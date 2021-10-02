@@ -20,6 +20,18 @@ impl ApiDelegator {
     }
 }
 
+#[macro_export]
+macro_rules! petstore_server {
+    ($x: expr) => {
+        actix_web::HttpServer::new(|| {
+            let delegator = petstore_client::ApiDelegator::new($x);
+            actix_web::App::new()
+                .data(delegator)
+                .service(petstore_client::index)
+        })
+    };
+}
+
 #[get("/{id}/{name}/index.html")]
 pub async fn index(
     api: web::Data<ApiDelegator>,

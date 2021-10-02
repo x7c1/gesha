@@ -1,16 +1,12 @@
-mod client;
-use crate::client::{index, Api, ApiDelegator};
+mod petstore_client;
+use crate::petstore_client::Api;
 
-use actix_web::{App, HttpServer};
 use async_trait::async_trait;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        let delegator = ApiDelegator::new(ApiImpl {
-            foo: "fooooo".to_string(),
-        });
-        App::new().data(delegator).service(index)
+    petstore_server!(ApiImpl {
+        foo: "fooooo".to_string(),
     })
     .bind("127.0.0.1:8080")?
     .run()
