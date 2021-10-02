@@ -1,4 +1,4 @@
-mod petstore_client;
+use sample_client::{petstore_server, petstore_delegate};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

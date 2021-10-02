@@ -24,10 +24,10 @@ impl ApiDelegator {
 macro_rules! petstore_server {
     ($x: expr) => {
         actix_web::HttpServer::new(|| {
-            let delegator = petstore_client::ApiDelegator::new($x);
+            let delegator = sample_client::ApiDelegator::new($x);
             actix_web::App::new()
                 .data(delegator)
-                .service(petstore_client::index)
+                .service(sample_client::index)
         })
     };
 }
@@ -36,7 +36,7 @@ macro_rules! petstore_server {
 macro_rules! petstore_delegate {
     ($x: ident) => {
         #[async_trait::async_trait]
-        impl petstore_client::Api for $x {
+        impl sample_client::Api for $x {
             async fn index(&self, id: u32, name: String) -> String {
                $x::index(self, id, name).await
             }
