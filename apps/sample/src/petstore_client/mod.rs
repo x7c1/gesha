@@ -32,6 +32,18 @@ macro_rules! petstore_server {
     };
 }
 
+#[macro_export]
+macro_rules! petstore_delegate {
+    ($x: ident) => {
+        #[async_trait::async_trait]
+        impl petstore_client::Api for $x {
+            async fn index(&self, id: u32, name: String) -> String {
+               $x::index(self, id, name).await
+            }
+        }
+    }
+}
+
 #[get("/{id}/{name}/index.html")]
 pub async fn index(
     api: web::Data<ApiDelegator>,

@@ -1,7 +1,4 @@
 mod petstore_client;
-use crate::petstore_client::Api;
-
-use async_trait::async_trait;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -17,8 +14,9 @@ struct ApiImpl {
     foo: String,
 }
 
-#[async_trait]
-impl Api for ApiImpl {
+petstore_delegate!(ApiImpl);
+
+impl ApiImpl {
     async fn index(&self, id: u32, name: String) -> String {
         println!("server internal field: {}", self.foo);
         format!("Hello {}! id:{}", name, id)
