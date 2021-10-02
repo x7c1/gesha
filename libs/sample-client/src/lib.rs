@@ -21,7 +21,7 @@ impl ApiDelegator {
 }
 
 #[macro_export]
-macro_rules! petstore_server {
+macro_rules! sample_server {
     ($x: expr) => {
         actix_web::HttpServer::new(|| {
             let delegator = sample_client::ApiDelegator::new($x);
@@ -33,15 +33,15 @@ macro_rules! petstore_server {
 }
 
 #[macro_export]
-macro_rules! petstore_delegate {
+macro_rules! sample_delegate {
     ($x: ident) => {
         #[async_trait::async_trait]
         impl sample_client::Api for $x {
             async fn index(&self, id: u32, name: String) -> String {
-               $x::index(self, id, name).await
+                $x::index(self, id, name).await
             }
         }
-    }
+    };
 }
 
 #[get("/{id}/{name}/index.html")]

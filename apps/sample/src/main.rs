@@ -1,8 +1,8 @@
-use sample_client::{petstore_server, petstore_delegate};
+use sample_client::{sample_server, sample_delegate};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    petstore_server!(ApiImpl {
+    sample_server!(ApiImpl {
         foo: "fooooo".to_string(),
     })
     .bind("127.0.0.1:8080")?
@@ -14,7 +14,7 @@ struct ApiImpl {
     foo: String,
 }
 
-petstore_delegate!(ApiImpl);
+sample_delegate!(ApiImpl);
 
 impl ApiImpl {
     async fn index(&self, id: u32, name: String) -> String {
