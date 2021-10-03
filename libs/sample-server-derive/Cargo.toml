@@ -1,5 +1,5 @@
 [package]
-name = "sample-client-macros"
+name = "sample-server-derive"
 version = "0.1.0"
 edition = "2018"
 

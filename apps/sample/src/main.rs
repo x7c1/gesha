@@ -1,5 +1,5 @@
-use sample_client::sample_server;
-use sample_client_macros::DelegateSample;
+use sample_server::sample_server;
+use sample_server_derive::Sample;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -9,7 +9,7 @@ async fn main() -> std::io::Result<()> {
         .await
 }
 
-#[derive(DelegateSample)]
+#[derive(Sample)]
 struct Api {
     foo: String,
 }

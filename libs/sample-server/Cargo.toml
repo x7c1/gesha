@@ -1,5 +1,5 @@
 [package]
-name = "sample-client"
+name = "sample-server"
 version = "0.1.0"
 edition = "2018"
 

@@ -1,7 +1,7 @@
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
 
-#[proc_macro_derive(DelegateSample)]
+#[proc_macro_derive(Sample)]
 pub fn delegate_api_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).unwrap();
     impl_delegate_macro(&ast)
@@ -20,7 +20,7 @@ fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
         struct #impl_name(#name);
 
         #[async_trait::async_trait]
-        impl sample_client::Api for #impl_name {
+        impl sample_server::Api for #impl_name {
             async fn index(&self, id: u32, name: String) -> String {
                 self.0.index(id, name).await
             }

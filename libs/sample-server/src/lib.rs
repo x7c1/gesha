@@ -11,10 +11,10 @@ macro_rules! sample_server {
     ($x: expr) => {
         actix_web::HttpServer::new(|| {
             let api = $x.to_api();
-            let delegator = sample_client::ApiDelegator::new(api);
+            let delegator = sample_server::ApiDelegator::new(api);
             actix_web::App::new()
                 .data(delegator)
-                .service(sample_client::index)
+                .service(sample_server::index)
         })
     };
 }
