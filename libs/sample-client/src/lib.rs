@@ -6,6 +6,19 @@ pub trait Api {
     async fn index(&self, id: u32, name: String) -> String;
 }
 
+#[macro_export]
+macro_rules! sample_server {
+    ($x: expr) => {
+        actix_web::HttpServer::new(|| {
+            let api = $x.to_api();
+            let delegator = sample_client::ApiDelegator::new(api);
+            actix_web::App::new()
+                .data(delegator)
+                .service(sample_client::index)
+        })
+    };
+}
+
 pub struct ApiDelegator {
     api: Box<dyn Api>,
 }
@@ -18,18 +31,6 @@ impl ApiDelegator {
     pub async fn index(&self, id: u32, name: String) -> String {
         self.api.index(id, name).await
     }
-}
-
-#[macro_export]
-macro_rules! sample_server {
-    ($x: expr) => {
-        actix_web::HttpServer::new(|| {
-            let delegator = sample_client::ApiDelegator::new($x);
-            actix_web::App::new()
-                .data(delegator)
-                .service(sample_client::index)
-        })
-    };
 }
 
 #[get("/{id}/{name}/index.html")]
