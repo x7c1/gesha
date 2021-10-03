@@ -7,5 +7,6 @@ edition = "2018"
 
 [dependencies]
 sample-client = { path = "../../libs/sample-client" }
+sample-client-macros = { path = "../../libs/sample-client-macros" }
 actix-web = "3"
 async-trait = "0.1.51"
