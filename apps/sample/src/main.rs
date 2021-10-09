@@ -1,4 +1,5 @@
 use sample_server::sample_server;
+use sample_server_derive::delegate_to;
 use sample_server_derive::Sample;
 
 #[actix_web::main]
@@ -10,7 +11,7 @@ async fn main() -> std::io::Result<()> {
 }
 
 #[derive(Sample)]
-struct Api {
+pub struct Api {
     foo: String,
 }
 
@@ -23,6 +24,7 @@ impl Api {
 }
 
 impl Api {
+    #[delegate_to(index)]
     async fn index(&self, id: u32, name: String) -> String {
         println!("server internal field: {}", self.foo);
         format!("Hello {}! id:{}", name, id)
