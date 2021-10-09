@@ -1,5 +1,9 @@
-use proc_macro::TokenStream;
-use quote::{format_ident, quote};
+mod reified;
+
+use proc_macro::TokenTree;
+use proc_macro::{Delimiter, TokenStream};
+use quote::quote;
+use std::iter::FromIterator;
 
 #[proc_macro_derive(Sample)]
 pub fn delegate_api_derive(input: TokenStream) -> TokenStream {
@@ -8,22 +12,19 @@ pub fn delegate_api_derive(input: TokenStream) -> TokenStream {
 }
 
 fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
-    let name = &ast.ident;
-    let impl_name = format_ident!("{}GeneratedImpl", name);
+    let struct_name = &ast.ident;
 
     let gen = quote! {
-        impl #name {
-            pub fn to_api(self) -> #impl_name {
-                #impl_name(self)
-            }
-        }
-        struct #impl_name(#name);
+        use actix_web::web;
+        use actix_web::get;
+        use actix_web::Responder;
 
-        #[async_trait::async_trait]
-        impl sample_server::Api for #impl_name {
-            async fn index(&self, id: u32, name: String) -> String {
-                self.0.index(id, name).await
-            }
+        #[get("/{id}/{name}/index.html")]
+        pub async fn index(
+            api: web::Data<#struct_name>,
+            web::Path((id, name)): web::Path<(u32, String)>,
+        ) -> impl Responder {
+            api.index(id, name).await
         }
     };
     gen.into()
