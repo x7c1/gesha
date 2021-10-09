@@ -1,5 +1,5 @@
 #[allow(unused)]
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Parameter {
     /// e.g.
     /// &self

@@ -5,14 +5,14 @@ mod parameter;
 pub use parameter::Parameter;
 
 #[allow(unused)]
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 enum Modifier {
     Pub,
     Async,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 struct MethodName(String);
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 struct ReturnType(String);

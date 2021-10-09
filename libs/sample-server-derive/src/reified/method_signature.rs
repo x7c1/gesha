@@ -4,7 +4,7 @@ use proc_macro2::{TokenStream, TokenTree};
 #[allow(unused)]
 use quote::quote;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct MethodSignature {
     modifiers: Vec<Modifier>,
     method_name: MethodName,
@@ -99,6 +99,23 @@ fn test_create_signature() {
     let stream = quote! {
         pub async fn index(&self, param1: u32, param2: foo::Bar) -> String
     };
-    let signature = MethodSignature::from_stream(stream.into());
-    println!("sig: {:#?}", signature)
+    let actual = MethodSignature::from_stream(stream.into());
+    let expected = MethodSignature {
+        modifiers: vec![Modifier::Pub, Modifier::Async],
+        method_name: MethodName("index".to_string()),
+        parameters: vec![
+            Parameter::RefSelf,
+            Parameter::Arg {
+                name: "param1".to_string(),
+                type_name: "u32".to_string(),
+            },
+            Parameter::Arg {
+                name: "param2".to_string(),
+                type_name: "foo::Bar".to_string(),
+            },
+        ],
+        return_type: ReturnType("String".to_string()),
+    };
+    println!("sig: {:#?}", actual);
+    assert_eq!(actual, expected);
 }
