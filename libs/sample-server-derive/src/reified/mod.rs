@@ -15,4 +15,4 @@ enum Modifier {
 struct MethodName(String);
 
 #[derive(Debug, PartialEq)]
-struct ReturnType(String);
+struct ReturnType(Option<String>);

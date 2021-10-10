@@ -3,6 +3,7 @@ use proc_macro2::{TokenStream, TokenTree};
 
 #[allow(unused)]
 use quote::quote;
+use Modifier::{Async, Pub};
 
 #[derive(Debug, PartialEq)]
 pub struct MethodSignature {
@@ -19,6 +20,7 @@ impl MethodSignature {
         let modifiers = extract_modifiers(&mut iter);
         let method_name = extract_method_name(&mut iter);
         let parameters = extract_parameters(&mut iter);
+        let return_type = extract_return_type(&mut iter);
 
         dump_trees(&mut iter);
 
@@ -26,7 +28,7 @@ impl MethodSignature {
             modifiers,
             method_name,
             parameters,
-            return_type: ReturnType("hoge".to_string()),
+            return_type,
         }
     }
 }
@@ -37,8 +39,8 @@ fn extract_modifiers(iter: &mut impl Iterator<Item = TokenTree>) -> Vec<Modifier
     loop {
         match iter.next() {
             Some(TokenTree::Ident(ident)) => match ident.to_string().as_str() {
-                "pub" => modifiers.push(Modifier::Pub),
-                "async" => modifiers.push(Modifier::Async),
+                "pub" => modifiers.push(Pub),
+                "async" => modifiers.push(Async),
                 "fn" => break,
                 unknown => panic!("unknown modifier found: {}", unknown),
             },
@@ -86,6 +88,10 @@ fn extract_parameters(iter: &mut impl Iterator<Item = TokenTree>) -> Vec<Paramet
     parameters
 }
 
+fn extract_return_type(iter: &mut impl Iterator<Item = TokenTree>) -> ReturnType {
+    ReturnType(None)
+}
+
 #[allow(unused)]
 fn dump_trees(iter: &mut impl Iterator<Item = TokenTree>) {
     println!("[start] dump_trees");
@@ -94,28 +100,36 @@ fn dump_trees(iter: &mut impl Iterator<Item = TokenTree>) {
     }
 }
 
-#[test]
-fn test_create_signature() {
-    let stream = quote! {
-        pub async fn index(&self, param1: u32, param2: foo::Bar) -> String
-    };
-    let actual = MethodSignature::from_stream(stream.into());
-    let expected = MethodSignature {
-        modifiers: vec![Modifier::Pub, Modifier::Async],
-        method_name: MethodName("index".to_string()),
-        parameters: vec![
-            Parameter::RefSelf,
-            Parameter::Arg {
-                name: "param1".to_string(),
-                type_name: "u32".to_string(),
-            },
-            Parameter::Arg {
-                name: "param2".to_string(),
-                type_name: "foo::Bar".to_string(),
-            },
-        ],
-        return_type: ReturnType("String".to_string()),
-    };
-    println!("sig: {:#?}", actual);
-    assert_eq!(actual, expected);
+#[cfg(test)]
+mod tests {
+    use crate::reified::Modifier::{Async, Pub};
+    use crate::reified::{MethodName, MethodSignature, Parameter, ReturnType};
+    use pretty_assertions::assert_eq;
+    use quote::quote;
+
+    #[test]
+    fn test_create_signature() {
+        let stream = quote! {
+            pub async fn index(&self, param1: u32, param2: foo::Bar) -> String
+        };
+        let actual = MethodSignature::from_stream(stream.into());
+        let expected = MethodSignature {
+            modifiers: vec![Pub, Async],
+            method_name: MethodName("index".to_string()),
+            parameters: vec![
+                Parameter::RefSelf,
+                Parameter::Arg {
+                    name: "param1".to_string(),
+                    type_name: "u32".to_string(),
+                },
+                Parameter::Arg {
+                    name: "param2".to_string(),
+                    type_name: "foo::Bar".to_string(),
+                },
+            ],
+            return_type: ReturnType(Some("String".to_string())),
+        };
+        println!("sig: {:#?}", actual);
+        assert_eq!(actual, expected);
+    }
 }
