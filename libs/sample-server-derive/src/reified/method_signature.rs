@@ -11,7 +11,7 @@ pub struct MethodSignature {
     method_name: MethodName,
     parameters: Vec<Parameter>,
     return_type: ReturnType,
-    rendered_output: String,
+    pub rendered_output: String,
 }
 
 impl MethodSignature {
