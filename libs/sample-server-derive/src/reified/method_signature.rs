@@ -11,11 +11,13 @@ pub struct MethodSignature {
     method_name: MethodName,
     parameters: Vec<Parameter>,
     return_type: ReturnType,
+    rendered_output: String,
 }
 
 impl MethodSignature {
     #[allow(unused)]
-    fn from_stream(stream: TokenStream) -> Self {
+    pub fn from_stream(stream: TokenStream) -> Self {
+        let rendered_output = stream.to_string();
         let mut iter = stream.into_iter();
         let modifiers = extract_modifiers(&mut iter);
         let method_name = extract_method_name(&mut iter);
@@ -29,6 +31,7 @@ impl MethodSignature {
             method_name,
             parameters,
             return_type,
+            rendered_output,
         }
     }
 }
@@ -146,6 +149,9 @@ mod tests {
                 },
             ],
             return_type: ReturnType(Some("String".to_string())),
+            rendered_output:
+                "pub async fn index (& self , param1 : u32 , param2 : foo :: Bar) -> String"
+                    .to_string(),
         };
         println!("sig: {:#?}", actual);
         assert_eq!(actual, expected);
