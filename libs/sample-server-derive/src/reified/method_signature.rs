@@ -11,7 +11,7 @@ pub struct MethodSignature {
     method_name: MethodName,
     parameters: Vec<Parameter>,
     return_type: ReturnType,
-    pub rendered_output: String,
+    rendered_output: String,
 }
 
 impl MethodSignature {
@@ -33,6 +33,9 @@ impl MethodSignature {
             return_type,
             rendered_output,
         }
+    }
+    pub fn render(&self) -> &str {
+        &self.rendered_output
     }
 }
 

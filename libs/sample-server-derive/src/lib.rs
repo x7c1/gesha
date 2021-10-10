@@ -2,10 +2,8 @@ mod extractor;
 use extractor::validate_signature;
 mod reified;
 
-use proc_macro::TokenTree;
-use proc_macro::{Delimiter, TokenStream};
+use proc_macro::TokenStream;
 use quote::quote;
-use std::iter::FromIterator;
 
 #[proc_macro_derive(Sample)]
 pub fn delegate_api_derive(input: TokenStream) -> TokenStream {
@@ -33,7 +31,7 @@ fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
 }
 
 #[proc_macro_attribute]
-pub fn delegate_to(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn assert_signature(attr: TokenStream, item: TokenStream) -> TokenStream {
     let operation = attr.to_string();
     validate_signature(&operation, item.clone().into());
     item

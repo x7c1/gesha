@@ -11,7 +11,8 @@ pub fn validate_signature(operation: &str, item: TokenStream) {
     if expected != actual {
         panic!(
             "inconsistent signature:\nexpected: {}\n  actual: {}",
-            actual.rendered_output, expected.rendered_output
+            expected.render(),
+            actual.render(),
         )
     }
 }
