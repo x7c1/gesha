@@ -89,7 +89,25 @@ fn extract_parameters(iter: &mut impl Iterator<Item = TokenTree>) -> Vec<Paramet
 }
 
 fn extract_return_type(iter: &mut impl Iterator<Item = TokenTree>) -> ReturnType {
-    ReturnType(None)
+    match iter.next() {
+        Some(TokenTree::Punct(punct)) => match punct.to_string().as_str() {
+            "-" => (),
+            x => panic!("unknown char: {}", x),
+        },
+        x => panic!("unexpected token: {:#?}", x),
+    }
+    match iter.next() {
+        Some(TokenTree::Punct(punct)) => match punct.to_string().as_str() {
+            ">" => (),
+            x => panic!("unknown char: {}", x),
+        },
+        x => panic!("unexpected token: {:#?}", x),
+    }
+    let type_name = match iter.next() {
+        Some(TokenTree::Ident(ident)) => ident.to_string(),
+        x => panic!("unexpected token: {:#?}", x),
+    };
+    ReturnType(Some(type_name))
 }
 
 #[allow(unused)]
