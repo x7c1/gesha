@@ -1,5 +1,6 @@
 mod extractor;
 use extractor::validate_signature;
+
 mod reified;
 
 use proc_macro::TokenStream;
@@ -31,7 +32,7 @@ fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
 }
 
 #[proc_macro_attribute]
-pub fn assert_signature(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn define(attr: TokenStream, item: TokenStream) -> TokenStream {
     let operation = attr.to_string();
     validate_signature(&operation, item.clone().into());
     item

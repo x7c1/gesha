@@ -1,5 +1,5 @@
 use sample_server::sample_server;
-use sample_server_derive::assert_signature;
+use sample_server_derive::define;
 use sample_server_derive::Sample;
 
 #[actix_web::main]
@@ -24,7 +24,7 @@ impl Api {
 }
 
 impl Api {
-    #[assert_signature(index)]
+    #[define(index)]
     async fn index(&self, id: u32, name: String) -> String {
         println!("server internal field: {}", self.foo);
         format!("Hello {}! id:{}", name, id)
