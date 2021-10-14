@@ -22,7 +22,7 @@ pub fn validate_signature(operation: &str, item: TokenStream) {
 fn to_expected_signature(operation: &str) -> MethodSignature {
     let expected = match operation {
         "index" => quote! {
-            async fn index(&self, req: IndexRequest) -> String
+            pub async fn index(&self, req: index::Request) -> String
         },
         _ => panic!("unknown operation: {}", operation),
     };

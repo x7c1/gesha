@@ -1,5 +1,4 @@
-use actix_web::HttpRequest;
-use serde::Deserialize;
+pub mod index;
 
 #[macro_export]
 macro_rules! register_services {
@@ -16,16 +15,4 @@ macro_rules! http_server {
             register_services!(app)
         })
     };
-}
-
-#[derive(Debug, Deserialize)]
-pub struct IndexPath {
-    pub id: u32,
-    pub name: String,
-}
-
-#[derive(Debug)]
-pub struct IndexRequest {
-    pub path: IndexPath,
-    pub raw: HttpRequest,
 }

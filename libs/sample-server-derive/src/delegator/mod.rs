@@ -16,9 +16,9 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
             pub async fn index(
                 handlers: web::Data<#struct_name>,
                 raw: HttpRequest,
-                path: web::Path<sample_server::IndexPath>,
+                path: web::Path<sample_server::index::Path>,
             ) -> impl Responder {
-                let request = sample_server::IndexRequest {
+                let request = sample_server::index::Request {
                     path: path.into_inner(),
                     raw,
                 };

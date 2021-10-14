@@ -1,6 +1,7 @@
+mod index;
+
 use actix_web::{App, HttpServer};
-use sample_server::{register_services, IndexRequest};
-use sample_server_derive::define;
+use sample_server::register_services;
 use sample_server_derive::Sample;
 
 #[actix_web::main]
@@ -24,14 +25,5 @@ impl Handlers {
         Handlers {
             foo: "fooooo".to_string(),
         }
-    }
-}
-
-impl Handlers {
-    #[define(index)]
-    async fn index(&self, req: IndexRequest) -> String {
-        println!("server internal field: {}", self.foo);
-        println!("request: {:#?}", req);
-        format!("Hello {}! id:{}", req.path.name, req.path.id)
     }
 }
