@@ -7,7 +7,9 @@ pub fn validate_signature(operation: &str, item: TokenStream) {
     let expected = to_expected_signature(operation);
     let actual = extract_actual_signature(item);
 
-    // TODO: use simplified assertion, which can regard foo::Bar as Bar.
+    // TODO: use simplified assertion, which :
+    // can regard foo::Bar as Bar.
+    // can ignore `arg` of `arg: Bar`
     if expected != actual {
         panic!(
             "inconsistent signature:\nexpected: {}\n  actual: {}",
@@ -20,7 +22,7 @@ pub fn validate_signature(operation: &str, item: TokenStream) {
 fn to_expected_signature(operation: &str) -> MethodSignature {
     let expected = match operation {
         "index" => quote! {
-            async fn index(&self, id: u32, name: String) -> String
+            async fn index(&self, req: IndexRequest) -> String
         },
         _ => panic!("unknown operation: {}", operation),
     };

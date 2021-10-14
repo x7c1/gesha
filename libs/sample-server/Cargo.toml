@@ -8,3 +8,4 @@ edition = "2018"
 [dependencies]
 actix-web = "3"
 async-trait = "0.1.51"
+serde = "1.0.130"

@@ -4,18 +4,27 @@ use quote::quote;
 pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
     let struct_name = &ast.ident;
 
-    let gen = quote! {
-        use actix_web::web;
-        use actix_web::get;
-        use actix_web::Responder;
+    let stream = quote! {
+        mod generated {
+            use super::#struct_name;
+            use actix_web::web;
+            use actix_web::get;
+            use actix_web::Responder;
+            use actix_web::HttpRequest;
 
-        #[get("/{id}/{name}/index.html")]
-        pub async fn index(
-            api: web::Data<#struct_name>,
-            web::Path((id, name)): web::Path<(u32, String)>,
-        ) -> impl Responder {
-            api.index(id, name).await
+            #[get("/{id}/{name}/index.html")]
+            pub async fn index(
+                api: web::Data<#struct_name>,
+                raw: HttpRequest,
+                path: web::Path<sample_server::IndexPath>,
+            ) -> impl Responder {
+                let request = sample_server::IndexRequest {
+                    path: path.into_inner(),
+                    raw,
+                };
+                api.index(request).await
+            }
         }
     };
-    gen.into()
+    stream.into()
 }

@@ -1,4 +1,4 @@
-use sample_server::sample_server;
+use sample_server::{sample_server, IndexRequest};
 use sample_server_derive::define;
 use sample_server_derive::Sample;
 
@@ -25,8 +25,9 @@ impl Api {
 
 impl Api {
     #[define(index)]
-    async fn index(&self, id: u32, name: String) -> String {
+    async fn index(&self, req: IndexRequest) -> String {
         println!("server internal field: {}", self.foo);
-        format!("Hello {}! id:{}", name, id)
+        println!("request: {:#?}", req);
+        format!("Hello {}! id:{}", req.path.name, req.path.id)
     }
 }
