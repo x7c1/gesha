@@ -4,7 +4,10 @@ set -xue
 
 main () {
   cargo build
-  cargo run &
+
+  log_path="logs/$(date '+%F').log"
+  cargo run > "$log_path" &
+
   run_tests
 }
 
