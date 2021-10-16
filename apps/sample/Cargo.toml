@@ -8,6 +8,6 @@ edition = "2018"
 [dependencies]
 sample-server = { path = "../../libs/sample-server" }
 sample-server-derive = { path = "../../libs/sample-server-derive" }
+sample-models = { path = "../../libs/sample-models" }
 actix-web = "3"
 async-trait = "0.1.51"
-serde = "1.0.130"

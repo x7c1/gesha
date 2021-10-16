@@ -1,5 +1,5 @@
 use crate::Handlers;
-use sample_server::index;
+use sample_models::inline::index;
 use sample_server_derive::define;
 
 impl Handlers {

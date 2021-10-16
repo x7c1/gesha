@@ -1,5 +1,3 @@
-pub mod index;
-
 #[macro_export]
 macro_rules! register_services {
     ($app: ident) => {
