@@ -2,6 +2,7 @@
 macro_rules! register_services {
     ($app: ident) => {
         $app.service(generated::index)
+            .service(generated::show_pet_by_id)
     };
 }
 

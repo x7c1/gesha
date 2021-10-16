@@ -1,4 +1,5 @@
 mod index;
+mod pet;
 
 use actix_web::{App, HttpServer};
 use sample_server::register_services;

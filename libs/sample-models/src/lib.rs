@@ -1,4 +1,5 @@
 pub mod inline;
+pub mod schemas;
 
 #[cfg(test)]
 mod tests {

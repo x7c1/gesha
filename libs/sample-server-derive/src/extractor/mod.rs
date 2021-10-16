@@ -24,6 +24,9 @@ fn to_expected_signature(operation: &str) -> MethodSignature {
         "index" => quote! {
             pub async fn index(&self, req: index::Request) -> String
         },
+        "show_pet_by_id" => quote! {
+            pub async fn show_pet_by_id(&self, req: show_pet_by_id::Request) -> Pet
+        },
         _ => panic!("unknown operation: {}", operation),
     };
     MethodSignature::from_stream(expected)
