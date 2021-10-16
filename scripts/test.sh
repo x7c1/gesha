@@ -11,7 +11,7 @@ main () {
 run_tests() {
   sleep 1
   await_server
-  deno test --allow-net ./e2e-tests/main.ts
+  deno test --allow-net ./e2e-tests/
 }
 
 await_server() {
