@@ -24,8 +24,6 @@ impl MethodSignature {
         let parameters = extract_parameters(&mut iter);
         let return_type = extract_return_type(&mut iter);
 
-        dump_trees(&mut iter);
-
         MethodSignature {
             modifiers,
             method_name,

@@ -8,7 +8,7 @@ Deno.test("index.html", async () => {
 });
 
 Deno.test("show_pet_by_id", async () => {
-  const response = await client.call("pets/1234");
+  const response = await client.call("pets/111");
   const text = await response.text();
-  assertEquals(text, `{"id":0,"name":"sample_name","tag":null}`);
+  assertEquals(text, `{"id":111,"name":"sample_name","tag":null}`);
 });

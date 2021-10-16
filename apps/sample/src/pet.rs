@@ -7,8 +7,11 @@ impl Handlers {
     #[define(show_pet_by_id)]
     pub async fn show_pet_by_id(&self, req: show_pet_by_id::Request) -> Pet {
         println!("request: {:#?}", req);
+
+        // TODO: remove unwrap
+        let id = req.path.pet_id.parse().unwrap();
         Pet {
-            id: 0,
+            id,
             name: "sample_name".to_string(),
             tag: None,
         }
