@@ -1,6 +1,12 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Error {
+    pub code: i32,
+    pub message: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Pet {
     pub id: i64,
     pub name: String,

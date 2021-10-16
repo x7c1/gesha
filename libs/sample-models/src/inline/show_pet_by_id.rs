@@ -1,3 +1,4 @@
+use crate::schemas::{Error, Pet};
 use actix_web::HttpRequest;
 use serde::Deserialize;
 
@@ -10,4 +11,10 @@ pub struct Path {
 pub struct Request {
     pub path: Path,
     pub raw: HttpRequest,
+}
+
+#[derive(Debug)]
+pub enum Response {
+    OK(Pet),
+    InternalServerError(Error),
 }
