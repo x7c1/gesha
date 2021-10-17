@@ -8,9 +8,6 @@ pub fn validate_signature(item: TokenStream) {
     let operation = actual.method_name();
     let expected = to_expected_signature(operation);
 
-    // TODO: use simplified assertion, which :
-    // can regard foo::Bar as Bar.
-    // can ignore `arg` of `arg: Bar`
     if expected != actual {
         panic!(
             "inconsistent signature:\nexpected: {}\n  actual: {}",
