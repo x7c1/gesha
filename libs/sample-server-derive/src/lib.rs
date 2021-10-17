@@ -15,8 +15,7 @@ pub fn delegate_api_derive(input: TokenStream) -> TokenStream {
 }
 
 #[proc_macro_attribute]
-pub fn define(attr: TokenStream, item: TokenStream) -> TokenStream {
-    let operation = attr.to_string();
-    validate_signature(&operation, item.clone().into());
+pub fn define(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    validate_signature(item.clone().into());
     item
 }

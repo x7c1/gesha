@@ -32,6 +32,9 @@ impl MethodSignature {
             rendered_output,
         }
     }
+    pub fn method_name(&self) -> &str {
+        &self.method_name.0
+    }
     pub fn render(&self) -> &str {
         &self.rendered_output
     }

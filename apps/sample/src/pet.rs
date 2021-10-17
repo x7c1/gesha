@@ -4,7 +4,7 @@ use sample_models::schemas::{Error, Pet};
 use sample_server_derive::define;
 
 impl Handlers {
-    #[define(show_pet_by_id)]
+    #[define]
     pub async fn show_pet_by_id(&self, req: show_pet_by_id::Request) -> show_pet_by_id::Response {
         println!("request: {:#?}", req);
 

@@ -3,9 +3,10 @@ use proc_macro2::{Delimiter, TokenStream, TokenTree};
 use quote::quote;
 use std::iter::FromIterator;
 
-pub fn validate_signature(operation: &str, item: TokenStream) {
-    let expected = to_expected_signature(operation);
+pub fn validate_signature(item: TokenStream) {
     let actual = extract_actual_signature(item);
+    let operation = actual.method_name();
+    let expected = to_expected_signature(operation);
 
     // TODO: use simplified assertion, which :
     // can regard foo::Bar as Bar.

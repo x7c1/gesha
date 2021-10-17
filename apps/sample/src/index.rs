@@ -3,7 +3,7 @@ use sample_models::inline::index;
 use sample_server_derive::define;
 
 impl Handlers {
-    #[define(index)]
+    #[define]
     pub async fn index(&self, req: index::Request) -> String {
         println!("server internal field: {}", self.foo);
         println!("request: {:#?}", req);
