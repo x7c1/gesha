@@ -1,10 +1,10 @@
 use crate::Handlers;
 use sample_models::inline::show_pet_by_id;
 use sample_models::schemas::{Error, Pet};
-use sample_server_derive::define;
+use sample_server_derive::assert_signature;
 
 impl Handlers {
-    #[define]
+    #[assert_signature]
     pub async fn show_pet_by_id(&self, req: show_pet_by_id::Request) -> show_pet_by_id::Response {
         println!("request: {:#?}", req);
 

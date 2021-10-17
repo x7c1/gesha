@@ -15,7 +15,7 @@ pub fn delegate_api_derive(input: TokenStream) -> TokenStream {
 }
 
 #[proc_macro_attribute]
-pub fn define(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn assert_signature(_attr: TokenStream, item: TokenStream) -> TokenStream {
     validate_signature(item.clone().into());
     item
 }
