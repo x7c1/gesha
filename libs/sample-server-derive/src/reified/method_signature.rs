@@ -24,8 +24,6 @@ impl MethodSignature {
         let parameters = extract_parameters(&mut iter);
         let return_type = extract_return_type(&mut iter);
 
-        dump_trees(&mut iter);
-
         MethodSignature {
             modifiers,
             method_name,
@@ -33,6 +31,9 @@ impl MethodSignature {
             return_type,
             rendered_output,
         }
+    }
+    pub fn method_name(&self) -> &str {
+        &self.method_name.0
     }
     pub fn render(&self) -> &str {
         &self.rendered_output
