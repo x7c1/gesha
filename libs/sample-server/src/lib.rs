@@ -4,7 +4,7 @@ macro_rules! register_services {
         $app.service($($module::)* generated::index)
             .service($($module::)* generated::show_pet_by_id)
     };
-    ($app: ident, generated in $($module: ident)::+) => {
+    ($app: ident, generated in $($module: ident)::*) => {
         register_services!($app, $($module)::*)
     };
     ($app: ident) => {
