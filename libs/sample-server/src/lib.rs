@@ -1,8 +1,14 @@
 #[macro_export]
 macro_rules! register_services {
-    ($app: ident, generated in $($module: ident)::*) => {
-        $app.service($($module::)*generated::index)
-            .service($($module::)*generated::show_pet_by_id)
+    ($app: ident, $($module: ident)::*) => {
+        $app.service($($module::)* generated::index)
+            .service($($module::)* generated::show_pet_by_id)
+    };
+    ($app: ident, generated in $($module: ident)::+) => {
+        register_services!($app, $($module)::*)
+    };
+    ($app: ident) => {
+        register_services!($app,)
     };
 }
 
