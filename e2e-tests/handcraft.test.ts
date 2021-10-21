@@ -20,7 +20,7 @@ Deno.test("show_pet_by_id - OK", async () => {
   assertEquals(response.headers.get("content-type"), "application/json");
   assertEquals(await response.json(), {
     id: 111,
-    name: "sample_name",
+    name: "handcraft_name",
     tag: null,
   });
 });
