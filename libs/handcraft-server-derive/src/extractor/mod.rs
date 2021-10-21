@@ -32,10 +32,7 @@ fn to_expected_signature(operation: &str) -> MethodSignature {
 
 fn extract_actual_signature(item: TokenStream) -> MethodSignature {
     let actual = item.into_iter().take_while(|x| match x {
-        TokenTree::Group(g) => match g.delimiter() {
-            Delimiter::Brace => false,
-            _ => true,
-        },
+        TokenTree::Group(g) => !matches!(g.delimiter(), Delimiter::Brace),
         _ => true,
     });
     let stream = TokenStream::from_iter(actual);
