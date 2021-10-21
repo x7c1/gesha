@@ -4,7 +4,7 @@ use quote::quote;
 pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
     let struct_name = &ast.ident;
 
-    let stream = quote! {
+    quote! {
         pub mod generated {
             use super::#struct_name;
             use handcraft_models::inline;
@@ -49,6 +49,5 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
                 actix_web::Result::Ok(response)
             }
         }
-    };
-    stream.into()
+    }
 }
