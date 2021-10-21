@@ -8,7 +8,7 @@ mod reified;
 
 use proc_macro::TokenStream;
 
-#[proc_macro_derive(Sample)]
+#[proc_macro_derive(Handcraft)]
 pub fn delegate_api_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).unwrap();
     impl_delegate_macro(&ast).into()

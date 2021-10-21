@@ -7,7 +7,7 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
     let stream = quote! {
         pub mod generated {
             use super::#struct_name;
-            use sample_models::inline;
+            use handcraft_models::inline;
             use actix_web::get;
             use actix_web::HttpRequest;
             use actix_web::HttpResponse;

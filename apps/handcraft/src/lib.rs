@@ -1,9 +1,9 @@
-use sample_server_derive::Sample;
+use handcraft_server_derive::Handcraft;
 
 mod index;
 mod pet;
 
-#[derive(Sample)]
+#[derive(Handcraft)]
 pub struct Handlers {
     foo: String,
 }

@@ -1,6 +1,6 @@
 use crate::Handlers;
-use sample_models::inline::index;
-use sample_server_derive::assert_signature;
+use handcraft_models::inline::index;
+use handcraft_server_derive::assert_signature;
 
 impl Handlers {
     #[assert_signature]

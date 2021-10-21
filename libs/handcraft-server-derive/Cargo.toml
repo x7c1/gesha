@@ -1,5 +1,5 @@
 [package]
-name = "sample-server-derive"
+name = "handcraft-server-derive"
 version = "0.1.0"
 edition = "2018"
 
