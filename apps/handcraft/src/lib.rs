@@ -8,8 +8,8 @@ pub struct Handlers {
     foo: String,
 }
 
-impl Handlers {
-    pub fn new() -> Self {
+impl Default for Handlers {
+    fn default() -> Self {
         Handlers {
             foo: "fooooo".to_string(),
         }
