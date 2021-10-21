@@ -86,7 +86,7 @@ fn extract_parameters(iter: &mut impl Iterator<Item = TokenTree>) -> Vec<Paramet
             None => break,
         }
     }
-    if tokens.len() > 0 {
+    if !tokens.is_empty() {
         parameters.push(Parameter::new(tokens));
     }
     parameters
