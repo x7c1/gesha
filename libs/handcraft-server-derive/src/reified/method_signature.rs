@@ -43,15 +43,12 @@ impl MethodSignature {
 #[allow(unused)]
 fn extract_modifiers(iter: &mut impl Iterator<Item = TokenTree>) -> Vec<Modifier> {
     let mut modifiers: Vec<Modifier> = vec![];
-    loop {
-        match iter.next() {
-            Some(TokenTree::Ident(ident)) => match ident.to_string().as_str() {
-                "pub" => modifiers.push(Pub),
-                "async" => modifiers.push(Async),
-                "fn" => break,
-                unknown => panic!("unknown modifier found: {}", unknown),
-            },
-            _ => break,
+    while let Some(TokenTree::Ident(ident)) = iter.next() {
+        match ident.to_string().as_str() {
+            "pub" => modifiers.push(Pub),
+            "async" => modifiers.push(Async),
+            "fn" => break,
+            unknown => panic!("unknown modifier found: {}", unknown),
         }
     }
     modifiers
