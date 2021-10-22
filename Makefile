@@ -5,6 +5,12 @@ help: ## docs : display tasks
 	sed -e 's/:[ ]*##[ ]*/:/' |\
 	column -t -s :
 
+cargo-clippy: ## linter :
+	cargo clippy -- --no-deps -D warnings
+
+cargo-fmt: ## formatter
+	cargo fmt -- --check
+
 deno-test: ## tests : run e2e tests
 	./scripts/e2e-test.sh
 
