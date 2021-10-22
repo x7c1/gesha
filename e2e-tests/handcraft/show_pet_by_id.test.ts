@@ -1,7 +1,7 @@
 import { client } from "../client.ts";
 import { assertEquals } from "../deps.ts";
 
-Deno.test("show_pet_by_id - OK", async () => {
+Deno.test("200", async () => {
   const response = await client.call("pets/111");
   const actual = {
     status: response.status,
@@ -20,7 +20,7 @@ Deno.test("show_pet_by_id - OK", async () => {
   assertEquals(actual, expected);
 });
 
-Deno.test("show_pet_by_id - InternalServerError", async () => {
+Deno.test("500", async () => {
   const response = await client.call("pets/invalid_id");
   const actual = {
     status: response.status,

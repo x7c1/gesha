@@ -1,7 +1,7 @@
 import { client } from "../client.ts";
 import { assertEquals } from "../deps.ts";
 
-Deno.test("list_pets - OK - empty", async () => {
+Deno.test("200 empty", async () => {
   const response = await client.call("pets");
   const actual = {
     status: response.status,
@@ -18,7 +18,7 @@ Deno.test("list_pets - OK - empty", async () => {
   assertEquals(actual, expected);
 });
 
-Deno.test("list_pets - OK - query parameter", async () => {
+Deno.test("200 non-empty", async () => {
   const response = await client.call("pets?limit=123");
   const actual = {
     status: response.status,
@@ -46,7 +46,24 @@ Deno.test("list_pets - OK - query parameter", async () => {
   assertEquals(actual, expected);
 });
 
-Deno.test("list_pets - InternalServerError", async () => {
+Deno.test("400 invalid query parameter", async () => {
+  const response = await client.call("pets?limit=invalid");
+  const actual = {
+    status: response.status,
+    contentType: response.headers.get("content-type"),
+    x_next: response.headers.get("x-next"),
+    body: await response.text(),
+  };
+  const expected = {
+    status: 400,
+    contentType: "text/plain; charset=utf-8",
+    x_next: null,
+    body: "Query deserialize error: invalid digit found in string",
+  };
+  assertEquals(actual, expected);
+});
+
+Deno.test("500", async () => {
   const response = await client.call("pets?limit=666");
   const actual = {
     status: response.status,
