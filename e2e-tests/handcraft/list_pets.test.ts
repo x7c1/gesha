@@ -38,10 +38,30 @@ Deno.test("list_pets - OK - query parameter", async () => {
       },
       {
         id: 222,
-        name: "name-111",
+        name: "name-222",
         tag: null,
       },
     ],
+  };
+  assertEquals(actual, expected);
+});
+
+Deno.test("list_pets - InternalServerError", async () => {
+  const response = await client.call("pets?limit=666");
+  const actual = {
+    status: response.status,
+    contentType: response.headers.get("content-type"),
+    x_next: response.headers.get("x-next"),
+    body: await response.json(),
+  };
+  const expected = {
+    status: 500,
+    contentType: "application/json",
+    x_next: null,
+    body: {
+      code: 333,
+      message: "sample error message",
+    },
   };
   assertEquals(actual, expected);
 });

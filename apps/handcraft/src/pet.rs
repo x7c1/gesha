@@ -42,10 +42,16 @@ impl Handlers {
                     },
                     Pet {
                         id: 222,
-                        name: "name-111".to_string(),
+                        name: "name-222".to_string(),
                         tag: None,
                     },
                 ]),
+            },
+            Some(666) => list_pets::Response::InternalServerError {
+                content: Error {
+                    code: 333,
+                    message: "sample error message".to_string(),
+                },
             },
             _ => list_pets::Response::OK {
                 headers: list_pets::ResponseHeaders { x_next: None },
