@@ -30,9 +30,9 @@ impl Handlers {
     pub async fn list_pets(&self, req: list_pets::Request) -> impl list_pets::Responder {
         println!("request: {:#?}", req);
         match req.query.limit {
-            Some(2) => list_pets::Response::OK {
+            Some(123) => list_pets::Response::OK {
                 headers: list_pets::ResponseHeaders {
-                    x_next: Some("3".to_string()),
+                    x_next: Some("456".to_string()),
                 },
                 content: Pets(vec![
                     Pet {
@@ -54,3 +54,23 @@ impl Handlers {
         }
     }
 }
+
+/*
+use actix_web::{get, web, HttpRequest, HttpResponse};
+use handcraft_models::inline;
+
+#[get("/pets/{pet_id}")]
+pub async fn draft_show_pet_by_id(
+    handlers: web::Data<Handlers>,
+    raw: HttpRequest,
+    path: web::Path<inline::show_pet_by_id::Path>,
+) -> actix_web::Result<HttpResponse> {
+    let request = inline::show_pet_by_id::Request {
+        path: path.into_inner(),
+        raw,
+    };
+    let response = handlers.show_pet_by_id(request).await;
+    let raw_response = inline::show_pet_by_id::Responder::to_raw(response);
+    actix_web::Result::Ok(raw_response)
+}
+*/

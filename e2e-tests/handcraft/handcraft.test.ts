@@ -1,5 +1,5 @@
-import { assertEquals } from "./deps.ts";
-import { client } from "./client.ts";
+import { assertEquals } from "../deps.ts";
+import { client } from "../client.ts";
 
 Deno.test("index.html", async () => {
   const response = await client.call("123/foooo/index.html");
@@ -49,21 +49,6 @@ Deno.test("show_pet_by_id - InternalServerError", async () => {
       code: 1,
       message: "invalid digit found in string",
     },
-  };
-  assertEquals(actual, expected);
-});
-
-Deno.test("list_pets - OK", async () => {
-  const response = await client.call("pets");
-  const actual = {
-    status: response.status,
-    contentType: response.headers.get("content-type"),
-    body: await response.json(),
-  };
-  const expected = {
-    status: 200,
-    contentType: "application/json",
-    body: [],
   };
   assertEquals(actual, expected);
 });
