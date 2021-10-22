@@ -38,15 +38,9 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
                     path: path.into_inner(),
                     raw,
                 };
-                let response = match handlers.show_pet_by_id(request).await {
-                    inline::show_pet_by_id::Response::OK(body) => {
-                        HttpResponse::Ok().json(body)
-                    }
-                    inline::show_pet_by_id::Response::InternalServerError(e) => {
-                        HttpResponse::InternalServerError().json(e)
-                    }
-                };
-                actix_web::Result::Ok(response)
+                let response = handlers.show_pet_by_id(request).await;
+                let raw_response = inline::show_pet_by_id::Responder::to_raw(response);
+                actix_web::Result::Ok(raw_response)
             }
         }
     }
