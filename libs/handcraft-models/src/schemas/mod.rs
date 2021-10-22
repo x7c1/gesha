@@ -14,10 +14,4 @@ pub struct Pet {
 }
 
 #[derive(Debug, Serialize)]
-pub struct Pets(Vec<Pet>);
-
-impl Pets {
-    pub fn new(xs: Vec<Pet>) -> Self {
-        Pets(xs)
-    }
-}
+pub struct Pets(pub Vec<Pet>);

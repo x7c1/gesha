@@ -52,3 +52,18 @@ Deno.test("show_pet_by_id - InternalServerError", async () => {
   };
   assertEquals(actual, expected);
 });
+
+Deno.test("list_pets - OK", async () => {
+  const response = await client.call("pets");
+  const actual = {
+    status: response.status,
+    contentType: response.headers.get("content-type"),
+    body: await response.json(),
+  };
+  const expected = {
+    status: 200,
+    contentType: "application/json",
+    body: [],
+  };
+  assertEquals(actual, expected);
+});

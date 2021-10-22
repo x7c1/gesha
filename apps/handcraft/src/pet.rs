@@ -10,7 +10,6 @@ impl Handlers {
         req: show_pet_by_id::Request,
     ) -> impl show_pet_by_id::Responder {
         println!("request: {:#?}", req);
-
         match req.path.pet_id.parse() {
             Ok(id) => show_pet_by_id::Response::OK {
                 content: Pet {
@@ -28,10 +27,30 @@ impl Handlers {
         }
     }
     #[assert_signature]
-    pub async fn list_pets(&self, _req: list_pets::Request) -> impl list_pets::Responder {
-        list_pets::Response::OK {
-            headers: list_pets::ResponseHeaders { x_next: None },
-            content: Pets::new(vec![]),
+    pub async fn list_pets(&self, req: list_pets::Request) -> impl list_pets::Responder {
+        println!("request: {:#?}", req);
+        match req.query.limit {
+            Some(2) => list_pets::Response::OK {
+                headers: list_pets::ResponseHeaders {
+                    x_next: Some("3".to_string()),
+                },
+                content: Pets(vec![
+                    Pet {
+                        id: 111,
+                        name: "name-111".to_string(),
+                        tag: None,
+                    },
+                    Pet {
+                        id: 222,
+                        name: "name-111".to_string(),
+                        tag: None,
+                    },
+                ]),
+            },
+            _ => list_pets::Response::OK {
+                headers: list_pets::ResponseHeaders { x_next: None },
+                content: Pets(vec![]),
+            },
         }
     }
 }
