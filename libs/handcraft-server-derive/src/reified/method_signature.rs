@@ -23,7 +23,7 @@ impl PartialEq for MethodSignature {
 
 impl MethodSignature {
     pub fn from_stream(stream: TokenStream) -> Self {
-        let rendered_output = stream.to_string();
+        let rendered_output = stream.to_string().replace("\n", " ");
         let mut iter = stream.into_iter();
         let modifiers = extract_modifiers(&mut iter);
         let method_name = extract_method_name(&mut iter);
@@ -99,16 +99,19 @@ fn extract_return_type(iter: &mut impl Iterator<Item = TokenTree>) -> ReturnType
     match iter.next() {
         Some(Punct(punct)) => match punct.to_string().as_str() {
             "-" => (),
-            x => panic!("unknown char: {}", x),
+            x => panic!("unknown punct: {}", x),
         },
-        x => panic!("unexpected token: {:#?}", x),
+        Some(x) => panic!("unknown token: {}", x),
+        None => {
+            return ReturnType(None);
+        }
     }
     match iter.next() {
         Some(Punct(punct)) => match punct.to_string().as_str() {
             ">" => (),
-            x => panic!("unknown char: {}", x),
+            x => panic!("unknown punct: {}", x),
         },
-        x => panic!("unexpected token: {:#?}", x),
+        x => panic!("unexpected token (expected [>]): {:#?}", x),
     }
     let type_name = iter
         .map(|tree| match tree {
@@ -138,7 +141,7 @@ mod tests {
     use quote::quote;
 
     #[test]
-    fn test_create_signature() {
+    fn test_signature() {
         let stream = quote! {
             pub async fn index(&self, param1: u32, param2: foo::Bar) -> String
         };
@@ -167,7 +170,7 @@ mod tests {
     }
 
     #[test]
-    fn test_create_signature_impl() {
+    fn test_signature_impl() {
         let stream = quote! {
             pub async fn show_pet_by_id(&self, req: show_pet_by_id::Request) -> impl show_pet_by_id::Responder
         };

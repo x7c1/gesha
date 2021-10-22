@@ -7,7 +7,6 @@ pub fn validate_signature(item: TokenStream) {
     let actual = extract_actual_signature(item);
     let operation = actual.method_name();
     let expected = to_expected_signature(operation);
-
     if expected != actual {
         panic!(
             "inconsistent signature:\nexpected: {}\n  actual: {}",
@@ -24,6 +23,9 @@ fn to_expected_signature(operation: &str) -> MethodSignature {
         },
         "show_pet_by_id" => quote! {
             pub async fn show_pet_by_id(&self, req: show_pet_by_id::Request) -> impl show_pet_by_id::Responder
+        },
+        "list_pets" => quote! {
+            pub async fn list_pets(&self, req: list_pets::Request) -> impl list_pets::Responder
         },
         _ => panic!("unknown operation: {}", operation),
     };

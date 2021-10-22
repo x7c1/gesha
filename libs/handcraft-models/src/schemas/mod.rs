@@ -12,3 +12,12 @@ pub struct Pet {
     pub name: String,
     pub tag: Option<String>,
 }
+
+#[derive(Debug, Serialize)]
+pub struct Pets(Vec<Pet>);
+
+impl Pets {
+    pub fn new(xs: Vec<Pet>) -> Self {
+        Pets(xs)
+    }
+}

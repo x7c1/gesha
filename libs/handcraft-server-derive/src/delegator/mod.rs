@@ -28,6 +28,21 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
                 handlers.index(request).await
             }
 
+            #[get("/pets")]
+            pub async fn list_pets(
+                handlers: web::Data<#struct_name>,
+                raw: HttpRequest,
+                query: web::Query<inline::list_pets::Query>,
+            ) -> Result<HttpResponse> {
+                let request = inline::list_pets::Request {
+                    query: query.into_inner(),
+                    raw,
+                };
+                let response = handlers.list_pets(request).await;
+                let raw_response = inline::list_pets::Responder::to_raw(response);
+                actix_web::Result::Ok(raw_response)
+            }
+
             #[get("/pets/{pet_id}")]
             pub async fn show_pet_by_id(
                 handlers: web::Data<#struct_name>,

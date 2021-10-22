@@ -1,15 +1,15 @@
-use crate::schemas::{Error, Pet};
+use crate::schemas::{Error, Pets};
 use actix_web::{HttpRequest, HttpResponse};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
-pub struct Path {
-    pub pet_id: String,
+pub struct Query {
+    pub limit: Option<i32>,
 }
 
 #[derive(Debug)]
 pub struct Request {
-    pub path: Path,
+    pub query: Query,
     pub raw: HttpRequest,
 }
 
@@ -18,16 +18,29 @@ pub trait Responder {
 }
 
 #[derive(Debug)]
+pub struct ResponseHeaders {
+    pub x_next: Option<String>,
+}
+
+#[derive(Debug)]
 pub enum Response {
-    OK { content: Pet },
-    InternalServerError { content: Error },
+    OK {
+        headers: ResponseHeaders,
+        content: Pets,
+    },
+    InternalServerError {
+        content: Error,
+    },
 }
 
 impl Responder for Response {
     fn to_raw(self) -> HttpResponse {
         match self {
-            Response::OK { content } => {
+            Response::OK { headers, content } => {
                 let mut response = HttpResponse::Ok();
+                if let Some(value) = headers.x_next {
+                    response.set_header("x-next", value);
+                }
                 response.json(content)
             }
             Response::InternalServerError { content } => {
