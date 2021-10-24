@@ -1,3 +1,5 @@
+pub mod show_pet_by_id;
+
 #[macro_export]
 macro_rules! register_services {
     ($app: ident, $($module: ident)::*) => {
@@ -21,4 +23,9 @@ macro_rules! http_server {
             register_services!(app)
         })
     };
+}
+use handcraft_models::inline::RequestError;
+
+pub trait BadRequestHandler {
+    fn on_bad_request(&self, error: RequestError) -> actix_web::HttpResponse;
 }

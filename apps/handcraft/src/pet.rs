@@ -62,7 +62,7 @@ impl Handlers {
 }
 
 /*
-use actix_web::{get, web, HttpRequest, HttpResponse};
+use actix_web::{get, web, HttpRequest, HttpResponse, FromRequest, Responder};
 use handcraft_models::inline;
 
 #[get("/pets/{pet_id}")]
@@ -79,4 +79,4 @@ pub async fn draft_show_pet_by_id(
     let raw_response = inline::show_pet_by_id::Responder::to_raw(response);
     actix_web::Result::Ok(raw_response)
 }
-*/
+// */

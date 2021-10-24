@@ -8,12 +8,21 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
         pub mod generated {
             use super::#struct_name;
             use handcraft_models::inline;
+            use handcraft_server::BadRequestHandler;
             use actix_web::get;
             use actix_web::HttpRequest;
             use actix_web::HttpResponse;
             use actix_web::Responder;
             use actix_web::Result;
             use actix_web::web;
+
+            fn foo1<A: handcraft_server::BadRequestHandler>(handler: A) {
+                println!("dummy");
+            }
+
+            fn foo2(handler: #struct_name) {
+                foo1(handler);
+            }
 
             #[get("/{id}/{name}/index.html")]
             pub async fn index(
@@ -47,15 +56,12 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
             pub async fn show_pet_by_id(
                 handlers: web::Data<#struct_name>,
                 raw: HttpRequest,
-                path: web::Path<inline::show_pet_by_id::Path>,
             ) -> Result<HttpResponse> {
-                let request = inline::show_pet_by_id::Request {
-                    path: path.into_inner(),
+                handcraft_server::show_pet_by_id::delegate(
                     raw,
-                };
-                let response = handlers.show_pet_by_id(request).await;
-                let raw_response = inline::show_pet_by_id::Responder::to_raw(response);
-                actix_web::Result::Ok(raw_response)
+                    |x| handlers.show_pet_by_id(x),
+                    |x| handlers.on_bad_request(x),
+                ).await
             }
         }
     }
