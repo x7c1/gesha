@@ -18,10 +18,12 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
             use actix_web::Result;
             use actix_web::web;
 
+            // dummy function to check whether handler implements BadRequestHandler or not.
             fn foo1<A: handcraft_server::BadRequestHandler>(handler: A) {
                 println!("dummy");
             }
 
+            // dummy function defined to call foo1 above.
             fn foo2(handler: #struct_name) {
                 foo1(handler);
             }
@@ -55,15 +57,14 @@ fn define_service(struct_name: &Ident, operation: &str) -> TokenStream {
             handlers: web::Data<#struct_name>,
             raw: HttpRequest,
         ) -> Result<HttpResponse> {
-            actix_web::Result::Ok(
-                match handcraft_models::inline::#op::Request::from_raw(raw).await {
-                    Ok(request) => {
-                        let response = handlers.#op(request).await;
-                        handcraft_models::inline::#op::Responder::to_raw(response)
-                    }
-                    Err(e) => handlers.on_bad_request(e),
-                },
-            )
+            let response = match handcraft_models::inline::#op::Request::from_raw(raw).await {
+                Ok(request) => {
+                    let response = handlers.#op(request).await;
+                    handcraft_models::inline::#op::Responder::to_raw(response)
+                }
+                Err(e) => handlers.on_bad_request(e),
+            };
+            actix_web::Result::Ok(response)
         }
     }
 }
