@@ -7,11 +7,11 @@ pub async fn delegate<F, G, X1, X2>(
     operate: F,
     on_bad_request: G,
 ) -> actix_web::Result<HttpResponse>
-    where
-        F: Fn(list_pets::Request) -> X1,
-        X1: Future<Output = X2>,
-        X2: list_pets::Responder,
-        G: Fn(RequestError) -> HttpResponse,
+where
+    F: Fn(list_pets::Request) -> X1,
+    X1: Future<Output = X2>,
+    X2: list_pets::Responder,
+    G: Fn(RequestError) -> HttpResponse,
 {
     let raw_response = match list_pets::Request::from_raw(raw).await {
         Ok(request) => {
