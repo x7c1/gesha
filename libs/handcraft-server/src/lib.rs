@@ -23,21 +23,6 @@ macro_rules! http_server {
     };
 }
 
-#[macro_export]
-macro_rules! delegate {
-    ($handlers: ident . $op: ident ($raw: ident)) => {
-        actix_web::Result::Ok(
-            match handcraft_models::inline::$op::Request::from_raw($raw).await {
-                Ok(request) => {
-                    let response = $handlers.$op(request).await;
-                    handcraft_models::inline::$op::Responder::to_raw(response)
-                }
-                Err(e) => $handlers.on_bad_request(e),
-            },
-        )
-    };
-}
-
 use handcraft_models::inline::RequestError;
 
 pub trait BadRequestHandler {

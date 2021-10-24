@@ -1,14 +1,16 @@
-use proc_macro2::TokenStream;
+use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
 
 pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
     let struct_name = &ast.ident;
+    let define_list_pets = define_service(struct_name, "list_pets");
+    let define_show_pet_by_id = define_service(struct_name, "show_pet_by_id");
 
     quote! {
         pub mod generated {
             use super::#struct_name;
             use handcraft_models::inline;
-            use handcraft_server::{BadRequestHandler, delegate};
+            use handcraft_server::BadRequestHandler;
             use actix_web::get;
             use actix_web::HttpRequest;
             use actix_web::HttpResponse;
@@ -38,20 +40,30 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
             }
 
             #[get("/pets")]
-            pub async fn list_pets(
-                handlers: web::Data<#struct_name>,
-                raw: HttpRequest,
-            ) -> Result<HttpResponse> {
-                delegate!{ handlers.list_pets(raw) }
-            }
+            #define_list_pets
 
             #[get("/pets/{pet_id}")]
-            pub async fn show_pet_by_id(
-                handlers: web::Data<#struct_name>,
-                raw: HttpRequest,
-            ) -> Result<HttpResponse> {
-                delegate!{ handlers.show_pet_by_id(raw) }
-            }
+            #define_show_pet_by_id
+        }
+    }
+}
+
+fn define_service(struct_name: &Ident, operation: &str) -> TokenStream {
+    let op = Ident::new(operation, Span::call_site());
+    quote! {
+        pub async fn #op(
+            handlers: web::Data<#struct_name>,
+            raw: HttpRequest,
+        ) -> Result<HttpResponse> {
+            actix_web::Result::Ok(
+                match handcraft_models::inline::#op::Request::from_raw(raw).await {
+                    Ok(request) => {
+                        let response = handlers.#op(request).await;
+                        handcraft_models::inline::#op::Responder::to_raw(response)
+                    }
+                    Err(e) => handlers.on_bad_request(e),
+                },
+            )
         }
     }
 }
