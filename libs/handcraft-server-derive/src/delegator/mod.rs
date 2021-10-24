@@ -8,7 +8,7 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
         pub mod generated {
             use super::#struct_name;
             use handcraft_models::inline;
-            use handcraft_server::BadRequestHandler;
+            use handcraft_server::{BadRequestHandler, delegate};
             use actix_web::get;
             use actix_web::HttpRequest;
             use actix_web::HttpResponse;
@@ -42,11 +42,7 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
                 handlers: web::Data<#struct_name>,
                 raw: HttpRequest,
             ) -> Result<HttpResponse> {
-                handcraft_server::list_pets::delegate(
-                    raw,
-                    |x| handlers.list_pets(x),
-                    |x| handlers.on_bad_request(x),
-                ).await
+                delegate!{ handlers.list_pets(raw) }
             }
 
             #[get("/pets/{pet_id}")]
@@ -54,11 +50,7 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
                 handlers: web::Data<#struct_name>,
                 raw: HttpRequest,
             ) -> Result<HttpResponse> {
-                handcraft_server::show_pet_by_id::delegate(
-                    raw,
-                    |x| handlers.show_pet_by_id(x),
-                    |x| handlers.on_bad_request(x),
-                ).await
+                delegate!{ handlers.show_pet_by_id(raw) }
             }
         }
     }
