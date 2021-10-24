@@ -1,5 +1,5 @@
-use proc_macro2::{Ident, Span, TokenStream};
-use quote::quote;
+use proc_macro2::{Ident, TokenStream};
+use quote::{format_ident, quote};
 
 pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
     let struct_name = &ast.ident;
@@ -51,7 +51,7 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
 }
 
 fn define_service(struct_name: &Ident, operation: &str) -> TokenStream {
-    let op = Ident::new(operation, Span::call_site());
+    let op = format_ident!("{}", operation);
     quote! {
         pub async fn #op(
             handlers: web::Data<#struct_name>,
