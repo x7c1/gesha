@@ -1,6 +1,6 @@
 use crate::inline::RequestError;
 use crate::schemas::{Error, Pet};
-use actix_web::{web, HttpRequest, HttpResponse};
+use actix_web::{web, FromRequest, HttpRequest, HttpResponse};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -16,7 +16,6 @@ pub struct Request {
 
 impl Request {
     pub async fn from_raw(raw: HttpRequest) -> Result<Self, RequestError> {
-        use actix_web::FromRequest;
         let x = web::Path::<Path>::extract(&raw).await;
         // TODO:
         let path = x.unwrap();

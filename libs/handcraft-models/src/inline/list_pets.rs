@@ -1,5 +1,7 @@
+use crate::inline::RequestError;
 use crate::schemas::{Error, Pets};
-use actix_web::{HttpRequest, HttpResponse};
+use actix_web::FromRequest;
+use actix_web::{web, HttpRequest, HttpResponse};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -11,6 +13,22 @@ pub struct Query {
 pub struct Request {
     pub query: Query,
     pub raw: HttpRequest,
+}
+
+impl Request {
+    pub async fn from_raw(raw: HttpRequest) -> Result<Self, RequestError> {
+        match web::Query::<Query>::extract(&raw).await {
+            Ok(query) => Ok(Request {
+                query: query.into_inner(),
+                raw,
+            }),
+            Err(e) => Err(RequestError {
+                // TODO:
+                key: "list_pets???".to_string(),
+                message: e.to_string(),
+            }),
+        }
+    }
 }
 
 pub trait Responder {

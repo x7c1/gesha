@@ -1,3 +1,4 @@
+use actix_web::HttpResponse;
 use handcraft_models::inline::RequestError;
 use handcraft_server::BadRequestHandler;
 use handcraft_server_derive::Handcraft;
@@ -19,8 +20,9 @@ impl Default for Handlers {
 }
 
 impl BadRequestHandler for Handlers {
-    fn on_bad_request(&self, error: RequestError) -> actix_web::HttpResponse {
-        println!("on_bad_request...{:#?}", error);
-        todo!()
+    fn on_bad_request(&self, error: RequestError) -> HttpResponse {
+        HttpResponse::BadRequest()
+            .content_type("text/plain; charset=utf-8")
+            .body(error.message)
     }
 }

@@ -1,3 +1,4 @@
+pub mod list_pets;
 pub mod show_pet_by_id;
 
 #[macro_export]
