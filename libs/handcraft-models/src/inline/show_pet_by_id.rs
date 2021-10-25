@@ -10,17 +10,20 @@ pub struct Path {
 
 impl Path {
     pub async fn from_raw(raw: &HttpRequest) -> Result<Self, RequestError> {
-        let path_with_segment = raw.match_info();
-        let pet_id = path_with_segment
+        let kvs = raw.match_info();
+        let pet_id = kvs
             .get("pet_id")
-            .ok_or_else(|| RequestError {
-                key: "pet_id".to_string(),
-                message: "pet_id required".to_string(),
-            })?
-            .parse::<String>()
-            .map_err(|e| RequestError {
-                key: "pet_id".to_string(),
-                message: e.to_string(),
+            .map(|value| {
+                value.parse::<String>().map_err(|e| RequestError {
+                    key: "pet_id".to_string(),
+                    message: e.to_string(),
+                })
+            })
+            .unwrap_or_else(|| {
+                Err(RequestError {
+                    key: "pet_id".to_string(),
+                    message: "pet_id required".to_string(),
+                })
             })?;
 
         Ok(Path { pet_id })

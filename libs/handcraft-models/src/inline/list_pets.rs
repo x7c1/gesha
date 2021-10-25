@@ -11,19 +11,22 @@ pub struct Query {
 
 impl Query {
     pub async fn from_raw(raw: &HttpRequest) -> Result<Self, RequestError> {
-        let kvs: HashMap<String, String> =
-            serde_urlencoded::from_str(raw.query_string()).map_err(|e| RequestError {
+        let kvs = serde_urlencoded::from_str::<HashMap<String, String>>(raw.query_string())
+            .map_err(|e| RequestError {
                 key: "query".to_string(),
                 message: e.to_string(),
             })?;
 
-        let limit = match kvs.get("limit") {
-            Some(value) => Some(value.parse::<i32>().map_err(|e| RequestError {
-                key: "limit".to_string(),
-                message: e.to_string(),
-            })?),
-            None => None,
-        };
+        let limit = kvs
+            .get("limit")
+            .map(|value| {
+                value.parse::<i32>().map_err(|e| RequestError {
+                    key: "limit".to_string(),
+                    message: e.to_string(),
+                })
+            })
+            .transpose()?;
+
         Ok(Query { limit })
     }
 }
