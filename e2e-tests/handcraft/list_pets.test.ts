@@ -58,7 +58,7 @@ Deno.test("400 invalid query parameter", async () => {
     status: 400,
     contentType: "text/plain; charset=utf-8",
     x_next: null,
-    body: "Query deserialize error: invalid digit found in string",
+    body: "invalid digit found in string",
   };
   assertEquals(actual, expected);
 });

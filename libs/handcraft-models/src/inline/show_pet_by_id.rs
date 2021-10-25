@@ -9,7 +9,7 @@ pub struct Path {
 }
 
 impl Path {
-    pub fn from_raw(raw: &HttpRequest) -> Result<Self, RequestError> {
+    pub async fn from_raw(raw: &HttpRequest) -> Result<Self, RequestError> {
         let path_with_segment = raw.match_info();
         let pet_id = path_with_segment
             .get("pet_id")
@@ -35,7 +35,7 @@ pub struct Request {
 
 impl Request {
     pub async fn from_raw(raw: HttpRequest) -> Result<Self, RequestError> {
-        let path = Path::from_raw(&raw)?;
+        let path = Path::from_raw(&raw).await?;
         Ok(Request { path, raw })
     }
 }

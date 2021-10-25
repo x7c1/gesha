@@ -1,12 +1,31 @@
 use crate::inline::RequestError;
 use crate::schemas::{Error, Pets};
-use actix_web::FromRequest;
-use actix_web::{web, HttpRequest, HttpResponse};
+use actix_web::{HttpRequest, HttpResponse};
 use serde::Deserialize;
+use std::collections::HashMap;
 
 #[derive(Debug, Deserialize)]
 pub struct Query {
     pub limit: Option<i32>,
+}
+
+impl Query {
+    pub async fn from_raw(raw: &HttpRequest) -> Result<Self, RequestError> {
+        let kvs: HashMap<String, String> =
+            serde_urlencoded::from_str(raw.query_string()).map_err(|e| RequestError {
+                key: "query".to_string(),
+                message: e.to_string(),
+            })?;
+
+        let limit = match kvs.get("limit") {
+            Some(value) => Some(value.parse::<i32>().map_err(|e| RequestError {
+                key: "limit".to_string(),
+                message: e.to_string(),
+            })?),
+            None => None,
+        };
+        Ok(Query { limit })
+    }
 }
 
 #[derive(Debug)]
@@ -17,17 +36,8 @@ pub struct Request {
 
 impl Request {
     pub async fn from_raw(raw: HttpRequest) -> Result<Self, RequestError> {
-        match web::Query::<Query>::extract(&raw).await {
-            Ok(query) => Ok(Request {
-                query: query.into_inner(),
-                raw,
-            }),
-            Err(e) => Err(RequestError {
-                // TODO:
-                key: "list_pets???".to_string(),
-                message: e.to_string(),
-            }),
-        }
+        let query = Query::from_raw(&raw).await?;
+        Ok(Request { query, raw })
     }
 }
 
