@@ -1,11 +1,30 @@
 use crate::inline::RequestError;
 use crate::schemas::{Error, Pet};
-use actix_web::{web, FromRequest, HttpRequest, HttpResponse};
+use actix_web::{HttpRequest, HttpResponse};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct Path {
     pub pet_id: String,
+}
+
+impl Path {
+    pub fn from_raw(raw: &HttpRequest) -> Result<Self, RequestError> {
+        let path_with_segment = raw.match_info();
+        let pet_id = path_with_segment
+            .get("pet_id")
+            .ok_or_else(|| RequestError {
+                key: "pet_id".to_string(),
+                message: "pet_id required".to_string(),
+            })?
+            .parse::<String>()
+            .map_err(|e| RequestError {
+                key: "pet_id".to_string(),
+                message: e.to_string(),
+            })?;
+
+        Ok(Path { pet_id })
+    }
 }
 
 #[derive(Debug)]
@@ -16,13 +35,8 @@ pub struct Request {
 
 impl Request {
     pub async fn from_raw(raw: HttpRequest) -> Result<Self, RequestError> {
-        let x = web::Path::<Path>::extract(&raw).await;
-        // TODO:
-        let path = x.unwrap();
-        Ok(Request {
-            path: path.into_inner(),
-            raw,
-        })
+        let path = Path::from_raw(&raw)?;
+        Ok(Request { path, raw })
     }
 }
 
