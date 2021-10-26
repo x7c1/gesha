@@ -1,4 +1,4 @@
-use crate::inline::RequestError;
+use crate::errors::RequestError;
 use crate::schemas::{Error, Pets};
 use actix_web::{HttpRequest, HttpResponse};
 use serde::Deserialize;

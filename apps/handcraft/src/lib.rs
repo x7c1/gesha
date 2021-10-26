@@ -1,5 +1,5 @@
 use actix_web::HttpResponse;
-use handcraft_models::inline::RequestError;
+use handcraft_models::errors::RequestError;
 use handcraft_server::BadRequestHandler;
 use handcraft_server_derive::Handcraft;
 

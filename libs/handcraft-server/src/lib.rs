@@ -23,7 +23,7 @@ macro_rules! http_server {
     };
 }
 
-use handcraft_models::inline::RequestError;
+use handcraft_models::errors::RequestError;
 
 pub trait BadRequestHandler {
     fn on_bad_request(&self, error: RequestError) -> actix_web::HttpResponse;
