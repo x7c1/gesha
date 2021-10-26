@@ -12,3 +12,6 @@ pub struct Pet {
     pub name: String,
     pub tag: Option<String>,
 }
+
+#[derive(Debug, Serialize)]
+pub struct Pets(pub Vec<Pet>);

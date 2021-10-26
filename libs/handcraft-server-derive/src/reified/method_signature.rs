@@ -1,11 +1,9 @@
 use crate::reified::{MethodName, Modifier, Parameter, ReturnType};
 use proc_macro2::{TokenStream, TokenTree};
-
-#[allow(unused)]
-use quote::quote;
 use Modifier::{Async, Pub};
+use TokenTree::{Ident, Punct};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug)]
 pub struct MethodSignature {
     modifiers: Vec<Modifier>,
     method_name: MethodName,
@@ -14,10 +12,18 @@ pub struct MethodSignature {
     rendered_output: String,
 }
 
+impl PartialEq for MethodSignature {
+    fn eq(&self, other: &Self) -> bool {
+        self.modifiers == other.modifiers
+            && self.method_name == other.method_name
+            && self.parameters == other.parameters
+            && self.return_type == other.return_type
+    }
+}
+
 impl MethodSignature {
-    #[allow(unused)]
     pub fn from_stream(stream: TokenStream) -> Self {
-        let rendered_output = stream.to_string();
+        let rendered_output = stream.to_string().replace("\n", " ");
         let mut iter = stream.into_iter();
         let modifiers = extract_modifiers(&mut iter);
         let method_name = extract_method_name(&mut iter);
@@ -40,10 +46,9 @@ impl MethodSignature {
     }
 }
 
-#[allow(unused)]
 fn extract_modifiers(iter: &mut impl Iterator<Item = TokenTree>) -> Vec<Modifier> {
     let mut modifiers: Vec<Modifier> = vec![];
-    while let Some(TokenTree::Ident(ident)) = iter.next() {
+    while let Some(Ident(ident)) = iter.next() {
         match ident.to_string().as_str() {
             "pub" => modifiers.push(Pub),
             "async" => modifiers.push(Async),
@@ -54,16 +59,14 @@ fn extract_modifiers(iter: &mut impl Iterator<Item = TokenTree>) -> Vec<Modifier
     modifiers
 }
 
-#[allow(unused)]
 fn extract_method_name(iter: &mut impl Iterator<Item = TokenTree>) -> MethodName {
     let name = match iter.next() {
-        Some(TokenTree::Ident(ident)) => ident.to_string(),
+        Some(Ident(ident)) => ident.to_string(),
         _ => panic!("method name not found"),
     };
     MethodName(name)
 }
 
-#[allow(unused)]
 fn extract_parameters(iter: &mut impl Iterator<Item = TokenTree>) -> Vec<Parameter> {
     let stream = match iter.next() {
         Some(TokenTree::Group(group)) => group.stream(),
@@ -74,7 +77,7 @@ fn extract_parameters(iter: &mut impl Iterator<Item = TokenTree>) -> Vec<Paramet
     let mut tokens: Vec<String> = vec![];
     loop {
         match param_iter.next() {
-            Some(TokenTree::Punct(punct)) => match punct.to_string().as_str() {
+            Some(Punct(punct)) => match punct.to_string().as_str() {
                 "," => {
                     let parameter = Parameter::new(tokens);
                     parameters.push(parameter);
@@ -94,23 +97,31 @@ fn extract_parameters(iter: &mut impl Iterator<Item = TokenTree>) -> Vec<Paramet
 
 fn extract_return_type(iter: &mut impl Iterator<Item = TokenTree>) -> ReturnType {
     match iter.next() {
-        Some(TokenTree::Punct(punct)) => match punct.to_string().as_str() {
+        Some(Punct(punct)) => match punct.to_string().as_str() {
             "-" => (),
-            x => panic!("unknown char: {}", x),
+            x => panic!("unknown punct: {}", x),
         },
-        x => panic!("unexpected token: {:#?}", x),
+        Some(x) => panic!("unknown token: {}", x),
+        None => {
+            return ReturnType(None);
+        }
     }
     match iter.next() {
-        Some(TokenTree::Punct(punct)) => match punct.to_string().as_str() {
+        Some(Punct(punct)) => match punct.to_string().as_str() {
             ">" => (),
-            x => panic!("unknown char: {}", x),
+            x => panic!("unknown punct: {}", x),
         },
-        x => panic!("unexpected token: {:#?}", x),
+        x => panic!("unexpected token (expected [>]): {:#?}", x),
     }
-    let type_name = match iter.next() {
-        Some(TokenTree::Ident(ident)) => ident.to_string(),
-        x => panic!("unexpected token: {:#?}", x),
-    };
+    let type_name = iter
+        .map(|tree| match tree {
+            Ident(ident) => ident.to_string() + if ident == "impl" { " " } else { "" },
+            Punct(punct) => punct.to_string(),
+            _ => "".to_string(),
+        })
+        .collect::<Vec<String>>()
+        .join("");
+
     ReturnType(Some(type_name))
 }
 
@@ -130,7 +141,7 @@ mod tests {
     use quote::quote;
 
     #[test]
-    fn test_create_signature() {
+    fn test_signature() {
         let stream = quote! {
             pub async fn index(&self, param1: u32, param2: foo::Bar) -> String
         };
@@ -154,7 +165,32 @@ mod tests {
                 "pub async fn index (& self , param1 : u32 , param2 : foo :: Bar) -> String"
                     .to_string(),
         };
-        println!("sig: {:#?}", actual);
+        // println!("actual: {:#?}", actual);
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn test_signature_impl() {
+        let stream = quote! {
+            pub async fn show_pet_by_id(&self, req: show_pet_by_id::Request) -> impl show_pet_by_id::Responder
+        };
+        let actual = MethodSignature::from_stream(stream.into());
+        let expected = MethodSignature {
+            modifiers: vec![Pub, Async],
+            method_name: MethodName("show_pet_by_id".to_string()),
+            parameters: vec![
+                Parameter::RefSelf,
+                Parameter::Arg {
+                    name: "req".to_string(),
+                    type_name: "show_pet_by_id::Request".to_string(),
+                },
+            ],
+            return_type: ReturnType(Some("impl show_pet_by_id::Responder".to_string())),
+            rendered_output:
+                "pub async fn show_pet_by_id (& self , req : show_pet_by_id :: Request) -> impl show_pet_by_id :: Responder"
+                    .to_string(),
+        };
+        // println!("actual: {:#?}", actual);
         assert_eq!(actual, expected);
     }
 }
