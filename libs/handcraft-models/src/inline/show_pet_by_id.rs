@@ -15,15 +15,16 @@ impl Path {
         let value_of_pet_id = kvs
             .get("pet_id")
             .map(|value| {
-                value.parse::<String>().map_err(|e| RequestError {
-                    key: "pet_id".to_string(),
-                    message: e.to_string(),
-                })
+                value
+                    .parse::<String>()
+                    .map_err(|e| RequestError::InvalidPathValue {
+                        key: "pet_id".to_string(),
+                        message: e.to_string(),
+                    })
             })
             .unwrap_or_else(|| {
-                Err(RequestError {
+                Err(RequestError::EmptyPathValue {
                     key: "pet_id".to_string(),
-                    message: "pet_id required".to_string(),
                 })
             })?;
 

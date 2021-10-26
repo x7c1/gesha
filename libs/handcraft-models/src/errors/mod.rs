@@ -1,5 +1,10 @@
-#[derive(Debug)]
-pub struct RequestError {
-    pub key: String,
-    pub message: String,
+use serde::Serialize;
+
+#[derive(Debug, Serialize)]
+#[serde(tag = "type", content = "content")]
+pub enum RequestError {
+    QueryStringBroken(String),
+    InvalidQueryValue { key: String, message: String },
+    InvalidPathValue { key: String, message: String },
+    EmptyPathValue { key: String },
 }

@@ -52,13 +52,16 @@ Deno.test("400 invalid query parameter", async () => {
     status: response.status,
     contentType: response.headers.get("content-type"),
     x_next: response.headers.get("x-next"),
-    body: await response.text(),
+    body: await response.json(),
   };
   const expected = {
     status: 400,
-    contentType: "text/plain; charset=utf-8",
+    contentType: "application/json",
     x_next: null,
-    body: "invalid digit found in string",
+    body: {
+      code: 4002,
+      message: "invalid digit found in string [key:limit]",
+    },
   };
   assertEquals(actual, expected);
 });
