@@ -16,8 +16,10 @@ mod tests {
     #[test]
     fn query_string_broken() {
         let e = RequestError::QueryStringBroken("abcde".to_string());
-        let json = serde_json::to_string(&e).unwrap();
-        assert_eq!(json, r#"{"type":"QueryStringBroken","content":"abcde"}"#);
+        assert_eq!(
+            serde_json::to_string(&e).unwrap(),
+            r#"{"type":"QueryStringBroken","content":"abcde"}"#
+        );
     }
 
     #[test]
@@ -26,7 +28,9 @@ mod tests {
             key: "k1".to_string(),
             message: "m1".to_string(),
         };
-        let json = serde_json::to_string(&e).unwrap();
-        assert_eq!(json, r#"{"type":"InvalidQueryValue","content":{"key":"k1","message":"m1"}}"#);
+        assert_eq!(
+            serde_json::to_string(&e).unwrap(),
+            r#"{"type":"InvalidQueryValue","content":{"key":"k1","message":"m1"}}"#
+        );
     }
 }

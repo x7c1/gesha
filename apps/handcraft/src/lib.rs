@@ -31,10 +31,10 @@ fn to_api_error(e: RequestError) -> schemas::Error {
     let (code, message) = match e {
         RequestError::QueryStringBroken(s) => (4001, s),
         RequestError::InvalidQueryValue { key, message } => {
-            (4002, format!("{} [key:{}]", message, key))
+            (4002, format!("{} [query-key:{}]", message, key))
         }
         RequestError::InvalidPathValue { key, message } => {
-            (4003, format!("{} [key:{}]", message, key))
+            (4003, format!("{} [path-key:{}]", message, key))
         }
         RequestError::EmptyPathValue { key } => (4004, format!("[key:{}] required.", key)),
     };

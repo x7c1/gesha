@@ -60,7 +60,7 @@ Deno.test("400 invalid query parameter", async () => {
     x_next: null,
     body: {
       code: 4002,
-      message: "invalid digit found in string [key:limit]",
+      message: "invalid digit found in string [query-key:limit]",
     },
   };
   assertEquals(actual, expected);
