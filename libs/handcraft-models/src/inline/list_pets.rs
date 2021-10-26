@@ -17,7 +17,7 @@ impl Query {
                 message: e.to_string(),
             })?;
 
-        let limit = kvs
+        let value_of_limit = kvs
             .get("limit")
             .map(|value| {
                 value.parse::<i32>().map_err(|e| RequestError {
@@ -27,7 +27,9 @@ impl Query {
             })
             .transpose()?;
 
-        Ok(Query { limit })
+        Ok(Query {
+            limit: value_of_limit,
+        })
     }
 }
 

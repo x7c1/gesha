@@ -11,7 +11,8 @@ pub struct Path {
 impl Path {
     pub async fn from_raw(raw: &HttpRequest) -> Result<Self, RequestError> {
         let kvs = raw.match_info();
-        let pet_id = kvs
+
+        let value_of_pet_id = kvs
             .get("pet_id")
             .map(|value| {
                 value.parse::<String>().map_err(|e| RequestError {
@@ -26,7 +27,9 @@ impl Path {
                 })
             })?;
 
-        Ok(Path { pet_id })
+        Ok(Path {
+            pet_id: value_of_pet_id,
+        })
     }
 }
 
