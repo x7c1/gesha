@@ -1,4 +1,4 @@
-use crate::inline::RequestError;
+use crate::errors::RequestError;
 use crate::schemas::{Error, Pets};
 use actix_web::{HttpRequest, HttpResponse};
 use serde::Deserialize;
@@ -12,18 +12,17 @@ pub struct Query {
 impl Query {
     pub async fn from_raw(raw: &HttpRequest) -> Result<Self, RequestError> {
         let kvs = serde_urlencoded::from_str::<HashMap<String, String>>(raw.query_string())
-            .map_err(|e| RequestError {
-                key: "query".to_string(),
-                message: e.to_string(),
-            })?;
+            .map_err(|e| RequestError::QueryStringBroken(e.to_string()))?;
 
         let value_of_limit = kvs
             .get("limit")
             .map(|value| {
-                value.parse::<i32>().map_err(|e| RequestError {
-                    key: "limit".to_string(),
-                    message: e.to_string(),
-                })
+                value
+                    .parse::<i32>()
+                    .map_err(|e| RequestError::InvalidQueryValue {
+                        key: "limit".to_string(),
+                        message: e.to_string(),
+                    })
             })
             .transpose()?;
 
