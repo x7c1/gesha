@@ -1,5 +1,5 @@
 use crate::Handlers;
-use handcraft_models::inline::{list_pets, show_pet_by_id};
+use handcraft_models::inline::{create_pets, list_pets, show_pet_by_id};
 use handcraft_models::schemas::{Error, Pet, Pets};
 use handcraft_server_derive::assert_signature;
 
@@ -58,6 +58,12 @@ impl Handlers {
                 content: Pets(vec![]),
             },
         }
+    }
+
+    #[assert_signature]
+    pub async fn create_pets(&self, req: create_pets::Request) -> impl create_pets::Responder {
+        println!("request: {:#?}", req);
+        create_pets::Response::Created
     }
 }
 

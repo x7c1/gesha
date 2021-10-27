@@ -5,13 +5,14 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
     let struct_name = &ast.ident;
     let define_list_pets = define_service(struct_name, "list_pets");
     let define_show_pet_by_id = define_service(struct_name, "show_pet_by_id");
+    let define_create_pets = define_service(struct_name, "create_pets");
 
     quote! {
         pub mod generated {
             use super::#struct_name;
             use handcraft_models::inline;
             use handcraft_server::BadRequestHandler;
-            use actix_web::get;
+            use actix_web::{get, post};
             use actix_web::HttpRequest;
             use actix_web::HttpResponse;
             use actix_web::Responder;
@@ -43,6 +44,9 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
 
             #[get("/pets")]
             #define_list_pets
+
+            #[post("/pets")]
+            #define_create_pets
 
             #[get("/pets/{pet_id}")]
             #define_show_pet_by_id
