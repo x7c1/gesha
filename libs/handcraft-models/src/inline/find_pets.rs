@@ -7,7 +7,7 @@ use serde::Deserialize;
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Query {
     pub limit: Option<i32>,
-    pub tags: Option<Vec<String>>,
+    pub tags: Vec<String>,
 }
 
 impl Query {
@@ -44,7 +44,8 @@ fn from_query_string(query_string: &str) -> Result<Query, RequestError> {
             });
             iter_to_single_result(iter)
         })
-        .transpose()?;
+        .transpose()?
+        .unwrap_or_else(|| vec![]);
 
     Ok(Query {
         limit: value_of_limit,
@@ -64,7 +65,7 @@ mod tests {
             result,
             Query {
                 limit: None,
-                tags: None
+                tags: vec![]
             }
         )
     }
@@ -76,7 +77,7 @@ mod tests {
             result,
             Query {
                 limit: Some(1),
-                tags: None
+                tags: vec![]
             }
         )
     }
@@ -88,7 +89,7 @@ mod tests {
             result,
             Query {
                 limit: Some(1),
-                tags: None
+                tags: vec![]
             }
         )
     }
@@ -114,7 +115,7 @@ mod tests {
             result,
             Query {
                 limit: Some(1),
-                tags: Some(vec!["t1".to_string()])
+                tags: vec!["t1".to_string()]
             }
         )
     }
