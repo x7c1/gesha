@@ -1,8 +1,8 @@
+use crate::core::{group_by_query_key, iter_to_single_result};
 use crate::errors::RequestError;
 use crate::schemas::{Error, Pets};
 use actix_web::{HttpRequest, HttpResponse};
 use serde::Deserialize;
-use std::collections::HashMap;
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Query {
@@ -34,8 +34,9 @@ fn from_query_string(query_string: &str) -> Result<Query, RequestError> {
     let value_of_tags = kvs
         .get("tags")
         .map(|values| {
-            let iter = values.iter().map(|s| {
-                s.parse::<String>()
+            let iter = values.iter().map(|value| {
+                value
+                    .parse::<String>()
                     .map_err(|e| RequestError::InvalidQueryValue {
                         key: "tags".to_string(),
                         message: e.to_string(),
@@ -49,29 +50,6 @@ fn from_query_string(query_string: &str) -> Result<Query, RequestError> {
         limit: value_of_limit,
         tags: value_of_tags,
     })
-}
-
-fn group_by_query_key(query_string: &str) -> Result<HashMap<String, Vec<String>>, RequestError> {
-    let pairs: Vec<(String, String)> = serde_urlencoded::from_str(query_string)
-        .map_err(|e| RequestError::QueryStringBroken(e.to_string()))?;
-
-    let mut kvs = HashMap::<String, Vec<String>>::new();
-    for (k, v) in pairs {
-        kvs.entry(k).or_insert(vec![]).push(v)
-    }
-
-    Ok(kvs)
-}
-
-fn iter_to_single_result<A, B>(xs: impl Iterator<Item = Result<A, B>>) -> Result<Vec<A>, B> {
-    let mut ys = vec![];
-    for x in xs {
-        match x {
-            Ok(value) => ys.push(value),
-            Err(e) => return Err(e),
-        }
-    }
-    Ok(ys)
 }
 
 #[cfg(test)]

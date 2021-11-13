@@ -1,8 +1,8 @@
+use crate::core::group_by_query_key;
 use crate::errors::RequestError;
 use crate::schemas::{Error, Pets};
 use actix_web::{HttpRequest, HttpResponse};
 use serde::Deserialize;
-use std::collections::HashMap;
 
 #[derive(Debug, Deserialize)]
 pub struct Query {
@@ -11,13 +11,12 @@ pub struct Query {
 
 impl Query {
     pub async fn from_raw(raw: &HttpRequest) -> Result<Self, RequestError> {
-        let kvs = serde_urlencoded::from_str::<HashMap<String, String>>(raw.query_string())
-            .map_err(|e| RequestError::QueryStringBroken(e.to_string()))?;
+        let kvs = group_by_query_key(raw.query_string())?;
 
         let value_of_limit = kvs
             .get("limit")
-            .map(|value| {
-                value
+            .map(|values| {
+                values[0]
                     .parse::<i32>()
                     .map_err(|e| RequestError::InvalidQueryValue {
                         key: "limit".to_string(),
