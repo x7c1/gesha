@@ -1,5 +1,5 @@
-import { client } from "../client.ts";
-import { assertEquals } from "../deps.ts";
+import { client } from "../../client.ts";
+import { assertEquals } from "../../deps.ts";
 
 const endpoint = "petstore-expanded/pets";
 
