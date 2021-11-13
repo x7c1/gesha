@@ -1,15 +1,21 @@
 use crate::errors::RequestError;
-use crate::schemas::{Error, Pet};
+use crate::errors::RequestError::InvalidBody;
+use crate::schemas::{Error, NewPet, Pet};
+use actix_web::web::Bytes;
 use actix_web::{HttpRequest, HttpResponse};
 
 #[derive(Debug)]
 pub struct Request {
     pub raw: HttpRequest,
+    pub body: NewPet,
 }
 
 impl Request {
-    pub async fn from_raw(raw: HttpRequest) -> Result<Self, RequestError> {
-        Ok(Request { raw })
+    pub async fn from_raw(raw: HttpRequest, body: Bytes) -> Result<Self, RequestError> {
+        let body: NewPet = serde_json::from_slice(body.as_ref()).map_err(|e| InvalidBody {
+            message: e.to_string(),
+        })?;
+        Ok(Request { raw, body })
     }
 }
 

@@ -83,12 +83,12 @@ impl Handlers {
         }
     }
     #[assert_signature]
-    pub async fn add_pet(&self, _: add_pet::Request) -> impl add_pet::Responder {
+    pub async fn add_pet(&self, req: add_pet::Request) -> impl add_pet::Responder {
         add_pet::Response::OK {
             content: Pet {
                 id: 123,
-                name: "sample name".to_string(),
-                tag: None,
+                name: format!("created:{}", req.body.name),
+                tag: req.body.tag.map(|tag| format!("created:{}", tag)),
             },
         }
     }

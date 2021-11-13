@@ -7,7 +7,7 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
     let define_find_pets = define_service(struct_name, "find_pets");
     let define_list_pets = define_service(struct_name, "list_pets");
     let define_show_pet_by_id = define_service(struct_name, "show_pet_by_id");
-    let define_add_pet = define_service(struct_name, "add_pet");
+    let define_add_pet = define_service_with_body(struct_name, "add_pet");
 
     quote! {
         pub mod generated {
@@ -70,6 +70,26 @@ fn define_service(struct_name: &Ident, operation: &str) -> TokenStream {
             raw: HttpRequest,
         ) -> Result<HttpResponse> {
             let response = match handcraft_models::inline::#op::Request::from_raw(raw).await {
+                Ok(request) => {
+                    let response = handlers.#op(request).await;
+                    handcraft_models::inline::#op::Responder::to_raw(response)
+                }
+                Err(e) => handlers.on_bad_request(e),
+            };
+            actix_web::Result::Ok(response)
+        }
+    }
+}
+
+fn define_service_with_body(struct_name: &Ident, operation: &str) -> TokenStream {
+    let op = format_ident!("{}", operation);
+    quote! {
+        pub async fn #op(
+            handlers: web::Data<#struct_name>,
+            raw: HttpRequest,
+            body: web::Bytes,
+        ) -> Result<HttpResponse> {
+            let response = match handcraft_models::inline::#op::Request::from_raw(raw, body).await {
                 Ok(request) => {
                     let response = handlers.#op(request).await;
                     handcraft_models::inline::#op::Responder::to_raw(response)
