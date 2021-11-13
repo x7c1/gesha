@@ -14,8 +14,8 @@ path = "src/bin.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-handcraft-server = { path = "../../libs/handcraft-server" }
-handcraft-server-derive = { path = "../../libs/handcraft-server-derive" }
-handcraft-models = { path = "../../libs/handcraft-models" }
+handcraft-server = { path = "../../libs/handcraft/handcraft-server" }
+handcraft-server-derive = { path = "../../libs/handcraft/handcraft-server-derive" }
+handcraft-models = { path = "../../libs/handcraft/handcraft-models" }
 actix-web = "3.3.2"
 async-trait = "0.1.51"
