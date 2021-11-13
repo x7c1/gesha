@@ -1,8 +1,10 @@
 import { client } from "../client.ts";
 import { assertEquals } from "../deps.ts";
 
+const endpoint = "petstore-expanded/pet";
+
 Deno.test("200", async () => {
-  const response = await client.post("petstore-expanded/pet", {
+  const response = await client.post(endpoint, {
     body: {
       name: "sample-pet",
       tag: "sample-tag",
@@ -23,7 +25,7 @@ Deno.test("200", async () => {
 });
 
 Deno.test("400 missing-field", async () => {
-  const response = await client.post("petstore-expanded/pet", {
+  const response = await client.post(endpoint, {
     body: {
       name_asdf: "sample-pet",
       tag_asdf: "sample-tag",
@@ -44,7 +46,7 @@ Deno.test("400 missing-field", async () => {
 });
 
 Deno.test("400 invalid-type", async () => {
-  const response = await client.post("petstore-expanded/pet", {
+  const response = await client.post(endpoint, {
     body: {
       name: 12345,
       tag: "sample-tag",

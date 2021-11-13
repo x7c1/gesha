@@ -1,8 +1,10 @@
 import { client } from "../client.ts";
 import { assertEquals } from "../deps.ts";
 
+const endpoint = "petstore-expanded/pets";
+
 Deno.test("200-empty", async () => {
-  const response = await client.get("petstore-expanded/pets");
+  const response = await client.get(endpoint);
   const actual = {
     status: response.status,
     contentType: response.headers.get("content-type"),
@@ -17,7 +19,7 @@ Deno.test("200-empty", async () => {
 });
 
 Deno.test("200-multiple", async () => {
-  const response = await client.get("petstore-expanded/pets?tags=t0&tags=t1");
+  const response = await client.get(`${endpoint}?tags=t0&tags=t1`);
   const actual = {
     status: response.status,
     contentType: response.headers.get("content-type"),
