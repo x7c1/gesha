@@ -21,6 +21,9 @@ fn to_expected_signature(operation: &str) -> MethodSignature {
         "index" => quote! {
             pub async fn index(&self, req: index::Request) -> String
         },
+        "add_pet" => quote! {
+            pub async fn add_pet(&self, req: add_pet::Request) -> impl add_pet::Responder
+        },
         "create_pets" => quote! {
             pub async fn create_pets(&self, req: create_pets::Request) -> impl create_pets::Responder
         },

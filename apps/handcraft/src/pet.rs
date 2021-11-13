@@ -1,5 +1,5 @@
 use crate::Handlers;
-use handcraft_models::inline::{create_pets, find_pets, list_pets, show_pet_by_id};
+use handcraft_models::inline::{add_pet, create_pets, find_pets, list_pets, show_pet_by_id};
 use handcraft_models::schemas::{Error, Pet, Pets};
 use handcraft_server_derive::assert_signature;
 
@@ -80,6 +80,16 @@ impl Handlers {
 
         find_pets::Response::OK {
             content: Pets(pets),
+        }
+    }
+    #[assert_signature]
+    pub async fn add_pet(&self, _: add_pet::Request) -> impl add_pet::Responder {
+        add_pet::Response::OK {
+            content: Pet {
+                id: 123,
+                name: "sample name".to_string(),
+                tag: None,
+            },
         }
     }
 }

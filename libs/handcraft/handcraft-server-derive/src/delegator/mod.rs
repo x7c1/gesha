@@ -7,6 +7,7 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
     let define_find_pets = define_service(struct_name, "find_pets");
     let define_list_pets = define_service(struct_name, "list_pets");
     let define_show_pet_by_id = define_service(struct_name, "show_pet_by_id");
+    let define_add_pet = define_service(struct_name, "add_pet");
 
     quote! {
         pub mod generated {
@@ -54,6 +55,9 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
 
             #[get("/petstore-expanded/pets")]
             #define_find_pets
+
+            #[post("/petstore-expanded/pet")]
+            #define_add_pet
         }
     }
 }

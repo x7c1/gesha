@@ -1,3 +1,4 @@
+pub mod add_pet;
 pub mod create_pets;
 pub mod find_pets;
 pub mod index;
