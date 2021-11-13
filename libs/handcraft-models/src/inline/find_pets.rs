@@ -34,17 +34,14 @@ fn from_query_string(query_string: &str) -> Result<Query, RequestError> {
     let value_of_tags = kvs
         .get("tags")
         .map(|values| {
-            let y: Vec<Result<String, RequestError>> = values
-                .iter()
-                .map(|s| {
-                    s.parse::<String>()
-                        .map_err(|e| RequestError::InvalidQueryValue {
-                            key: "tags".to_string(),
-                            message: e.to_string(),
-                        })
-                })
-                .collect();
-            vec_to_single_result(y)
+            let iter = values.iter().map(|s| {
+                s.parse::<String>()
+                    .map_err(|e| RequestError::InvalidQueryValue {
+                        key: "tags".to_string(),
+                        message: e.to_string(),
+                    })
+            });
+            iter_to_single_result(iter)
         })
         .transpose()?;
 
@@ -66,7 +63,7 @@ fn group_by_query_key(query_string: &str) -> Result<HashMap<String, Vec<String>>
     Ok(kvs)
 }
 
-fn vec_to_single_result<A, B>(xs: Vec<Result<A, B>>) -> Result<Vec<A>, B> {
+fn iter_to_single_result<A, B>(xs: impl Iterator<Item = Result<A, B>>) -> Result<Vec<A>, B> {
     let mut ys = vec![];
     for x in xs {
         match x {
