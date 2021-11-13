@@ -66,8 +66,20 @@ impl Handlers {
     }
     #[assert_signature]
     pub async fn find_pets(&self, req: find_pets::Request) -> impl find_pets::Responder {
+        let pets = req
+            .query
+            .tags
+            .iter()
+            .enumerate()
+            .map(|(i, tag)| Pet {
+                id: i as i64,
+                name: format!("name-{}", i),
+                tag: Some(tag.to_string()),
+            })
+            .collect();
+
         find_pets::Response::OK {
-            content: Pets(vec![]),
+            content: Pets(pets),
         }
     }
 }
