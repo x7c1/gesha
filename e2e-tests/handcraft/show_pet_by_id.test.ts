@@ -2,7 +2,7 @@ import { client } from "../client.ts";
 import { assertEquals } from "../deps.ts";
 
 Deno.test("200", async () => {
-  const response = await client.call("pets/111");
+  const response = await client.get("pets/111");
   const actual = {
     status: response.status,
     contentType: response.headers.get("content-type"),
@@ -21,7 +21,7 @@ Deno.test("200", async () => {
 });
 
 Deno.test("500", async () => {
-  const response = await client.call("pets/invalid_id");
+  const response = await client.get("pets/invalid_id");
   const actual = {
     status: response.status,
     contentType: response.headers.get("content-type"),

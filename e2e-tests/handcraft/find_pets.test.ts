@@ -1,8 +1,8 @@
-import { assertEquals } from "../deps.ts";
 import { client } from "../client.ts";
+import { assertEquals } from "../deps.ts";
 
-Deno.test("index.html", async () => {
-  const response = await client.get("123/foooo/index.html");
+Deno.test("201", async () => {
+  const response = await client.get("petstore-expanded/pets");
   const actual = {
     status: response.status,
     contentType: response.headers.get("content-type"),
@@ -10,8 +10,8 @@ Deno.test("index.html", async () => {
   };
   const expected = {
     status: 200,
-    contentType: "text/plain; charset=utf-8",
-    body: "Hello foooo! id:123",
+    contentType: "application/json",
+    body: "[]",
   };
   assertEquals(actual, expected);
 });

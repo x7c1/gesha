@@ -3,9 +3,10 @@ use quote::{format_ident, quote};
 
 pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
     let struct_name = &ast.ident;
+    let define_create_pets = define_service(struct_name, "create_pets");
+    let define_find_pets = define_service(struct_name, "find_pets");
     let define_list_pets = define_service(struct_name, "list_pets");
     let define_show_pet_by_id = define_service(struct_name, "show_pet_by_id");
-    let define_create_pets = define_service(struct_name, "create_pets");
 
     quote! {
         pub mod generated {
@@ -50,6 +51,9 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
 
             #[get("/pets/{pet_id}")]
             #define_show_pet_by_id
+
+            #[get("/petstore-expanded/pets")]
+            #define_find_pets
         }
     }
 }
