@@ -119,6 +119,32 @@ mod tests {
             }
         )
     }
+
+    #[allow(non_snake_case)]
+    #[test]
+    fn test_from_query_string__multiple_2() {
+        let result = from_query_string("limit=1&limit=2&tags=t1&tags=t2").unwrap();
+        assert_eq!(
+            result,
+            Query {
+                limit: Some(1),
+                tags: vec!["t1".to_string(), "t2".to_string()]
+            }
+        )
+    }
+
+    #[allow(non_snake_case)]
+    #[test]
+    fn test_from_query_string__multiple_0() {
+        let result = from_query_string("limit=1&limit=2&tags=").unwrap();
+        assert_eq!(
+            result,
+            Query {
+                limit: Some(1),
+                tags: vec!["".to_string()]
+            }
+        )
+    }
 }
 
 #[derive(Debug)]
