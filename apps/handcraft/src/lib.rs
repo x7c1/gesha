@@ -5,7 +5,7 @@ use handcraft_server::BadRequestHandler;
 use handcraft_server_derive::Handcraft;
 
 mod index;
-mod pet;
+mod petstore;
 
 #[derive(Handcraft)]
 pub struct Handlers {
