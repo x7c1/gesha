@@ -1,10 +1,10 @@
 export interface ApiClient {
-  call: (path: string) => Promise<Response>;
+  get: (path: string) => Promise<Response>;
   post: (path: string) => Promise<Response>;
 }
 
 export const client: ApiClient = {
-  call: (path: string): Promise<Response> => {
+  get: (path: string): Promise<Response> => {
     const url = toUrl(path);
     return fetch(url);
   },

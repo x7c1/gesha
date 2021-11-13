@@ -2,7 +2,7 @@ import { client } from "../client.ts";
 import { assertEquals } from "../deps.ts";
 
 Deno.test("200 empty", async () => {
-  const response = await client.call("pets");
+  const response = await client.get("pets");
   const actual = {
     status: response.status,
     contentType: response.headers.get("content-type"),
@@ -19,7 +19,7 @@ Deno.test("200 empty", async () => {
 });
 
 Deno.test("200 non-empty", async () => {
-  const response = await client.call("pets?limit=123");
+  const response = await client.get("pets?limit=123");
   const actual = {
     status: response.status,
     contentType: response.headers.get("content-type"),
@@ -47,7 +47,7 @@ Deno.test("200 non-empty", async () => {
 });
 
 Deno.test("400 invalid query parameter", async () => {
-  const response = await client.call("pets?limit=invalid");
+  const response = await client.get("pets?limit=invalid");
   const actual = {
     status: response.status,
     contentType: response.headers.get("content-type"),
@@ -67,7 +67,7 @@ Deno.test("400 invalid query parameter", async () => {
 });
 
 Deno.test("500", async () => {
-  const response = await client.call("pets?limit=666");
+  const response = await client.get("pets?limit=666");
   const actual = {
     status: response.status,
     contentType: response.headers.get("content-type"),
