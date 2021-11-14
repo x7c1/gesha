@@ -2,7 +2,6 @@ use crate::errors::RequestError;
 use crate::errors::RequestError::InvalidBody;
 use actix_web::web::{BytesMut, Payload};
 use std::collections::HashMap;
-use std::io::Read;
 
 pub fn group_by_query_key(
     query_string: &str,
@@ -29,7 +28,7 @@ pub fn iter_to_single_result<A, B>(xs: impl Iterator<Item = Result<A, B>>) -> Re
     Ok(ys)
 }
 
-pub async fn payload_to_reader(mut payload: Payload) -> Result<impl Read, RequestError> {
+pub async fn payload_to_bytes(mut payload: Payload) -> Result<BytesMut, RequestError> {
     use futures_util::StreamExt;
 
     let mut bytes = BytesMut::new();
@@ -39,6 +38,5 @@ pub async fn payload_to_reader(mut payload: Payload) -> Result<impl Read, Reques
         })?;
         bytes.extend_from_slice(slice);
     }
-    use bytes::buf::BufExt;
-    Ok(bytes.reader())
+    Ok(bytes)
 }

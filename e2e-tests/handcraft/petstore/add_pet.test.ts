@@ -64,7 +64,7 @@ Deno.test("400 invalid-type", async () => {
     body: {
       code: 4005,
       message:
-        "invalid type: integer `12345`, expected a string at line 1 column 14",
+        "invalid type: integer `12345`, expected a string at line 1 column 13",
     },
   };
   assertEquals(actual, expected);
