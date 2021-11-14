@@ -1,13 +1,15 @@
 use crate::errors::RequestError;
 use std::collections::HashMap;
 
-pub fn group_by_query_key(query_string: &str) -> Result<HashMap<String, Vec<String>>, RequestError> {
+pub fn group_by_query_key(
+    query_string: &str,
+) -> Result<HashMap<String, Vec<String>>, RequestError> {
     let pairs: Vec<(String, String)> = serde_urlencoded::from_str(query_string)
         .map_err(|e| RequestError::QueryStringBroken(e.to_string()))?;
 
     let mut kvs = HashMap::<String, Vec<String>>::new();
     for (k, v) in pairs {
-        kvs.entry(k).or_insert(vec![]).push(v)
+        kvs.entry(k).or_insert_with(Vec::new).push(v)
     }
 
     Ok(kvs)

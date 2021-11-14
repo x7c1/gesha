@@ -11,7 +11,7 @@ cargo-clippy: ## linter :
 cargo-fmt: ## formatter
 	cargo fmt -- --check
 
-deno-test: ## tests : run e2e tests
+e2e-test: ## tests : run e2e tests
 	./scripts/e2e-test.sh
 
 deno-fmt: ## formatter :

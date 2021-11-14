@@ -2,6 +2,7 @@
 macro_rules! register_services {
     ($app: ident, $($module: ident)::*) => {
         $app.service($($module::)* generated::index)
+            .service($($module::)* generated::add_pet)
             .service($($module::)* generated::create_pets)
             .service($($module::)* generated::find_pets)
             .service($($module::)* generated::list_pets)

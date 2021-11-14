@@ -41,4 +41,4 @@ jobs:
           deno-version: v1.x
 
       - run: |
-          ./scripts/e2e-test.sh
+          make e2e-test

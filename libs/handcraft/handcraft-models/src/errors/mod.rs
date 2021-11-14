@@ -6,6 +6,7 @@ pub enum RequestError {
     QueryStringBroken(String),
     InvalidQueryValue { key: String, message: String },
     InvalidPathValue { key: String, message: String },
+    InvalidBody { message: String },
     EmptyPathValue { key: String },
 }
 

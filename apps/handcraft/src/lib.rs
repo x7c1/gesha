@@ -5,7 +5,7 @@ use handcraft_server::BadRequestHandler;
 use handcraft_server_derive::Handcraft;
 
 mod index;
-mod pet;
+mod petstore;
 
 #[derive(Handcraft)]
 pub struct Handlers {
@@ -37,6 +37,7 @@ fn to_api_error(e: RequestError) -> schemas::Error {
             (4003, format!("{} [path-key:{}]", message, key))
         }
         RequestError::EmptyPathValue { key } => (4004, format!("[key:{}] required.", key)),
+        RequestError::InvalidBody { message } => (4005, message),
     };
     schemas::Error { code, message }
 }
