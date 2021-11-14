@@ -22,13 +22,13 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
             use actix_web::web;
 
             // dummy function to check whether handler implements BadRequestHandler or not.
-            fn foo1<A: handcraft_server::BadRequestHandler>(handler: A) {
-                println!("dummy");
+            fn is_bad_request_handler<A: handcraft_server::BadRequestHandler>(handler: A) {
+                unimplemented!();
             }
 
-            // dummy function defined to call foo1 above.
-            fn foo2(handler: #struct_name) {
-                foo1(handler);
+            // make compile failed if handler doesn't implement BadRequestHandler.
+            fn get_help_by_compiler(handler: #struct_name) {
+                is_bad_request_handler(handler);
             }
 
             #[get("/{id}/{name}/index.html")]
