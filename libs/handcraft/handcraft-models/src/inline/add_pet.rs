@@ -1,7 +1,8 @@
+use crate::core::payload_to_reader;
 use crate::errors::RequestError;
 use crate::errors::RequestError::InvalidBody;
 use crate::schemas::{Error, NewPet, Pet};
-use actix_web::web::Bytes;
+use actix_web::web::Payload;
 use actix_web::{HttpRequest, HttpResponse};
 
 #[derive(Debug)]
@@ -11,8 +12,9 @@ pub struct Request {
 }
 
 impl Request {
-    pub async fn from_raw(raw: HttpRequest, body: Bytes) -> Result<Self, RequestError> {
-        let body: NewPet = serde_json::from_slice(body.as_ref()).map_err(|e| InvalidBody {
+    pub async fn from_raw(raw: HttpRequest, body: Payload) -> Result<Self, RequestError> {
+        let bytes = payload_to_reader(body).await?;
+        let body: NewPet = serde_json::from_reader(bytes).map_err(|e| InvalidBody {
             message: e.to_string(),
         })?;
         Ok(Request { raw, body })

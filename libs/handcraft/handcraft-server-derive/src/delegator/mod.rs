@@ -87,7 +87,7 @@ fn define_service_with_body(struct_name: &Ident, operation: &str) -> TokenStream
         pub async fn #op(
             handlers: web::Data<#struct_name>,
             raw: HttpRequest,
-            body: web::Bytes,
+            body: web::Payload,
         ) -> Result<HttpResponse> {
             let response = match handcraft_models::inline::#op::Request::from_raw(raw, body).await {
                 Ok(request) => {
