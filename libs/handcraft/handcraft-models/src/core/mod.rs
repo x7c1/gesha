@@ -36,6 +36,14 @@ pub async fn payload_to_bytes(mut payload: Payload) -> Result<BytesMut, RequestE
         let slice = &item.map_err(|e| InvalidBody {
             message: format!("{}", e),
         })?;
+        /*
+        TODO:
+        // rf. https://actix.rs/docs/request/
+        // limit max size of in-memory payload
+        if (body.len() + chunk.len()) > MAX_SIZE {
+            return Err(error::ErrorBadRequest("overflow"));
+        }
+        */
         bytes.extend_from_slice(slice);
     }
     Ok(bytes)
