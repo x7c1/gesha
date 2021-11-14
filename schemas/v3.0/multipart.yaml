@@ -15,6 +15,7 @@ info:
 paths:
   /multipart_request:
     post:
+      operationId: postMultipartRequest
       requestBody:
         required: true
         content:
