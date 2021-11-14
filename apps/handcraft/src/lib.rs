@@ -23,11 +23,11 @@ impl Default for Handlers {
 impl BadRequestHandler for Handlers {
     fn on_bad_request(&self, error: RequestError) -> HttpResponse {
         // sample codes mapping RequestError to schemas::Error.
-        HttpResponse::BadRequest().json(to_api_error(error))
+        HttpResponse::BadRequest().json(from_request_error(error))
     }
 }
 
-fn to_api_error(e: RequestError) -> schemas::Error {
+fn from_request_error(e: RequestError) -> schemas::Error {
     let (code, message) = match e {
         RequestError::QueryStringBroken(s) => (4001, s),
         RequestError::InvalidQueryValue { key, message } => {
