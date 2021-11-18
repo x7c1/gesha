@@ -1,7 +1,7 @@
 import { client } from "../../client.ts";
 import { assertEquals } from "../../deps.ts";
 
-const endpoint = "pets";
+const endpoint = "multipart_request";
 
 Deno.test("201", async () => {
   const response = await client.post(endpoint);
