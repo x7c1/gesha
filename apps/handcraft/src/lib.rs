@@ -5,6 +5,7 @@ use handcraft_server::BadRequestHandler;
 use handcraft_server_derive::Handcraft;
 
 mod index;
+pub mod multipart;
 mod petstore;
 
 #[derive(Handcraft)]

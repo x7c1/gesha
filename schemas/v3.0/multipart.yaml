@@ -98,7 +98,9 @@ components:
               type: array
               items:
                 type: string
-        binary_field:
+        # original yaml defines it as 'binary field', which is so confusing.
+        # binary_field:
+        bite_field:
           type: string
           format: byte
     multipart_related_request:
