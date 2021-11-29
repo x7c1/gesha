@@ -81,7 +81,7 @@ components:
       type: object
       required:
         - string_field
-        - binary_field
+        - byte_field
       properties:
         string_field:
           type: string
@@ -100,7 +100,7 @@ components:
                 type: string
         # original yaml defines it as 'binary field', which is so confusing.
         # binary_field:
-        bite_field:
+        byte_field:
           type: string
           format: byte
     multipart_related_request:

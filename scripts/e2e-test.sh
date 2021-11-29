@@ -26,7 +26,7 @@ run_tests() {
   await_server
 
   # shellcheck disable=SC2086
-  deno test --allow-net $args
+  deno test --allow-net --allow-read $args
 }
 
 await_server() {
