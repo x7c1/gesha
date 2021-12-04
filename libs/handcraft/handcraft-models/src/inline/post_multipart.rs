@@ -1,16 +1,27 @@
 use crate::errors::RequestError;
-use crate::schemas::Error;
+use crate::schemas::{Error, MultipartFormDataParameters};
+use actix_multipart::Multipart;
 use actix_web::body::Body;
-use actix_web::{HttpRequest, HttpResponse};
+use actix_web::dev::Payload;
+use actix_web::{FromRequest, HttpRequest, HttpResponse};
+use futures_util::future::LocalBoxFuture;
+use futures_util::FutureExt;
 
 #[derive(Debug)]
 pub struct Request {
-    pub raw: HttpRequest,
+    pub body: Result<MultipartFormDataParameters, RequestError>,
 }
 
-impl Request {
-    pub async fn from_raw(raw: HttpRequest) -> Result<Self, RequestError> {
-        Ok(Request { raw })
+impl FromRequest for Request {
+    type Error = actix_web::Error;
+    type Future = LocalBoxFuture<'static, Result<Request, actix_web::Error>>;
+    type Config = ();
+
+    fn from_request(req: &HttpRequest, payload: &mut Payload) -> Self::Future {
+        let multipart = Multipart::new(req.headers(), payload.take());
+        MultipartFormDataParameters::from_multipart(multipart)
+            .map(|body| Ok(Request { body }))
+            .boxed_local()
     }
 }
 

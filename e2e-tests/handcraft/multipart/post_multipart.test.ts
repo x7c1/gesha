@@ -1,6 +1,6 @@
 import { assertEquals, streamFromMultipart } from "../../deps.ts";
 
-const endpoint = "multipart_request";
+const endpoint = "multipart_form_data";
 
 Deno.test("201", async () => {
   const [stream, boundary] = streamFromMultipart(async (writer) => {

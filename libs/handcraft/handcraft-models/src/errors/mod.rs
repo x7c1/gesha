@@ -1,3 +1,4 @@
+use actix_multipart::MultipartError;
 use serde::Serialize;
 
 #[derive(Debug, Serialize, PartialEq)]
@@ -8,7 +9,37 @@ pub enum RequestError {
     InvalidPathValue { key: String, message: String },
     InvalidBody { message: String },
     EmptyPathValue { key: String },
+    // multipart/form-data
+    FormDataFieldRequired { name: String },
+    MultipartError { cause: String },
+    ContentDispositionNotFound,
+    ContentDispositionNameNotFound,
 }
+
+impl From<MultipartError> for RequestError {
+    fn from(cause: MultipartError) -> Self {
+        Self::MultipartError {
+            cause: format!("{:#?}", cause),
+        }
+    }
+}
+
+/*
+impl Display for RequestError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            RequestError::QueryStringBroken(s) => write!(f, "QueryStringBroken: {}", s),
+            RequestError::InvalidQueryValue { key, message } => write!()
+            RequestError::InvalidPathValue { .. } => {}
+            RequestError::InvalidBody { .. } => {}
+            RequestError::EmptyPathValue { .. } => {}
+            RequestError::FormDataFieldRequired { .. } => {}
+            RequestError::MultipartError { .. } => {}
+            RequestError::ContentDispositionNotFound => {}
+        }
+    }
+}
+*/
 
 #[cfg(test)]
 mod tests {

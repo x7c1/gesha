@@ -13,15 +13,15 @@ info:
   # original: https://github.com/OpenAPITools/openapi-generator/blob/b0520a346d207cd587139d142fa9e62aa7b828ac/modules/openapi-generator/src/test/resources/3_0/rust-server/multipart-v3.yaml
   version: 1.0.7
 paths:
-  /multipart_request:
+  /multipart_form_data:
     post:
-      operationId: postMultipartRequest
+      operationId: postMultipartFormData
       requestBody:
         required: true
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/MultipartRequest'
+              $ref: '#/components/schemas/MultipartFormDataParameters'
       responses:
         '201':
           description: 'OK'
@@ -81,7 +81,7 @@ paths:
 
 components:
   schemas:
-    MultipartRequest:
+    MultipartFormDataParameters:
       type: object
       required:
         - string_field
@@ -121,7 +121,6 @@ components:
         optional_sring_field:
           $ref: '#/components/schemas/ReceivedString'
 
-    # "string_field"
     ReceivedString:
       type: object
       required:
@@ -133,7 +132,6 @@ components:
         value:
           type: string
 
-    # "binary_field"
     ReceivedBinary:
       type: object
       required:

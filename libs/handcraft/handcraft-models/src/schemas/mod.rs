@@ -1,3 +1,10 @@
+use crate::core::{BinaryContent, FormDataField, StringContent};
+use crate::errors::RequestError;
+use crate::errors::RequestError::{
+    ContentDispositionNameNotFound, ContentDispositionNotFound, FormDataFieldRequired,
+};
+use actix_multipart::Multipart;
+use futures_util::TryStreamExt;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -41,7 +48,7 @@ pub struct NewPet {
     pub tag: Option<String>,
 }
 
-trait NewPetLike {
+pub trait NewPetLike {
     fn name(&self) -> &str;
     fn tag(&self) -> &Option<String>;
 }
@@ -53,5 +60,48 @@ impl NewPetLike for NewPet {
 
     fn tag(&self) -> &Option<String> {
         &self.tag
+    }
+}
+
+#[derive(Debug)]
+pub struct MultipartFormDataParameters {
+    pub string_field: FormDataField<StringContent>,
+    pub binary_field: FormDataField<BinaryContent>,
+}
+
+impl MultipartFormDataParameters {
+    pub async fn from_multipart(mut multipart: Multipart) -> Result<Self, RequestError> {
+        let mut string_field = None;
+        let mut binary_field = None;
+
+        while let Some(field) = multipart.try_next().await? {
+            let content_disposition = field
+                .content_disposition()
+                .ok_or_else(|| ContentDispositionNotFound)?;
+
+            let name = content_disposition
+                .get_name()
+                .ok_or_else(|| ContentDispositionNameNotFound)?;
+
+            match name {
+                "string_field" => {
+                    let field = FormDataField::from_string(field, content_disposition).await?;
+                    string_field = Some(field)
+                }
+                "binary_field" => {
+                    let field = FormDataField::from_binary(field, content_disposition).await?;
+                    binary_field = Some(field)
+                }
+                _ => (/* ignore unknown field */),
+            };
+        }
+        Ok(MultipartFormDataParameters {
+            string_field: string_field.ok_or_else(|| FormDataFieldRequired {
+                name: "string_field".to_string(),
+            })?,
+            binary_field: binary_field.ok_or_else(|| FormDataFieldRequired {
+                name: "binary_field".to_string(),
+            })?,
+        })
     }
 }
