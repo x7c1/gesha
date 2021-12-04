@@ -5,6 +5,9 @@ help: ## docs : display tasks
 	sed -e 's/:[ ]*##[ ]*/:/' |\
 	column -t -s :
 
+swagger-ui: ## docs :
+	./scripts/swagger-ui.sh
+
 cargo-clippy: ## linter :
 	cargo clippy -- --no-deps -D warnings
 

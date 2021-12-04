@@ -8,7 +8,7 @@
 
 openapi: 3.0.1
 info:
-  title: Multipart OpenAPI V3 Rust Server Test
+  title: Multipart Sample
   description: API under test
   # original: https://github.com/OpenAPITools/openapi-generator/blob/b0520a346d207cd587139d142fa9e62aa7b828ac/modules/openapi-generator/src/test/resources/3_0/rust-server/multipart-v3.yaml
   version: 1.0.7
