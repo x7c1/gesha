@@ -14,6 +14,7 @@ impl Content for StringContent {}
 pub struct BinaryContent(Vec<Bytes>);
 impl Content for BinaryContent {}
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct FormDataField<A: Content> {
     content_disposition: ContentDisposition,
