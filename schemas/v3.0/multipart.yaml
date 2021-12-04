@@ -21,70 +21,80 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/multipart_request'
+              $ref: '#/components/schemas/MultipartRequest'
       responses:
         '201':
           description: 'OK'
-  /multipart_related_request:
-    post:
-      requestBody:
-        required: true
-        content:
-          multipart/related:  # message with binary body part(s)
-            schema:
-              $ref: '#/components/schemas/multipart_related_request'
-            encoding:
-              object_field:
-                contentType:  application/json
-              optional_binary_field:
-                contentType:  application/zip
-                headers:
-                  Content-Id:
-                    schema:
-                      type: string
-              required_binary_field:
-                contentType:  image/png
-                headers:
-                  Content-Id:
-                    schema:
-                      type: string
 
-      responses:
-        '201':
-          description: 'OK'
-  /multiple-identical-mime-types:
-    post:
-      requestBody:
-        required: true
-        content:
-          multipart/related:
-            schema:
-              type: object
-              properties:
-                binary1:
-                  type: string
-                  format: binary
-                binary2:
-                  type: string
-                  format: binary
-            encoding:
-              binary1:
-                contentType: application/octet-stream
-              binary2:
-                contentType: application/octet-stream
-      responses:
-        200:
-          description: OK
+# NOT SUPPORTED YET ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- #
+
+#  /multipart_related_request:
+#    post:
+#      requestBody:
+#        required: true
+#        content:
+#          multipart/related:  # message with binary body part(s)
+#            schema:
+#              $ref: '#/components/schemas/multipart_related_request'
+#            encoding:
+#              object_field:
+#                contentType:  application/json
+#              optional_binary_field:
+#                contentType:  application/zip
+#                headers:
+#                  Content-Id:
+#                    schema:
+#                      type: string
+#              required_binary_field:
+#                contentType:  image/png
+#                headers:
+#                  Content-Id:
+#                    schema:
+#                      type: string
+#
+#      responses:
+#        '201':
+#          description: 'OK'
+#  /multiple-identical-mime-types:
+#    post:
+#      requestBody:
+#        required: true
+#        content:
+#          multipart/related:
+#            schema:
+#              type: object
+#              properties:
+#                binary1:
+#                  type: string
+#                  format: binary
+#                binary2:
+#                  type: string
+#                  format: binary
+#            encoding:
+#              binary1:
+#                contentType: application/octet-stream
+#              binary2:
+#                contentType: application/octet-stream
+#      responses:
+#        200:
+#          description: OK
+
 components:
   schemas:
-    multipart_request:
+    MultipartRequest:
       type: object
       required:
         - string_field
-        - byte_field
+        - binary_field
       properties:
         string_field:
           type: string
+        binary_field:
+          type: string
+          format: binary
+        byte_field:
+          type: string
+          format: byte
         optional_string_field:
           type: string
         object_field:
@@ -98,30 +108,67 @@ components:
               type: array
               items:
                 type: string
-        # original yaml defines it as 'binary field', which is so confusing.
-        # binary_field:
-        byte_field:
-          type: string
-          format: byte
-    multipart_related_request:
+    MultiPartFormDataResponse:
       type: object
       required:
-        - required_binary_field
+        - string_field
+        - binary_field
       properties:
-        object_field:
-          type: object
-          required:
-            - field_a
-          properties:
-            field_a:
-              type: string
-            field_b:
-              type: array
-              items:
-                type: string
-        optional_binary_field:
+        string_field:
+          $ref: '#/components/schemas/ReceivedString'
+        binary_field:
+          $ref: '#/components/schemas/ReceivedBinary'
+        optional_sring_field:
+          $ref: '#/components/schemas/ReceivedString'
+
+    # "string_field"
+    ReceivedString:
+      type: object
+      required:
+        - name
+        - value
+      properties:
+        name:
           type: string
-          format: binary
-        required_binary_field:
+        value:
           type: string
-          format: binary
+
+    # "binary_field"
+    ReceivedBinary:
+      type: object
+      required:
+        - name
+        - file_name
+        - value
+      properties:
+        name:
+          type: string
+        file_name:
+          type: string
+        value:
+          type: string
+
+# NOT SUPPORTED YET ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- #
+
+#    multipart_related_request:
+#      type: object
+#      required:
+#        - required_binary_field
+#      properties:
+#        object_field:
+#          type: object
+#          required:
+#            - field_a
+#          properties:
+#            field_a:
+#              type: string
+#            field_b:
+#              type: array
+#              items:
+#                type: string
+#        optional_binary_field:
+#          type: string
+#          format: binary
+#        required_binary_field:
+#          type: string
+#          format: binary
