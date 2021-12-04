@@ -19,7 +19,7 @@ Deno.test("201", async () => {
     method: "POST",
   });
 
-  response.text();
-  console.log("response", response);
+  const text = await response.text();
+  console.log("response", response, text);
   assertEquals(1, 1);
 });

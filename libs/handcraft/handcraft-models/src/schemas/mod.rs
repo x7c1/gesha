@@ -77,11 +77,11 @@ impl MultipartFormDataParameters {
         while let Some(field) = multipart.try_next().await? {
             let content_disposition = field
                 .content_disposition()
-                .ok_or_else(|| ContentDispositionNotFound)?;
+                .ok_or(ContentDispositionNotFound)?;
 
             let name = content_disposition
                 .get_name()
-                .ok_or_else(|| ContentDispositionNameNotFound)?;
+                .ok_or(ContentDispositionNameNotFound)?;
 
             match name {
                 "string_field" => {
@@ -105,3 +105,6 @@ impl MultipartFormDataParameters {
         })
     }
 }
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub struct MultiPartFormDataResponse {}
