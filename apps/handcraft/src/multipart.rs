@@ -1,5 +1,5 @@
 use actix_web::http::StatusCode;
-use actix_web::{post, HttpRequest, ResponseError};
+use actix_web::{post, ResponseError};
 use handcraft_models::errors::RequestError;
 use handcraft_models::inline::post_multipart_form_data::Response::Created;
 use handcraft_models::inline::post_multipart_form_data::{Request, Response};
