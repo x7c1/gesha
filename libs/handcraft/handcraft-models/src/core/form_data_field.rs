@@ -25,12 +25,12 @@ impl FormDataField<StringContent> {
         mut field: Field,
         content_disposition: ContentDisposition,
     ) -> Result<Self, RequestError> {
-        let mut contents = vec![];
+        let mut chunks = vec![];
         while let Some(chunk) = field.try_next().await? {
             let content = String::from_utf8_lossy(&chunk);
-            contents.push(content.to_string());
+            chunks.push(content.to_string());
         }
-        let content = StringContent(contents);
+        let content = StringContent(chunks);
         Ok(FormDataField {
             content_disposition,
             content,
@@ -43,11 +43,11 @@ impl FormDataField<BinaryContent> {
         mut field: Field,
         content_disposition: ContentDisposition,
     ) -> Result<Self, RequestError> {
-        let mut contents = vec![];
+        let mut chunks = vec![];
         while let Some(chunk) = field.try_next().await? {
-            contents.push(chunk);
+            chunks.push(chunk);
         }
-        let content = BinaryContent(contents);
+        let content = BinaryContent(chunks);
         Ok(FormDataField {
             content_disposition,
             content,
