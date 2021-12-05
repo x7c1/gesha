@@ -140,15 +140,15 @@ components:
       type: object
       required:
         - name
-        - file_name
         - value
       properties:
         name:
           type: string
         file_name:
           type: string
-        value:
-          type: string
+        length:
+          type: integer
+          format: int64
 
 # NOT SUPPORTED YET ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- #
 

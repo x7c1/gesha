@@ -107,4 +107,21 @@ impl MultipartFormDataParameters {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct MultiPartFormDataResponse {}
+pub struct MultiPartFormDataResponse {
+    pub string_field: ReceivedString,
+    pub binary_field: ReceivedBinary,
+    pub optional_string_field: Option<ReceivedString>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub struct ReceivedString {
+    pub name: String,
+    pub value: String,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub struct ReceivedBinary {
+    pub name: String,
+    pub length: i64,
+    pub file_name: Option<String>,
+}

@@ -1,4 +1,5 @@
 use crate::errors::RequestError;
+use crate::errors::RequestError::ContentDispositionNameNotFound;
 use actix_multipart::Field;
 use actix_web::http::header::ContentDisposition;
 use actix_web::web::Bytes;
@@ -21,6 +22,14 @@ pub struct FormDataField<A: Content> {
     content: A,
 }
 
+impl<A: Content> FormDataField<A> {
+    pub fn name(&self) -> Result<&str, RequestError> {
+        self.content_disposition
+            .get_name()
+            .ok_or(ContentDispositionNameNotFound)
+    }
+}
+
 impl FormDataField<StringContent> {
     pub async fn from_string(
         mut field: Field,
@@ -36,6 +45,10 @@ impl FormDataField<StringContent> {
             content_disposition,
             content,
         })
+    }
+
+    pub fn to_string(&self) -> String {
+        self.content.0.join("")
     }
 }
 
@@ -53,5 +66,17 @@ impl FormDataField<BinaryContent> {
             content_disposition,
             content,
         })
+    }
+
+    pub fn len(&self) -> usize {
+        let mut len = 0;
+        for x in &self.content.0 {
+            len += x.len()
+        }
+        len
+    }
+
+    pub fn file_name(&self) -> Option<&str> {
+        self.content_disposition.get_filename()
     }
 }

@@ -19,7 +19,26 @@ Deno.test("201", async () => {
     method: "POST",
   });
 
-  const text = await response.text();
-  console.log("response", response, text);
-  assertEquals(1, 1);
+  const actual = {
+    status: response.status,
+    contentType: response.headers.get("content-type"),
+    body: await response.json(),
+  };
+  const expected = {
+    status: 201,
+    contentType: "application/json",
+    body: {
+      string_field: {
+        name: "string_field",
+        value: "abcde",
+      },
+      binary_field: {
+        name: "binary_field",
+        length: 8,
+        file_name: "README.md",
+      },
+      optional_string_field: null,
+    },
+  };
+  assertEquals(actual, expected);
 });
