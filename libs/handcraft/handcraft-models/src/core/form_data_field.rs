@@ -49,7 +49,7 @@ impl<A: Send + Debug + DeserializeOwned> FormDataField<ObjectContent<A>> {
             content: ObjectContent(object),
         })
     }
-    pub fn to_object(self) -> A {
+    pub fn extract(self) -> A {
         self.content.0
     }
 }

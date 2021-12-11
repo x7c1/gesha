@@ -28,7 +28,7 @@ pub async fn post_multipart_form_data(request: Request) -> Result<Response, ApiE
             optional_object_field: body.optional_object_field.map(|field| ReceivedObject {
                 // TODO: remove unwrap()
                 name: field.name().unwrap().to_string(),
-                value: field.to_object(),
+                value: field.extract(),
             }),
         },
     })
