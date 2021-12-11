@@ -18,7 +18,7 @@ impl FromRequest for Request {
 
     fn from_request(req: &HttpRequest, payload: &mut Payload) -> Self::Future {
         let multipart = Multipart::new(req.headers(), payload.take());
-        MultipartFormDataParameters::from_multipart(multipart)
+        MultipartFormDataParameters::from_multipart_form_data(multipart)
             .map(|body| Ok(Request { body }))
             .boxed_local()
     }

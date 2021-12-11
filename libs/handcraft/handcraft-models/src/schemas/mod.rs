@@ -70,7 +70,7 @@ pub struct MultipartFormDataParameters {
 }
 
 impl MultipartFormDataParameters {
-    pub async fn from_multipart(mut multipart: Multipart) -> Result<Self, RequestError> {
+    pub async fn from_multipart_form_data(mut multipart: Multipart) -> Result<Self, RequestError> {
         let mut string_field = None;
         let mut binary_field = None;
 

@@ -4,6 +4,7 @@ use handcraft_models::schemas;
 use handcraft_server::BadRequestHandler;
 use handcraft_server_derive::Handcraft;
 
+mod error;
 mod index;
 pub mod multipart;
 mod petstore;
