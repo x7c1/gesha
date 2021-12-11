@@ -5,6 +5,8 @@ use handcraft_server::BadRequestHandler;
 use handcraft_server_derive::Handcraft;
 
 mod error;
+type Result<T> = std::result::Result<T, error::ApiError>;
+
 mod index;
 pub mod multipart;
 mod petstore;

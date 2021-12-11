@@ -1,4 +1,3 @@
-use crate::error::ApiError;
 use actix_web::post;
 use handcraft_models::core::{FormDataField, ObjectContent};
 use handcraft_models::errors::RequestError;
@@ -9,7 +8,7 @@ use handcraft_models::schemas::{
 };
 
 #[post("/multipart_form_data")]
-pub async fn post_multipart_form_data(request: Request) -> Result<Response, ApiError> {
+pub async fn post_multipart_form_data(request: Request) -> crate::Result<Response> {
     println!("[start] post_multipart_form_data: {:#?}", request);
 
     let body = request.body?;
