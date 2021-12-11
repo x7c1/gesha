@@ -49,6 +49,9 @@ impl<A: Send + Debug + DeserializeOwned> FormDataField<ObjectContent<A>> {
             content: ObjectContent(object),
         })
     }
+    pub fn to_object(self) -> A {
+        self.content.0
+    }
 }
 
 impl FormDataField<StringContent> {

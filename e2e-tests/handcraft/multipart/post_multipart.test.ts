@@ -10,7 +10,7 @@ Deno.test("201", async () => {
 
     await writer.writeField("string_field", "abcde");
     await writer.writeField(
-      "object_field",
+      "optional_object_field",
       JSON.stringify({
         field_a: "sample field_a",
       }),
@@ -44,6 +44,12 @@ Deno.test("201", async () => {
         file_name: "README.md",
       },
       optional_string_field: null,
+      optional_object_field: {
+        name: "optional_object_field",
+        value: {
+          field_a: "sample field_a",
+        },
+      },
     },
   };
   assertEquals(actual, expected);
