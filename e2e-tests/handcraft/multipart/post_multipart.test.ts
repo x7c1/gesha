@@ -9,6 +9,12 @@ Deno.test("201", async () => {
     file.close();
 
     await writer.writeField("string_field", "abcde");
+    await writer.writeField(
+      "object_field",
+      JSON.stringify({
+        field_a: "sample field_a",
+      }),
+    );
   });
 
   const response = await fetch(`http://localhost:8080/${endpoint}`, {

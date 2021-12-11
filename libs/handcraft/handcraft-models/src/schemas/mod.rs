@@ -1,4 +1,4 @@
-use crate::core::{BinaryContent, FormDataField, StringContent};
+use crate::core::{BinaryContent, FormDataField, ObjectContent, StringContent};
 use crate::errors::RequestError;
 use crate::errors::RequestError::{
     ContentDispositionNameNotFound, ContentDispositionNotFound, FormDataFieldRequired,
@@ -67,12 +67,19 @@ impl NewPetLike for NewPet {
 pub struct MultipartFormDataParameters {
     pub string_field: FormDataField<StringContent>,
     pub binary_field: FormDataField<BinaryContent>,
+    pub object_field: Option<FormDataField<ObjectContent<SampleObjectField>>>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SampleObjectField {
+    pub field_a: String,
 }
 
 impl MultipartFormDataParameters {
     pub async fn from_multipart_form_data(mut multipart: Multipart) -> Result<Self, RequestError> {
         let mut string_field = None;
         let mut binary_field = None;
+        let mut object_field = None;
 
         while let Some(field) = multipart.try_next().await? {
             let content_disposition = field
@@ -92,6 +99,10 @@ impl MultipartFormDataParameters {
                     let field = FormDataField::from_binary(field, content_disposition).await?;
                     binary_field = Some(field)
                 }
+                "object_field" => {
+                    let field = FormDataField::from_object(field, content_disposition).await?;
+                    object_field = Some(field);
+                }
                 _ => (/* ignore unknown field */),
             };
         }
@@ -102,6 +113,7 @@ impl MultipartFormDataParameters {
             binary_field: binary_field.ok_or_else(|| FormDataFieldRequired {
                 name: "binary_field".to_string(),
             })?,
+            object_field,
         })
     }
 }

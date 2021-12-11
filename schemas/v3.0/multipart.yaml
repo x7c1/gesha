@@ -101,17 +101,35 @@ components:
           format: byte
         optional_string_field:
           type: string
+
+# inline schema not supported.
+#        object_field:
+#          type: object
+#          required:
+#            - field_a
+#          properties:
+#            field_a:
+#              type: string
+#            field_b:
+#              type: array
+#              items:
+#                type: string
+
         object_field:
-          type: object
-          required:
-            - field_a
-          properties:
-            field_a:
-              type: string
-            field_b:
-              type: array
-              items:
-                type: string
+          $ref: '#/components/schemas/SampleObjectField'
+
+    SampleObjectField:
+      type: object
+      required:
+        - field_a
+      properties:
+        field_a:
+          type: string
+        field_b:
+          type: array
+          items:
+            type: string
+
     MultiPartFormDataResponse:
       type: object
       required:

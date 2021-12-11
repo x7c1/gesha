@@ -4,7 +4,8 @@ use actix_multipart::Field;
 use actix_web::http::header::ContentDisposition;
 use actix_web::web::Bytes;
 use futures_util::TryStreamExt;
-use std::fmt::{Display, Formatter};
+use serde::de::DeserializeOwned;
+use std::fmt::{Debug, Display, Formatter};
 
 pub trait Content: Send {}
 
@@ -16,18 +17,37 @@ impl Content for StringContent {}
 pub struct BinaryContent(Vec<Bytes>);
 impl Content for BinaryContent {}
 
+#[derive(Debug)]
+pub struct ObjectContent<A: Send>(A);
+impl<A: Send> Content for ObjectContent<A> {}
+
 #[allow(dead_code)]
 #[derive(Debug)]
-pub struct FormDataField<A: Content> {
+pub struct FormDataField<A> {
     content_disposition: ContentDisposition,
     content: A,
 }
 
-impl<A: Content> FormDataField<A> {
+impl<A> FormDataField<A> {
     pub fn name(&self) -> Result<&str, RequestError> {
         self.content_disposition
             .get_name()
             .ok_or(ContentDispositionNameNotFound)
+    }
+}
+
+impl<A: Send + Debug + DeserializeOwned> FormDataField<ObjectContent<A>> {
+    pub async fn from_object(
+        field: Field,
+        content_disposition: ContentDisposition,
+    ) -> Result<Self, RequestError> {
+        let xs = FormDataField::from_string(field, content_disposition).await?;
+        // TODO: remove unwrap()
+        let object = serde_json::from_str(&xs.to_string()).unwrap();
+        Ok(FormDataField {
+            content_disposition: xs.content_disposition,
+            content: ObjectContent(object),
+        })
     }
 }
 

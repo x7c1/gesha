@@ -1,5 +1,5 @@
 mod form_data_field;
-pub use form_data_field::{BinaryContent, FormDataField, StringContent};
+pub use form_data_field::{BinaryContent, FormDataField, ObjectContent, StringContent};
 
 use crate::errors::RequestError;
 use crate::errors::RequestError::InvalidBody;
