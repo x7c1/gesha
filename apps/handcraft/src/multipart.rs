@@ -15,7 +15,7 @@ pub async fn post_multipart_form_data(request: Request) -> Result<Response, ApiE
         content: MultiPartFormDataResponse {
             string_field: ReceivedString {
                 name: body.string_field.name()?.to_string(),
-                value: body.string_field.to_string().to_string(),
+                value: body.string_field.to_string(),
             },
             binary_field: ReceivedBinary {
                 name: body.binary_field.name()?.to_string(),

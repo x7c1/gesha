@@ -4,6 +4,7 @@ use actix_multipart::Field;
 use actix_web::http::header::ContentDisposition;
 use actix_web::web::Bytes;
 use futures_util::TryStreamExt;
+use std::fmt::{Display, Formatter};
 
 pub trait Content: Send {}
 
@@ -46,9 +47,11 @@ impl FormDataField<StringContent> {
             content,
         })
     }
+}
 
-    pub fn to_string(&self) -> String {
-        self.content.0.join("")
+impl Display for FormDataField<StringContent> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.content.0.join(""))
     }
 }
 
