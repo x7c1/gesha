@@ -6,7 +6,7 @@ use crate::errors::RequestError::InvalidBody;
 use actix_web::web::{BytesMut, Payload};
 use std::collections::HashMap;
 
-pub fn group_by_query_key(
+pub(crate) fn group_by_query_key(
     query_string: &str,
 ) -> Result<HashMap<String, Vec<String>>, RequestError> {
     let pairs: Vec<(String, String)> = serde_urlencoded::from_str(query_string)
@@ -20,7 +20,7 @@ pub fn group_by_query_key(
     Ok(kvs)
 }
 
-pub fn iter_to_single_result<A, B>(xs: impl Iterator<Item = Result<A, B>>) -> Result<Vec<A>, B> {
+pub(crate) fn iter_to_single_result<A, B>(xs: impl Iterator<Item = Result<A, B>>) -> Result<Vec<A>, B> {
     let mut ys = vec![];
     for x in xs {
         match x {
@@ -31,7 +31,7 @@ pub fn iter_to_single_result<A, B>(xs: impl Iterator<Item = Result<A, B>>) -> Re
     Ok(ys)
 }
 
-pub async fn payload_to_bytes(mut payload: Payload) -> Result<BytesMut, RequestError> {
+pub(crate) async fn payload_to_bytes(mut payload: Payload) -> Result<BytesMut, RequestError> {
     use futures_util::StreamExt;
 
     let mut bytes = BytesMut::new();
