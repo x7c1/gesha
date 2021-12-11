@@ -13,6 +13,7 @@ Deno.test("201", async () => {
       "optional_object_field",
       JSON.stringify({
         field_a: "sample field_a",
+        field_b: ["b1", "b2"],
       }),
     );
   });
@@ -48,6 +49,7 @@ Deno.test("201", async () => {
         name: "optional_object_field",
         value: {
           field_a: "sample field_a",
+          field_b: ["b1", "b2"],
         },
       },
     },

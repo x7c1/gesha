@@ -9,6 +9,7 @@ use futures_util::FutureExt;
 #[derive(Debug)]
 pub struct Request {
     pub body: Result<MultipartFormDataParameters, RequestError>,
+    pub raw: HttpRequest,
 }
 
 impl FromRequest for Request {
@@ -18,8 +19,9 @@ impl FromRequest for Request {
 
     fn from_request(req: &HttpRequest, payload: &mut Payload) -> Self::Future {
         let multipart = Multipart::new(req.headers(), payload.take());
+        let raw = req.clone();
         MultipartFormDataParameters::from_multipart_form_data(multipart)
-            .map(|body| Ok(Request { body }))
+            .map(|body| Ok(Request { body, raw }))
             .boxed_local()
     }
 }

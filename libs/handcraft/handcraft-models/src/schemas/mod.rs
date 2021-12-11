@@ -73,6 +73,7 @@ pub struct MultipartFormDataParameters {
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct SampleObjectField {
     pub field_a: String,
+    pub field_b: Option<Vec<String>>,
 }
 
 impl MultipartFormDataParameters {
