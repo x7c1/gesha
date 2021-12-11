@@ -105,6 +105,10 @@ impl FormDataField<BinaryContent> {
         len
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
     pub fn file_name(&self) -> Option<&str> {
         self.content_disposition.get_filename()
     }
