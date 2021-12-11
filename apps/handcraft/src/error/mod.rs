@@ -21,6 +21,7 @@ impl From<RequestError> for ApiError {
             RequestError::MultipartError { .. } => {}
             RequestError::ContentDispositionNotFound => {}
             RequestError::ContentDispositionNameNotFound => {}
+            RequestError::JsonFormatError { .. } => {}
         }
         ApiError::InvalidRequest
     }

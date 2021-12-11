@@ -20,7 +20,9 @@ pub(crate) fn group_by_query_key(
     Ok(kvs)
 }
 
-pub(crate) fn iter_to_single_result<A, B>(xs: impl Iterator<Item = Result<A, B>>) -> Result<Vec<A>, B> {
+pub(crate) fn iter_to_single_result<A, B>(
+    xs: impl Iterator<Item = Result<A, B>>,
+) -> Result<Vec<A>, B> {
     let mut ys = vec![];
     for x in xs {
         match x {

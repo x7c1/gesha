@@ -1,5 +1,5 @@
 use crate::errors::RequestError;
-use crate::errors::RequestError::ContentDispositionNameNotFound;
+use crate::errors::RequestError::{ContentDispositionNameNotFound, JsonFormatError};
 use actix_multipart::Field;
 use actix_web::http::header::ContentDisposition;
 use actix_web::web::Bytes;
@@ -41,11 +41,14 @@ impl<A: Send + Debug + DeserializeOwned> FormDataField<ObjectContent<A>> {
         field: Field,
         content_disposition: ContentDisposition,
     ) -> Result<Self, RequestError> {
-        let xs = FormDataField::from_string(field, content_disposition).await?;
-        // TODO: remove unwrap()
-        let object = serde_json::from_str(&xs.to_string()).unwrap();
+        let field = FormDataField::from_string(field, content_disposition).await?;
+        let name = field.name()?;
+        let object = serde_json::from_str(&field.to_string()).map_err(|e| JsonFormatError {
+            key: name.to_string(),
+            message: e.to_string(),
+        })?;
         Ok(FormDataField {
-            content_disposition: xs.content_disposition,
+            content_disposition: field.content_disposition,
             content: ObjectContent(object),
         })
     }

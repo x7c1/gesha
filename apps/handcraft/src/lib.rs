@@ -48,6 +48,7 @@ fn from_request_error(e: RequestError) -> schemas::Error {
         RequestError::ContentDispositionNameNotFound => {
             (4009, "content disposition name not found".to_string())
         }
+        RequestError::JsonFormatError { .. } => (4010, "invalid json".to_string()),
     };
     schemas::Error { code, message }
 }

@@ -9,6 +9,7 @@ pub enum RequestError {
     InvalidPathValue { key: String, message: String },
     InvalidBody { message: String },
     EmptyPathValue { key: String },
+    JsonFormatError { key: String, message: String },
     // multipart/form-data
     FormDataFieldRequired { name: String },
     MultipartError { cause: String },
