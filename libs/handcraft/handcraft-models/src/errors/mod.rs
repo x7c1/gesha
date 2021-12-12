@@ -1,3 +1,4 @@
+use actix_multipart::MultipartError;
 use serde::Serialize;
 
 #[derive(Debug, Serialize, PartialEq)]
@@ -8,6 +9,20 @@ pub enum RequestError {
     InvalidPathValue { key: String, message: String },
     InvalidBody { message: String },
     EmptyPathValue { key: String },
+    JsonFormatError { key: String, message: String },
+    // multipart/form-data
+    FormDataFieldRequired { name: String },
+    MultipartError { cause: String },
+    ContentDispositionNotFound,
+    ContentDispositionNameNotFound,
+}
+
+impl From<MultipartError> for RequestError {
+    fn from(cause: MultipartError) -> Self {
+        Self::MultipartError {
+            cause: format!("{:#?}", cause),
+        }
+    }
 }
 
 #[cfg(test)]

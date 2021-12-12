@@ -1,0 +1,207 @@
+# Test the multipart function of the OpenAPI specification
+#
+# Specifically, these tests include
+#   - multipart/form data including
+#      - binary data
+#      - string data
+#      - objects
+
+openapi: 3.0.1
+info:
+  title: Multipart Sample
+  description: API under test
+  # original: https://github.com/OpenAPITools/openapi-generator/blob/b0520a346d207cd587139d142fa9e62aa7b828ac/modules/openapi-generator/src/test/resources/3_0/rust-server/multipart-v3.yaml
+  version: 1.0.7
+paths:
+  /multipart_form_data:
+    post:
+      operationId: postMultipartFormData
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MultipartFormDataParameters'
+      responses:
+        '201':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MultiPartFormDataResponse"
+
+# NOT SUPPORTED YET ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- #
+
+#  /multipart_related_request:
+#    post:
+#      requestBody:
+#        required: true
+#        content:
+#          multipart/related:  # message with binary body part(s)
+#            schema:
+#              $ref: '#/components/schemas/multipart_related_request'
+#            encoding:
+#              object_field:
+#                contentType:  application/json
+#              optional_binary_field:
+#                contentType:  application/zip
+#                headers:
+#                  Content-Id:
+#                    schema:
+#                      type: string
+#              required_binary_field:
+#                contentType:  image/png
+#                headers:
+#                  Content-Id:
+#                    schema:
+#                      type: string
+#
+#      responses:
+#        '201':
+#          description: 'OK'
+#  /multiple-identical-mime-types:
+#    post:
+#      requestBody:
+#        required: true
+#        content:
+#          multipart/related:
+#            schema:
+#              type: object
+#              properties:
+#                binary1:
+#                  type: string
+#                  format: binary
+#                binary2:
+#                  type: string
+#                  format: binary
+#            encoding:
+#              binary1:
+#                contentType: application/octet-stream
+#              binary2:
+#                contentType: application/octet-stream
+#      responses:
+#        200:
+#          description: OK
+
+components:
+  schemas:
+    MultipartFormDataParameters:
+      type: object
+      required:
+        - string_field
+        - binary_field
+      properties:
+        string_field:
+          type: string
+        binary_field:
+          type: string
+          format: binary
+        byte_field:
+          type: string
+          format: byte
+        optional_string_field:
+          type: string
+
+# inline schema not supported.
+#        object_field:
+#          type: object
+#          required:
+#            - field_a
+#          properties:
+#            field_a:
+#              type: string
+#            field_b:
+#              type: array
+#              items:
+#                type: string
+
+        optional_object_field:
+          $ref: '#/components/schemas/SampleObjectField'
+
+    SampleObjectField:
+      type: object
+      required:
+        - field_a
+      properties:
+        field_a:
+          type: string
+        field_b:
+          type: array
+          items:
+            type: string
+
+    MultiPartFormDataResponse:
+      type: object
+      required:
+        - string_field
+        - binary_field
+      properties:
+        string_field:
+          $ref: '#/components/schemas/ReceivedString'
+        binary_field:
+          $ref: '#/components/schemas/ReceivedBinary'
+        optional_sring_field:
+          $ref: '#/components/schemas/ReceivedString'
+        optional_object_field:
+          $ref: '#/components/schemas/ReceivedObject'
+
+    ReceivedString:
+      type: object
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+
+    ReceivedBinary:
+      type: object
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+        file_name:
+          type: string
+        length:
+          type: integer
+          format: int64
+
+    ReceivedObject:
+      type: object
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+        value:
+          $ref: '#/components/schemas/SampleObjectField'
+
+# NOT SUPPORTED YET ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- #
+
+#    multipart_related_request:
+#      type: object
+#      required:
+#        - required_binary_field
+#      properties:
+#        object_field:
+#          type: object
+#          required:
+#            - field_a
+#          properties:
+#            field_a:
+#              type: string
+#            field_b:
+#              type: array
+#              items:
+#                type: string
+#        optional_binary_field:
+#          type: string
+#          format: binary
+#        required_binary_field:
+#          type: string
+#          format: binary

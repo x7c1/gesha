@@ -4,7 +4,11 @@ use handcraft_models::schemas;
 use handcraft_server::BadRequestHandler;
 use handcraft_server_derive::Handcraft;
 
+mod error;
+type Result<T> = std::result::Result<T, error::ApiError>;
+
 mod index;
+pub mod multipart;
 mod petstore;
 
 #[derive(Handcraft)]
@@ -23,11 +27,11 @@ impl Default for Handlers {
 impl BadRequestHandler for Handlers {
     fn on_bad_request(&self, error: RequestError) -> HttpResponse {
         // sample codes mapping RequestError to schemas::Error.
-        HttpResponse::BadRequest().json(to_api_error(error))
+        HttpResponse::BadRequest().json(from_request_error(error))
     }
 }
 
-fn to_api_error(e: RequestError) -> schemas::Error {
+fn from_request_error(e: RequestError) -> schemas::Error {
     let (code, message) = match e {
         RequestError::QueryStringBroken(s) => (4001, s),
         RequestError::InvalidQueryValue { key, message } => {
@@ -38,6 +42,15 @@ fn to_api_error(e: RequestError) -> schemas::Error {
         }
         RequestError::EmptyPathValue { key } => (4004, format!("[key:{}] required.", key)),
         RequestError::InvalidBody { message } => (4005, message),
+        RequestError::FormDataFieldRequired { name } => (4006, name),
+        RequestError::MultipartError { cause } => (4007, cause),
+        RequestError::ContentDispositionNotFound => {
+            (4008, "content disposition not found".to_string())
+        }
+        RequestError::ContentDispositionNameNotFound => {
+            (4009, "content disposition name not found".to_string())
+        }
+        RequestError::JsonFormatError { .. } => (4010, "invalid json".to_string()),
     };
     schemas::Error { code, message }
 }

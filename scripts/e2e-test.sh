@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+# Usage
+# $ ./scripts/e2e-test.sh ./e2e-tests/handcraft/petstore/add_pet.test.ts
+# $ ./scripts/e2e-test.sh ./e2e-tests/handcraft
+
+args=$*
+
+if ! [[ $args ]]; then
+  args='./e2e-tests'
+fi
+
 set -xue
 
 main () {
@@ -14,7 +24,9 @@ main () {
 run_tests() {
   sleep 1
   await_server
-  deno test --allow-net ./e2e-tests/
+
+  # shellcheck disable=SC2086
+  deno test --allow-net --allow-read $args
 }
 
 await_server() {

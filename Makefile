@@ -1,18 +1,25 @@
 
-help: ## docs : display tasks
+help: ## docs : Display tasks
 	@cat Makefile |\
-	egrep '^[A-Za-z-]+:' |\
+	egrep '^[A-Z0-9a-z-]+:' |\
 	sed -e 's/:[ ]*##[ ]*/:/' |\
 	column -t -s :
 
-cargo-clippy: ## linter :
+swagger-ui: ## docs :
+	./scripts/swagger-ui.sh
+
+cargo-clippy: ## lint :
 	cargo clippy -- --no-deps -D warnings
 
-cargo-fmt: ## formatter
-	cargo fmt -- --check
+cargo-fmt: ## format :
+	cargo fmt
 
-e2e-test: ## tests : run e2e tests
-	./scripts/e2e-test.sh
-
-deno-fmt: ## formatter :
+deno-fmt: ## format :
 	cd e2e-tests && deno fmt
+
+format: ## format
+	make cargo-fmt
+	make deno-fmt
+
+e2e-test: ## tests : Run e2e tests
+	./scripts/e2e-test.sh
