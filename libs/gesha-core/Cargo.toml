@@ -1,9 +1,9 @@
 [package]
-name = "gesha"
+name = "gesha-core"
 version = "0.0.1"
 edition = "2021"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-gesha-core = { path = "../../libs/gesha-core" }
-clap = { version = "3.1.18", features = ["derive"] }
+openapi-types = { path = "../../libs/openapi-types" }
