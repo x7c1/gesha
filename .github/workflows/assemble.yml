@@ -12,6 +12,10 @@ on:
     paths:
       - '**'
 
+env:
+  # https://stackoverflow.com/a/71158878
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,13 +35,11 @@ jobs:
             ~/.cargo/git
             ~/.cargo/bin
             target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-${BRANCH_NAME}-
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-${{ env.BRANCH_NAME }}-
           restore-keys: |
             ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-
             ${{ runner.os }}-cargo-
-        env:
-          # https://stackoverflow.com/a/71158878
-          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+
 
       - run: |
           sudo apt update && \
@@ -59,7 +61,7 @@ jobs:
       - name: Cache deno.land dependencies
         uses: actions/cache@v2
         with:
-          key: ${{ runner.os }}-deno-${{ hashFiles('e2e-tests/**/*') }}-${BRANCH_NAME}-
+          key: ${{ runner.os }}-deno-${{ hashFiles('e2e-tests/**/*') }}-${{ env.BRANCH_NAME }}-
           restore-keys: |
             ${{ runner.os }}-deno-${{ hashFiles('e2e-tests/**/*') }}-
             ${{ runner.os }}-deno-
