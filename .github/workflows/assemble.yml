@@ -53,6 +53,9 @@ jobs:
       - run: |
           cargo test
 
+      - run: |
+          make gesha-sample
+
       - name: Cache deno.land dependencies
         uses: actions/cache@v2
         with:
