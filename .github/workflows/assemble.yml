@@ -40,7 +40,6 @@ jobs:
             ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-
             ${{ runner.os }}-cargo-
 
-
       - run: |
           sudo apt update && \
           sudo apt install \

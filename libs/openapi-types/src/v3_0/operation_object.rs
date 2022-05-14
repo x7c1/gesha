@@ -7,8 +7,23 @@ pub struct OperationObject {
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#responsesObject
 #[derive(Debug)]
 pub struct ResponsesObject {
-    pub responses: Vec<(HttpStatusCode, ResponseCase)>,
-    pub default: Option<ResponseCase>,
+    _responses: Vec<(HttpStatusCode, ResponseCase)>,
+    _default: Option<ResponseCase>,
+}
+
+impl ResponsesObject {
+    /// > The Responses Object MUST contain at least one response code,
+    /// > and it SHOULD be the response for a successful operation call.
+    pub fn new(
+        responses: Vec<(HttpStatusCode, ResponseCase)>,
+        default: Option<ResponseCase>,
+    ) -> Self {
+        // TODO: check if arguments satisfy specifications
+        ResponsesObject {
+            _responses: responses,
+            _default: default,
+        }
+    }
 }
 
 /// Response Object | Reference Object

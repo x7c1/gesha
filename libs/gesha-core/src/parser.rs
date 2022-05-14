@@ -16,10 +16,7 @@ pub fn open_document_file<A: Into<PathBuf>>(path: A) -> OpenApiDocument {
             PathFieldName::new("/pets"),
             PathItemObject {
                 get: Some(OperationObject {
-                    responses: ResponsesObject {
-                        responses: vec![],
-                        default: None,
-                    },
+                    responses: ResponsesObject::new(vec![], None),
                 }),
                 post: None,
             },
