@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 openapi-types = { path = "../../libs/openapi-types" }
+yaml-rust = "0.4.5"
