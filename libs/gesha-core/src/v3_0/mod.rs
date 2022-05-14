@@ -1,25 +1,21 @@
-use crate::Error::Incompatible;
-use crate::{Error, OpenApiDocument};
+use crate::yaml_wrapper::{YamlMap, YamlValue};
+use crate::Error::IncompatibleVersion;
+use crate::OpenApiDocument;
 use openapi_types::v3_0::{
     Document, InfoObject, OperationObject, PathFieldName, PathItemObject, PathsObject,
     ResponsesObject,
 };
-use yaml_rust::Yaml;
 
-/// return Error::Incompatible if not supported version.
-pub fn to_document(yaml: Yaml) -> crate::Result<OpenApiDocument> {
-    let openapi = match &yaml["openapi"] {
-        Yaml::String(version) if version.starts_with("3.0.") => version.to_owned(),
-        Yaml::String(_) => return Err(Incompatible),
-        _ => return Err(Error::cannot_parse("'openapi' must be string")),
-    };
-    println!("openapi...{:#?}", openapi);
-
+/// return Error::IncompatibleVersion if not supported version.
+pub fn to_document(mut map: YamlMap) -> crate::Result<OpenApiDocument> {
+    let value = map.remove("openapi")?;
+    let openapi: String = value.try_into()?;
+    if !openapi.starts_with("3.0.") {
+        return Err(IncompatibleVersion);
+    }
     let document = Document {
-        openapi: "3.0.0".to_string(),
-        info: InfoObject {
-            title: "sample title".to_string(),
-        },
+        openapi,
+        info: to_info(map.remove("info")?)?,
         paths: PathsObject::new(vec![(
             PathFieldName::new("/pets"),
             PathItemObject {
@@ -31,4 +27,12 @@ pub fn to_document(yaml: Yaml) -> crate::Result<OpenApiDocument> {
         )]),
     };
     Ok(OpenApiDocument::V3_0(document))
+}
+
+pub fn to_info(value: YamlValue) -> crate::Result<InfoObject> {
+    let mut map: YamlMap = value.try_into()?;
+    let info = InfoObject {
+        title: map.remove("title")?.try_into()?,
+    };
+    Ok(info)
 }
