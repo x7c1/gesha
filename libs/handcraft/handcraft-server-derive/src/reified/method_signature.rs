@@ -23,7 +23,7 @@ impl PartialEq for MethodSignature {
 
 impl MethodSignature {
     pub fn from_stream(stream: TokenStream) -> Self {
-        let rendered_output = stream.to_string().replace("\n", " ");
+        let rendered_output = stream.to_string().replace('\n', " ");
         let mut iter = stream.into_iter();
         let modifiers = extract_modifiers(&mut iter);
         let method_name = extract_method_name(&mut iter);
