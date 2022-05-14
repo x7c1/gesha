@@ -21,7 +21,7 @@ main () {
 
 cargo_run() {
   set +e
-  cargo run
+  cargo run --bin handcraft-app
   exit_code=$?
   echo "cargo_run($exit_code)" >> "$log_path"
 }
