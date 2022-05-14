@@ -18,9 +18,25 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
+
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cargo/bin
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-${BRANCH_NAME}-
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-
+            ${{ runner.os }}-cargo-
+        env:
+          # https://stackoverflow.com/a/71158878
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
       - run: |
           sudo apt update && \
