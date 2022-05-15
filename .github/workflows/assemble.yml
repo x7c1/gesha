@@ -35,7 +35,7 @@ jobs:
             ~/.cargo/git
             ~/.cargo/bin
             target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-${{ env.BRANCH_NAME }}-
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-${{ env.BRANCH_NAME }}
           restore-keys: |
             ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-
             ${{ runner.os }}-cargo-
@@ -60,7 +60,7 @@ jobs:
       - name: Cache deno.land dependencies
         uses: actions/cache@v2
         with:
-          key: ${{ runner.os }}-deno-${{ hashFiles('e2e-tests/**/*') }}-${{ env.BRANCH_NAME }}-
+          key: ${{ runner.os }}-deno-${{ hashFiles('e2e-tests/**/*') }}-${{ env.BRANCH_NAME }}
           restore-keys: |
             ${{ runner.os }}-deno-${{ hashFiles('e2e-tests/**/*') }}-
             ${{ runner.os }}-deno-
