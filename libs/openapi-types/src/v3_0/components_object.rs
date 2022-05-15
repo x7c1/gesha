@@ -18,8 +18,14 @@ impl SchemasObject {
 
 /// > All the fixed fields declared above are objects
 /// > that MUST use keys that match the regular expression: ^[a-zA-Z0-9\.\-_]+$.
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq, Hash)]
 pub struct SchemaFieldName(String);
+
+impl SchemaFieldName {
+    pub fn new<A: Into<String>>(a: A) -> Self {
+        SchemaFieldName(a.into())
+    }
+}
 
 /// Schema Object | Reference Object
 #[derive(Debug)]
@@ -28,5 +34,14 @@ pub enum SchemaCase {
     Reference(ReferenceObject),
 }
 
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
 #[derive(Debug)]
-pub struct SchemaObject {}
+pub enum SchemaObject {
+    Object(ObjectTypeSchema),
+}
+
+/// type: object
+#[derive(Debug)]
+pub struct ObjectTypeSchema {
+    pub properties: Vec<SchemaCase>,
+}
