@@ -16,21 +16,22 @@ pub fn to_document(mut map: YamlMap) -> crate::Result<OpenApiDocument> {
     Ok(OpenApiDocument::V3_0(document))
 }
 
-pub fn to_openapi_version(s: String) -> crate::Result<String> {
+fn to_openapi_version(s: String) -> crate::Result<String> {
     if !s.starts_with("3.0.") {
         return Err(IncompatibleVersion);
     }
     Ok(s)
 }
 
-pub fn to_info(mut map: YamlMap) -> crate::Result<InfoObject> {
+fn to_info(mut map: YamlMap) -> crate::Result<InfoObject> {
     let info = InfoObject {
         title: map.remove("title")?,
     };
     Ok(info)
 }
 
-pub fn to_paths_object(_map: YamlMap) -> crate::Result<PathsObject> {
+fn to_paths_object(map: YamlMap) -> crate::Result<PathsObject> {
+    println!("paths.....{:#?}", map);
     // TODO: convert _map to PathsObject
     Ok(PathsObject::new(vec![(
         PathFieldName::new("/pets"),

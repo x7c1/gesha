@@ -1,5 +1,5 @@
-use crate::Error;
-use crate::Error::IncompatibleType;
+use crate::yaml_wrapper::YamlMap;
+use crate::Error::TypeMismatch;
 
 #[derive(Debug)]
 pub enum YamlValue {
@@ -14,7 +14,11 @@ impl TryFrom<yaml_rust::Yaml> for YamlValue {
         match yaml {
             yaml_rust::Yaml::String(x) => Ok(YamlValue::String(x)),
             yaml_rust::Yaml::Hash(x) => Ok(YamlValue::Map(YamlMap(x))),
-            unknown => return Err(Error::todo(format!("unsupported type found: {unknown:?}"))),
+            unknown => {
+                return Err(crate::Error::todo(format!(
+                    "unsupported type found: {unknown:#?}"
+                )))
+            }
         }
     }
 }
@@ -25,7 +29,7 @@ impl TryFrom<YamlValue> for String {
     fn try_from(value: YamlValue) -> Result<Self, Self::Error> {
         match value {
             YamlValue::String(x) => Ok(x),
-            _ => Err(IncompatibleType),
+            _ => Err(TypeMismatch),
         }
     }
 }
@@ -36,23 +40,7 @@ impl TryFrom<YamlValue> for YamlMap {
     fn try_from(value: YamlValue) -> Result<Self, Self::Error> {
         match value {
             YamlValue::Map(x) => Ok(x),
-            _ => Err(IncompatibleType),
+            _ => Err(TypeMismatch),
         }
-    }
-}
-
-#[derive(Debug)]
-pub struct YamlMap(yaml_rust::yaml::Hash);
-
-impl YamlMap {
-    pub fn remove<A>(&mut self, key: &str) -> crate::Result<A>
-    where
-        A: TryFrom<YamlValue, Error = crate::Error>,
-    {
-        // TODO: remove unwrap
-        let yaml = self.0.remove(&yaml_rust::Yaml::from_str(key)).unwrap();
-        let value: YamlValue = yaml.try_into()?;
-        // TODO: return error that includes (key, IncompatibleType)
-        value.try_into()
     }
 }

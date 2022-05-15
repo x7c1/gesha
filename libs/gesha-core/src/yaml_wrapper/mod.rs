@@ -1,5 +1,8 @@
+mod yaml_map;
+pub use yaml_map::YamlMap;
+
 mod yaml_value;
-pub use yaml_value::{YamlMap, YamlValue};
+pub use yaml_value::YamlValue;
 
 pub fn load_map_from_str(contents: &str) -> crate::Result<YamlMap> {
     // TODO: remove unwrap
