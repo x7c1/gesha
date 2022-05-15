@@ -42,7 +42,11 @@ fn to_paths_object(map: YamlMap) -> crate::Result<PathsObject> {
     Ok(PathsObject::new(tuples))
 }
 
-fn reify_entry(kv: crate::Result<(YamlValue, YamlValue)>) -> crate::Result<(String, YamlMap)> {
+fn reify_entry<A, B>(kv: crate::Result<(YamlValue, YamlValue)>) -> crate::Result<(A, B)>
+where
+    A: TryFrom<YamlValue, Error = crate::Error>,
+    B: TryFrom<YamlValue, Error = crate::Error>,
+{
     match kv {
         Ok((k, v)) => Ok((k.try_into()?, v.try_into()?)),
         Err(e) => Err(e),
