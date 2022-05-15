@@ -1,3 +1,5 @@
+use crate::v3_0::ReferenceObject;
+
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#operationObject
 #[derive(Debug)]
 pub struct OperationObject {
@@ -35,9 +37,6 @@ pub enum ResponseCase {
 
 #[derive(Debug)]
 pub struct ResponseObject {}
-
-#[derive(Debug)]
-pub struct ReferenceObject {}
 
 #[derive(Debug)]
 pub enum HttpStatusCode {

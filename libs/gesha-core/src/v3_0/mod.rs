@@ -6,12 +6,21 @@ use openapi_types::v3_0::{Document, InfoObject};
 mod to_paths_object;
 use to_paths_object::to_paths_object;
 
+mod to_components_object;
+use to_components_object::to_components_object;
+
 /// return Error::IncompatibleVersion if not supported version.
 pub fn to_document(mut map: YamlMap) -> crate::Result<OpenApiDocument> {
+    let components = map
+        .remove_if_exists("components")?
+        .map(to_components_object)
+        .transpose()?;
+
     let document = Document {
         openapi: to_openapi_version(map.remove("openapi")?)?,
         info: to_info(map.remove("info")?)?,
         paths: to_paths_object(map.remove("paths")?)?,
+        components,
     };
     Ok(OpenApiDocument::V3_0(document))
 }
