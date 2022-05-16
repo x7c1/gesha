@@ -8,7 +8,8 @@ pub use paths_object::{PathFieldName, PathItemObject, PathsObject};
 
 mod components_object;
 pub use components_object::{
-    ComponentsObject, SchemaCase, SchemaFieldName, SchemaObject, SchemasObject,
+    ComponentsObject, RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaObject,
+    SchemaProperties, SchemasObject,
 };
 
 /// OpenAPI Document

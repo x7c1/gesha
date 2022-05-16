@@ -1,7 +1,9 @@
-use crate::v3_0::reify_entry;
-use crate::yaml_wrapper::YamlMap;
+use crate::v3_0::{reify, reify_entry};
+use crate::yaml_wrapper::{YamlArray, YamlMap};
+use indexmap::IndexSet;
 use openapi_types::v3_0::{
-    ComponentsObject, ReferenceObject, SchemaCase, SchemaFieldName, SchemaObject, SchemasObject,
+    ComponentsObject, ReferenceObject, RequiredSchemaFields, SchemaCase, SchemaFieldName,
+    SchemaObject, SchemaProperties, SchemasObject,
 };
 use std::collections::HashMap;
 
@@ -45,19 +47,32 @@ fn to_schema_object(mut map: YamlMap) -> crate::Result<SchemaObject> {
         .map(to_properties)
         .transpose()?;
 
+    let required = map
+        .remove_if_exists::<YamlArray>("required")?
+        .map(to_required)
+        .transpose()?;
+
     Ok(SchemaObject {
         type_name: map.remove_if_exists::<String>("type")?,
         properties,
-        // TODO:
-        required: vec![],
+        required,
     })
 }
 
-fn to_properties(map: YamlMap) -> crate::Result<Vec<(SchemaFieldName, SchemaCase)>> {
+fn to_properties(map: YamlMap) -> crate::Result<SchemaProperties> {
     map.into_iter()
         .map(reify_entry)
         .collect::<crate::Result<Vec<(String, YamlMap)>>>()?
         .into_iter()
         .map(to_schema_pair)
         .collect()
+}
+
+fn to_required(array: YamlArray) -> crate::Result<RequiredSchemaFields> {
+    let fields = array
+        .into_iter()
+        .map(reify)
+        .collect::<crate::Result<IndexSet<String>>>()?;
+
+    Ok(RequiredSchemaFields::new(fields))
 }

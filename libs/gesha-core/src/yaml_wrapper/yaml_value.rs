@@ -1,8 +1,9 @@
-use crate::yaml_wrapper::YamlMap;
+use crate::yaml_wrapper::{YamlArray, YamlMap};
 use crate::Error::TypeMismatch;
 
 #[derive(Debug)]
 pub enum YamlValue {
+    Array(YamlArray),
     String(String),
     Map(YamlMap),
 }
@@ -12,6 +13,7 @@ impl TryFrom<yaml_rust::Yaml> for YamlValue {
 
     fn try_from(yaml: yaml_rust::Yaml) -> Result<Self, Self::Error> {
         match yaml {
+            yaml_rust::Yaml::Array(x) => Ok(YamlValue::Array(YamlArray(x))),
             yaml_rust::Yaml::String(x) => Ok(YamlValue::String(x)),
             yaml_rust::Yaml::Hash(x) => Ok(YamlValue::Map(YamlMap(x))),
             unknown => {
@@ -19,6 +21,17 @@ impl TryFrom<yaml_rust::Yaml> for YamlValue {
                     "unsupported type found: {unknown:#?}"
                 )))
             }
+        }
+    }
+}
+
+impl TryFrom<YamlValue> for YamlArray {
+    type Error = crate::Error;
+
+    fn try_from(value: YamlValue) -> Result<Self, Self::Error> {
+        match value {
+            YamlValue::Array(x) => Ok(x),
+            _ => Err(TypeMismatch),
         }
     }
 }
