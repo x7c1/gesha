@@ -39,14 +39,11 @@ fn to_info(mut map: YamlMap) -> crate::Result<InfoObject> {
     Ok(info)
 }
 
-fn reify<A>(v: crate::Result<YamlValue>) -> crate::Result<A>
+fn reify_value<A>(v: crate::Result<YamlValue>) -> crate::Result<A>
 where
     A: TryFrom<YamlValue, Error = crate::Error>,
 {
-    match v {
-        Ok(v) => Ok(v.try_into()?),
-        Err(e) => Err(e),
-    }
+    v?.try_into()
 }
 
 fn reify_entry<A, B>(kv: crate::Result<(YamlValue, YamlValue)>) -> crate::Result<(A, B)>

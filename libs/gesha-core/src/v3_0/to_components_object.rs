@@ -1,4 +1,4 @@
-use crate::v3_0::{reify, reify_entry};
+use crate::v3_0::{reify_entry, reify_value};
 use crate::yaml_wrapper::{YamlArray, YamlMap};
 use indexmap::IndexSet;
 use openapi_types::v3_0::{
@@ -71,7 +71,7 @@ fn to_properties(map: YamlMap) -> crate::Result<SchemaProperties> {
 fn to_required(array: YamlArray) -> crate::Result<RequiredSchemaFields> {
     let fields = array
         .into_iter()
-        .map(reify)
+        .map(reify_value)
         .collect::<crate::Result<IndexSet<String>>>()?;
 
     Ok(RequiredSchemaFields::new(fields))
