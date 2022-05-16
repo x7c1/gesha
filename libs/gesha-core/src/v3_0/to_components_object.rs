@@ -1,24 +1,63 @@
+use crate::v3_0::reify_entry;
 use crate::yaml_wrapper::YamlMap;
 use openapi_types::v3_0::{
-    ComponentsObject, ObjectTypeSchema, ReferenceObject, SchemaCase, SchemaFieldName, SchemaObject,
-    SchemasObject,
+    ComponentsObject, ReferenceObject, SchemaCase, SchemaFieldName, SchemaObject, SchemasObject,
 };
 use std::collections::HashMap;
 
-pub fn to_components_object(map: YamlMap) -> crate::Result<ComponentsObject> {
-    println!("to_components_object: {:#?}", map);
+pub fn to_components_object(mut map: YamlMap) -> crate::Result<ComponentsObject> {
+    let schemas = map
+        .remove_if_exists("schemas")?
+        .map(to_schemas)
+        .transpose()?;
 
-    // TODO:
-    let sample_schema = SchemaCase::Schema(SchemaObject::Object(ObjectTypeSchema {
-        properties: vec![SchemaCase::Reference(ReferenceObject {})],
-    }));
-    let sample_name = SchemaFieldName::new("Sample");
+    Ok(ComponentsObject { schemas })
+}
 
-    let mut map = HashMap::default();
-    map.insert(sample_name, sample_schema);
+fn to_schemas(map: YamlMap) -> crate::Result<SchemasObject> {
+    let schema_map = map
+        .into_iter()
+        .map(reify_entry)
+        .collect::<crate::Result<Vec<(String, YamlMap)>>>()?
+        .into_iter()
+        .map(to_schema_pair)
+        .collect::<crate::Result<HashMap<SchemaFieldName, SchemaCase>>>()?;
 
-    Ok(ComponentsObject {
+    Ok(SchemasObject::new(schema_map))
+}
+
+fn to_schema_pair(kv: (String, YamlMap)) -> crate::Result<(SchemaFieldName, SchemaCase)> {
+    let (name, map) = kv;
+    Ok((SchemaFieldName::new(name), to_schema_case(map)?))
+}
+
+fn to_schema_case(mut map: YamlMap) -> crate::Result<SchemaCase> {
+    let case = match map.remove_if_exists::<String>("$ref")? {
+        Some(reference) => SchemaCase::Reference(ReferenceObject::new(reference)),
+        None => SchemaCase::Schema(to_schema_object(map)?),
+    };
+    Ok(case)
+}
+
+fn to_schema_object(mut map: YamlMap) -> crate::Result<SchemaObject> {
+    let properties = map
+        .remove_if_exists("properties")?
+        .map(to_properties)
+        .transpose()?;
+
+    Ok(SchemaObject {
+        type_name: map.remove_if_exists::<String>("type")?,
+        properties,
         // TODO:
-        schemas: SchemasObject::new(map),
+        required: vec![],
     })
+}
+
+fn to_properties(map: YamlMap) -> crate::Result<Vec<(SchemaFieldName, SchemaCase)>> {
+    map.into_iter()
+        .map(reify_entry)
+        .collect::<crate::Result<Vec<(String, YamlMap)>>>()?
+        .into_iter()
+        .map(to_schema_pair)
+        .collect()
 }

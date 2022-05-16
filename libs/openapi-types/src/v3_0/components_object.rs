@@ -4,7 +4,7 @@ use std::collections::HashMap;
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#componentsObject
 #[derive(Debug)]
 pub struct ComponentsObject {
-    pub schemas: SchemasObject,
+    pub schemas: Option<SchemasObject>,
 }
 
 #[derive(Debug)]
@@ -36,12 +36,9 @@ pub enum SchemaCase {
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
 #[derive(Debug)]
-pub enum SchemaObject {
-    Object(ObjectTypeSchema),
-}
-
-/// type: object
-#[derive(Debug)]
-pub struct ObjectTypeSchema {
-    pub properties: Vec<SchemaCase>,
+pub struct SchemaObject {
+    /// 'type'
+    pub type_name: Option<String>,
+    pub properties: Option<Vec<(SchemaFieldName, SchemaCase)>>,
+    pub required: Vec<String>,
 }

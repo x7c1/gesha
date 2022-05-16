@@ -8,7 +8,7 @@ pub use paths_object::{PathFieldName, PathItemObject, PathsObject};
 
 mod components_object;
 pub use components_object::{
-    ComponentsObject, ObjectTypeSchema, SchemaCase, SchemaFieldName, SchemaObject, SchemasObject,
+    ComponentsObject, SchemaCase, SchemaFieldName, SchemaObject, SchemasObject,
 };
 
 /// OpenAPI Document
@@ -27,5 +27,12 @@ pub struct InfoObject {
     pub title: String,
 }
 
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#referenceObject
 #[derive(Debug)]
-pub struct ReferenceObject {}
+pub struct ReferenceObject(String);
+
+impl ReferenceObject {
+    pub fn new<A: Into<String>>(a: A) -> Self {
+        ReferenceObject(a.into())
+    }
+}
