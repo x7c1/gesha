@@ -13,11 +13,11 @@ impl ModuleName {
 
 #[derive(Debug)]
 pub enum RustType {
-    Struct {
+    StructDef {
         name: String,
         fields: Vec<StructField>,
     },
-    Vec {
+    VecDef {
         name: String,
         type_name: String,
     },

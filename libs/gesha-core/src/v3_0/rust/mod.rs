@@ -31,12 +31,13 @@ fn to_rust_type(name: SchemaFieldName, object: SchemaObject) -> crate::Result<Ru
     match object.type_name.as_deref() {
         Some("object") => to_struct(name, object),
         Some("array") => to_vec(name, object),
+        // TODO:
         _ => unimplemented!(),
     }
 }
 
 fn to_struct(name: SchemaFieldName, _object: SchemaObject) -> crate::Result<RustType> {
-    Ok(RustType::Struct {
+    Ok(RustType::StructDef {
         name: name.into(),
         // TODO:
         fields: vec![],
@@ -44,7 +45,7 @@ fn to_struct(name: SchemaFieldName, _object: SchemaObject) -> crate::Result<Rust
 }
 
 fn to_vec(name: SchemaFieldName, _object: SchemaObject) -> crate::Result<RustType> {
-    Ok(RustType::Vec {
+    Ok(RustType::VecDef {
         name: name.into(),
         // TODO:
         type_name: "todo".to_string(),
