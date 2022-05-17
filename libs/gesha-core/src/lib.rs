@@ -1,8 +1,10 @@
 mod error;
 pub use error::{Error, Result};
 
-mod parser;
-pub use parser::open_document_file;
+pub mod rust_types;
+
+mod reader;
+pub use reader::{open_document_file, translate_components};
 
 mod v3_0;
 

@@ -1,3 +1,5 @@
+pub mod translate;
+
 use crate::yaml_wrapper::{YamlMap, YamlValue};
 use crate::Error::IncompatibleVersion;
 use crate::OpenApiDocument;

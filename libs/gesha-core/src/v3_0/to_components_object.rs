@@ -5,7 +5,6 @@ use openapi_types::v3_0::{
     ComponentsObject, ReferenceObject, RequiredSchemaFields, SchemaCase, SchemaFieldName,
     SchemaObject, SchemaProperties, SchemasObject,
 };
-use std::collections::HashMap;
 
 pub fn to_components_object(mut map: YamlMap) -> crate::Result<ComponentsObject> {
     let schemas = map
@@ -17,15 +16,12 @@ pub fn to_components_object(mut map: YamlMap) -> crate::Result<ComponentsObject>
 }
 
 fn to_schemas(map: YamlMap) -> crate::Result<SchemasObject> {
-    let schema_map = map
-        .into_iter()
+    map.into_iter()
         .map(reify_entry)
         .collect::<crate::Result<Vec<(String, YamlMap)>>>()?
         .into_iter()
         .map(to_schema_pair)
-        .collect::<crate::Result<HashMap<SchemaFieldName, SchemaCase>>>()?;
-
-    Ok(SchemasObject::new(schema_map))
+        .collect()
 }
 
 fn to_schema_pair(kv: (String, YamlMap)) -> crate::Result<(SchemaFieldName, SchemaCase)> {
