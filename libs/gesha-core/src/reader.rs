@@ -15,12 +15,12 @@ pub fn open_document_file<A: Into<PathBuf>>(path: A) -> crate::Result<OpenApiDoc
     file.read_to_string(&mut contents).unwrap();
 
     let map = load_map_from_str(&contents)?;
-    v3_0::to_document(map)
+    v3_0::openapi::to_document(map)
 }
 
 pub fn to_rust_modules(document: OpenApiDocument) -> crate::Result<Option<RustModules>> {
     let maybe = match document {
-        OpenApiDocument::V3_0(doc) => doc.components.map(v3_0::translate::from_components),
+        OpenApiDocument::V3_0(doc) => doc.components.map(v3_0::rust::from_components),
     };
     maybe.transpose()
 }

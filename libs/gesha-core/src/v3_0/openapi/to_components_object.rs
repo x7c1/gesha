@@ -1,4 +1,4 @@
-use crate::v3_0::{reify_entry, reify_value};
+use crate::v3_0::openapi::{reify_entry, reify_value};
 use crate::yaml_wrapper::{YamlArray, YamlMap};
 use indexmap::IndexSet;
 use openapi_types::v3_0::{

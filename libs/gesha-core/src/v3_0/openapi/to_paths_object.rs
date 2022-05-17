@@ -1,4 +1,4 @@
-use crate::v3_0;
+use crate::v3_0::openapi::reify_entry;
 use crate::yaml_wrapper::YamlMap;
 use openapi_types::v3_0::{
     HttpStatusCode, OperationObject, PathFieldName, PathItemObject, PathsObject, ResponseCase,
@@ -8,7 +8,7 @@ use openapi_types::v3_0::{
 pub fn to_paths_object(map: YamlMap) -> crate::Result<PathsObject> {
     let tuples = map
         .into_iter()
-        .map(v3_0::reify_entry)
+        .map(reify_entry)
         .collect::<crate::Result<Vec<(String, YamlMap)>>>()?
         .into_iter()
         .map(to_path_pair)
@@ -45,7 +45,7 @@ fn to_operation_object(mut map: YamlMap) -> crate::Result<OperationObject> {
 fn to_responses_object(map: YamlMap) -> crate::Result<ResponsesObject> {
     let tuples = map
         .into_iter()
-        .map(v3_0::reify_entry)
+        .map(reify_entry)
         .collect::<crate::Result<Vec<(String, YamlMap)>>>()?
         .into_iter()
         .map(to_response_pair)
