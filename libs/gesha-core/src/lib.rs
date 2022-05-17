@@ -4,7 +4,7 @@ pub use error::{Error, Result};
 pub mod rust_types;
 
 mod reader;
-pub use reader::{open_document_file, translate_components};
+pub use reader::{open_document_file, to_rust_modules};
 
 mod v3_0;
 

@@ -1,4 +1,4 @@
-use crate::rust_types::ComponentsType;
+use crate::rust_types::RustModules;
 use crate::yaml_wrapper::load_map_from_str;
 use crate::{v3_0, OpenApiDocument};
 use std::fs::File;
@@ -18,7 +18,7 @@ pub fn open_document_file<A: Into<PathBuf>>(path: A) -> crate::Result<OpenApiDoc
     v3_0::to_document(map)
 }
 
-pub fn translate_components(document: OpenApiDocument) -> crate::Result<Option<ComponentsType>> {
+pub fn to_rust_modules(document: OpenApiDocument) -> crate::Result<Option<RustModules>> {
     let maybe = match document {
         OpenApiDocument::V3_0(doc) => doc.components.map(v3_0::translate::from_components),
     };

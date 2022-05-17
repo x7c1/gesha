@@ -1,5 +1,5 @@
 use clap::Parser;
-use gesha_core::{open_document_file, translate_components};
+use gesha_core::{open_document_file, to_rust_modules};
 use std::process::exit;
 
 #[derive(Parser, Debug)]
@@ -18,6 +18,6 @@ fn main() {
         exit(1);
     });
 
-    let components = translate_components(document);
-    println!("components: {:#?}", components);
+    let rust_types = to_rust_modules(document);
+    println!("components: {:#?}", rust_types);
 }
