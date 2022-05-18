@@ -25,4 +25,4 @@ e2e-test: ## test : Run e2e tests
 	./scripts/e2e-test.sh
 
 gesha-sample: ## debug : Sample gesha command
-	cargo run --bin gesha -- --schema schemas/v3.0/petstore.yaml
+	cargo run --bin gesha -- generate --schema schemas/v3.0/petstore.yaml
