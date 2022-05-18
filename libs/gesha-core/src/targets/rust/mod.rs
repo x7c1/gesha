@@ -26,5 +26,13 @@ pub enum Definition {
 #[derive(Debug)]
 pub struct StructField {
     pub name: String,
-    pub type_name: String,
+    pub data_type: FieldType,
+}
+
+#[derive(Debug)]
+pub enum FieldType {
+    String,
+    Int64,
+    // TODO: include type parameter
+    Vec,
 }

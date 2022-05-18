@@ -1,4 +1,4 @@
-use crate::v3_0::ReferenceObject;
+use crate::v3_0::{OpenApiDataType, ReferenceObject};
 use indexmap::{IndexMap, IndexSet};
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#componentsObject
@@ -38,7 +38,7 @@ pub enum SchemaCase {
 pub struct SchemaObject {
     /// > type - Value MUST be a string.
     /// > Multiple types via an array are not supported.
-    pub type_name: Option<String>,
+    pub data_type: Option<OpenApiDataType>,
 
     pub properties: Option<SchemaProperties>,
 

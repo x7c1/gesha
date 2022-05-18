@@ -4,7 +4,7 @@ use to_struct::to_struct;
 use crate::targets::rust::{Definition, ModuleName, RustModules};
 use indexmap::indexmap;
 use openapi_types::v3_0::{
-    ComponentsObject, SchemaCase, SchemaFieldName, SchemaObject, SchemasObject,
+    ComponentsObject, OpenApiDataType, SchemaCase, SchemaFieldName, SchemaObject, SchemasObject,
 };
 
 pub fn from_components(components: ComponentsObject) -> crate::Result<RustModules> {
@@ -25,24 +25,24 @@ fn from_schemas(schemas: SchemasObject) -> crate::Result<Vec<Definition>> {
 fn from_schema_entry(kv: (SchemaFieldName, SchemaCase)) -> crate::Result<Definition> {
     let (field_name, schema_case) = kv;
     match schema_case {
-        SchemaCase::Schema(obj) => to_rust_type(field_name, obj),
+        SchemaCase::Schema(obj) => to_definition(field_name, obj),
         SchemaCase::Reference(_) => todo!(),
     }
 }
 
-fn to_rust_type(name: SchemaFieldName, object: SchemaObject) -> crate::Result<Definition> {
-    match object.type_name.as_deref() {
-        Some("object") => to_struct(name, object),
-        Some("array") => to_vec(name, object),
-        // TODO:
-        _ => unimplemented!(),
+fn to_definition(name: SchemaFieldName, object: SchemaObject) -> crate::Result<Definition> {
+    match object.data_type.as_ref() {
+        Some(OpenApiDataType::Object) => to_struct(name, object),
+        Some(OpenApiDataType::Array) => to_vec(name, object),
+        _ => todo!(),
     }
 }
 
-fn to_vec(name: SchemaFieldName, _object: SchemaObject) -> crate::Result<Definition> {
+fn to_vec(name: SchemaFieldName, object: SchemaObject) -> crate::Result<Definition> {
+    println!("object.data_type: {:?}", object.data_type);
     Ok(Definition::VecDef {
         name: name.into(),
-        // TODO:
+        // TODO: parse "items" field
         type_name: "todo".to_string(),
     })
 }

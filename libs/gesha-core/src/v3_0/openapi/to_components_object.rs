@@ -2,8 +2,8 @@ use crate::v3_0::openapi::{reify_entry, reify_value};
 use crate::yaml_wrapper::{YamlArray, YamlMap};
 use indexmap::IndexSet;
 use openapi_types::v3_0::{
-    ComponentsObject, ReferenceObject, RequiredSchemaFields, SchemaCase, SchemaFieldName,
-    SchemaObject, SchemaProperties, SchemasObject,
+    ComponentsObject, OpenApiDataType, ReferenceObject, RequiredSchemaFields, SchemaCase,
+    SchemaFieldName, SchemaObject, SchemaProperties, SchemasObject,
 };
 
 pub fn to_components_object(mut map: YamlMap) -> crate::Result<ComponentsObject> {
@@ -48,8 +48,13 @@ fn to_schema_object(mut map: YamlMap) -> crate::Result<SchemaObject> {
         .map(to_required)
         .transpose()?;
 
+    let date_type = map
+        .remove_if_exists::<String>("type")?
+        .map(to_date_type)
+        .transpose()?;
+
     Ok(SchemaObject {
-        type_name: map.remove_if_exists::<String>("type")?,
+        data_type: date_type,
         properties,
         required,
     })
@@ -71,4 +76,14 @@ fn to_required(array: YamlArray) -> crate::Result<RequiredSchemaFields> {
         .collect::<crate::Result<IndexSet<String>>>()?;
 
     Ok(RequiredSchemaFields::new(fields))
+}
+
+fn to_date_type(x: String) -> crate::Result<OpenApiDataType> {
+    match x.as_str() {
+        "object" => Ok(OpenApiDataType::Object),
+        "string" => Ok(OpenApiDataType::String),
+        "integer" => Ok(OpenApiDataType::Integer),
+        "array" => Ok(OpenApiDataType::Array),
+        _ => Err(crate::Error::UnknownDataType(x)),
+    }
 }

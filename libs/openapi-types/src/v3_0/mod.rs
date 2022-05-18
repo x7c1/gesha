@@ -37,3 +37,12 @@ impl ReferenceObject {
         ReferenceObject(a.into())
     }
 }
+
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#dataTypes
+#[derive(Debug)]
+pub enum OpenApiDataType {
+    Object,
+    String,
+    Integer,
+    Array,
+}

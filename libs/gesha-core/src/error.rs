@@ -5,6 +5,7 @@ pub enum Error {
     IncompatibleVersion,
     TypeMismatch,
     FieldTypeMissing,
+    UnknownDataType(String),
     TODO(String),
 }
 
