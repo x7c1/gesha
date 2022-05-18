@@ -1,2 +1,2 @@
 pub mod openapi;
-pub mod rust;
+pub mod to_rust;

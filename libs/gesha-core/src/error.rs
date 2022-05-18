@@ -4,6 +4,7 @@ pub type Result<A> = std::result::Result<A, Error>;
 pub enum Error {
     IncompatibleVersion,
     TypeMismatch,
+    FieldTypeMissing,
     TODO(String),
 }
 

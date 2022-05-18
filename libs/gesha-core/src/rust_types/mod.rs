@@ -1,6 +1,6 @@
 use indexmap::IndexMap;
 
-pub type RustModules = IndexMap<ModuleName, Vec<RustType>>;
+pub type RustModules = IndexMap<ModuleName, Vec<Definition>>;
 
 #[derive(Debug, Hash, Eq, PartialEq)]
 pub struct ModuleName(String);
@@ -12,7 +12,7 @@ impl ModuleName {
 }
 
 #[derive(Debug)]
-pub enum RustType {
+pub enum Definition {
     StructDef {
         name: String,
         fields: Vec<StructField>,
