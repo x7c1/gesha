@@ -1,13 +1,12 @@
 mod error;
 pub use error::{Error, Result};
 
-pub mod rust_types;
+pub mod languages;
 
 mod reader;
 pub use reader::{open_document_file, to_rust_modules};
 
 mod v3_0;
-
 mod yaml_wrapper;
 
 #[derive(Debug)]

@@ -1,7 +1,7 @@
 mod to_struct;
 use to_struct::to_struct;
 
-use crate::rust_types::{Definition, ModuleName, RustModules};
+use crate::languages::rust::{Definition, ModuleName, RustModules};
 use indexmap::indexmap;
 use openapi_types::v3_0::{
     ComponentsObject, SchemaCase, SchemaFieldName, SchemaObject, SchemasObject,
