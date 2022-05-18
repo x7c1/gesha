@@ -1,4 +1,4 @@
-use crate::languages::rust::{Definition, StructField};
+use crate::targets::rust::{Definition, StructField};
 use openapi_types::v3_0::{SchemaCase, SchemaFieldName, SchemaObject, SchemaProperties};
 
 pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> crate::Result<Definition> {

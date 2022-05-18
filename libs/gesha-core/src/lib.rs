@@ -1,7 +1,7 @@
 mod error;
 pub use error::{Error, Result};
 
-pub mod languages;
+pub mod targets;
 
 mod reader;
 pub use reader::{open_document_file, to_rust_modules};

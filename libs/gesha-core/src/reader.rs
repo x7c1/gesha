@@ -1,4 +1,4 @@
-use crate::languages::rust::RustModules;
+use crate::targets::rust::RustModules;
 use crate::yaml_wrapper::load_map_from_str;
 use crate::{v3_0, OpenApiDocument};
 use std::fs::File;
