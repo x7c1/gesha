@@ -18,7 +18,7 @@ pub fn from_components(components: ComponentsObject) -> crate::Result<RustModule
     })
 }
 
-fn from_schemas(schemas: SchemasObject) -> crate::Result<Vec<Definition>> {
+pub fn from_schemas(schemas: SchemasObject) -> crate::Result<Vec<Definition>> {
     schemas.into_iter().map(from_schema_entry).collect()
 }
 

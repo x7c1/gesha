@@ -9,6 +9,7 @@ use openapi_types::v3_0::{Document, InfoObject};
 use to_paths_object::to_paths_object;
 
 use to_components_object::to_components_object;
+pub use to_components_object::to_schemas;
 
 /// return Error::IncompatibleVersion if not supported version.
 pub fn to_document(mut map: YamlMap) -> crate::Result<OpenApiDocument> {

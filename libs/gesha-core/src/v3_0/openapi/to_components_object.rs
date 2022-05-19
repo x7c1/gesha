@@ -15,7 +15,7 @@ pub fn to_components_object(mut map: YamlMap) -> crate::Result<ComponentsObject>
     Ok(ComponentsObject { schemas })
 }
 
-fn to_schemas(map: YamlMap) -> crate::Result<SchemasObject> {
+pub fn to_schemas(map: YamlMap) -> crate::Result<SchemasObject> {
     map.into_iter()
         .map(reify_entry)
         .collect::<crate::Result<Vec<(String, YamlMap)>>>()?
