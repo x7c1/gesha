@@ -6,4 +6,5 @@ edition = "2021"
 
 [dependencies]
 gesha-core = { path = "../../libs/gesha-core" }
+openapi-types = { path = "../../libs/openapi-types" }
 clap = { version = "3.1.18", features = ["derive"] }

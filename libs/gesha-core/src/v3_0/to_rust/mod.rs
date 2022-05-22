@@ -1,7 +1,7 @@
 mod to_struct;
 use to_struct::to_struct;
 
-use crate::targets::rust::{Definition, ModuleName, RustModules};
+use crate::targets::rust::{Definition, ModuleName, RustModules, ToRust};
 use indexmap::indexmap;
 use openapi_types::v3_0::{
     ComponentsObject, OpenApiDataType, SchemaCase, SchemaFieldName, SchemaObject, SchemasObject,
@@ -10,7 +10,7 @@ use openapi_types::v3_0::{
 pub fn from_components(components: ComponentsObject) -> crate::Result<RustModules> {
     let schemas = components
         .schemas
-        .map(from_schemas)
+        .map(ToRust::apply)
         .unwrap_or_else(|| Ok(vec![]))?;
 
     Ok(indexmap! {
@@ -18,8 +18,10 @@ pub fn from_components(components: ComponentsObject) -> crate::Result<RustModule
     })
 }
 
-pub fn from_schemas(schemas: SchemasObject) -> crate::Result<Vec<Definition>> {
-    schemas.into_iter().map(from_schema_entry).collect()
+impl ToRust<SchemasObject> for Vec<Definition> {
+    fn apply(this: SchemasObject) -> crate::Result<Self> {
+        this.into_iter().map(from_schema_entry).collect()
+    }
 }
 
 fn from_schema_entry(kv: (SchemaFieldName, SchemaCase)) -> crate::Result<Definition> {

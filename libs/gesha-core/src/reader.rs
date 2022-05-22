@@ -1,5 +1,4 @@
 use crate::targets::rust::RustModules;
-use crate::v3_0::openapi::to_schemas;
 use crate::yaml_wrapper::{load_map_from_str, YamlMap};
 use crate::{v3_0, OpenApiDocument};
 use openapi_types::v3_0::SchemasObject;
@@ -14,7 +13,7 @@ pub fn open_document_file<A: Into<PathBuf>>(path: A) -> crate::Result<OpenApiDoc
 
 pub fn open_v3_0_schemas_file<A: Into<PathBuf>>(path: A) -> crate::Result<SchemasObject> {
     let map = open_yaml_map(path)?;
-    to_schemas(map)
+    v3_0::openapi::to_schemas(map)
 }
 
 // TODO: remove unwrap

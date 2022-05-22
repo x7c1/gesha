@@ -1,5 +1,5 @@
 use clap::Parser;
-use gesha_core::v3_0::to_rust::from_schemas;
+use gesha_core::targets::rust::{Definition, ToRust};
 use gesha_core::{open_document_file, open_v3_0_schemas_file, to_rust_modules};
 use std::process::exit;
 
@@ -53,6 +53,9 @@ fn generate_sample(args: GenerateSampleArgs) {
         println!("[failed] {:#?}", e);
         exit(1);
     });
-    let rust_types = from_schemas(schemas);
+    let rust_types: Vec<Definition> = ToRust::apply(schemas).unwrap_or_else(|e| {
+        println!("[failed] {:#?}", e);
+        exit(1);
+    });
     println!("schemas: {:#?}", rust_types);
 }

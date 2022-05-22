@@ -36,3 +36,10 @@ pub enum FieldType {
     // TODO: include type parameter
     Vec,
 }
+
+pub trait ToRust<A>
+where
+    Self: Sized,
+{
+    fn apply(this: A) -> crate::Result<Self>;
+}
