@@ -1,11 +1,11 @@
-use crate::v3_0::openapi::reify_entry;
+use crate::conversions::reify_entry;
 use crate::yaml_wrapper::YamlMap;
 use openapi_types::v3_0::{
     HttpStatusCode, OperationObject, PathFieldName, PathItemObject, PathsObject, ResponseCase,
     ResponseObject, ResponsesObject,
 };
 
-pub fn to_paths_object(map: YamlMap) -> crate::Result<PathsObject> {
+pub(super) fn to_paths_object(map: YamlMap) -> crate::Result<PathsObject> {
     let tuples = map
         .into_iter()
         .map(reify_entry)

@@ -1,13 +1,20 @@
 mod to_struct;
 use to_struct::to_struct;
 
-use crate::targets::rust::{Definition, ModuleName, RustModules, ToRust};
+use crate::targets::rust::{Definition, ModuleName, Modules, ToRust};
 use indexmap::indexmap;
 use openapi_types::v3_0::{
-    ComponentsObject, OpenApiDataType, SchemaCase, SchemaFieldName, SchemaObject, SchemasObject,
+    ComponentsObject, Document, OpenApiDataType, SchemaCase, SchemaFieldName, SchemaObject,
+    SchemasObject,
 };
 
-pub fn from_components(components: ComponentsObject) -> crate::Result<RustModules> {
+impl ToRust<Document> for Option<Modules> {
+    fn apply(this: Document) -> crate::Result<Self> {
+        this.components.map(from_components).transpose()
+    }
+}
+
+fn from_components(components: ComponentsObject) -> crate::Result<Modules> {
     let schemas = components
         .schemas
         .map(ToRust::apply)

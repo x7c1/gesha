@@ -1,4 +1,4 @@
-use crate::v3_0::openapi::{reify_entry, reify_value};
+use crate::conversions::{reify_entry, reify_value, ToOpenApi};
 use crate::yaml_wrapper::{YamlArray, YamlMap};
 use indexmap::IndexSet;
 use openapi_types::v3_0::{
@@ -6,22 +6,24 @@ use openapi_types::v3_0::{
     SchemaFieldName, SchemaObject, SchemaProperties, SchemasObject,
 };
 
-pub fn to_components_object(mut map: YamlMap) -> crate::Result<ComponentsObject> {
+pub(super) fn to_components_object(mut map: YamlMap) -> crate::Result<ComponentsObject> {
     let schemas = map
         .remove_if_exists("schemas")?
-        .map(to_schemas)
+        .map(ToOpenApi::apply)
         .transpose()?;
 
     Ok(ComponentsObject { schemas })
 }
 
-pub fn to_schemas(map: YamlMap) -> crate::Result<SchemasObject> {
-    map.into_iter()
-        .map(reify_entry)
-        .collect::<crate::Result<Vec<(String, YamlMap)>>>()?
-        .into_iter()
-        .map(to_schema_pair)
-        .collect()
+impl ToOpenApi for SchemasObject {
+    fn apply(map: YamlMap) -> crate::Result<Self> {
+        map.into_iter()
+            .map(reify_entry)
+            .collect::<crate::Result<Vec<(String, YamlMap)>>>()?
+            .into_iter()
+            .map(to_schema_pair)
+            .collect()
+    }
 }
 
 fn to_schema_pair(kv: (String, YamlMap)) -> crate::Result<(SchemaFieldName, SchemaCase)> {

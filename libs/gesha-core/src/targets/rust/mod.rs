@@ -1,6 +1,6 @@
 use indexmap::IndexMap;
 
-pub type RustModules = IndexMap<ModuleName, Vec<Definition>>;
+pub type Modules = IndexMap<ModuleName, Vec<Definition>>;
 
 #[derive(Debug, Hash, Eq, PartialEq)]
 pub struct ModuleName(String);
@@ -37,9 +37,6 @@ pub enum FieldType {
     Vec,
 }
 
-pub trait ToRust<A>
-where
-    Self: Sized,
-{
+pub trait ToRust<A>: Sized {
     fn apply(this: A) -> crate::Result<Self>;
 }

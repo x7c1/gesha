@@ -1,6 +1,7 @@
 use clap::Parser;
-use gesha_core::targets::rust::{Definition, ToRust};
-use gesha_core::{open_document_file, open_v3_0_schemas_file, to_rust_modules};
+use gesha_core::targets::rust::{Definition, Modules};
+use gesha_core::Reader;
+use openapi_types::v3_0;
 use std::process::exit;
 
 #[derive(Parser, Debug)]
@@ -39,21 +40,21 @@ fn main() {
 }
 
 fn generate(args: GenerateArgs) {
-    let document = open_document_file(args.schema).unwrap_or_else(|e| {
+    println!("generate> {:?}", args);
+
+    let reader = Reader::new::<v3_0::Document>();
+    let rust_types: Option<Modules> = reader.open(args.schema).unwrap_or_else(|e| {
         println!("[failed] {:#?}", e);
         exit(1);
     });
-    let rust_types = to_rust_modules(document);
     println!("components: {:#?}", rust_types);
 }
 
 fn generate_sample(args: GenerateSampleArgs) {
-    println!("test> {:?}", args);
-    let schemas = open_v3_0_schemas_file(args.schema).unwrap_or_else(|e| {
-        println!("[failed] {:#?}", e);
-        exit(1);
-    });
-    let rust_types: Vec<Definition> = ToRust::apply(schemas).unwrap_or_else(|e| {
+    println!("generate_sample> {:?}", args);
+
+    let reader = Reader::new::<v3_0::SchemasObject>();
+    let rust_types: Vec<Definition> = reader.open(args.schema).unwrap_or_else(|e| {
         println!("[failed] {:#?}", e);
         exit(1);
     });
