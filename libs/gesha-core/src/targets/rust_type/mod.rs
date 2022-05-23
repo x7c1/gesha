@@ -13,14 +13,32 @@ impl ModuleName {
 
 #[derive(Debug)]
 pub enum Definition {
-    StructDef {
-        name: String,
-        fields: Vec<StructField>,
-    },
-    VecDef {
-        name: String,
-        type_name: String,
-    },
+    StructDef(StructDef),
+    VecDef(VecDef),
+}
+
+#[derive(Debug)]
+pub struct StructDef {
+    pub name: String,
+    pub fields: Vec<StructField>,
+}
+
+impl From<StructDef> for Definition {
+    fn from(x: StructDef) -> Self {
+        Self::StructDef(x)
+    }
+}
+
+#[derive(Debug)]
+pub struct VecDef {
+    pub name: String,
+    pub type_name: String,
+}
+
+impl From<VecDef> for Definition {
+    fn from(x: VecDef) -> Self {
+        Self::VecDef(x)
+    }
 }
 
 #[derive(Debug)]

@@ -1,14 +1,15 @@
-use crate::targets::rust_type::{Definition, FieldType, StructField};
+use crate::targets::rust_type::{Definition, FieldType, StructDef, StructField};
 use openapi_types::v3_0::{
     OpenApiDataType, SchemaCase, SchemaFieldName, SchemaObject, SchemaProperties,
 };
 
 pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> crate::Result<Definition> {
     let fields = object.properties.map(to_fields).unwrap_or(Ok(vec![]))?;
-    Ok(Definition::StructDef {
+    let def = StructDef {
         name: name.into(),
         fields,
-    })
+    };
+    Ok(def.into())
 }
 
 fn to_fields(props: SchemaProperties) -> crate::Result<Vec<StructField>> {

@@ -18,7 +18,7 @@ impl<A> Reader<A>
 where
     A: ToOpenApi,
 {
-    pub fn open<P, B>(&self, path: P) -> crate::Result<B>
+    pub fn open_rust_type<P, B>(&self, path: P) -> crate::Result<B>
     where
         P: Into<PathBuf>,
         B: ToRustType<A>,

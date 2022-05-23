@@ -2,7 +2,7 @@ mod to_struct;
 use to_struct::to_struct;
 
 use crate::conversions::ToRustType;
-use crate::targets::rust_type::{Definition, ModuleName, Modules};
+use crate::targets::rust_type::{Definition, ModuleName, Modules, VecDef};
 use indexmap::indexmap;
 use openapi_types::v3_0::{
     ComponentsObject, Document, OpenApiDataType, SchemaCase, SchemaFieldName, SchemaObject,
@@ -54,9 +54,10 @@ fn to_definition(name: SchemaFieldName, object: SchemaObject) -> crate::Result<D
 
 fn to_vec(name: SchemaFieldName, object: SchemaObject) -> crate::Result<Definition> {
     println!("object.data_type: {:?}", object.data_type);
-    Ok(Definition::VecDef {
+    let def = VecDef {
         name: name.into(),
         // TODO: parse "items" field
         type_name: "todo".to_string(),
-    })
+    };
+    Ok(def.into())
 }
