@@ -1,7 +1,6 @@
 use clap::Parser;
-use gesha_core::io::Reader;
-use gesha_core::renderer::Renderer;
-use gesha_core::targets::rust_type::{Definition, Modules};
+use gesha_core::io::{write, Reader};
+use gesha_core::targets::rust_type;
 use openapi_types::v3_0;
 use std::process::exit;
 
@@ -28,6 +27,9 @@ struct GenerateArgs {
 struct GenerateSampleArgs {
     #[clap(long)]
     schema: String,
+
+    #[clap(long)]
+    output: String,
 }
 
 fn main() {
@@ -43,27 +45,31 @@ fn main() {
 fn generate(args: GenerateArgs) {
     println!("generate> {:?}", args);
 
-    let reader = Reader::new::<v3_0::Document>();
-    let rust_types: Modules = reader.open_rust_type(args.schema).unwrap_or_else(|e| {
-        println!("[failed] {:#?}", e);
-        exit(1);
-    });
+    let rust_types: rust_type::Modules = Reader::new::<v3_0::Document>()
+        .open_rust_type(args.schema)
+        .unwrap_or_else(|e| {
+            println!("[failed] {:#?}", e);
+            exit(1);
+        });
+
     println!("components: {:#?}", rust_types);
 }
 
 fn generate_sample(args: GenerateSampleArgs) {
     println!("generate_sample> {:?}", args);
 
-    let reader = Reader::new::<v3_0::SchemasObject>();
-    let rust_types: Vec<Definition> = reader.open_rust_type(args.schema).unwrap_or_else(|e| {
-        println!("[failed] {:#?}", e);
-        exit(1);
-    });
+    let rust_types: Vec<rust_type::Definition> = Reader::new::<v3_0::SchemasObject>()
+        .open_rust_type(args.schema)
+        .unwrap_or_else(|e| {
+            println!("[failed] {:#?}", e);
+            exit(1);
+        });
+
     println!("schemas: {:#?}", rust_types);
 
-    let code = rust_types.render().unwrap_or_else(|e| {
-        println!("[failed] cannot render: {:#?}", e);
+    write(args.output, rust_types).unwrap_or_else(|e| {
+        println!("[failed] cannot write: {:#?}", e);
         exit(1);
     });
-    println!("rendered: {}", code)
+    println!("[done]")
 }

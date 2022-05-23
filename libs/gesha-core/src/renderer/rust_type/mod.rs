@@ -34,7 +34,7 @@ fn render_fields(fields: Vec<StructField>) -> crate::Result<String> {
         .into_iter()
         .map(render_field)
         .collect::<crate::Result<Vec<String>>>()?
-        .join("\n");
+        .join(",\n");
 
     Ok(rendered)
 }
