@@ -6,13 +6,15 @@ use openapi_types::v3_0::{
     SchemaFieldName, SchemaObject, SchemaProperties, SchemasObject,
 };
 
-pub(super) fn to_components_object(mut map: YamlMap) -> crate::Result<ComponentsObject> {
-    let schemas = map
-        .remove_if_exists("schemas")?
-        .map(ToOpenApi::apply)
-        .transpose()?;
+impl ToOpenApi for ComponentsObject {
+    fn apply(mut map: YamlMap) -> crate::Result<Self> {
+        let schemas = map
+            .remove_if_exists("schemas")?
+            .map(ToOpenApi::apply)
+            .transpose()?;
 
-    Ok(ComponentsObject { schemas })
+        Ok(ComponentsObject { schemas })
+    }
 }
 
 impl ToOpenApi for SchemasObject {
@@ -52,7 +54,7 @@ fn to_schema_object(mut map: YamlMap) -> crate::Result<SchemaObject> {
 
     let date_type = map
         .remove_if_exists::<String>("type")?
-        .map(to_date_type)
+        .map(to_data_type)
         .transpose()?;
 
     Ok(SchemaObject {
@@ -80,7 +82,7 @@ fn to_required(array: YamlArray) -> crate::Result<RequiredSchemaFields> {
     Ok(RequiredSchemaFields::new(fields))
 }
 
-fn to_date_type(x: String) -> crate::Result<OpenApiDataType> {
+fn to_data_type(x: String) -> crate::Result<OpenApiDataType> {
     match x.as_str() {
         "object" => Ok(OpenApiDataType::Object),
         "string" => Ok(OpenApiDataType::String),

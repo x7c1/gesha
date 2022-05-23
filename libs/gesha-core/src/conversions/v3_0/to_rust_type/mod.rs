@@ -1,31 +1,36 @@
 mod to_struct;
 use to_struct::to_struct;
 
-use crate::targets::rust::{Definition, ModuleName, Modules, ToRust};
+use crate::conversions::ToRustType;
+use crate::targets::rust_type::{Definition, ModuleName, Modules};
 use indexmap::indexmap;
 use openapi_types::v3_0::{
     ComponentsObject, Document, OpenApiDataType, SchemaCase, SchemaFieldName, SchemaObject,
     SchemasObject,
 };
 
-impl ToRust<Document> for Option<Modules> {
+impl ToRustType<Document> for Modules {
     fn apply(this: Document) -> crate::Result<Self> {
-        this.components.map(from_components).transpose()
+        this.components
+            .map(ToRustType::apply)
+            .unwrap_or_else(|| Ok(Modules::new()))
     }
 }
 
-fn from_components(components: ComponentsObject) -> crate::Result<Modules> {
-    let schemas = components
-        .schemas
-        .map(ToRust::apply)
-        .unwrap_or_else(|| Ok(vec![]))?;
+impl ToRustType<ComponentsObject> for Modules {
+    fn apply(this: ComponentsObject) -> crate::Result<Self> {
+        let schemas = this
+            .schemas
+            .map(ToRustType::apply)
+            .unwrap_or_else(|| Ok(vec![]))?;
 
-    Ok(indexmap! {
-         ModuleName::new("schemas") => schemas,
-    })
+        Ok(indexmap! {
+             ModuleName::new("schemas") => schemas,
+        })
+    }
 }
 
-impl ToRust<SchemasObject> for Vec<Definition> {
+impl ToRustType<SchemasObject> for Vec<Definition> {
     fn apply(this: SchemasObject) -> crate::Result<Self> {
         this.into_iter().map(from_schema_entry).collect()
     }

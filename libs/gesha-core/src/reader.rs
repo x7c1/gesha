@@ -1,5 +1,5 @@
 use crate::conversions::ToOpenApi;
-use crate::targets::rust::ToRust;
+use crate::conversions::ToRustType;
 use crate::yaml_wrapper::{load_map_from_str, YamlMap};
 use std::fs::File;
 use std::io::Read;
@@ -21,11 +21,11 @@ where
     pub fn open<P, B>(&self, path: P) -> crate::Result<B>
     where
         P: Into<PathBuf>,
-        B: ToRust<A>,
+        B: ToRustType<A>,
     {
         let map = open_yaml_map(path)?;
         let openapi_value = ToOpenApi::apply(map)?;
-        ToRust::apply(openapi_value)
+        ToRustType::apply(openapi_value)
     }
 }
 

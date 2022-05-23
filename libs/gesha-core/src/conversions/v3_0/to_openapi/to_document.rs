@@ -1,5 +1,4 @@
-use crate::conversions::v3_0::openapi::to_components_object::to_components_object;
-use crate::conversions::v3_0::openapi::to_paths_object::to_paths_object;
+use crate::conversions::v3_0::to_openapi::to_paths_object::to_paths_object;
 use crate::conversions::ToOpenApi;
 use crate::yaml_wrapper::YamlMap;
 use crate::Error::IncompatibleVersion;
@@ -10,7 +9,7 @@ impl ToOpenApi for Document {
     fn apply(mut map: YamlMap) -> crate::Result<Self> {
         let components = map
             .remove_if_exists("components")?
-            .map(to_components_object)
+            .map(ToOpenApi::apply)
             .transpose()?;
 
         let document = Document {

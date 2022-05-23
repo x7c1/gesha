@@ -1,5 +1,5 @@
 use clap::Parser;
-use gesha_core::targets::rust::{Definition, Modules};
+use gesha_core::targets::rust_type::{Definition, Modules};
 use gesha_core::Reader;
 use openapi_types::v3_0;
 use std::process::exit;
@@ -43,7 +43,7 @@ fn generate(args: GenerateArgs) {
     println!("generate> {:?}", args);
 
     let reader = Reader::new::<v3_0::Document>();
-    let rust_types: Option<Modules> = reader.open(args.schema).unwrap_or_else(|e| {
+    let rust_types: Modules = reader.open(args.schema).unwrap_or_else(|e| {
         println!("[failed] {:#?}", e);
         exit(1);
     });

@@ -1,4 +1,4 @@
-use crate::targets::rust::{Definition, FieldType, StructField};
+use crate::targets::rust_type::{Definition, FieldType, StructField};
 use openapi_types::v3_0::{
     OpenApiDataType, SchemaCase, SchemaFieldName, SchemaObject, SchemaProperties,
 };
