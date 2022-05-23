@@ -3,7 +3,8 @@
 set -xue
 
 main() {
-  output="tests/v3.0/components/pet.rs"
+  output="output/v3.0/components/pet.rs"
+  expected="tests/v3.0/components/pet.rs"
 
   cargo run --bin gesha -- \
     generate-sample \
@@ -11,6 +12,8 @@ main() {
     --output "$output"
 
   rustfmt "$output"
+
+  diff "$output" "$expected"
 }
 
 main
