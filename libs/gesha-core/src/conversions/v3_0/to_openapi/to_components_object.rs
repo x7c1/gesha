@@ -52,13 +52,13 @@ fn to_schema_object(mut map: YamlMap) -> crate::Result<SchemaObject> {
         .map(to_required)
         .transpose()?;
 
-    let date_type = map
+    let data_type = map
         .remove_if_exists::<String>("type")?
         .map(to_data_type)
         .transpose()?;
 
     Ok(SchemaObject {
-        data_type: date_type,
+        data_type,
         properties,
         required,
     })

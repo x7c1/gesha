@@ -3,6 +3,17 @@ use gesha_core::io::{write, Reader};
 use gesha_core::targets::rust_type;
 use openapi_types::v3_0;
 use std::process::exit;
+use Subcommand::{Generate, GenerateSample};
+
+fn main() {
+    let args: Args = Args::parse();
+    println!("main> {:?}", args);
+
+    match args.sub {
+        Generate(x) => generate(x),
+        GenerateSample(x) => generate_sample(x),
+    }
+}
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -30,16 +41,6 @@ struct GenerateSampleArgs {
 
     #[clap(long)]
     output: String,
-}
-
-fn main() {
-    let args: Args = Args::parse();
-    println!("main> {:?}", args);
-
-    match args.sub {
-        Subcommand::Generate(x) => generate(x),
-        Subcommand::GenerateSample(x) => generate_sample(x),
-    }
 }
 
 fn generate(args: GenerateArgs) {
