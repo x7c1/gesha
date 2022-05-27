@@ -7,6 +7,7 @@ pub enum Error {
     FieldTypeMissing,
     UnknownDataType(String),
     FieldNotExist { field: String },
+    FormatFailed { path: String, detail: String },
     CannotReadFile { path: String, detail: String },
     CannotScanYaml { detail: String },
     CannotWriteFile { path: String, detail: String },

@@ -2,4 +2,4 @@ mod reader;
 pub use reader::Reader;
 
 mod writer;
-pub use writer::write;
+pub use writer::Writer;

@@ -16,8 +16,6 @@ main() {
     --schema "$schema" \
     --output "$output"
 
-  rustfmt "$output"
-
   diff "$output" "$expected"
 }
 
