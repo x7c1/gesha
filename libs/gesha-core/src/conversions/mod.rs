@@ -6,7 +6,7 @@ use reify::{reify_entry, reify_value};
 
 mod v3_0;
 
-use crate::yaml_wrapper::YamlMap;
+use crate::yaml::YamlMap;
 
 /// convert YamlMap to a type defined in openapi_types crate.
 pub trait ToOpenApi: Sized {

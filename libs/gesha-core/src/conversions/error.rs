@@ -1,18 +1,21 @@
-use crate::conversions::Error::YamlWrapper;
-use crate::yaml_wrapper;
+use crate::conversions::Error::Yaml;
+use crate::yaml;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {
+    // inherited errors
+    Yaml(yaml::Error),
+
+    // module errors
     IncompatibleVersion,
     FieldTypeMissing,
     UnknownDataType(String),
-    YamlWrapper(yaml_wrapper::Error),
 }
 
-impl From<yaml_wrapper::Error> for Error {
-    fn from(cause: yaml_wrapper::Error) -> Self {
-        YamlWrapper(cause)
+impl From<yaml::Error> for Error {
+    fn from(cause: yaml::Error) -> Self {
+        Yaml(cause)
     }
 }

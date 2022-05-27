@@ -1,5 +1,5 @@
-use crate::yaml_wrapper::Error::FieldNotExist;
-use crate::yaml_wrapper::{Error, Result, YamlValue};
+use crate::yaml::Error::FieldNotExist;
+use crate::yaml::{Error, Result, YamlValue};
 
 #[derive(Debug)]
 pub struct YamlMap(pub(super) yaml_rust::yaml::Hash);

@@ -1,6 +1,6 @@
 use clap::Parser;
-use gesha_core::io::{Reader, Writer};
 use gesha_core::targets::rust_type::Modules;
+use gesha_core::wire::{Reader, Writer};
 use openapi_types::v3_0;
 use std::process::exit;
 use Subcommand::{Generate, GenerateSample};

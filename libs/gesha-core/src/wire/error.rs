@@ -1,4 +1,4 @@
-use crate::{conversions, renderer, yaml_wrapper};
+use crate::{conversions, renderer, yaml};
 use std::path::PathBuf;
 
 pub type Result<A> = std::result::Result<A, Error>;
@@ -8,7 +8,7 @@ pub enum Error {
     // inherited errors
     Conversions(conversions::Error),
     Renderer(renderer::Error),
-    YamlWrapper(yaml_wrapper::Error),
+    Yaml(yaml::Error),
 
     // module errors
     FormatFailed { path: PathBuf, detail: String },
@@ -28,8 +28,8 @@ impl From<conversions::Error> for Error {
     }
 }
 
-impl From<yaml_wrapper::Error> for Error {
-    fn from(cause: yaml_wrapper::Error) -> Self {
-        Self::YamlWrapper(cause)
+impl From<yaml::Error> for Error {
+    fn from(cause: yaml::Error) -> Self {
+        Self::Yaml(cause)
     }
 }

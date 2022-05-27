@@ -1,6 +1,6 @@
-use crate::io::Error::{CannotWriteFile, FormatFailed};
-use crate::io::Result;
 use crate::renderer::Renderer;
+use crate::wire::Error::{CannotWriteFile, FormatFailed};
+use crate::wire::Result;
 use std::io::Write;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};

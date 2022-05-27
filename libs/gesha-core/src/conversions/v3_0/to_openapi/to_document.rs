@@ -1,7 +1,7 @@
 use crate::conversions::v3_0::to_openapi::to_paths_object::to_paths_object;
 use crate::conversions::Error::IncompatibleVersion;
 use crate::conversions::{Result, ToOpenApi};
-use crate::yaml_wrapper::YamlMap;
+use crate::yaml::YamlMap;
 use openapi_types::v3_0::{Document, InfoObject};
 
 impl ToOpenApi for Document {

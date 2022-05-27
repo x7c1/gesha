@@ -1,5 +1,5 @@
 use crate::conversions::{reify_entry, Result};
-use crate::yaml_wrapper::YamlMap;
+use crate::yaml::YamlMap;
 use openapi_types::v3_0::{
     HttpStatusCode, OperationObject, PathFieldName, PathItemObject, PathsObject, ResponseCase,
     ResponseObject, ResponsesObject,

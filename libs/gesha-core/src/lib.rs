@@ -1,9 +1,9 @@
 mod error;
 pub use error::{Error, Result};
 
-pub mod io;
 pub mod renderer;
 pub mod targets;
+pub mod wire;
 
 mod conversions;
-mod yaml_wrapper;
+mod yaml;

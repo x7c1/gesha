@@ -1,11 +1,11 @@
-use crate::{conversions, yaml_wrapper};
+use crate::{conversions, wire, yaml};
 
 pub type Result<A> = std::result::Result<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {
-    Io(crate::io::Error),
-    YamlWrapper(yaml_wrapper::Error),
+    Wire(wire::Error),
+    Yaml(yaml::Error),
     Conversions(conversions::Error),
     TODO(String),
 }
@@ -16,9 +16,9 @@ impl Error {
     }
 }
 
-impl From<crate::io::Error> for Error {
-    fn from(cause: crate::io::Error) -> Self {
-        Self::Io(cause)
+impl From<wire::Error> for Error {
+    fn from(cause: wire::Error) -> Self {
+        Self::Wire(cause)
     }
 }
 
@@ -28,8 +28,8 @@ impl From<conversions::Error> for Error {
     }
 }
 
-impl From<yaml_wrapper::Error> for Error {
-    fn from(cause: yaml_wrapper::Error) -> Self {
-        Self::YamlWrapper(cause)
+impl From<yaml::Error> for Error {
+    fn from(cause: yaml::Error) -> Self {
+        Self::Yaml(cause)
     }
 }

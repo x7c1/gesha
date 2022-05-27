@@ -1,6 +1,6 @@
 use crate::conversions::Error::UnknownDataType;
 use crate::conversions::{reify_entry, reify_value, Result, ToOpenApi};
-use crate::yaml_wrapper::{YamlArray, YamlMap};
+use crate::yaml::{YamlArray, YamlMap};
 use indexmap::IndexSet;
 use openapi_types::v3_0::{
     ComponentsObject, OpenApiDataType, ReferenceObject, RequiredSchemaFields, SchemaCase,

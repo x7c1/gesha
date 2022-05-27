@@ -1,5 +1,5 @@
-use crate::yaml_wrapper::Error::TypeMismatch;
-use crate::yaml_wrapper::{Error, Result, YamlArray, YamlMap};
+use crate::yaml::Error::TypeMismatch;
+use crate::yaml::{Error, Result, YamlArray, YamlMap};
 
 #[derive(Debug)]
 pub enum YamlValue {

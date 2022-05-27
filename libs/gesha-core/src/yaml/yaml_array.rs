@@ -1,4 +1,4 @@
-use crate::yaml_wrapper::{Result, YamlValue};
+use crate::yaml::{Result, YamlValue};
 
 #[derive(Debug)]
 pub struct YamlArray(pub(super) yaml_rust::yaml::Array);

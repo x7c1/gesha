@@ -1,8 +1,8 @@
 use crate::conversions::ToOpenApi;
 use crate::conversions::ToRustType;
-use crate::io::Error::CannotReadFile;
-use crate::io::Result;
-use crate::yaml_wrapper::{load_map_from_str, YamlMap};
+use crate::wire::Error::CannotReadFile;
+use crate::wire::Result;
+use crate::yaml::{load_map_from_str, YamlMap};
 use std::fs;
 use std::marker::PhantomData;
 use std::path::PathBuf;
