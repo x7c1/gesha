@@ -32,7 +32,7 @@ where
 fn open_yaml_map<A: Into<PathBuf>>(path: A) -> crate::Result<YamlMap> {
     let path = path.into();
     let content = fs::read_to_string(&path).map_err(|cause| CannotReadFile {
-        path: path.to_string_lossy().to_string(),
+        path: path.clone(),
         detail: format!("{:?}", cause),
     })?;
     load_map_from_str(&content)

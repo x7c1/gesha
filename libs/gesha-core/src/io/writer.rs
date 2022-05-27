@@ -15,7 +15,7 @@ impl Writer {
     pub fn print<A: Renderer>(self, a: A) -> crate::Result<()> {
         let rendered = a.render()?;
         let formatted = format(rendered).map_err(|e| FormatFailed {
-            path: self.path.to_string_lossy().to_string(),
+            path: self.path.clone(),
             detail: format!("{:?}", e),
         })?;
 
@@ -26,7 +26,7 @@ impl Writer {
         };
 
         fs::write(&self.path, code).map_err(|cause| CannotWriteFile {
-            path: self.path.to_string_lossy().to_string(),
+            path: self.path.clone(),
             detail: format!("{:?}", cause),
         })?;
         Ok(())

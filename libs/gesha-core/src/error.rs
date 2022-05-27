@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 pub type Result<A> = std::result::Result<A, Error>;
 
 #[derive(Debug)]
@@ -7,10 +9,10 @@ pub enum Error {
     FieldTypeMissing,
     UnknownDataType(String),
     FieldNotExist { field: String },
-    FormatFailed { path: String, detail: String },
-    CannotReadFile { path: String, detail: String },
+    FormatFailed { path: PathBuf, detail: String },
+    CannotReadFile { path: PathBuf, detail: String },
     CannotScanYaml { detail: String },
-    CannotWriteFile { path: String, detail: String },
+    CannotWriteFile { path: PathBuf, detail: String },
     TODO(String),
 }
 
