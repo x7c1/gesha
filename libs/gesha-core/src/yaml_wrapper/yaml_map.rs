@@ -20,7 +20,6 @@ impl YamlMap {
     {
         let yaml = self.0.remove(&yaml_rust::Yaml::from_str(key));
         let value: Option<YamlValue> = yaml.map(|x| x.try_into()).transpose()?;
-        // TODO: return error that includes (key, IncompatibleType)
         value.map(|x| x.try_into()).transpose()
     }
 }
