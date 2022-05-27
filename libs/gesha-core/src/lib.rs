@@ -1,7 +1,7 @@
 mod error;
 pub use error::{Error, Result};
 
-pub mod renderer;
+mod renderer;
 pub mod targets;
 pub mod wire;
 
