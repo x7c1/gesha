@@ -1,6 +1,7 @@
 use clap::Parser;
+use gesha_core::gateway;
+use gesha_core::gateway::{Reader, Writer};
 use gesha_core::targets::rust_type::Modules;
-use gesha_core::wire::{Reader, Writer};
 use openapi_types::v3_0;
 use std::process::exit;
 use Subcommand::{Generate, GenerateSample};
@@ -47,7 +48,7 @@ struct GenerateSampleArgs {
     output: String,
 }
 
-fn generate(args: GenerateArgs) -> gesha_core::Result<()> {
+fn generate(args: GenerateArgs) -> gateway::Result<()> {
     println!("generate> {:?}", args);
 
     let reader = Reader::new::<v3_0::Document>();
@@ -56,7 +57,7 @@ fn generate(args: GenerateArgs) -> gesha_core::Result<()> {
     Ok(())
 }
 
-fn generate_sample(args: GenerateSampleArgs) -> gesha_core::Result<()> {
+fn generate_sample(args: GenerateSampleArgs) -> gateway::Result<()> {
     println!("generate_sample> {:?}", args);
 
     let reader = Reader::new::<v3_0::ComponentsObject>();

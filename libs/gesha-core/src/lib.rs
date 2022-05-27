@@ -1,9 +1,6 @@
-mod error;
-pub use error::{Error, Result};
-
-mod renderer;
+pub mod gateway;
 pub mod targets;
-pub mod wire;
 
 mod conversions;
+mod renderer;
 mod yaml;
