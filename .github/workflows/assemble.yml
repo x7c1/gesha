@@ -5,12 +5,16 @@ on:
     branches:
       - main
     paths:
-      - '*'
+      - '**'
   pull_request:
     branches:
       - '*'
     paths:
-      - '*'
+      - '**'
+
+env:
+  # https://stackoverflow.com/a/71158878
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 jobs:
   build:
@@ -18,9 +22,23 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
+
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+
+      - name: Cache cargo dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cargo/bin
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-${{ env.BRANCH_NAME }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-
+            ${{ runner.os }}-cargo-
 
       - run: |
           sudo apt update && \
@@ -35,6 +53,20 @@ jobs:
 
       - run: |
           cargo test
+
+      - run: |
+          make gesha-sample
+          make gesha-test
+
+      - name: Cache deno.land dependencies
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-deno-${{ hashFiles('e2e-tests/**/*') }}-${{ env.BRANCH_NAME }}
+          restore-keys: |
+            ${{ runner.os }}-deno-${{ hashFiles('e2e-tests/**/*') }}-
+            ${{ runner.os }}-deno-
+          path: |
+            /home/runner/.cache/deno/deps/https/deno.land
 
       - uses: denoland/setup-deno@v1
         with:

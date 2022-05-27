@@ -45,7 +45,7 @@ fn from_query_string(query_string: &str) -> Result<Query, RequestError> {
             iter_to_single_result(iter)
         })
         .transpose()?
-        .unwrap_or_else(Vec::new);
+        .unwrap_or_default();
 
     Ok(Query {
         limit: value_of_limit,

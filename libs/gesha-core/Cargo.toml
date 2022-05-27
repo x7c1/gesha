@@ -1,0 +1,11 @@
+[package]
+name = "gesha-core"
+version = "0.0.1"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+openapi-types = { path = "../../libs/openapi-types" }
+yaml-rust = "0.4.5"
+indexmap = "1.8.1"
