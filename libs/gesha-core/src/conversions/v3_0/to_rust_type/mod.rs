@@ -48,7 +48,7 @@ fn to_definition(name: SchemaFieldName, object: SchemaObject) -> crate::Result<D
     match object.data_type.as_ref() {
         Some(OpenApiDataType::Object) => to_struct(name, object),
         Some(OpenApiDataType::Array) => to_vec(name, object),
-        _ => todo!(),
+        _ => todo!("object.type: {:?}", object.data_type),
     }
 }
 

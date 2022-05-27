@@ -1,15 +1,27 @@
 use crate::renderer::Renderer;
-use crate::targets::rust_type::{Definition, FieldType, StructDef, StructField};
+use crate::targets::rust_type::{
+    Definition, FieldType, ModuleName, Modules, StructDef, StructField,
+};
+
+impl Renderer for Modules {
+    fn render(self) -> crate::Result<String> {
+        render_items(self, render_module)
+    }
+}
+
+fn render_module(pair: (ModuleName, Vec<Definition>)) -> crate::Result<String> {
+    let (module_name, definitions) = pair;
+    let rendered = format!(
+        "pub mod {name} {{\n{defs}\n}}",
+        name = module_name,
+        defs = definitions.render()?,
+    );
+    Ok(rendered)
+}
 
 impl Renderer for Vec<Definition> {
     fn render(self) -> crate::Result<String> {
-        let rendered = self
-            .into_iter()
-            .map(render_definition)
-            .collect::<crate::Result<Vec<String>>>()?
-            .join("\n");
-
-        Ok(rendered)
+        render_items(self, render_definition)
     }
 }
 
@@ -54,4 +66,18 @@ fn render_field_type(field_type: FieldType) -> crate::Result<String> {
         FieldType::Vec => "Vec<???>".to_string(),
     };
     Ok(type_name)
+}
+
+fn render_items<A, B, F>(items: A, f: F) -> crate::Result<String>
+where
+    A: IntoIterator<Item = B>,
+    F: FnMut(B) -> crate::Result<String>,
+{
+    let rendered = items
+        .into_iter()
+        .map(f)
+        .collect::<crate::Result<Vec<String>>>()?
+        .join("\n");
+
+    Ok(rendered)
 }

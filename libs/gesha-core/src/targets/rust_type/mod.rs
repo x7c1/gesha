@@ -1,4 +1,5 @@
 use indexmap::IndexMap;
+use std::fmt::{Debug, Display, Formatter};
 
 pub type Modules = IndexMap<ModuleName, Vec<Definition>>;
 
@@ -8,6 +9,12 @@ pub struct ModuleName(String);
 impl ModuleName {
     pub fn new<A: Into<String>>(a: A) -> Self {
         Self(a.into())
+    }
+}
+
+impl Display for ModuleName {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        Display::fmt(&self.0, f)
     }
 }
 
