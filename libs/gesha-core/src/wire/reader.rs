@@ -2,7 +2,7 @@ use crate::conversions::ToOpenApi;
 use crate::conversions::ToRustType;
 use crate::wire::Error::CannotReadFile;
 use crate::wire::Result;
-use crate::yaml::{load_map_from_str, YamlMap};
+use crate::yaml::{load_from_str, YamlMap};
 use std::fs;
 use std::marker::PhantomData;
 use std::path::PathBuf;
@@ -37,6 +37,6 @@ fn open_yaml_map<A: Into<PathBuf>>(path: A) -> Result<YamlMap> {
         path: path.clone(),
         detail: format!("{:?}", cause),
     })?;
-    let map = load_map_from_str(&content)?;
+    let map = load_from_str(&content)?;
     Ok(map)
 }
