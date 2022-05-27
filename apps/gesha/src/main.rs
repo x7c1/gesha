@@ -1,6 +1,5 @@
 use clap::Parser;
 use gesha_core::io::{write, Reader};
-use gesha_core::targets::rust_type;
 use gesha_core::targets::rust_type::Modules;
 use openapi_types::v3_0;
 use std::process::exit;
@@ -47,7 +46,7 @@ struct GenerateSampleArgs {
 fn generate(args: GenerateArgs) {
     println!("generate> {:?}", args);
 
-    let rust_types: rust_type::Modules = Reader::new::<v3_0::Document>()
+    let rust_types: Modules = Reader::new::<v3_0::Document>()
         .open_rust_type(args.schema)
         .unwrap_or_else(|e| {
             println!("[failed] {:#?}", e);

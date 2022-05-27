@@ -12,6 +12,7 @@ pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> crate::R
     Ok(def.into())
 }
 
+// TODO: receive "required"
 fn to_fields(props: SchemaProperties) -> crate::Result<Vec<StructField>> {
     props.into_iter().map(to_field).collect()
 }

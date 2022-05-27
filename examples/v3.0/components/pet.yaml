@@ -10,5 +10,3 @@ schemas:
         format: int64
       name:
         type: string
-      tag:
-        type: string
