@@ -1,6 +1,6 @@
 use crate::renderer::Renderer;
-use std::fs::File;
-use std::io::Write;
+use crate::Error::CannotWriteFile;
+use std::fs;
 use std::path::PathBuf;
 
 pub fn write<P, A>(path: P, content: A) -> crate::Result<()>
@@ -9,10 +9,10 @@ where
     A: Renderer,
 {
     let code = content.render()?;
-
-    // TODO: remove unwrap
-    let mut file = File::create(path.into()).unwrap();
-    write!(file, "{}", code).unwrap();
-
+    let path = path.into();
+    fs::write(&path, code).map_err(|cause| CannotWriteFile {
+        path: path.to_string_lossy().to_string(),
+        detail: format!("{:?}", cause),
+    })?;
     Ok(())
 }

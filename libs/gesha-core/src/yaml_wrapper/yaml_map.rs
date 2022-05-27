@@ -1,4 +1,5 @@
 use crate::yaml_wrapper::YamlValue;
+use crate::Error::FieldNotExist;
 
 #[derive(Debug)]
 pub struct YamlMap(pub(super) yaml_rust::yaml::Hash);
@@ -8,11 +9,9 @@ impl YamlMap {
     where
         A: TryFrom<YamlValue, Error = crate::Error>,
     {
-        let maybe = self.remove_if_exists(key)?;
-        // TODO: remove unwrap
-        // TODO: return error that includes (key, NotFoundError)
-        let x = maybe.unwrap();
-        Ok(x)
+        self.remove_if_exists(key)?.ok_or_else(|| FieldNotExist {
+            field: key.to_string(),
+        })
     }
 
     pub fn remove_if_exists<A>(&mut self, key: &str) -> crate::Result<Option<A>>

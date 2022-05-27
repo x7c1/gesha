@@ -3,12 +3,17 @@
 set -xue
 
 main() {
+  schema="examples/v3.0/components/pet.yaml"
+  expected="examples/v3.0/components/pet.rs"
   output="output/v3.0/components/pet.rs"
-  expected="tests/v3.0/components/pet.rs"
+
+  if [ -f "$output" ]; then
+    rm "$output"
+  fi
 
   cargo run --bin gesha -- \
     generate-sample \
-    --schema tests/v3.0/components/pet.yaml \
+    --schema "$schema" \
     --output "$output"
 
   rustfmt "$output"

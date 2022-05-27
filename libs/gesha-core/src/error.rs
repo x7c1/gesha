@@ -6,6 +6,10 @@ pub enum Error {
     TypeMismatch,
     FieldTypeMissing,
     UnknownDataType(String),
+    FieldNotExist { field: String },
+    CannotReadFile { path: String, detail: String },
+    CannotScanYaml { detail: String },
+    CannotWriteFile { path: String, detail: String },
     TODO(String),
 }
 

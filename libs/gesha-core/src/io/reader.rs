@@ -1,8 +1,8 @@
 use crate::conversions::ToOpenApi;
 use crate::conversions::ToRustType;
 use crate::yaml_wrapper::{load_map_from_str, YamlMap};
-use std::fs::File;
-use std::io::Read;
+use crate::Error::CannotReadFile;
+use std::fs;
 use std::marker::PhantomData;
 use std::path::PathBuf;
 
@@ -29,12 +29,11 @@ where
     }
 }
 
-// TODO: remove unwrap
 fn open_yaml_map<A: Into<PathBuf>>(path: A) -> crate::Result<YamlMap> {
     let path = path.into();
-    let mut file = File::open(path).unwrap();
-    let mut contents = String::new();
-    file.read_to_string(&mut contents).unwrap();
-
-    load_map_from_str(&contents)
+    let content = fs::read_to_string(&path).map_err(|cause| CannotReadFile {
+        path: path.to_string_lossy().to_string(),
+        detail: format!("{:?}", cause),
+    })?;
+    load_map_from_str(&content)
 }
