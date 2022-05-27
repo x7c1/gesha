@@ -1,10 +1,10 @@
-use crate::yaml_wrapper::YamlValue;
+use crate::yaml_wrapper::{Result, YamlValue};
 
 #[derive(Debug)]
 pub struct YamlArray(pub(super) yaml_rust::yaml::Array);
 
 impl IntoIterator for YamlArray {
-    type Item = crate::Result<YamlValue>;
+    type Item = Result<YamlValue>;
     type IntoIter = Box<dyn Iterator<Item = Self::Item>>;
 
     fn into_iter(self) -> Self::IntoIter {

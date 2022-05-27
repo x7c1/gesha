@@ -1,3 +1,6 @@
+mod error;
+pub use error::{Error, Result};
+
 mod reader;
 pub use reader::Reader;
 

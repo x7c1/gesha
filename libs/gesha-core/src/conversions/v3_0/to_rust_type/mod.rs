@@ -1,7 +1,7 @@
 mod to_struct;
 use to_struct::to_struct;
 
-use crate::conversions::ToRustType;
+use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{Definition, ModuleName, Modules, VecDef};
 use indexmap::indexmap;
 use openapi_types::v3_0::{
@@ -10,7 +10,7 @@ use openapi_types::v3_0::{
 };
 
 impl ToRustType<Document> for Modules {
-    fn apply(this: Document) -> crate::Result<Self> {
+    fn apply(this: Document) -> Result<Self> {
         this.components
             .map(ToRustType::apply)
             .unwrap_or_else(|| Ok(Modules::new()))
@@ -18,7 +18,7 @@ impl ToRustType<Document> for Modules {
 }
 
 impl ToRustType<ComponentsObject> for Modules {
-    fn apply(this: ComponentsObject) -> crate::Result<Self> {
+    fn apply(this: ComponentsObject) -> Result<Self> {
         let schemas = this
             .schemas
             .map(ToRustType::apply)
@@ -31,12 +31,12 @@ impl ToRustType<ComponentsObject> for Modules {
 }
 
 impl ToRustType<SchemasObject> for Vec<Definition> {
-    fn apply(this: SchemasObject) -> crate::Result<Self> {
+    fn apply(this: SchemasObject) -> Result<Self> {
         this.into_iter().map(from_schema_entry).collect()
     }
 }
 
-fn from_schema_entry(kv: (SchemaFieldName, SchemaCase)) -> crate::Result<Definition> {
+fn from_schema_entry(kv: (SchemaFieldName, SchemaCase)) -> Result<Definition> {
     let (field_name, schema_case) = kv;
     match schema_case {
         SchemaCase::Schema(obj) => to_definition(field_name, obj),
@@ -44,7 +44,7 @@ fn from_schema_entry(kv: (SchemaFieldName, SchemaCase)) -> crate::Result<Definit
     }
 }
 
-fn to_definition(name: SchemaFieldName, object: SchemaObject) -> crate::Result<Definition> {
+fn to_definition(name: SchemaFieldName, object: SchemaObject) -> Result<Definition> {
     match object.data_type.as_ref() {
         Some(OpenApiDataType::Object) => to_struct(name, object),
         Some(OpenApiDataType::Array) => to_vec(name, object),
@@ -52,7 +52,7 @@ fn to_definition(name: SchemaFieldName, object: SchemaObject) -> crate::Result<D
     }
 }
 
-fn to_vec(name: SchemaFieldName, object: SchemaObject) -> crate::Result<Definition> {
+fn to_vec(name: SchemaFieldName, object: SchemaObject) -> Result<Definition> {
     println!("object.data_type: {:?}", object.data_type);
     let def = VecDef {
         name: name.into(),

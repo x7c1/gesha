@@ -1,5 +1,6 @@
+use crate::io::Error::{CannotWriteFile, FormatFailed};
+use crate::io::Result;
 use crate::renderer::Renderer;
-use crate::Error::{CannotWriteFile, FormatFailed};
 use std::io::Write;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
@@ -12,7 +13,7 @@ pub struct Writer {
 }
 
 impl Writer {
-    pub fn print<A: Renderer>(self, a: A) -> crate::Result<()> {
+    pub fn print<A: Renderer>(self, a: A) -> Result<()> {
         let rendered = a.render()?;
         let formatted = format(rendered).map_err(|e| FormatFailed {
             path: self.path.clone(),
