@@ -12,8 +12,10 @@ pub enum Error {
 
     // module errors
     FormatFailed { path: PathBuf, detail: String },
+    CannotCreateFile { path: PathBuf, detail: String },
     CannotWriteFile { path: PathBuf, detail: String },
     CannotReadFile { path: PathBuf, detail: String },
+    CannotRender { path: PathBuf, detail: String },
 }
 
 impl From<renderer::Error> for Error {

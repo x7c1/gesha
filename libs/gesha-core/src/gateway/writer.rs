@@ -1,4 +1,4 @@
-use crate::gateway::Error::{CannotWriteFile, FormatFailed};
+use crate::gateway::Error::{CannotCreateFile, CannotRender, CannotWriteFile, FormatFailed};
 use crate::gateway::Result;
 use crate::renderer::Renderer;
 use std::fs::File;
@@ -15,7 +15,10 @@ pub struct Writer {
 
 impl Writer {
     pub fn print<A: Renderer>(self, a: A) -> Result<()> {
-        let mut file = File::create(&self.path).unwrap();
+        let mut file = File::create(&self.path).map_err(|cause| CannotCreateFile {
+            path: self.path.clone(),
+            detail: format!("{:?}", cause),
+        })?;
 
         if let Some(preamble) = self.preamble {
             let bytes = preamble.as_bytes();
@@ -25,7 +28,7 @@ impl Writer {
             })?;
         }
 
-        a.render(&file).map_err(|cause| CannotWriteFile {
+        a.render(&file).map_err(|cause| CannotRender {
             path: self.path.clone(),
             detail: format!("{:?}", cause),
         })?;
@@ -44,8 +47,7 @@ fn format(path: &PathBuf) -> io::Result<String> {
     let output = Command::new("rustfmt")
         .arg("--verbose")
         .arg(path)
-        .output()
-        .unwrap();
+        .output()?;
 
     Ok(String::from_utf8_lossy(&output.stdout).to_string())
 }
