@@ -1,31 +1,37 @@
+use crate::renderer::Error::CannotWrite;
 use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
     Definition, FieldType, ModuleName, Modules, StructDef, StructField,
 };
+use std::io::Write;
 
 impl Renderer for Modules {
-    fn render(self) -> Result<String> {
-        render_items(self, render_module)
+    fn render<W: Write>(self, mut write: W) -> Result<()> {
+        self.into_iter()
+            .try_for_each(|(name, defs)| render_module(&mut write, name, defs))
     }
 }
 
-fn render_module(pair: (ModuleName, Vec<Definition>)) -> Result<String> {
-    let (module_name, definitions) = pair;
-    let rendered = format!(
-        "pub mod {name} {{\n{defs}\n}}",
-        name = module_name,
-        defs = definitions.render()?,
-    );
-    Ok(rendered)
+fn render_module<W: Write>(
+    mut write: W,
+    name: ModuleName,
+    definitions: Vec<Definition>,
+) -> Result<()> {
+    write!(write, "pub mod {name} {{").map_err(CannotWrite)?;
+    definitions.render(&mut write)?;
+    write!(write, "}}").map_err(CannotWrite)?;
+    Ok(())
 }
 
 impl Renderer for Vec<Definition> {
-    fn render(self) -> Result<String> {
-        render_items(self, render_definition)
+    fn render<W: Write>(self, mut write: W) -> Result<()> {
+        let x = render_items(self, render_definition)?;
+        write.write(x.as_bytes()).map(|_| ()).map_err(CannotWrite)
     }
 }
 
+// TODO: receive Write
 fn render_definition(x: Definition) -> Result<String> {
     match x {
         Definition::StructDef(x) => render_struct(x),

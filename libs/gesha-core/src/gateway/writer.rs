@@ -1,10 +1,11 @@
 use crate::gateway::Error::{CannotWriteFile, FormatFailed};
 use crate::gateway::Result;
 use crate::renderer::Renderer;
+use std::fs::File;
+use std::io;
 use std::io::Write;
 use std::path::PathBuf;
-use std::process::{Command, Stdio};
-use std::{fs, io};
+use std::process::Command;
 
 pub struct Writer {
     pub path: PathBuf,
@@ -14,35 +15,37 @@ pub struct Writer {
 
 impl Writer {
     pub fn print<A: Renderer>(self, a: A) -> Result<()> {
-        let rendered = a.render()?;
-        let formatted = format(rendered).map_err(|e| FormatFailed {
-            path: self.path.clone(),
-            detail: format!("{:?}", e),
-        })?;
+        let mut file = File::create(&self.path).unwrap();
 
-        let code = if let Some(preamble) = self.preamble {
-            format!("// {}\n\n{}", preamble, formatted)
-        } else {
-            formatted
-        };
+        if let Some(preamble) = self.preamble {
+            let bytes = preamble.as_bytes();
+            file.write(bytes).map_err(|cause| CannotWriteFile {
+                path: self.path.clone(),
+                detail: format!("{:?}", cause),
+            })?;
+        }
 
-        fs::write(&self.path, code).map_err(|cause| CannotWriteFile {
+        a.render(&file).map_err(|cause| CannotWriteFile {
             path: self.path.clone(),
             detail: format!("{:?}", cause),
         })?;
+
+        let output = format(&self.path).map_err(|e| FormatFailed {
+            path: self.path.clone(),
+            detail: format!("{:?}", e),
+        })?;
+        println!("[done] print: {}", output);
+
         Ok(())
     }
 }
 
-fn format(text: String) -> io::Result<String> {
-    let mut rustfmt = Command::new("rustfmt")
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()?;
+fn format(path: &PathBuf) -> io::Result<String> {
+    let output = Command::new("rustfmt")
+        .arg("--verbose")
+        .arg(path)
+        .output()
+        .unwrap();
 
-    write!(rustfmt.stdin.take().unwrap(), "{}", text)?;
-
-    let output = rustfmt.wait_with_output()?;
-    let stdout = String::from_utf8_lossy(&output.stdout).to_string();
-    Ok(stdout)
+    Ok(String::from_utf8_lossy(&output.stdout).to_string())
 }
