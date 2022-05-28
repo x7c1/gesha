@@ -4,9 +4,9 @@ set -xue
 
 main() {
   schema="examples/v3.0/components/pet.yaml"
-  expected="examples/v3.0/components/pet.rs"
   output="output/v3.0/components/pet.rs"
 
+  # TODO: run within rust function
   if [ -f "$output" ]; then
     rm "$output"
   fi
@@ -15,8 +15,6 @@ main() {
     test \
     --schema "$schema" \
     --output "$output"
-
-  diff "$output" "$expected"
 }
 
 main

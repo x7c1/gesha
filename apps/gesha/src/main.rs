@@ -17,10 +17,11 @@ fn main() {
         Generate(x) => generate(x),
         Test(x) => tests::run_tests(x),
     };
-    result.unwrap_or_else(|e| {
-        println!("[failed] {:#?}", e);
+    result.unwrap_or_else(|cause| {
+        cause.dump();
         exit(1);
     });
+    println!("[done]");
 }
 
 #[derive(Parser, Debug)]
