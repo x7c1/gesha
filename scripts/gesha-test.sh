@@ -12,7 +12,7 @@ main() {
   fi
 
   cargo run --bin gesha -- \
-    generate-sample \
+    test \
     --schema "$schema" \
     --output "$output"
 
