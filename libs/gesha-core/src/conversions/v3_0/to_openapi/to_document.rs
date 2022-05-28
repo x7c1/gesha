@@ -1,12 +1,12 @@
 use crate::conversions::v3_0::to_openapi::to_paths_object::to_paths_object;
-use crate::conversions::ToOpenApi;
-use crate::yaml_wrapper::YamlMap;
-use crate::Error::IncompatibleVersion;
+use crate::conversions::Error::IncompatibleVersion;
+use crate::conversions::{Result, ToOpenApi};
+use crate::yaml::YamlMap;
 use openapi_types::v3_0::{Document, InfoObject};
 
 impl ToOpenApi for Document {
     /// return Error::IncompatibleVersion if not supported version.
-    fn apply(mut map: YamlMap) -> crate::Result<Self> {
+    fn apply(mut map: YamlMap) -> Result<Self> {
         let components = map
             .remove_if_exists("components")?
             .map(ToOpenApi::apply)
@@ -22,14 +22,14 @@ impl ToOpenApi for Document {
     }
 }
 
-fn to_openapi_version(s: String) -> crate::Result<String> {
+fn to_openapi_version(s: String) -> Result<String> {
     if !s.starts_with("3.0.") {
         return Err(IncompatibleVersion);
     }
     Ok(s)
 }
 
-fn to_info(mut map: YamlMap) -> crate::Result<InfoObject> {
+fn to_info(mut map: YamlMap) -> Result<InfoObject> {
     let info = InfoObject {
         title: map.remove("title")?,
     };

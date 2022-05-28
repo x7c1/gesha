@@ -1,22 +1,22 @@
-use crate::yaml_wrapper::YamlValue;
-use crate::Error::FieldNotExist;
+use crate::yaml::Error::FieldNotExist;
+use crate::yaml::{Error, Result, YamlValue};
 
 #[derive(Debug)]
 pub struct YamlMap(pub(super) yaml_rust::yaml::Hash);
 
 impl YamlMap {
-    pub fn remove<A>(&mut self, key: &str) -> crate::Result<A>
+    pub fn remove<A>(&mut self, key: &str) -> Result<A>
     where
-        A: TryFrom<YamlValue, Error = crate::Error>,
+        A: TryFrom<YamlValue, Error = Error>,
     {
         self.remove_if_exists(key)?.ok_or_else(|| FieldNotExist {
             field: key.to_string(),
         })
     }
 
-    pub fn remove_if_exists<A>(&mut self, key: &str) -> crate::Result<Option<A>>
+    pub fn remove_if_exists<A>(&mut self, key: &str) -> Result<Option<A>>
     where
-        A: TryFrom<YamlValue, Error = crate::Error>,
+        A: TryFrom<YamlValue, Error = Error>,
     {
         let yaml = self.0.remove(&yaml_rust::Yaml::from_str(key));
         let value: Option<YamlValue> = yaml.map(|x| x.try_into()).transpose()?;
@@ -25,7 +25,7 @@ impl YamlMap {
 }
 
 impl IntoIterator for YamlMap {
-    type Item = crate::Result<(YamlValue, YamlValue)>;
+    type Item = Result<(YamlValue, YamlValue)>;
     type IntoIter = Box<dyn Iterator<Item = Self::Item>>;
 
     fn into_iter(self) -> Self::IntoIter {

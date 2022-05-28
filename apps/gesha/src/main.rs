@@ -1,5 +1,6 @@
 use clap::Parser;
-use gesha_core::io::{write, Reader};
+use gesha_core::gateway;
+use gesha_core::gateway::{Reader, Writer};
 use gesha_core::targets::rust_type::Modules;
 use openapi_types::v3_0;
 use std::process::exit;
@@ -9,10 +10,14 @@ fn main() {
     let args: Args = Args::parse();
     println!("main> {:?}", args);
 
-    match args.sub {
+    let result = match args.sub {
         Generate(x) => generate(x),
         GenerateSample(x) => generate_sample(x),
-    }
+    };
+    result.unwrap_or_else(|e| {
+        println!("[failed] {:#?}", e);
+        exit(1);
+    });
 }
 
 #[derive(Parser, Debug)]
@@ -43,34 +48,29 @@ struct GenerateSampleArgs {
     output: String,
 }
 
-fn generate(args: GenerateArgs) {
+fn generate(args: GenerateArgs) -> gateway::Result<()> {
     println!("generate> {:?}", args);
 
-    let rust_types: Modules = Reader::new::<v3_0::Document>()
-        .open_rust_type(args.schema)
-        .unwrap_or_else(|e| {
-            println!("[failed] {:#?}", e);
-            exit(1);
-        });
-
+    let reader = Reader::new::<v3_0::Document>();
+    let rust_types: Modules = reader.open_rust_type(args.schema)?;
     println!("components: {:#?}", rust_types);
+    Ok(())
 }
 
-fn generate_sample(args: GenerateSampleArgs) {
+fn generate_sample(args: GenerateSampleArgs) -> gateway::Result<()> {
     println!("generate_sample> {:?}", args);
 
-    let rust_types: Modules = Reader::new::<v3_0::ComponentsObject>()
-        .open_rust_type(args.schema)
-        .unwrap_or_else(|e| {
-            println!("[failed] {:#?}", e);
-            exit(1);
-        });
+    let reader = Reader::new::<v3_0::ComponentsObject>();
+    let rust_types: Modules = reader.open_rust_type(args.schema)?;
 
-    println!("schemas: {:#?}", rust_types);
+    println!("components: {:#?}", rust_types);
 
-    write(args.output, rust_types).unwrap_or_else(|e| {
-        println!("[failed] cannot write: {:#?}", e);
-        exit(1);
-    });
-    println!("[done]")
+    let writer = Writer {
+        path: args.output.into(),
+        preamble: None,
+    };
+    writer.print(rust_types)?;
+
+    println!("[done]");
+    Ok(())
 }

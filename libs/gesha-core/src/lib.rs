@@ -1,9 +1,6 @@
-mod error;
-pub use error::{Error, Result};
-
-pub mod io;
-pub mod renderer;
+pub mod gateway;
 pub mod targets;
 
 mod conversions;
-mod yaml_wrapper;
+mod renderer;
+mod yaml;
