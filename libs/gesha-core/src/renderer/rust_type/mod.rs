@@ -13,14 +13,26 @@ impl Renderer for Modules {
     }
 }
 
+macro_rules! render {
+    ($write:ident, {$expr:tt}) => {
+        writeln!($write, "{{").map_err(crate::renderer::Error::CannotWrite)?;
+        $expr.render(&mut $write)?;
+        writeln!($write, "}}").map_err(crate::renderer::Error::CannotWrite)?;
+    };
+    ($write:ident, $expr:tt) => {
+        writeln!($write, $expr).map_err(crate::renderer::Error::CannotWrite)?;
+    };
+    ($write:ident, $($expr:tt),+) => {
+        $(render!($write, $expr);)+
+    };
+}
+
 fn render_module<W: Write>(
     mut write: W,
     name: ModuleName,
     definitions: Vec<Definition>,
 ) -> Result<()> {
-    write!(write, "pub mod {name} {{").map_err(CannotWrite)?;
-    definitions.render(&mut write)?;
-    write!(write, "}}").map_err(CannotWrite)?;
+    render!(write, "pub mod {name}", { definitions });
     Ok(())
 }
 
