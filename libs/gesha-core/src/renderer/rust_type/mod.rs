@@ -1,6 +1,6 @@
 use crate::renderer::Error::CannotWrite;
-use crate::renderer::Renderer;
 use crate::renderer::Result;
+use crate::renderer::{render, Renderer};
 use crate::targets::rust_type::{
     Definition, FieldType, ModuleName, Modules, StructDef, StructField,
 };
@@ -11,20 +11,6 @@ impl Renderer for Modules {
         self.into_iter()
             .try_for_each(|(name, defs)| render_module(&mut write, name, defs))
     }
-}
-
-macro_rules! render {
-    ($write:ident, {$expr:tt}) => {
-        writeln!($write, "{{").map_err(crate::renderer::Error::CannotWrite)?;
-        $expr.render(&mut $write)?;
-        writeln!($write, "}}").map_err(crate::renderer::Error::CannotWrite)?;
-    };
-    ($write:ident, $expr:tt) => {
-        writeln!($write, $expr).map_err(crate::renderer::Error::CannotWrite)?;
-    };
-    ($write:ident, $($expr:tt),+) => {
-        $(render!($write, $expr);)+
-    };
 }
 
 fn render_module<W: Write>(
