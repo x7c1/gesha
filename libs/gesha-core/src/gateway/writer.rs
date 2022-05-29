@@ -14,7 +14,7 @@ pub struct Writer {
 }
 
 impl Writer {
-    pub fn print<A: Renderer>(self, a: A) -> Result<()> {
+    pub fn create_file<A: Renderer>(self, a: A) -> Result<()> {
         let mut file = File::create(&self.path).map_err(|cause| CannotCreateFile {
             path: self.path.clone(),
             detail: format!("{:?}", cause),
@@ -37,8 +37,7 @@ impl Writer {
             path: self.path.clone(),
             detail: format!("{:?}", e),
         })?;
-        println!("[done] print: {}", output);
-
+        println!("rustfmt>\n{}", output);
         Ok(())
     }
 }

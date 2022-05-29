@@ -16,13 +16,13 @@ pub fn run_test(target: TestTarget) -> gateway::Result<()> {
 
     let reader = Reader::new::<v3_0::ComponentsObject>();
     let rust_types: Modules = reader.open_rust_type(target.schema)?;
-    println!("components: {:#?}", rust_types);
+    println!("components> {:#?}", rust_types);
 
     let writer = Writer {
         path: target.output.clone(),
         preamble: None,
     };
-    writer.print(rust_types)?;
+    writer.create_file(rust_types)?;
     detect_diff(target.output, target.expected)?;
     Ok(())
 }
