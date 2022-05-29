@@ -1,8 +1,9 @@
 mod generate;
-mod tests;
+use generate::{run_generate, GenerateArgs};
 
-use crate::generate::{run_generate, GenerateArgs};
-use crate::tests::run_tests;
+mod test;
+use test::run_tests;
+
 use clap::Parser;
 use std::process::exit;
 use Subcommand::{Generate, Test};
