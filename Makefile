@@ -29,4 +29,4 @@ gesha-sample: ## debug : Sample gesha command
 	    generate --schema schemas/v3.0/petstore.yaml
 
 gesha-test: ## test : Test gesha command
-	./scripts/gesha-test.sh
+	cargo run --bin gesha -- test

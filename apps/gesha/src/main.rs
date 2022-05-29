@@ -1,3 +1,5 @@
+mod tests;
+
 use clap::Parser;
 use gesha_core::gateway;
 use gesha_core::gateway::Reader;
@@ -6,16 +8,13 @@ use openapi_types::v3_0;
 use std::process::exit;
 use Subcommand::{Generate, Test};
 
-mod tests;
-use tests::RunTestsArgs;
-
 fn main() {
     let args: Args = Args::parse();
     println!("main> {:?}", args);
 
     let result = match args.sub {
         Generate(x) => generate(x),
-        Test(x) => tests::run_tests(x),
+        Test => tests::run_tests(),
     };
     result.unwrap_or_else(|cause| {
         cause.dump();
@@ -34,7 +33,7 @@ struct Args {
 #[derive(clap::Subcommand, Debug)]
 enum Subcommand {
     Generate(GenerateArgs),
-    Test(RunTestsArgs),
+    Test,
 }
 
 #[derive(clap::Args, Debug)]
