@@ -1,10 +1,9 @@
+mod generate;
 mod tests;
 
+use crate::generate::{run_generate, GenerateArgs};
+use crate::tests::run_tests;
 use clap::Parser;
-use gesha_core::gateway;
-use gesha_core::gateway::Reader;
-use gesha_core::targets::rust_type::Modules;
-use openapi_types::v3_0;
 use std::process::exit;
 use Subcommand::{Generate, Test};
 
@@ -13,8 +12,8 @@ fn main() {
     println!("main> {:?}", args);
 
     let result = match args.sub {
-        Generate(x) => generate(x),
-        Test => tests::run_tests(),
+        Generate(x) => run_generate(x),
+        Test => run_tests(),
     };
     result.unwrap_or_else(|cause| {
         cause.dump();
@@ -34,19 +33,4 @@ struct Args {
 enum Subcommand {
     Generate(GenerateArgs),
     Test,
-}
-
-#[derive(clap::Args, Debug)]
-struct GenerateArgs {
-    #[clap(long)]
-    schema: String,
-}
-
-fn generate(args: GenerateArgs) -> gateway::Result<()> {
-    println!("generate> {:?}", args);
-
-    let reader = Reader::new::<v3_0::Document>();
-    let rust_types: Modules = reader.open_rust_type(args.schema)?;
-    println!("components: {:#?}", rust_types);
-    Ok(())
 }

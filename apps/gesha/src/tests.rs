@@ -14,7 +14,7 @@ pub fn run_tests() -> gateway::Result<()> {
 }
 
 #[derive(Debug)]
-pub struct TestTarget {
+struct TestTarget {
     schema: PathBuf,
     output: PathBuf,
     expected: PathBuf,
