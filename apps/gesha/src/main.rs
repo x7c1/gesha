@@ -1,8 +1,5 @@
 mod generate;
-use generate::{run_generate, GenerateArgs};
-
 mod test;
-use test::run_tests;
 
 use clap::Parser;
 use std::process::exit;
@@ -13,8 +10,8 @@ fn main() {
     println!("main> {:?}", args);
 
     let result = match args.sub {
-        Generate(x) => run_generate(x),
-        Test => run_tests(),
+        Generate(x) => generate::run(x),
+        Test => test::run(),
     };
     result.unwrap_or_else(|cause| {
         cause.dump();
@@ -32,6 +29,6 @@ struct Args {
 
 #[derive(clap::Subcommand, Debug)]
 enum Subcommand {
-    Generate(GenerateArgs),
+    Generate(generate::Args),
     Test,
 }
