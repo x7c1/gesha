@@ -6,9 +6,15 @@ use std::path::PathBuf;
 
 #[derive(Debug)]
 pub struct TestTarget {
-    pub schema: PathBuf,
-    pub output: PathBuf,
-    pub expected: PathBuf,
+    output: PathBuf,
+    schema: PathBuf,
+    expected: PathBuf,
+}
+
+impl TestTarget {
+    pub fn new(yaml_names: Vec<&str>) -> Vec<Self> {
+        yaml_names.into_iter().map(to_target).collect()
+    }
 }
 
 pub fn run_test(target: TestTarget) -> gateway::Result<()> {
@@ -25,4 +31,13 @@ pub fn run_test(target: TestTarget) -> gateway::Result<()> {
     writer.create_file(rust_types)?;
     detect_diff(target.output, target.expected)?;
     Ok(())
+}
+
+fn to_target(yaml_name: &str) -> TestTarget {
+    let rs_name = yaml_name.replace(".yaml", ".rs");
+    TestTarget {
+        output: format!("output/v3.0/components/{rs_name}").into(),
+        schema: format!("examples/v3.0/components/{yaml_name}").into(),
+        expected: format!("examples/v3.0/components/{rs_name}").into(),
+    }
 }
