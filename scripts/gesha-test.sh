@@ -3,6 +3,7 @@
 set -xue
 
 main() {
+  # TODO: remove variables
   schema="examples/v3.0/components/pet.yaml"
   output="output/v3.0/components/pet.rs"
 

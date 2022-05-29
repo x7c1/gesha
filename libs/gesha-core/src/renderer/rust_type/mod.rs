@@ -38,7 +38,6 @@ fn render_definition(x: Definition) -> Result<String> {
 }
 
 fn render_struct(x: StructDef) -> Result<String> {
-    println!("def: {:?}", x);
     Ok(format!(
         "pub struct {name} {{\n{fields}\n}}\n",
         name = x.name,
