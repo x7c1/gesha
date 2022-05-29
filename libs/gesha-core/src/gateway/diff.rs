@@ -46,14 +46,14 @@ fn is_changed(change: Change<&str>) -> bool {
 }
 
 fn format_text_diff<'a>(diff: &TextDiff<'a, 'a, 'a, str>) -> String {
-    let mut buf = String::new();
-    for change in diff.iter_all_changes() {
-        let (sign, style) = match change.tag() {
-            ChangeTag::Delete => ("-", Style::new().red()),
-            ChangeTag::Insert => ("+", Style::new().green()),
-            ChangeTag::Equal => (" ", Style::new()),
-        };
-        buf += &format!("{}{}", style.apply_to(sign), style.apply_to(change),);
-    }
-    buf
+    diff.iter_all_changes().into_iter().map(to_line).collect()
+}
+
+fn to_line(change: Change<&str>) -> String {
+    let (sign, style) = match change.tag() {
+        ChangeTag::Delete => ("-", Style::new().red()),
+        ChangeTag::Insert => ("+", Style::new().green()),
+        ChangeTag::Equal => (" ", Style::new()),
+    };
+    format!("{}{}", style.apply_to(sign), style.apply_to(change))
 }
