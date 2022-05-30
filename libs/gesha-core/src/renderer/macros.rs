@@ -1,11 +1,11 @@
 macro_rules! render {
     ($write:ident, {$expr:tt}) => {
-        writeln!($write, "{{").map_err(crate::renderer::Error::CannotWrite)?;
-        $expr.render(&mut $write)?;
-        writeln!($write, "}}").map_err(crate::renderer::Error::CannotWrite)?;
+        writeln!($write, "{{")?;
+        crate::renderer::Renderer::render($expr, &mut $write)?;
+        writeln!($write, "}}")?;
     };
     ($write:ident, $expr:tt) => {
-        writeln!($write, $expr).map_err(crate::renderer::Error::CannotWrite)?;
+        writeln!($write, $expr)?;
     };
     ($write:ident, $($expr:tt),+) => {
         $(render!($write, $expr);)+
