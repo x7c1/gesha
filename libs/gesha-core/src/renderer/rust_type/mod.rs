@@ -19,7 +19,7 @@ fn render_module<W: Write>(
 ) -> Result<()> {
     render!(write,
         text: "pub mod {name}",
-        block: definitions
+        block: definitions,
     );
     Ok(())
 }
@@ -43,10 +43,9 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
 
 fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
     let name = x.name;
-    let fields = x.fields;
     render!(write,
         text: "pub struct {name}",
-        block: fields
+        block: x.fields,
     );
     Ok(())
 }
@@ -73,6 +72,6 @@ fn render_field_type<W: Write>(mut write: W, field_type: FieldType) -> Result<()
         FieldType::Int64 => "i64".to_string(),
         FieldType::Vec => "Vec<???>".to_string(),
     };
-    write!(write, "{}", type_name)?;
+    write!(write, "{type_name}")?;
     Ok(())
 }

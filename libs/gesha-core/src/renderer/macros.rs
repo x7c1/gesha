@@ -7,7 +7,7 @@ macro_rules! render {
     ($write:ident, text: $x:tt) => {
         writeln!($write, $x)?;
     };
-    ($write:ident, $($mode:ident: $x:expr),*) => {
+    ($write:ident, $($mode:ident: $x:expr),* $(,)?) => {
         $(render!($write, $mode: $x);)+
     };
 }

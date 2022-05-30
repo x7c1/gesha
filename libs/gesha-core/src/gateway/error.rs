@@ -57,7 +57,7 @@ impl Error {
                 )
             }
             Error::FormatFailed { detail, .. } => {
-                println!("{}", detail)
+                println!("[failed] rustfmt>\n{}", detail)
             }
             _ => {
                 println!("[failed] {:#?}", self)
