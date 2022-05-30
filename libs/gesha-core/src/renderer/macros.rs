@@ -1,4 +1,9 @@
 macro_rules! render {
+    ($write:ident, block = $func:expr => $y:expr) => {
+        writeln!($write, "{{")?;
+        $func(&mut $write, $y)?;
+        writeln!($write, "}}")?;
+    };
     ($write:ident, block = $x:expr) => {
         writeln!($write, "{{")?;
         crate::renderer::Renderer::render($x, &mut $write)?;
@@ -7,8 +12,8 @@ macro_rules! render {
     ($write:ident, text = $x:expr) => {
         writeln!($write, $x)?;
     };
-    ($write:ident, $($mode:ident = $x:expr),* $(,)?) => {
-        $(render!($write, $mode = $x);)+
+    ($write:ident, $($mode:ident = $x:expr $(=> $y:expr)?),* $(,)?) => {
+        $(render!($write, $mode = $x $(=> $y)? );)+
     };
 }
 

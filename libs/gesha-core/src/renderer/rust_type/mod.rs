@@ -40,18 +40,20 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
 
 fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
     let name = x.name;
-    render!(write, text = "pub struct {name}", block = x.fields);
+    render!(
+        write,
+        text = "pub struct {name}",
+        block = render_fields => x.fields,
+    );
     Ok(())
 }
 
-impl Renderer for Vec<StructField> {
-    fn render<W: Write>(self, mut write: W) -> Result<()> {
-        for field in self.into_iter() {
-            render_field(&mut write, field)?;
-            writeln!(write, ",")?;
-        }
-        Ok(())
+fn render_fields<W: Write>(mut write: W, fields: Vec<StructField>) -> Result<()> {
+    for field in fields.into_iter() {
+        render_field(&mut write, field)?;
+        writeln!(write, ",")?;
     }
+    Ok(())
 }
 
 fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
