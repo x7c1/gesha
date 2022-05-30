@@ -17,10 +17,7 @@ fn render_module<W: Write>(
     name: ModuleName,
     definitions: Vec<Definition>,
 ) -> Result<()> {
-    render!(write,
-        text: "pub mod {name}",
-        block: definitions,
-    );
+    render!(write, text = "pub mod {name}", block = definitions);
     Ok(())
 }
 
@@ -43,10 +40,7 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
 
 fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
     let name = x.name;
-    render!(write,
-        text: "pub struct {name}",
-        block: x.fields,
-    );
+    render!(write, text = "pub struct {name}", block = x.fields);
     Ok(())
 }
 
