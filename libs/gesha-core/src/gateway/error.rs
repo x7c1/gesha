@@ -56,6 +56,9 @@ impl Error {
                     output
                 )
             }
+            Error::FormatFailed { detail, .. } => {
+                println!("{}", detail)
+            }
             _ => {
                 println!("[failed] {:#?}", self)
             }
