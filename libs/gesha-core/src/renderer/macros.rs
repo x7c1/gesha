@@ -1,12 +1,7 @@
 macro_rules! render {
-    ($write:ident, block > $func:expr => $y:expr) => {
+    ($write:ident, "{}" > $func:expr => $y:expr) => {
         writeln!($write, "{{")?;
         $func(&mut $write, $y)?;
-        writeln!($write, "}}")?;
-    };
-    ($write:ident, render > $x:expr) => {
-        writeln!($write, "{{")?;
-        crate::renderer::Renderer::render($x, &mut $write)?;
         writeln!($write, "}}")?;
     };
     ($write:ident, call > $func:expr => $y:expr) => {
@@ -18,7 +13,7 @@ macro_rules! render {
     (
         $write:ident =>
         $(
-            $mode:ident > $x:expr
+            $mode:tt > $x:expr
             $(=> $y:expr)?
             $(, $i:ident = $z:expr )*
         );+

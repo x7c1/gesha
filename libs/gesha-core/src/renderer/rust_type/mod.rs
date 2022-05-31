@@ -19,18 +19,14 @@ fn render_module<W: Write>(
 ) -> Result<()> {
     render! { write =>
         echo > "pub mod {name}";
-        render > definitions;
+        "{}" > render_definitions => definitions;
     };
     Ok(())
 }
 
-impl Renderer for Vec<Definition> {
-    fn render<W: Write>(self, mut write: W) -> Result<()> {
-        for def in self.into_iter() {
-            render_definition(&mut write, def)?;
-        }
-        Ok(())
-    }
+fn render_definitions<W: Write>(mut write: W, xs: Vec<Definition>) -> Result<()> {
+    xs.into_iter()
+        .try_for_each(|def| render_definition(&mut write, def))
 }
 
 fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
@@ -44,7 +40,7 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
 fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
     render! { write =>
         echo > "pub struct {name}", name = x.name;
-        block > render_fields => x.fields;
+        "{}" > render_fields => x.fields;
     };
     Ok(())
 }
