@@ -18,8 +18,8 @@ fn render_module<W: Write>(
     definitions: Vec<Definition>,
 ) -> Result<()> {
     render! { write =>
-        text > "pub mod {name}";
-        block > definitions;
+        echo > "pub mod {name}";
+        render > definitions;
     };
     Ok(())
 }
@@ -43,7 +43,7 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
 
 fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
     render! { write =>
-        text > "pub struct {name}", name = x.name;
+        echo > "pub struct {name}", name = x.name;
         block > render_fields => x.fields;
     };
     Ok(())
@@ -52,8 +52,8 @@ fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
 fn render_fields<W: Write>(mut write: W, fields: Vec<StructField>) -> Result<()> {
     for field in fields.into_iter() {
         render! { write =>
-            text > render_field => field;
-            text > ",\n";
+            call > render_field => field;
+            echo > ",\n";
         };
     }
     Ok(())
@@ -61,8 +61,8 @@ fn render_fields<W: Write>(mut write: W, fields: Vec<StructField>) -> Result<()>
 
 fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
     render! { write =>
-        text > "pub {name}: ", name = field.name;
-        text > render_field_type => field.data_type;
+        echo > "pub {name}: ", name = field.name;
+        call > render_field_type => field.data_type;
     };
     Ok(())
 }
@@ -74,7 +74,7 @@ fn render_field_type<W: Write>(mut write: W, field_type: FieldType) -> Result<()
         FieldType::Vec => "Vec<???>".to_string(),
     };
     render! { write =>
-        text > "{type_name}"
+        echo > "{type_name}"
     };
     Ok(())
 }

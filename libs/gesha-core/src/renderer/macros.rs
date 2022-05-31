@@ -4,15 +4,15 @@ macro_rules! render {
         $func(&mut $write, $y)?;
         writeln!($write, "}}")?;
     };
-    ($write:ident, block > $x:expr) => {
+    ($write:ident, render > $x:expr) => {
         writeln!($write, "{{")?;
         crate::renderer::Renderer::render($x, &mut $write)?;
         writeln!($write, "}}")?;
     };
-    ($write:ident, text > $func:expr => $y:expr) => {
+    ($write:ident, call > $func:expr => $y:expr) => {
         $func(&mut $write, $y)?;
     };
-    ($write:ident, text > $x:expr $(, $i:ident = $z:expr)*) => {
+    ($write:ident, echo > $x:expr $(, $i:ident = $z:expr)*) => {
         write!($write, $x $(, $i = $z)*)?;
     };
     (
