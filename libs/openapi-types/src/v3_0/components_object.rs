@@ -60,6 +60,10 @@ pub struct RequiredSchemaFields(IndexSet<String>);
 
 impl RequiredSchemaFields {
     pub fn new(fields: IndexSet<String>) -> Self {
+        // TODO: check fields length
         Self(fields)
+    }
+    pub fn contains(&self, field_name: &str) -> bool {
+        self.0.contains(field_name)
     }
 }

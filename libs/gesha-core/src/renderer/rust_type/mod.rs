@@ -1,5 +1,6 @@
+use crate::render;
+use crate::renderer::Renderer;
 use crate::renderer::Result;
-use crate::renderer::{render, Renderer};
 use crate::targets::rust_type::{
     Definition, FieldType, ModuleName, Modules, StructDef, StructField,
 };
@@ -64,13 +65,16 @@ fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
 }
 
 fn render_field_type<W: Write>(mut write: W, field_type: FieldType) -> Result<()> {
-    let type_name = match field_type {
-        FieldType::String => "String".to_string(),
-        FieldType::Int64 => "i64".to_string(),
-        FieldType::Vec => "Vec<???>".to_string(),
-    };
+    fn from_type(x: FieldType) -> String {
+        match x {
+            FieldType::String => "String".to_string(),
+            FieldType::Int64 => "i64".to_string(),
+            FieldType::Vec => unimplemented!(),
+            FieldType::Option(x) => format!("Option<{}>", from_type(*x)),
+        }
+    }
     render! { write =>
-        echo > "{type_name}"
-    };
+        echo > "{type_name}", type_name = from_type(field_type);
+    }
     Ok(())
 }
