@@ -1,84 +1,76 @@
-use crate::renderer::Renderer;
 use crate::renderer::Result;
+use crate::renderer::{render, Renderer};
 use crate::targets::rust_type::{
     Definition, FieldType, ModuleName, Modules, StructDef, StructField,
 };
+use std::io::Write;
 
 impl Renderer for Modules {
-    fn render(self) -> Result<String> {
-        render_items(self, render_module)
+    fn render<W: Write>(self, mut write: W) -> Result<()> {
+        self.into_iter()
+            .try_for_each(|(name, defs)| render_module(&mut write, name, defs))
     }
 }
 
-fn render_module(pair: (ModuleName, Vec<Definition>)) -> Result<String> {
-    let (module_name, definitions) = pair;
-    let rendered = format!(
-        "pub mod {name} {{\n{defs}\n}}",
-        name = module_name,
-        defs = definitions.render()?,
-    );
-    Ok(rendered)
+fn render_module<W: Write>(
+    mut write: W,
+    name: ModuleName,
+    definitions: Vec<Definition>,
+) -> Result<()> {
+    render! { write =>
+        echo > "pub mod {name}";
+        "{}" > render_definitions => definitions;
+    };
+    Ok(())
 }
 
-impl Renderer for Vec<Definition> {
-    fn render(self) -> Result<String> {
-        render_items(self, render_definition)
-    }
+fn render_definitions<W: Write>(mut write: W, xs: Vec<Definition>) -> Result<()> {
+    xs.into_iter()
+        .try_for_each(|def| render_definition(&mut write, def))
 }
 
-fn render_definition(x: Definition) -> Result<String> {
+fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
     match x {
-        Definition::StructDef(x) => render_struct(x),
+        Definition::StructDef(x) => render_struct(write, x)?,
         Definition::VecDef(_x) => unimplemented!(),
+    };
+    Ok(())
+}
+
+fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
+    render! { write =>
+        echo > "pub struct {name}", name = x.name;
+        "{}" > render_fields => x.fields;
+    };
+    Ok(())
+}
+
+fn render_fields<W: Write>(mut write: W, fields: Vec<StructField>) -> Result<()> {
+    for field in fields.into_iter() {
+        render! { write =>
+            call > render_field => field;
+            echo > ",\n";
+        };
     }
+    Ok(())
 }
 
-fn render_struct(x: StructDef) -> Result<String> {
-    println!("def: {:?}", x);
-    Ok(format!(
-        "pub struct {name} {{\n{fields}\n}}\n",
-        name = x.name,
-        fields = render_fields(x.fields)?
-    ))
+fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
+    render! { write =>
+        echo > "pub {name}: ", name = field.name;
+        call > render_field_type => field.data_type;
+    };
+    Ok(())
 }
 
-fn render_fields(fields: Vec<StructField>) -> Result<String> {
-    let rendered = fields
-        .into_iter()
-        .map(render_field)
-        .collect::<Result<Vec<String>>>()?
-        .join(",\n");
-
-    Ok(rendered)
-}
-
-fn render_field(field: StructField) -> Result<String> {
-    Ok(format!(
-        "pub {name}: {type_name}",
-        name = field.name,
-        type_name = render_field_type(field.data_type)?
-    ))
-}
-
-fn render_field_type(field_type: FieldType) -> Result<String> {
+fn render_field_type<W: Write>(mut write: W, field_type: FieldType) -> Result<()> {
     let type_name = match field_type {
         FieldType::String => "String".to_string(),
         FieldType::Int64 => "i64".to_string(),
         FieldType::Vec => "Vec<???>".to_string(),
     };
-    Ok(type_name)
-}
-
-fn render_items<A, B, F>(items: A, f: F) -> Result<String>
-where
-    A: IntoIterator<Item = B>,
-    F: FnMut(B) -> Result<String>,
-{
-    let rendered = items
-        .into_iter()
-        .map(f)
-        .collect::<Result<Vec<String>>>()?
-        .join("\n");
-
-    Ok(rendered)
+    render! { write =>
+        echo > "{type_name}"
+    };
+    Ok(())
 }

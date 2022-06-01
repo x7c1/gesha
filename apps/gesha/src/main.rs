@@ -1,23 +1,23 @@
+mod generate;
+mod test;
+
 use clap::Parser;
-use gesha_core::gateway;
-use gesha_core::gateway::{Reader, Writer};
-use gesha_core::targets::rust_type::Modules;
-use openapi_types::v3_0;
 use std::process::exit;
-use Subcommand::{Generate, GenerateSample};
+use Subcommand::{Generate, Test};
 
 fn main() {
     let args: Args = Args::parse();
     println!("main> {:?}", args);
 
     let result = match args.sub {
-        Generate(x) => generate(x),
-        GenerateSample(x) => generate_sample(x),
+        Generate(x) => generate::run(x),
+        Test => test::run(),
     };
-    result.unwrap_or_else(|e| {
-        println!("[failed] {:#?}", e);
+    result.unwrap_or_else(|cause| {
+        cause.dump();
         exit(1);
     });
+    println!("[done]");
 }
 
 #[derive(Parser, Debug)]
@@ -29,48 +29,6 @@ struct Args {
 
 #[derive(clap::Subcommand, Debug)]
 enum Subcommand {
-    Generate(GenerateArgs),
-    GenerateSample(GenerateSampleArgs),
-}
-
-#[derive(clap::Args, Debug)]
-struct GenerateArgs {
-    #[clap(long)]
-    schema: String,
-}
-
-#[derive(clap::Args, Debug)]
-struct GenerateSampleArgs {
-    #[clap(long)]
-    schema: String,
-
-    #[clap(long)]
-    output: String,
-}
-
-fn generate(args: GenerateArgs) -> gateway::Result<()> {
-    println!("generate> {:?}", args);
-
-    let reader = Reader::new::<v3_0::Document>();
-    let rust_types: Modules = reader.open_rust_type(args.schema)?;
-    println!("components: {:#?}", rust_types);
-    Ok(())
-}
-
-fn generate_sample(args: GenerateSampleArgs) -> gateway::Result<()> {
-    println!("generate_sample> {:?}", args);
-
-    let reader = Reader::new::<v3_0::ComponentsObject>();
-    let rust_types: Modules = reader.open_rust_type(args.schema)?;
-
-    println!("components: {:#?}", rust_types);
-
-    let writer = Writer {
-        path: args.output.into(),
-        preamble: None,
-    };
-    writer.print(rust_types)?;
-
-    println!("[done]");
-    Ok(())
+    Generate(generate::Args),
+    Test,
 }
