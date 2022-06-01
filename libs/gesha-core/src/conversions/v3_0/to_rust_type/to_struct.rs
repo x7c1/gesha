@@ -34,22 +34,29 @@ impl ToFields {
     fn to_field(&self, entry: (SchemaFieldName, SchemaCase)) -> Result<StructField> {
         let (field_name, schema_case) = entry;
         match schema_case {
-            SchemaCase::Schema(schema_object) => match schema_object.data_type {
-                Some(openapi_type) => {
-                    let mut data_type = to_field_type(openapi_type)?;
-                    let name: String = field_name.into();
+            SchemaCase::Schema(schema_object) => schema_object
+                .data_type
+                .map(self.on_schema(field_name))
+                .unwrap_or(Err(FieldTypeMissing)),
 
-                    if !self.is_required(&name) {
-                        data_type = FieldType::Option(Box::new(data_type))
-                    }
-                    Ok(StructField { name, data_type })
-                }
-                None => Err(FieldTypeMissing),
-            },
             // TODO:
             SchemaCase::Reference(reference_object) => {
                 unimplemented!("reference field not implemented: {:?}", reference_object)
             }
+        }
+    }
+
+    fn on_schema(
+        &self,
+        field_name: SchemaFieldName,
+    ) -> impl FnOnce(OpenApiDataType) -> Result<StructField> + '_ {
+        |openapi_type| {
+            let mut data_type = to_field_type(openapi_type)?;
+            let name: String = field_name.into();
+            if !self.is_required(&name) {
+                data_type = FieldType::Option(Box::new(data_type))
+            }
+            Ok(StructField { name, data_type })
         }
     }
 
