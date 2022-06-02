@@ -24,10 +24,10 @@ impl FormatModifier {
 impl AsRef<str> for FormatModifier {
     fn as_ref(&self) -> &str {
         match self {
-            FormatModifier::Int32 => "int32",
-            FormatModifier::Int64 => "int64",
-            FormatModifier::Float => "float",
-            FormatModifier::Double => "double",
+            Self::Int32 => "int32",
+            Self::Int64 => "int64",
+            Self::Float => "float",
+            Self::Double => "double",
         }
     }
 }

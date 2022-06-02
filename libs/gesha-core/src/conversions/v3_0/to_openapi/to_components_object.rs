@@ -90,15 +90,7 @@ fn to_required(array: YamlArray) -> Result<RequiredSchemaFields> {
 }
 
 fn to_data_type(x: String) -> Result<OpenApiDataType> {
-    match x.as_str() {
-        "array" => Ok(OpenApiDataType::Array),
-        "boolean" => Ok(OpenApiDataType::Boolean),
-        "integer" => Ok(OpenApiDataType::Integer),
-        "number" => Ok(OpenApiDataType::Number),
-        "object" => Ok(OpenApiDataType::Object),
-        "string" => Ok(OpenApiDataType::String),
-        _ => Err(UnknownDataType(x)),
-    }
+    OpenApiDataType::find(&x).ok_or(UnknownDataType(x))
 }
 
 fn to_format_modifier(x: String) -> Result<FormatModifier> {

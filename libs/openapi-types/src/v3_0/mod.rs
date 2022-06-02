@@ -1,5 +1,4 @@
 mod operation_object;
-
 pub use operation_object::{
     HttpStatusCode, OperationObject, ResponseCase, ResponseObject, ResponsesObject,
 };
@@ -15,6 +14,9 @@ pub use components_object::{
 
 mod format_modifier;
 pub use format_modifier::FormatModifier;
+
+mod openapi_data_type;
+pub use openapi_data_type::OpenApiDataType;
 
 /// OpenAPI Document
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schema
@@ -41,15 +43,3 @@ impl ReferenceObject {
         ReferenceObject(a.into())
     }
 }
-
-/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#dataTypes
-#[derive(Debug)]
-pub enum OpenApiDataType {
-    Array,
-    Boolean,
-    Integer,
-    Number,
-    Object,
-    String,
-}
-
