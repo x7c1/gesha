@@ -74,19 +74,22 @@ impl ToFields {
         data_type: OpenApiDataType,
         format: Option<FormatModifier>,
     ) -> Result<FieldType> {
+        use FieldType as ft;
+        use FormatModifier as fm;
+        use OpenApiDataType as ot;
+
         match (&data_type, format) {
-            (OpenApiDataType::String, _) => Ok(FieldType::String),
-            (OpenApiDataType::Integer, Some(FormatModifier::Int32)) => Ok(FieldType::Int32),
-            (OpenApiDataType::Integer, Some(FormatModifier::Int64) | None) => Ok(FieldType::Int64),
-            (OpenApiDataType::Number, Some(FormatModifier::Float)) => Ok(FieldType::Float32),
-            (OpenApiDataType::Number, Some(FormatModifier::Double) | None) => {
-                Ok(FieldType::Float64)
-            }
+            (ot::String, _) => Ok(ft::String),
+            (ot::Integer, Some(fm::Int32)) => Ok(ft::Int32),
+            (ot::Integer, Some(fm::Int64) | None) => Ok(ft::Int64),
+            (ot::Number, Some(fm::Float)) => Ok(ft::Float32),
+            (ot::Number, Some(fm::Double) | None) => Ok(ft::Float64),
             // TODO: receive "items"
-            (OpenApiDataType::Array, _) => Ok(FieldType::Vec),
-            (OpenApiDataType::Object, _) => {
-                unimplemented!("inline object definition not implemented: {:?}", data_type)
-            }
+            (ot::Array, _) => Ok(ft::Vec),
+            (ot::Object, _) => unimplemented! {
+                "inline object definition not implemented: {:?}",
+                data_type
+            },
             (_, Some(x)) => Err(UnknownFormat {
                 data_type,
                 format: x.to_string(),
