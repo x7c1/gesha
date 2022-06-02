@@ -34,16 +34,7 @@ impl FieldsFactory {
     fn to_field(&self, entry: (SchemaFieldName, SchemaCase)) -> Result<StructField> {
         let (field_name, schema_case) = entry;
         match schema_case {
-            Schema(object) => {
-                let to_fields = |data_type| {
-                    let factory = FieldFactory::new(field_name, object.format, &self.required);
-                    factory.apply(data_type)
-                };
-                object
-                    .data_type
-                    .map(to_fields)
-                    .unwrap_or(Err(FieldTypeMissing))
-            }
+            Schema(object) => self.translate(field_name, object),
 
             // TODO:
             Reference(reference_object) => {
@@ -51,41 +42,44 @@ impl FieldsFactory {
             }
         }
     }
-}
 
-/// OpenApiDataType -> StructField
-struct FieldFactory {
-    field_name: SchemaFieldName,
-    format: Option<FormatModifier>,
-    is_required: bool,
-}
-
-impl FieldFactory {
-    fn new(
-        field_name: SchemaFieldName,
-        format: Option<FormatModifier>,
-        required: &Option<RequiredSchemaFields>,
-    ) -> FieldFactory {
-        let is_required = match &required {
-            Some(required) => required.contains(field_name.as_ref()),
-            None => false,
-        };
-        Self {
-            field_name,
-            format,
-            is_required,
+    fn translate(&self, name: SchemaFieldName, object: SchemaObject) -> Result<StructField> {
+        match object.data_type {
+            Some(data_type) => {
+                let factory = FieldFactory {
+                    format: object.format,
+                    required: &self.required,
+                };
+                factory.apply(name, data_type)
+            }
+            None => Err(FieldTypeMissing),
         }
     }
+}
 
-    fn apply(self, openapi_type: OpenApiDataType) -> Result<StructField> {
-        let mut data_type = self.to_field_type(openapi_type)?;
-        if !self.is_required {
-            data_type = FieldType::Option(Box::new(data_type))
+/// (SchemaFieldName, OpenApiDataType) -> StructField
+struct FieldFactory<'a> {
+    format: Option<FormatModifier>,
+    required: &'a Option<RequiredSchemaFields>,
+}
+
+impl<'a> FieldFactory<'a> {
+    fn apply(self, name: SchemaFieldName, data_type: OpenApiDataType) -> Result<StructField> {
+        let mut field_type = self.to_field_type(data_type)?;
+        if !self.is_required(&name) {
+            field_type = FieldType::Option(Box::new(field_type))
         }
         Ok(StructField {
-            name: self.field_name.into(),
-            data_type,
+            name: name.into(),
+            data_type: field_type,
         })
+    }
+
+    fn is_required(&self, field_name: &SchemaFieldName) -> bool {
+        match self.required {
+            Some(required) => required.contains(field_name.as_ref()),
+            None => false,
+        }
     }
 
     fn to_field_type(&self, data_type: OpenApiDataType) -> Result<FieldType> {
