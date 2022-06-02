@@ -26,6 +26,12 @@ impl From<SchemaFieldName> for String {
     }
 }
 
+impl AsRef<str> for SchemaFieldName {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 /// Schema Object | Reference Object
 #[derive(Debug)]
 pub enum SchemaCase {

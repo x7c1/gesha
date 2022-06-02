@@ -35,10 +35,17 @@ impl ToFields {
     fn to_field(&self, entry: (SchemaFieldName, SchemaCase)) -> Result<StructField> {
         let (field_name, schema_case) = entry;
         match schema_case {
-            Schema(object) => object
-                .data_type
-                .map(self.on_schema(field_name, object.format))
-                .unwrap_or(Err(FieldTypeMissing)),
+            Schema(object) => {
+                let to_field = ToField {
+                    field_name,
+                    format: object.format,
+                    required: &self.required,
+                };
+                object
+                    .data_type
+                    .map(|x| to_field.apply(x))
+                    .unwrap_or(Err(FieldTypeMissing))
+            }
 
             // TODO:
             Reference(reference_object) => {
@@ -46,39 +53,39 @@ impl ToFields {
             }
         }
     }
+}
 
-    fn on_schema(
-        &self,
-        field_name: SchemaFieldName,
-        format: Option<FormatModifier>,
-    ) -> impl FnOnce(OpenApiDataType) -> Result<StructField> + '_ {
-        |openapi_type| {
-            let mut data_type = self.to_field_type(openapi_type, format)?;
-            let name: String = field_name.into();
-            if !self.is_required(&name) {
-                data_type = FieldType::Option(Box::new(data_type))
-            }
-            Ok(StructField { name, data_type })
+struct ToField<'a> {
+    field_name: SchemaFieldName,
+    format: Option<FormatModifier>,
+    required: &'a Option<RequiredSchemaFields>,
+}
+
+impl ToField<'_> {
+    fn apply(self, openapi_type: OpenApiDataType) -> Result<StructField> {
+        let mut data_type = self.to_field_type(openapi_type)?;
+        if !self.is_required() {
+            data_type = FieldType::Option(Box::new(data_type))
         }
+        Ok(StructField {
+            name: self.field_name.into(),
+            data_type,
+        })
     }
 
-    fn is_required(&self, name: &str) -> bool {
+    fn is_required(&self) -> bool {
         match &self.required {
-            Some(required) => required.contains(name),
+            Some(required) => required.contains(self.field_name.as_ref()),
             None => false,
         }
     }
 
-    fn to_field_type(
-        &self,
-        data_type: OpenApiDataType,
-        format: Option<FormatModifier>,
-    ) -> Result<FieldType> {
+    fn to_field_type(&self, data_type: OpenApiDataType) -> Result<FieldType> {
         use FieldType as ft;
         use FormatModifier as fm;
         use OpenApiDataType as ot;
 
-        match (&data_type, format) {
+        match (&data_type, &self.format) {
             // TODO: receive "items"
             (ot::Array, _) => Ok(ft::Vec),
             (ot::Boolean, _) => Ok(ft::Bool),
