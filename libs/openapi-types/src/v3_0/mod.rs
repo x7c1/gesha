@@ -1,7 +1,9 @@
 mod operation_object;
+
 pub use operation_object::{
     HttpStatusCode, OperationObject, ResponseCase, ResponseObject, ResponsesObject,
 };
+use std::fmt::{Display, Formatter};
 
 mod paths_object;
 pub use paths_object::{PathFieldName, PathItemObject, PathsObject};
@@ -41,8 +43,35 @@ impl ReferenceObject {
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#dataTypes
 #[derive(Debug)]
 pub enum OpenApiDataType {
+    Array,
+    Boolean,
+    Integer,
+    Number,
     Object,
     String,
-    Integer,
-    Array,
+}
+
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#dataTypes
+#[derive(Debug)]
+pub enum FormatModifier {
+    Int32,
+    Int64,
+    Float,
+    Double,
+    // TODO:
+    // > the format property is an open string-valued property,
+    // > and can have any value. Formats such as "email", "uuid", and so on,
+    // > MAY be used even though undefined by this specification.
+}
+
+impl Display for FormatModifier {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let str = match self {
+            FormatModifier::Int32 => "int32",
+            FormatModifier::Int64 => "int64",
+            FormatModifier::Float => "float",
+            FormatModifier::Double => "double",
+        };
+        write!(f, "{str}")
+    }
 }

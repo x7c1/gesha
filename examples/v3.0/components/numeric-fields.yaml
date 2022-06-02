@@ -1,0 +1,27 @@
+schemas:
+  Numeric:
+    type: object
+    required:
+      - integer_without_format
+      - int1
+      - int2
+      - number_without_format
+      - num1
+      - num2
+    properties:
+      integer_without_format:
+        type: integer
+      int1:
+        type: integer
+        format: int32
+      int2:
+        type: integer
+        format: int64
+      number_without_format:
+        type: number
+      num1:
+        type: number
+        format: float
+      num2:
+        type: number
+        format: double

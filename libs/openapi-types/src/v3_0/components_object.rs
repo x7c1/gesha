@@ -1,4 +1,4 @@
-use crate::v3_0::{OpenApiDataType, ReferenceObject};
+use crate::v3_0::{FormatModifier, OpenApiDataType, ReferenceObject};
 use indexmap::{IndexMap, IndexSet};
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#componentsObject
@@ -26,6 +26,12 @@ impl From<SchemaFieldName> for String {
     }
 }
 
+impl AsRef<str> for SchemaFieldName {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 /// Schema Object | Reference Object
 #[derive(Debug)]
 pub enum SchemaCase {
@@ -34,15 +40,37 @@ pub enum SchemaCase {
 }
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
+///
+/// ex.1
+/// ```yaml
+/// type: object
+/// required:
+///   - id
+/// properties:
+///   id:
+///     type: integer
+///     format: int64
+///   tag:
+///     type: string
+/// ```
+///
+/// ex.2
+/// ```yaml
+/// type: integer
+/// format: int64
+/// ```
+///
 #[derive(Debug)]
 pub struct SchemaObject {
     /// > type - Value MUST be a string.
     /// > Multiple types via an array are not supported.
     pub data_type: Option<OpenApiDataType>,
 
-    pub properties: Option<SchemaProperties>,
+    pub format: Option<FormatModifier>,
 
     pub required: Option<RequiredSchemaFields>,
+
+    pub properties: Option<SchemaProperties>,
 }
 
 /// > properties - Property definitions MUST be a Schema Object
@@ -60,6 +88,10 @@ pub struct RequiredSchemaFields(IndexSet<String>);
 
 impl RequiredSchemaFields {
     pub fn new(fields: IndexSet<String>) -> Self {
+        // TODO: check fields length
         Self(fields)
+    }
+    pub fn contains(&self, field_name: &str) -> bool {
+        self.0.contains(field_name)
     }
 }

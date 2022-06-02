@@ -3,8 +3,8 @@ use crate::conversions::{reify_entry, reify_value, Result, ToOpenApi};
 use crate::yaml::{YamlArray, YamlMap};
 use indexmap::IndexSet;
 use openapi_types::v3_0::{
-    ComponentsObject, OpenApiDataType, ReferenceObject, RequiredSchemaFields, SchemaCase,
-    SchemaFieldName, SchemaObject, SchemaProperties, SchemasObject,
+    ComponentsObject, FormatModifier, OpenApiDataType, ReferenceObject, RequiredSchemaFields,
+    SchemaCase, SchemaFieldName, SchemaObject, SchemaProperties, SchemasObject,
 };
 
 impl ToOpenApi for ComponentsObject {
@@ -58,8 +58,14 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         .map(to_data_type)
         .transpose()?;
 
+    let format = map
+        .remove_if_exists::<String>("format")?
+        .map(to_format_modifier)
+        .transpose()?;
+
     Ok(SchemaObject {
         data_type,
+        format,
         properties,
         required,
     })
@@ -85,10 +91,22 @@ fn to_required(array: YamlArray) -> Result<RequiredSchemaFields> {
 
 fn to_data_type(x: String) -> Result<OpenApiDataType> {
     match x.as_str() {
+        "array" => Ok(OpenApiDataType::Array),
+        "boolean" => Ok(OpenApiDataType::Boolean),
+        "integer" => Ok(OpenApiDataType::Integer),
+        "number" => Ok(OpenApiDataType::Number),
         "object" => Ok(OpenApiDataType::Object),
         "string" => Ok(OpenApiDataType::String),
-        "integer" => Ok(OpenApiDataType::Integer),
-        "array" => Ok(OpenApiDataType::Array),
         _ => Err(UnknownDataType(x)),
+    }
+}
+
+fn to_format_modifier(x: String) -> Result<FormatModifier> {
+    match x.as_str() {
+        "int32" => Ok(FormatModifier::Int32),
+        "int64" => Ok(FormatModifier::Int64),
+        "float" => Ok(FormatModifier::Float),
+        "double" => Ok(FormatModifier::Double),
+        _ => unimplemented!("unimplemented: {}", x),
     }
 }

@@ -1,5 +1,6 @@
 use crate::conversions::Error::Yaml;
 use crate::yaml;
+use openapi_types::v3_0::OpenApiDataType;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
@@ -11,6 +12,10 @@ pub enum Error {
     // module errors
     IncompatibleVersion,
     FieldTypeMissing,
+    UnknownFormat {
+        data_type: OpenApiDataType,
+        format: String,
+    },
     UnknownDataType(String),
 }
 

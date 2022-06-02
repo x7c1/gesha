@@ -1,3 +1,4 @@
+#[macro_export]
 macro_rules! render {
     ($write:ident, "{}" > $func:expr => $y:expr) => {
         writeln!($write, "{{")?;
@@ -32,5 +33,3 @@ macro_rules! render {
         )+
     };
 }
-
-pub(super) use render;

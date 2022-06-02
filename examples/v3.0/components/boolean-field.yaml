@@ -3,9 +3,9 @@ schemas:
     type: object
     required:
       - id
-      - name
+      - is_animal
     properties:
       id:
         type: integer
-      name:
-        type: string
+      is_animal:
+        type: boolean
