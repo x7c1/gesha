@@ -60,6 +60,7 @@ pub enum FieldType {
     Int32,
     Int64,
     Float32,
+    Float64,
     // TODO: include type parameter
     Vec,
     Option(Box<FieldType>),

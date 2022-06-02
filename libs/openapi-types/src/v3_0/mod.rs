@@ -56,6 +56,7 @@ pub enum FormatModifier {
     Int32,
     Int64,
     Float,
+    Double,
     // TODO:
     // > the format property is an open string-valued property,
     // > and can have any value. Formats such as "email", "uuid", and so on,
@@ -68,6 +69,7 @@ impl Display for FormatModifier {
             FormatModifier::Int32 => "int32",
             FormatModifier::Int64 => "int64",
             FormatModifier::Float => "float",
+            FormatModifier::Double => "double",
         };
         write!(f, "{str}")
     }

@@ -79,7 +79,9 @@ impl ToFields {
             (OpenApiDataType::Integer, Some(FormatModifier::Int32)) => Ok(FieldType::Int32),
             (OpenApiDataType::Integer, Some(FormatModifier::Int64) | None) => Ok(FieldType::Int64),
             (OpenApiDataType::Number, Some(FormatModifier::Float)) => Ok(FieldType::Float32),
-            (OpenApiDataType::Number, _) => unimplemented!(),
+            (OpenApiDataType::Number, Some(FormatModifier::Double) | None) => {
+                Ok(FieldType::Float64)
+            }
             // TODO: receive "items"
             (OpenApiDataType::Array, _) => Ok(FieldType::Vec),
             (OpenApiDataType::Object, _) => {

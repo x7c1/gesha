@@ -71,6 +71,7 @@ fn render_field_type<W: Write>(mut write: W, field_type: FieldType) -> Result<()
             FieldType::Int32 => "i32".to_string(),
             FieldType::Int64 => "i64".to_string(),
             FieldType::Float32 => "f32".to_string(),
+            FieldType::Float64 => "f64".to_string(),
             FieldType::Vec => unimplemented!(),
             FieldType::Option(x) => format!("Option<{}>", from_type(*x)),
         }
