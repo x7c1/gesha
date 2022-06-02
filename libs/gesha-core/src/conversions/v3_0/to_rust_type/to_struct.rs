@@ -2,9 +2,10 @@ use crate::conversions::Error::FieldTypeMissing;
 use crate::conversions::Result;
 use crate::targets::rust_type::{Definition, FieldType, StructDef, StructField};
 use openapi_types::v3_0::{
-    OpenApiDataType, RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaObject,
-    SchemaProperties,
+    FormatModifier, OpenApiDataType, RequiredSchemaFields, SchemaCase, SchemaFieldName,
+    SchemaObject, SchemaProperties,
 };
+use SchemaCase::{Reference, Schema};
 
 pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> Result<Definition> {
     let to_fields = ToFields {
@@ -34,13 +35,13 @@ impl ToFields {
     fn to_field(&self, entry: (SchemaFieldName, SchemaCase)) -> Result<StructField> {
         let (field_name, schema_case) = entry;
         match schema_case {
-            SchemaCase::Schema(schema_object) => schema_object
+            Schema(object) => object
                 .data_type
-                .map(self.on_schema(field_name))
+                .map(self.on_schema(field_name, object.format))
                 .unwrap_or(Err(FieldTypeMissing)),
 
             // TODO:
-            SchemaCase::Reference(reference_object) => {
+            Reference(reference_object) => {
                 unimplemented!("reference field not implemented: {:?}", reference_object)
             }
         }
@@ -49,9 +50,10 @@ impl ToFields {
     fn on_schema(
         &self,
         field_name: SchemaFieldName,
+        format: Option<FormatModifier>,
     ) -> impl FnOnce(OpenApiDataType) -> Result<StructField> + '_ {
         |openapi_type| {
-            let mut data_type = to_field_type(openapi_type)?;
+            let mut data_type = self.to_field_type(openapi_type, format)?;
             let name: String = field_name.into();
             if !self.is_required(&name) {
                 data_type = FieldType::Option(Box::new(data_type))
@@ -66,17 +68,22 @@ impl ToFields {
             None => false,
         }
     }
-}
 
-fn to_field_type(data_type: OpenApiDataType) -> Result<FieldType> {
-    match data_type {
-        OpenApiDataType::String => Ok(FieldType::String),
-        // TODO: receive "format"
-        OpenApiDataType::Integer => Ok(FieldType::Int64),
-        // TODO: receive "items"
-        OpenApiDataType::Array => Ok(FieldType::Vec),
-        OpenApiDataType::Object => {
-            unimplemented!("inline object definition not implemented: {:?}", data_type)
+    fn to_field_type(
+        &self,
+        data_type: OpenApiDataType,
+        format: Option<FormatModifier>,
+    ) -> Result<FieldType> {
+        match (&data_type, format) {
+            (OpenApiDataType::String, _) => Ok(FieldType::String),
+            (OpenApiDataType::Integer, Some(FormatModifier::Int32)) => Ok(FieldType::Int32),
+            (OpenApiDataType::Integer, Some(FormatModifier::Int64) | None) => Ok(FieldType::Int64),
+            (OpenApiDataType::Number, _) => unimplemented!(),
+            // TODO: receive "items"
+            (OpenApiDataType::Array, _) => Ok(FieldType::Vec),
+            (OpenApiDataType::Object, _) => {
+                unimplemented!("inline object definition not implemented: {:?}", data_type)
+            }
         }
     }
 }

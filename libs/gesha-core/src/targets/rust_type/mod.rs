@@ -54,9 +54,10 @@ pub struct StructField {
     pub data_type: FieldType,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum FieldType {
     String,
+    Int32,
     Int64,
     // TODO: include type parameter
     Vec,

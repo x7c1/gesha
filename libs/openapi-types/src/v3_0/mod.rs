@@ -44,5 +44,17 @@ pub enum OpenApiDataType {
     Object,
     String,
     Integer,
+    Number,
     Array,
+}
+
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#dataTypes
+#[derive(Debug)]
+pub enum FormatModifier {
+    Int32,
+    Int64,
+    // TODO:
+    // > the format property is an open string-valued property,
+    // > and can have any value. Formats such as "email", "uuid", and so on,
+    // > MAY be used even though undefined by this specification.
 }

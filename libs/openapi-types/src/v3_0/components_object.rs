@@ -1,4 +1,4 @@
-use crate::v3_0::{OpenApiDataType, ReferenceObject};
+use crate::v3_0::{FormatModifier, OpenApiDataType, ReferenceObject};
 use indexmap::{IndexMap, IndexSet};
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#componentsObject
@@ -34,15 +34,37 @@ pub enum SchemaCase {
 }
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
+///
+/// ex.1
+/// ```yaml
+/// type: object
+/// required:
+///   - id
+/// properties:
+///   id:
+///     type: integer
+///     format: int64
+///   tag:
+///     type: string
+/// ```
+///
+/// ex.2
+/// ```yaml
+/// type: integer
+/// format: int64
+/// ```
+///
 #[derive(Debug)]
 pub struct SchemaObject {
     /// > type - Value MUST be a string.
     /// > Multiple types via an array are not supported.
     pub data_type: Option<OpenApiDataType>,
 
-    pub properties: Option<SchemaProperties>,
+    pub format: Option<FormatModifier>,
 
     pub required: Option<RequiredSchemaFields>,
+
+    pub properties: Option<SchemaProperties>,
 }
 
 /// > properties - Property definitions MUST be a Schema Object

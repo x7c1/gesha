@@ -1,0 +1,22 @@
+schemas:
+  Numeric:
+    type: object
+    required:
+      - num1
+      - num2
+#      - num3
+#      - num4
+    properties:
+      num1:
+        type: integer
+        format: int32
+      num2:
+        type: integer
+        format: int64
+# TODO:
+#      num3:
+#        type: number
+#        format: float
+#      num4:
+#        type: number
+#        format: double
