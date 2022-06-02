@@ -102,11 +102,5 @@ fn to_data_type(x: String) -> Result<OpenApiDataType> {
 }
 
 fn to_format_modifier(x: String) -> Result<FormatModifier> {
-    match x.as_str() {
-        "int32" => Ok(FormatModifier::Int32),
-        "int64" => Ok(FormatModifier::Int64),
-        "float" => Ok(FormatModifier::Float),
-        "double" => Ok(FormatModifier::Double),
-        _ => unimplemented!("unimplemented: {}", x),
-    }
+    FormatModifier::find(&x).ok_or_else(|| unimplemented!("unimplemented: {}", x))
 }
