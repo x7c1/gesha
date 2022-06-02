@@ -6,6 +6,5 @@ schemas:
     properties:
       id:
         type: integer
-        format: int64
       tag:
         type: string

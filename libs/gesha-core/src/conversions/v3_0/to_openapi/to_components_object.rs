@@ -104,6 +104,7 @@ fn to_format_modifier(x: String) -> Result<FormatModifier> {
     match x.as_str() {
         "int32" => Ok(FormatModifier::Int32),
         "int64" => Ok(FormatModifier::Int64),
+        "float" => Ok(FormatModifier::Float),
         _ => unimplemented!("unimplemented: {}", x),
     }
 }

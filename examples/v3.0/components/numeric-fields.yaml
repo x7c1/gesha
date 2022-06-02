@@ -4,7 +4,7 @@ schemas:
     required:
       - num1
       - num2
-#      - num3
+      - num3
 #      - num4
     properties:
       num1:
@@ -13,10 +13,10 @@ schemas:
       num2:
         type: integer
         format: int64
+      num3:
+        type: number
+        format: float
 # TODO:
-#      num3:
-#        type: number
-#        format: float
 #      num4:
 #        type: number
 #        format: double

@@ -1,4 +1,4 @@
-use crate::conversions::Error::FieldTypeMissing;
+use crate::conversions::Error::{FieldTypeMissing, UnknownFormat};
 use crate::conversions::Result;
 use crate::targets::rust_type::{Definition, FieldType, StructDef, StructField};
 use openapi_types::v3_0::{
@@ -78,12 +78,17 @@ impl ToFields {
             (OpenApiDataType::String, _) => Ok(FieldType::String),
             (OpenApiDataType::Integer, Some(FormatModifier::Int32)) => Ok(FieldType::Int32),
             (OpenApiDataType::Integer, Some(FormatModifier::Int64) | None) => Ok(FieldType::Int64),
+            (OpenApiDataType::Number, Some(FormatModifier::Float)) => Ok(FieldType::Float32),
             (OpenApiDataType::Number, _) => unimplemented!(),
             // TODO: receive "items"
             (OpenApiDataType::Array, _) => Ok(FieldType::Vec),
             (OpenApiDataType::Object, _) => {
                 unimplemented!("inline object definition not implemented: {:?}", data_type)
             }
+            (_, Some(x)) => Err(UnknownFormat {
+                data_type,
+                format: x.to_string(),
+            }),
         }
     }
 }
