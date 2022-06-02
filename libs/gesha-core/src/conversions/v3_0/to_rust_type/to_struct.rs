@@ -79,17 +79,18 @@ impl ToFields {
         use OpenApiDataType as ot;
 
         match (&data_type, format) {
-            (ot::String, _) => Ok(ft::String),
+            // TODO: receive "items"
+            (ot::Array, _) => Ok(ft::Vec),
+            (ot::Boolean, _) => Ok(ft::Bool),
             (ot::Integer, Some(fm::Int32)) => Ok(ft::Int32),
             (ot::Integer, Some(fm::Int64) | None) => Ok(ft::Int64),
             (ot::Number, Some(fm::Float)) => Ok(ft::Float32),
             (ot::Number, Some(fm::Double) | None) => Ok(ft::Float64),
-            // TODO: receive "items"
-            (ot::Array, _) => Ok(ft::Vec),
             (ot::Object, _) => unimplemented! {
                 "inline object definition not implemented: {:?}",
                 data_type
             },
+            (ot::String, _) => Ok(ft::String),
             (_, Some(x)) => Err(UnknownFormat {
                 data_type,
                 format: x.to_string(),

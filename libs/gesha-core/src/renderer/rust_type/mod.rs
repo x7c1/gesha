@@ -67,13 +67,14 @@ fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
 fn render_field_type<W: Write>(mut write: W, field_type: FieldType) -> Result<()> {
     fn from_type(x: FieldType) -> String {
         match x {
-            FieldType::String => "String".to_string(),
+            FieldType::Bool => "bool".to_string(),
             FieldType::Int32 => "i32".to_string(),
             FieldType::Int64 => "i64".to_string(),
             FieldType::Float32 => "f32".to_string(),
             FieldType::Float64 => "f64".to_string(),
-            FieldType::Vec => unimplemented!(),
             FieldType::Option(x) => format!("Option<{}>", from_type(*x)),
+            FieldType::String => "String".to_string(),
+            FieldType::Vec => unimplemented!(),
         }
     }
     render! { write =>

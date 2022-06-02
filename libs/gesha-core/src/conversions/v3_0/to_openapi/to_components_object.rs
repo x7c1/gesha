@@ -91,11 +91,12 @@ fn to_required(array: YamlArray) -> Result<RequiredSchemaFields> {
 
 fn to_data_type(x: String) -> Result<OpenApiDataType> {
     match x.as_str() {
-        "object" => Ok(OpenApiDataType::Object),
-        "string" => Ok(OpenApiDataType::String),
+        "array" => Ok(OpenApiDataType::Array),
+        "boolean" => Ok(OpenApiDataType::Boolean),
         "integer" => Ok(OpenApiDataType::Integer),
         "number" => Ok(OpenApiDataType::Number),
-        "array" => Ok(OpenApiDataType::Array),
+        "object" => Ok(OpenApiDataType::Object),
+        "string" => Ok(OpenApiDataType::String),
         _ => Err(UnknownDataType(x)),
     }
 }

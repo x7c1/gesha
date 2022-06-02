@@ -1,0 +1,11 @@
+schemas:
+  Pet:
+    type: object
+    required:
+      - id
+      - is_animal
+    properties:
+      id:
+        type: integer
+      is_animal:
+        type: boolean

@@ -8,6 +8,7 @@ pub fn run() -> gateway::Result<()> {
         "pet.yaml",
         "optional-field.yaml",
         "numeric-fields.yaml",
+        "boolean-field.yaml",
     ]);
     cases.into_iter().try_for_each(test_rust_type)
 }

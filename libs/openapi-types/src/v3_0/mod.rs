@@ -43,11 +43,12 @@ impl ReferenceObject {
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#dataTypes
 #[derive(Debug)]
 pub enum OpenApiDataType {
-    Object,
-    String,
+    Array,
+    Boolean,
     Integer,
     Number,
-    Array,
+    Object,
+    String,
 }
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#dataTypes
