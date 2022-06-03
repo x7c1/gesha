@@ -3,8 +3,9 @@ use crate::conversions::{reify_entry, reify_value, Result, ToOpenApi};
 use crate::yaml::{YamlArray, YamlMap};
 use indexmap::IndexSet;
 use openapi_types::v3_0::{
-    ComponentsObject, FormatModifier, OpenApiDataType, ReferenceObject, RequiredSchemaFields,
-    SchemaCase, SchemaFieldName, SchemaObject, SchemaProperties, SchemasObject,
+    ArrayItems, ComponentsObject, FormatModifier, OpenApiDataType, ReferenceObject,
+    RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaObject, SchemaProperties,
+    SchemasObject,
 };
 
 impl ToOpenApi for ComponentsObject {
@@ -63,11 +64,17 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         .map(to_format_modifier)
         .transpose()?;
 
+    let items = map
+        .remove_if_exists::<YamlMap>("items")?
+        .map(to_array_items)
+        .transpose()?;
+
     Ok(SchemaObject {
         data_type,
         format,
         properties,
         required,
+        items,
     })
 }
 
@@ -95,4 +102,9 @@ fn to_data_type(x: String) -> Result<OpenApiDataType> {
 
 fn to_format_modifier(x: String) -> Result<FormatModifier> {
     FormatModifier::find(&x).ok_or_else(|| unimplemented!("unimplemented: {}", x))
+}
+
+fn to_array_items(map: YamlMap) -> Result<ArrayItems> {
+    let case = to_schema_case(map)?;
+    Ok(ArrayItems::new(case))
 }

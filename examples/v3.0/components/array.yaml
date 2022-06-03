@@ -1,0 +1,13 @@
+schemas:
+  Pet:
+    type: object
+    required:
+      - id
+      - string_values
+    properties:
+      id:
+        type: integer
+      string_values:
+        type: array
+        items:
+          type: string

@@ -11,7 +11,6 @@ pub enum Error {
 
     // module errors
     IncompatibleVersion,
-    FieldTypeMissing,
     UnknownFormat {
         data_type: OpenApiDataType,
         format: String,

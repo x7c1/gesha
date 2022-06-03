@@ -8,7 +8,7 @@ pub use paths_object::{PathFieldName, PathItemObject, PathsObject};
 
 mod components_object;
 pub use components_object::{
-    ComponentsObject, RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaObject,
+    ArrayItems, ComponentsObject, RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaObject,
     SchemaProperties, SchemasObject,
 };
 

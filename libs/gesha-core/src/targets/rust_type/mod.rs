@@ -51,18 +51,17 @@ impl From<VecDef> for Definition {
 #[derive(Debug)]
 pub struct StructField {
     pub name: String,
-    pub data_type: FieldType,
+    pub data_type: DataType,
 }
 
 #[derive(Debug, Clone)]
-pub enum FieldType {
+pub enum DataType {
     Bool,
     Int32,
     Int64,
     Float32,
     Float64,
-    Option(Box<FieldType>),
+    Option(Box<DataType>),
     String,
-    // TODO: include type parameter
-    Vec,
+    Vec(Box<DataType>),
 }

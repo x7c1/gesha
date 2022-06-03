@@ -2,7 +2,7 @@ use crate::render;
 use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
-    Definition, FieldType, ModuleName, Modules, StructDef, StructField,
+    DataType, Definition, ModuleName, Modules, StructDef, StructField,
 };
 use std::io::Write;
 
@@ -64,21 +64,21 @@ fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
     Ok(())
 }
 
-fn render_field_type<W: Write>(mut write: W, field_type: FieldType) -> Result<()> {
-    fn from_type(x: FieldType) -> String {
+fn render_field_type<W: Write>(mut write: W, data_type: DataType) -> Result<()> {
+    fn from_type(x: DataType) -> String {
         match x {
-            FieldType::Bool => "bool".to_string(),
-            FieldType::Int32 => "i32".to_string(),
-            FieldType::Int64 => "i64".to_string(),
-            FieldType::Float32 => "f32".to_string(),
-            FieldType::Float64 => "f64".to_string(),
-            FieldType::Option(x) => format!("Option<{}>", from_type(*x)),
-            FieldType::String => "String".to_string(),
-            FieldType::Vec => unimplemented!(),
+            DataType::Bool => "bool".to_string(),
+            DataType::Int32 => "i32".to_string(),
+            DataType::Int64 => "i64".to_string(),
+            DataType::Float32 => "f32".to_string(),
+            DataType::Float64 => "f64".to_string(),
+            DataType::Option(x) => format!("Option<{}>", from_type(*x)),
+            DataType::String => "String".to_string(),
+            DataType::Vec(x) => format!("Vec<{}>", from_type(*x)),
         }
     }
     render! { write =>
-        echo > "{type_name}", type_name = from_type(field_type);
+        echo > "{type_name}", type_name = from_type(data_type);
     }
     Ok(())
 }
