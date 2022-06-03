@@ -4,6 +4,8 @@ schemas:
     required:
       - id
       - string_values
+      - int32_values
+      - array_array
     properties:
       id:
         type: integer
@@ -11,3 +13,14 @@ schemas:
         type: array
         items:
           type: string
+      int32_values:
+        type: array
+        items:
+          type: integer
+          format: int32
+      array_array:
+        type: array
+        items:
+          type: array
+          items:
+            type: integer
