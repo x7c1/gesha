@@ -65,20 +65,8 @@ fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
 }
 
 fn render_field_type<W: Write>(mut write: W, data_type: DataType) -> Result<()> {
-    fn from_type(x: DataType) -> String {
-        match x {
-            DataType::Bool => "bool".to_string(),
-            DataType::Int32 => "i32".to_string(),
-            DataType::Int64 => "i64".to_string(),
-            DataType::Float32 => "f32".to_string(),
-            DataType::Float64 => "f64".to_string(),
-            DataType::Option(x) => format!("Option<{}>", from_type(*x)),
-            DataType::String => "String".to_string(),
-            DataType::Vec(x) => format!("Vec<{}>", from_type(*x)),
-        }
-    }
     render! { write =>
-        echo > "{type_name}", type_name = from_type(data_type);
+        echo > "{type_name}", type_name = String::from(data_type);
     }
     Ok(())
 }
