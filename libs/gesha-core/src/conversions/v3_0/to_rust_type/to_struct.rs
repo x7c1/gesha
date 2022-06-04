@@ -60,18 +60,22 @@ impl FieldsFactory {
         name: SchemaFieldName,
         object: ReferenceObject,
     ) -> Result<StructField> {
-        let type_name = match String::from(object) {
-            x if x.starts_with("#/components/schemas/") => {
-                // TODO: change location to relative paths if using "#/components/responses/" etc
-                x.replace("#/components/schemas/", "")
-            }
-            x => unimplemented!("not implemented: {x}"),
-        };
         Ok(StructField {
             name: name.into(),
-            data_type: DataType::Custom(type_name),
+            data_type: reference_to_data_type(object)?,
         })
     }
+}
+
+fn reference_to_data_type(object: ReferenceObject) -> Result<DataType> {
+    let type_name = match String::from(object) {
+        x if x.starts_with("#/components/schemas/") => {
+            // TODO: change location to relative paths if using "#/components/responses/" etc
+            x.replace("#/components/schemas/", "")
+        }
+        x => unimplemented!("not implemented: {x}"),
+    };
+    Ok(DataType::Custom(type_name))
 }
 
 /// (SchemaFieldName, OpenApiDataType) -> StructField
@@ -149,6 +153,6 @@ fn items_to_type(items: ArrayItems) -> Result<DataType> {
             let data_type = object.data_type.unwrap_or_else(|| unimplemented!());
             factory.apply(data_type)
         }
-        Reference(_) => unimplemented!(),
+        Reference(object) => reference_to_data_type(object),
     }
 }
