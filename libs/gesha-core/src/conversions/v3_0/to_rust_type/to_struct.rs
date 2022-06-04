@@ -62,6 +62,7 @@ impl FieldsFactory {
     ) -> Result<StructField> {
         let type_name = match String::from(object) {
             x if x.starts_with("#/components/schemas/") => {
+                // TODO: change location to relative paths if using "#/components/responses/" etc
                 x.replace("#/components/schemas/", "")
             }
             x => unimplemented!("not implemented: {x}"),
