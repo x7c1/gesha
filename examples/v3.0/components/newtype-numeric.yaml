@@ -1,0 +1,22 @@
+schemas:
+  IntegerDefaultValue:
+    type: integer
+
+  Int64Value:
+    type: integer
+    format: int64
+
+  Int32Value:
+    type: integer
+    format: int32
+
+  NumberDefaultValue:
+    type: number
+
+  FloatValue:
+    type: number
+    format: float
+
+  DoubleValue:
+    type: number
+    format: double

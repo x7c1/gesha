@@ -13,6 +13,7 @@ pub fn run() -> gateway::Result<()> {
         "ref-property.yaml",
         "ref-items.yaml",
         "newtype.yaml",
+        "newtype-numeric.yaml",
     ]);
     cases.into_iter().try_for_each(test_rust_type)
 }

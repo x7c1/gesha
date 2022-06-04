@@ -2,28 +2,6 @@ schemas:
   StringValue:
     type: string
 
-  IntegerDefaultValue:
-    type: integer
-
-  Int64Value:
-    type: integer
-    format: int64
-
-  Int32Value:
-    type: integer
-    format: int32
-
-  NumberDefaultValue:
-    type: number
-
-  FloatValue:
-    type: number
-    format: float
-
-  DoubleValue:
-    type: number
-    format: double
-
   BooleanValue:
     type: boolean
 
@@ -31,3 +9,16 @@ schemas:
     type: array
     items:
       type: integer
+
+  ArrayCustomValue:
+    type: array
+    items:
+      $ref: '#/components/schemas/Pet'
+
+  Pet:
+    type: object
+    required:
+      - id
+    properties:
+      id:
+        type: integer
