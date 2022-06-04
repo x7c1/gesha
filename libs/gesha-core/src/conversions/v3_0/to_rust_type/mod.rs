@@ -1,6 +1,8 @@
 mod to_struct;
 use to_struct::to_struct;
 
+mod type_factory;
+
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{DataType, Definition, ModuleName, Modules, NewTypeDef, VecDef};
 use indexmap::indexmap;
@@ -48,12 +50,13 @@ fn to_definition(name: SchemaFieldName, object: SchemaObject) -> Result<Definiti
     match object.data_type.as_ref() {
         Some(OpenApiDataType::Object) => to_struct(name, object),
         Some(OpenApiDataType::Array) => to_vec(name, object),
-        Some(OpenApiDataType::String) => to_newtype_string(name, object),
+        Some(OpenApiDataType::String | OpenApiDataType::Integer) => to_newtype(name, object),
         _ => todo!("object.type: {:?}", object.data_type),
     }
 }
 
-fn to_newtype_string(name: SchemaFieldName, _object: SchemaObject) -> Result<Definition> {
+fn to_newtype(name: SchemaFieldName, _object: SchemaObject) -> Result<Definition> {
+    // _object.
     let def = NewTypeDef {
         name: name.into(),
         data_type: DataType::String,
