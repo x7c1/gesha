@@ -62,7 +62,7 @@ impl FieldsFactory {
     ) -> Result<StructField> {
         let type_name = match String::from(object) {
             x if x.starts_with("#/components/schemas/") => {
-                x.replace("#/components/schemas/", "super::schemas::")
+                x.replace("#/components/schemas/", "")
             }
             x => unimplemented!("not implemented: {x}"),
         };
@@ -145,8 +145,7 @@ fn items_to_type(items: ArrayItems) -> Result<DataType> {
                 format: object.format,
                 items: object.items,
             };
-            // TODO: remove unwrap()
-            let data_type = object.data_type.unwrap();
+            let data_type = object.data_type.unwrap_or_else(|| unimplemented!());
             factory.apply(data_type)
         }
         Reference(_) => unimplemented!(),
