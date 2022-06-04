@@ -86,7 +86,7 @@ impl<'a> FieldFactory<'a> {
     }
 }
 
-/// OpenApiDataType -> FieldType
+/// OpenApiDataType -> DataType
 struct TypeFactory {
     format: Option<FormatModifier>,
     items: Option<ArrayItems>,

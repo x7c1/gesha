@@ -59,12 +59,12 @@ fn render_fields<W: Write>(mut write: W, fields: Vec<StructField>) -> Result<()>
 fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
     render! { write =>
         echo > "pub {name}: ", name = field.name;
-        call > render_field_type => field.data_type;
+        call > render_data_type => field.data_type;
     };
     Ok(())
 }
 
-fn render_field_type<W: Write>(mut write: W, data_type: DataType) -> Result<()> {
+fn render_data_type<W: Write>(mut write: W, data_type: DataType) -> Result<()> {
     render! { write =>
         echo > "{type_name}", type_name = String::from(data_type);
     }
