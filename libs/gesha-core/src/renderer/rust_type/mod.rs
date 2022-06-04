@@ -34,7 +34,6 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
     match x {
         Definition::StructDef(x) => render_struct(write, x)?,
         Definition::NewTypeDef(x) => render_newtype(write, x)?,
-        Definition::VecDef(_x) => unimplemented!(),
     };
     Ok(())
 }
@@ -43,6 +42,7 @@ fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
     render! { write =>
         echo > "pub struct {name}", name = x.name;
         "{}" > render_fields => x.fields;
+        echo > "\n";
     };
     Ok(())
 }
@@ -76,7 +76,7 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
     render! { write =>
         echo > "pub struct {name}", name = x.name;
         "()" > render_data_type => x.data_type;
-        echo > ";\n";
+        echo > ";\n\n";
     }
     Ok(())
 }
