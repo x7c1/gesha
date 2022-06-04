@@ -1,0 +1,11 @@
+schemas:
+  StringValue:
+    type: string
+#  IntegerValue:
+#    type: integer
+#  BooleanValue:
+#    type: boolean
+#  ArrayValue:
+#    type: array
+#    items:
+#      type: integer

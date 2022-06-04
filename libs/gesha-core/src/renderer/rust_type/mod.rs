@@ -2,7 +2,7 @@ use crate::render;
 use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, ModuleName, Modules, StructDef, StructField,
+    DataType, Definition, ModuleName, Modules, NewTypeDef, StructDef, StructField,
 };
 use std::io::Write;
 
@@ -33,6 +33,7 @@ fn render_definitions<W: Write>(mut write: W, xs: Vec<Definition>) -> Result<()>
 fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
     match x {
         Definition::StructDef(x) => render_struct(write, x)?,
+        Definition::NewTypeDef(x) => render_newtype(write, x)?,
         Definition::VecDef(_x) => unimplemented!(),
     };
     Ok(())
@@ -67,6 +68,15 @@ fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
 fn render_data_type<W: Write>(mut write: W, data_type: DataType) -> Result<()> {
     render! { write =>
         echo > "{type_name}", type_name = String::from(data_type);
+    }
+    Ok(())
+}
+
+fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
+    render! { write =>
+        echo > "pub struct {name}", name = x.name;
+        "()" > render_data_type => x.data_type;
+        echo > ";\n";
     }
     Ok(())
 }

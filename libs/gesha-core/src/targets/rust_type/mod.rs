@@ -22,6 +22,7 @@ impl Display for ModuleName {
 pub enum Definition {
     StructDef(StructDef),
     VecDef(VecDef),
+    NewTypeDef(NewTypeDef),
 }
 
 #[derive(Debug)]
@@ -33,6 +34,18 @@ pub struct StructDef {
 impl From<StructDef> for Definition {
     fn from(x: StructDef) -> Self {
         Self::StructDef(x)
+    }
+}
+
+#[derive(Debug)]
+pub struct NewTypeDef {
+    pub name: String,
+    pub data_type: DataType,
+}
+
+impl From<NewTypeDef> for Definition {
+    fn from(x: NewTypeDef) -> Self {
+        Self::NewTypeDef(x)
     }
 }
 

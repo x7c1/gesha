@@ -12,6 +12,7 @@ pub fn run() -> gateway::Result<()> {
         "array.yaml",
         "ref-property.yaml",
         "ref-items.yaml",
+        "newtype.yaml",
     ]);
     cases.into_iter().try_for_each(test_rust_type)
 }
