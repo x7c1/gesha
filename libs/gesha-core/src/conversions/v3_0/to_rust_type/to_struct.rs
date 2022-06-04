@@ -2,8 +2,8 @@ use crate::conversions::Error::UnknownFormat;
 use crate::conversions::Result;
 use crate::targets::rust_type::{DataType, Definition, StructDef, StructField};
 use openapi_types::v3_0::{
-    ArrayItems, FormatModifier, OpenApiDataType, RequiredSchemaFields, SchemaCase, SchemaFieldName,
-    SchemaObject, SchemaProperties,
+    ArrayItems, FormatModifier, OpenApiDataType, ReferenceObject, RequiredSchemaFields, SchemaCase,
+    SchemaFieldName, SchemaObject, SchemaProperties,
 };
 use SchemaCase::{Reference, Schema};
 
@@ -34,15 +34,12 @@ impl FieldsFactory {
     fn to_field(&self, entry: (SchemaFieldName, SchemaCase)) -> Result<StructField> {
         let (field_name, schema_case) = entry;
         match schema_case {
-            Schema(object) => self.translate(field_name, object),
-            Reference(reference_object) => {
-                // TODO:
-                unimplemented!("reference field not implemented: {:?}", reference_object)
-            }
+            Schema(object) => self.schema_to_field(field_name, object),
+            Reference(object) => self.reference_to_field(field_name, object),
         }
     }
 
-    fn translate(&self, name: SchemaFieldName, object: SchemaObject) -> Result<StructField> {
+    fn schema_to_field(&self, name: SchemaFieldName, object: SchemaObject) -> Result<StructField> {
         match object.data_type {
             Some(data_type) => {
                 let factory = FieldFactory {
@@ -56,6 +53,23 @@ impl FieldsFactory {
             }
             None => unimplemented!(),
         }
+    }
+
+    fn reference_to_field(
+        &self,
+        name: SchemaFieldName,
+        object: ReferenceObject,
+    ) -> Result<StructField> {
+        let type_name = match String::from(object) {
+            x if x.starts_with("#/components/schemas/") => {
+                x.replace("#/components/schemas/", "super::schemas::")
+            }
+            x => unimplemented!("not implemented: {x}"),
+        };
+        Ok(StructField {
+            name: name.into(),
+            data_type: DataType::Custom(type_name),
+        })
     }
 }
 

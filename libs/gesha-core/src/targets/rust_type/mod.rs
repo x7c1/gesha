@@ -64,6 +64,7 @@ pub enum DataType {
     Option(Box<DataType>),
     String,
     Vec(Box<DataType>),
+    Custom(String),
 }
 
 impl From<DataType> for String {
@@ -77,6 +78,7 @@ impl From<DataType> for String {
             DataType::Option(x) => format!("Option<{}>", String::from(*x)),
             DataType::String => "String".to_string(),
             DataType::Vec(x) => format!("Vec<{}>", String::from(*x)),
+            DataType::Custom(x) => x,
         }
     }
 }
