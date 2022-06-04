@@ -60,6 +60,12 @@ pub enum SchemaCase {
 /// format: int64
 /// ```
 ///
+/// ex.3
+/// ```yaml
+/// type: array
+/// items:
+///     type: string
+/// ```
 #[derive(Debug)]
 pub struct SchemaObject {
     /// > type - Value MUST be a string.
@@ -71,6 +77,8 @@ pub struct SchemaObject {
     pub required: Option<RequiredSchemaFields>,
 
     pub properties: Option<SchemaProperties>,
+
+    pub items: Option<ArrayItems>,
 }
 
 /// > properties - Property definitions MUST be a Schema Object
@@ -93,5 +101,28 @@ impl RequiredSchemaFields {
     }
     pub fn contains(&self, field_name: &str) -> bool {
         self.0.contains(field_name)
+    }
+}
+
+/// > Value MUST be an object and not an array.
+/// > Inline or referenced schema MUST be of a Schema Object and
+/// > not a standard JSON Schema. items MUST be present if the type is array.
+///
+/// ---
+///
+/// see also: https://swagger.io/docs/specification/data-models/data-types/
+///
+#[derive(Debug)]
+pub struct ArrayItems(Box<SchemaCase>);
+
+impl ArrayItems {
+    pub fn new(case: SchemaCase) -> Self {
+        Self(Box::new(case))
+    }
+}
+
+impl From<ArrayItems> for SchemaCase {
+    fn from(xs: ArrayItems) -> Self {
+        *xs.0
     }
 }

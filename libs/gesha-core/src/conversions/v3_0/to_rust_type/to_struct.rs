@@ -1,8 +1,8 @@
-use crate::conversions::Error::{FieldTypeMissing, UnknownFormat};
+use crate::conversions::Error::UnknownFormat;
 use crate::conversions::Result;
-use crate::targets::rust_type::{Definition, FieldType, StructDef, StructField};
+use crate::targets::rust_type::{DataType, Definition, StructDef, StructField};
 use openapi_types::v3_0::{
-    FormatModifier, OpenApiDataType, RequiredSchemaFields, SchemaCase, SchemaFieldName,
+    ArrayItems, FormatModifier, OpenApiDataType, RequiredSchemaFields, SchemaCase, SchemaFieldName,
     SchemaObject, SchemaProperties,
 };
 use SchemaCase::{Reference, Schema};
@@ -35,9 +35,8 @@ impl FieldsFactory {
         let (field_name, schema_case) = entry;
         match schema_case {
             Schema(object) => self.translate(field_name, object),
-
-            // TODO:
             Reference(reference_object) => {
+                // TODO:
                 unimplemented!("reference field not implemented: {:?}", reference_object)
             }
         }
@@ -47,27 +46,31 @@ impl FieldsFactory {
         match object.data_type {
             Some(data_type) => {
                 let factory = FieldFactory {
-                    format: object.format,
                     required: &self.required,
+                    to_type: TypeFactory {
+                        format: object.format,
+                        items: object.items,
+                    },
                 };
                 factory.apply(name, data_type)
             }
-            None => Err(FieldTypeMissing),
+            None => unimplemented!(),
         }
     }
 }
 
 /// (SchemaFieldName, OpenApiDataType) -> StructField
 struct FieldFactory<'a> {
-    format: Option<FormatModifier>,
     required: &'a Option<RequiredSchemaFields>,
+    to_type: TypeFactory,
 }
 
 impl<'a> FieldFactory<'a> {
     fn apply(self, name: SchemaFieldName, data_type: OpenApiDataType) -> Result<StructField> {
-        let mut field_type = self.to_field_type(data_type)?;
-        if !self.is_required(&name) {
-            field_type = FieldType::Option(Box::new(field_type))
+        let is_required = self.is_required(&name);
+        let mut field_type = self.to_type.apply(data_type)?;
+        if !is_required {
+            field_type = DataType::Option(Box::new(field_type))
         }
         Ok(StructField {
             name: name.into(),
@@ -81,29 +84,57 @@ impl<'a> FieldFactory<'a> {
             None => false,
         }
     }
+}
 
-    fn to_field_type(&self, data_type: OpenApiDataType) -> Result<FieldType> {
-        use FieldType as ft;
+/// OpenApiDataType -> DataType
+struct TypeFactory {
+    format: Option<FormatModifier>,
+    items: Option<ArrayItems>,
+}
+
+impl TypeFactory {
+    fn apply(self, data_type: OpenApiDataType) -> Result<DataType> {
+        use DataType as tp;
         use FormatModifier as fm;
         use OpenApiDataType as ot;
 
         match (&data_type, &self.format) {
-            // TODO: receive "items"
-            (ot::Array, _) => Ok(ft::Vec),
-            (ot::Boolean, _) => Ok(ft::Bool),
-            (ot::Integer, Some(fm::Int32)) => Ok(ft::Int32),
-            (ot::Integer, Some(fm::Int64) | None) => Ok(ft::Int64),
-            (ot::Number, Some(fm::Float)) => Ok(ft::Float32),
-            (ot::Number, Some(fm::Double) | None) => Ok(ft::Float64),
+            (ot::Array, _) => {
+                // TODO: remove expect()
+                let items = self.items.expect("todo: array must have items");
+                let item_type = items_to_type(items)?;
+                Ok(tp::Vec(Box::new(item_type)))
+            }
+            (ot::Boolean, _) => Ok(tp::Bool),
+            (ot::Integer, Some(fm::Int32)) => Ok(tp::Int32),
+            (ot::Integer, Some(fm::Int64) | None) => Ok(tp::Int64),
+            (ot::Number, Some(fm::Float)) => Ok(tp::Float32),
+            (ot::Number, Some(fm::Double) | None) => Ok(tp::Float64),
             (ot::Object, _) => unimplemented! {
                 "inline object definition not implemented: {:?}",
                 data_type
             },
-            (ot::String, _) => Ok(ft::String),
+            (ot::String, _) => Ok(tp::String),
             (_, Some(x)) => Err(UnknownFormat {
                 data_type,
                 format: x.to_string(),
             }),
         }
+    }
+}
+
+fn items_to_type(items: ArrayItems) -> Result<DataType> {
+    let case: SchemaCase = items.into();
+    match case {
+        Schema(object) => {
+            let factory = TypeFactory {
+                format: object.format,
+                items: object.items,
+            };
+            // TODO: remove unwrap()
+            let data_type = object.data_type.unwrap();
+            factory.apply(data_type)
+        }
+        Reference(_) => unimplemented!(),
     }
 }

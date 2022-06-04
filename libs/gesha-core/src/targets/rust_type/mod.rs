@@ -51,18 +51,32 @@ impl From<VecDef> for Definition {
 #[derive(Debug)]
 pub struct StructField {
     pub name: String,
-    pub data_type: FieldType,
+    pub data_type: DataType,
 }
 
 #[derive(Debug, Clone)]
-pub enum FieldType {
+pub enum DataType {
     Bool,
     Int32,
     Int64,
     Float32,
     Float64,
-    Option(Box<FieldType>),
+    Option(Box<DataType>),
     String,
-    // TODO: include type parameter
-    Vec,
+    Vec(Box<DataType>),
+}
+
+impl From<DataType> for String {
+    fn from(x: DataType) -> Self {
+        match x {
+            DataType::Bool => "bool".to_string(),
+            DataType::Int32 => "i32".to_string(),
+            DataType::Int64 => "i64".to_string(),
+            DataType::Float32 => "f32".to_string(),
+            DataType::Float64 => "f64".to_string(),
+            DataType::Option(x) => format!("Option<{}>", String::from(*x)),
+            DataType::String => "String".to_string(),
+            DataType::Vec(x) => format!("Vec<{}>", String::from(*x)),
+        }
+    }
 }
