@@ -5,7 +5,7 @@ use openapi_types::v3_0;
 
 pub fn run() -> gateway::Result<()> {
     let cases = TestCase::<(v3_0::ComponentsObject, Modules)>::from(vec![
-        "pet.yaml",
+        "struct.yaml",
         "optional-field.yaml",
         "numeric-fields.yaml",
         "boolean-field.yaml",
