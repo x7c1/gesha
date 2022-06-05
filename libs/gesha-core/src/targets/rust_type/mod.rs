@@ -52,6 +52,29 @@ impl From<NewTypeDef> for Definition {
 pub struct StructField {
     pub name: String,
     pub data_type: DataType,
+    _hide_default_constructor: bool,
+}
+
+impl StructField {
+    pub fn new(name: String, data_type: DataType) -> Self {
+        Self {
+            name: to_rust_compatible_name(name),
+            data_type,
+            _hide_default_constructor: true,
+        }
+    }
+}
+
+/// append '_' if given string is reserved keyword.
+///
+/// https://doc.rust-lang.org/reference/keywords.html
+fn to_rust_compatible_name(x: String) -> String {
+    // TODO: avoid other keywords
+    ["type"]
+        .into_iter()
+        .find(|y| &x == y)
+        .map(|y| y.to_string() + "_")
+        .unwrap_or(x)
 }
 
 #[derive(Debug, Clone)]

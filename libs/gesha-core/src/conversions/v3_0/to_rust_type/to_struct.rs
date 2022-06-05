@@ -60,10 +60,10 @@ impl FieldsFactory {
         name: SchemaFieldName,
         object: ReferenceObject,
     ) -> Result<StructField> {
-        Ok(StructField {
-            name: name.into(),
-            data_type: reference_to_data_type(object)?,
-        })
+        Ok(StructField::new(
+            name.into(),
+            reference_to_data_type(object)?,
+        ))
     }
 }
 
@@ -91,10 +91,7 @@ impl<'a> FieldFactory<'a> {
         if !is_required {
             field_type = DataType::Option(Box::new(field_type))
         }
-        Ok(StructField {
-            name: name.into(),
-            data_type: field_type,
-        })
+        Ok(StructField::new(name.into(), field_type))
     }
 
     fn is_required(&self, field_name: &SchemaFieldName) -> bool {
