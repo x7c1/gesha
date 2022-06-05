@@ -101,7 +101,7 @@ fn to_data_type(x: String) -> Result<OpenApiDataType> {
 }
 
 fn to_format_modifier(x: String) -> Result<FormatModifier> {
-    FormatModifier::find(&x).ok_or_else(|| unimplemented!("unimplemented: {}", x))
+    Ok(FormatModifier::find(&x).unwrap_or(FormatModifier::Custom(x)))
 }
 
 fn to_array_items(map: YamlMap) -> Result<ArrayItems> {

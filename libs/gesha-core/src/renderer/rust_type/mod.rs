@@ -59,7 +59,7 @@ fn render_fields<W: Write>(mut write: W, fields: Vec<StructField>) -> Result<()>
 
 fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
     render! { write =>
-        echo > "pub {name}: ", name = field.name;
+        echo > "pub {name}: ", name = to_rust_compatible_name(field.name);
         call > render_data_type => field.data_type;
     };
     Ok(())
@@ -79,4 +79,16 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
         echo > ";\n\n";
     }
     Ok(())
+}
+
+/// append '_' if given string is reserved keyword.
+///
+/// https://doc.rust-lang.org/reference/keywords.html
+fn to_rust_compatible_name(x: String) -> String {
+    // TODO: avoid other keywords
+    ["type"]
+        .into_iter()
+        .find(|y| &x == y)
+        .map(|y| y.to_string() + "_")
+        .unwrap_or(x)
 }

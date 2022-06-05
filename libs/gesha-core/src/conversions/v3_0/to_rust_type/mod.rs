@@ -54,7 +54,8 @@ fn to_definition(name: SchemaFieldName, object: SchemaObject) -> Result<Definiti
         Some(ot::String | ot::Integer | ot::Number | ot::Boolean | ot::Array) => {
             to_newtype(name, object)
         }
-        None => unimplemented!(),
+        // define it as 'object' if 'type' is not specified.
+        None => to_struct(name, object),
     }
 }
 
