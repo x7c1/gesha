@@ -18,6 +18,9 @@ pub use format_modifier::FormatModifier;
 mod openapi_data_type;
 pub use openapi_data_type::OpenApiDataType;
 
+mod reference_object;
+pub use reference_object::ReferenceObject;
+
 /// OpenAPI Document
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schema
 #[derive(Debug)]
@@ -32,14 +35,4 @@ pub struct Document {
 #[derive(Debug)]
 pub struct InfoObject {
     pub title: String,
-}
-
-/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#referenceObject
-#[derive(Debug)]
-pub struct ReferenceObject(String);
-
-impl ReferenceObject {
-    pub fn new<A: Into<String>>(a: A) -> Self {
-        ReferenceObject(a.into())
-    }
 }

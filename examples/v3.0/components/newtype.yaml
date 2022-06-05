@@ -1,0 +1,24 @@
+schemas:
+  StringValue:
+    type: string
+
+  BooleanValue:
+    type: boolean
+
+  ArrayValue:
+    type: array
+    items:
+      type: integer
+
+  ArrayCustomValue:
+    type: array
+    items:
+      $ref: '#/components/schemas/Pet'
+
+  Pet:
+    type: object
+    required:
+      - id
+    properties:
+      id:
+        type: integer

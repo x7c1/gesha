@@ -21,7 +21,7 @@ impl Display for ModuleName {
 #[derive(Debug)]
 pub enum Definition {
     StructDef(StructDef),
-    VecDef(VecDef),
+    NewTypeDef(NewTypeDef),
 }
 
 #[derive(Debug)]
@@ -37,14 +37,14 @@ impl From<StructDef> for Definition {
 }
 
 #[derive(Debug)]
-pub struct VecDef {
+pub struct NewTypeDef {
     pub name: String,
-    pub type_name: String,
+    pub data_type: DataType,
 }
 
-impl From<VecDef> for Definition {
-    fn from(x: VecDef) -> Self {
-        Self::VecDef(x)
+impl From<NewTypeDef> for Definition {
+    fn from(x: NewTypeDef) -> Self {
+        Self::NewTypeDef(x)
     }
 }
 
@@ -64,6 +64,7 @@ pub enum DataType {
     Option(Box<DataType>),
     String,
     Vec(Box<DataType>),
+    Custom(String),
 }
 
 impl From<DataType> for String {
@@ -77,6 +78,7 @@ impl From<DataType> for String {
             DataType::Option(x) => format!("Option<{}>", String::from(*x)),
             DataType::String => "String".to_string(),
             DataType::Vec(x) => format!("Vec<{}>", String::from(*x)),
+            DataType::Custom(x) => x,
         }
     }
 }

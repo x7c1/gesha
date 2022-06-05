@@ -1,8 +1,11 @@
 mod to_struct;
 use to_struct::to_struct;
 
+mod type_factory;
+use type_factory::TypeFactory;
+
 use crate::conversions::{Result, ToRustType};
-use crate::targets::rust_type::{Definition, ModuleName, Modules, VecDef};
+use crate::targets::rust_type::{Definition, ModuleName, Modules, NewTypeDef};
 use indexmap::indexmap;
 use openapi_types::v3_0::{
     ComponentsObject, Document, OpenApiDataType, SchemaCase, SchemaFieldName, SchemaObject,
@@ -45,19 +48,25 @@ fn from_schema_entry(kv: (SchemaFieldName, SchemaCase)) -> Result<Definition> {
 }
 
 fn to_definition(name: SchemaFieldName, object: SchemaObject) -> Result<Definition> {
+    use OpenApiDataType as ot;
     match object.data_type.as_ref() {
-        Some(OpenApiDataType::Object) => to_struct(name, object),
-        Some(OpenApiDataType::Array) => to_vec(name, object),
-        _ => todo!("object.type: {:?}", object.data_type),
+        Some(ot::Object) => to_struct(name, object),
+        Some(ot::String | ot::Integer | ot::Number | ot::Boolean | ot::Array) => {
+            to_newtype(name, object)
+        }
+        None => unimplemented!(),
     }
 }
 
-fn to_vec(name: SchemaFieldName, object: SchemaObject) -> Result<Definition> {
-    println!("object.data_type: {:?}", object.data_type);
-    let def = VecDef {
+fn to_newtype(name: SchemaFieldName, object: SchemaObject) -> Result<Definition> {
+    let to_type = TypeFactory {
+        format: object.format,
+        items: object.items,
+    };
+    let openapi_type = object.data_type.unwrap_or_else(|| unimplemented!());
+    let def = NewTypeDef {
         name: name.into(),
-        // TODO: parse "items" field
-        type_name: "todo".to_string(),
+        data_type: to_type.apply(openapi_type)?,
     };
     Ok(def.into())
 }

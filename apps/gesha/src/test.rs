@@ -5,11 +5,15 @@ use openapi_types::v3_0;
 
 pub fn run() -> gateway::Result<()> {
     let cases = TestCase::<(v3_0::ComponentsObject, Modules)>::from(vec![
-        "pet.yaml",
+        "struct.yaml",
         "optional-field.yaml",
         "numeric-fields.yaml",
         "boolean-field.yaml",
         "array.yaml",
+        "ref-property.yaml",
+        "ref-items.yaml",
+        "newtype.yaml",
+        "newtype-numeric.yaml",
     ]);
     cases.into_iter().try_for_each(test_rust_type)
 }
