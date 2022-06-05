@@ -22,15 +22,7 @@ pub fn run(params: Params) -> gateway::Result<()> {
             "newtype.yaml",
             "newtype-numeric.yaml",
         ]),
-        Some(x) => to_cases(x),
+        Some(x) => vec![TestCase::from_path(x)?],
     };
     cases.into_iter().try_for_each(test_rust_type)
-}
-
-fn to_cases(path: String) -> Vec<TestCase<(v3_0::ComponentsObject, Modules)>> {
-    let target = "examples/v3.0/components/";
-    if path.starts_with(target) {
-        return TestCase::from(vec![path.replace(target, "")]);
-    }
-    unimplemented!("unsupported location: {}", path)
 }

@@ -1,5 +1,6 @@
 use crate::conversions::{ToOpenApi, ToRustType};
 use crate::gateway;
+use crate::gateway::Error::UnsupportedExampleLocation;
 use crate::gateway::{detect_diff, Reader, Writer};
 use crate::renderer::Renderer;
 use crate::targets::rust_type::Modules;
@@ -27,6 +28,15 @@ impl TestCase<(v3_0::ComponentsObject, Modules)> {
             .map(|x| x.into())
             .map(Self::create)
             .collect()
+    }
+
+    pub fn from_path(path: String) -> gateway::Result<Self> {
+        let target = "examples/v3.0/components/";
+        if path.starts_with(target) {
+            Ok(Self::create(path.replace(target, "").into()))
+        } else {
+            Err(UnsupportedExampleLocation(path))
+        }
     }
 
     fn create(yaml_name: Cow<str>) -> Self {
