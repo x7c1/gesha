@@ -11,7 +11,7 @@ fn main() {
 
     let result = match args.sub {
         Generate(x) => generate::run(x),
-        Test => test::run(),
+        Test(x) => test::run(x),
     };
     result.unwrap_or_else(|cause| {
         cause.dump();
@@ -29,6 +29,6 @@ struct Args {
 
 #[derive(clap::Subcommand, Debug)]
 enum Subcommand {
-    Generate(generate::Args),
-    Test,
+    Generate(generate::Params),
+    Test(test::Params),
 }
