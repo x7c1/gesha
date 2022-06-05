@@ -19,8 +19,10 @@ impl TypeFactory {
 
         match (&data_type, &self.format) {
             (ot::Array, _) => {
-                // TODO: remove expect()
-                let items = self.items.expect("todo: array must have items");
+                let items = self
+                    .items
+                    .unwrap_or_else(|| unimplemented!("array must have items"));
+
                 let item_type = items_to_type(items)?;
                 Ok(tp::Vec(Box::new(item_type)))
             }
