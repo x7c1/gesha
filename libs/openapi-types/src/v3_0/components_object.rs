@@ -42,12 +42,10 @@ impl Display for SchemaFieldName {
 /// Schema Object | Reference Object
 #[derive(Debug)]
 pub enum SchemaCase {
-    Schema(SchemaObject),
+    Schema(Box<SchemaObject>),
     Reference(ReferenceObject),
 }
 
-/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
-///
 /// ex.1
 /// ```yaml
 /// type: object
@@ -73,6 +71,16 @@ pub enum SchemaCase {
 /// items:
 ///     type: string
 /// ```
+///
+/// ex.4
+/// ```yaml
+/// type: string
+/// enum:
+///   - "value1"
+///   - "value2"
+/// ```
+///
+/// rf. https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
 #[derive(Debug)]
 pub struct SchemaObject {
     /// > type - Value MUST be a string.
@@ -86,6 +94,8 @@ pub struct SchemaObject {
     pub properties: Option<SchemaProperties>,
 
     pub items: Option<ArrayItems>,
+
+    pub enum_values: Option<EnumValues>,
 }
 
 /// > properties - Property definitions MUST be a Schema Object
@@ -133,3 +143,9 @@ impl From<ArrayItems> for SchemaCase {
         *xs.0
     }
 }
+
+/// https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.20
+/// > The value of this keyword MUST be an array. This array SHOULD have
+/// > at least one element.  Elements in the array SHOULD be unique.
+/// > Elements in the array MAY be of any type, including null.
+pub type EnumValues = IndexSet<String>;

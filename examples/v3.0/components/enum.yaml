@@ -1,0 +1,27 @@
+schemas:
+  StringEnum1:
+    type: string
+    enum:
+      - "ERROR1"
+      - "ERROR2"
+
+  StringEnum2:
+    type: string
+    enum:
+      - "ERROR_FOO"
+      - "ERROR_BAR"
+
+  StringEnum3:
+    type: string
+    enum:
+      - asc
+      - desc
+
+# TODO:
+#  Int32Enum:
+#    type: integer
+#    format: int32
+#    enum:
+#      - 10
+#      - 20
+#      - 30

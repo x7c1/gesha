@@ -34,7 +34,7 @@ impl FieldsFactory {
     fn to_field(&self, entry: (SchemaFieldName, SchemaCase)) -> Result<StructField> {
         let (field_name, schema_case) = entry;
         match schema_case {
-            Schema(object) => self.schema_to_field(field_name, object),
+            Schema(object) => self.schema_to_field(field_name, *object),
             Reference(object) => self.reference_to_field(field_name, object),
         }
     }

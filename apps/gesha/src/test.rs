@@ -22,6 +22,7 @@ pub fn run(params: Params) -> gateway::Result<()> {
             "newtype.yaml",
             "newtype-numeric.yaml",
             "reserved-keywords.yaml",
+            "enum.yaml",
         ]),
         Some(x) => vec![TestCase::from_path(x)?],
     };

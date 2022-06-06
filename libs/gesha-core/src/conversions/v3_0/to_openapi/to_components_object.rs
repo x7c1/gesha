@@ -3,7 +3,7 @@ use crate::conversions::{reify_entry, reify_value, Result, ToOpenApi};
 use crate::yaml::{YamlArray, YamlMap};
 use indexmap::IndexSet;
 use openapi_types::v3_0::{
-    ArrayItems, ComponentsObject, FormatModifier, OpenApiDataType, ReferenceObject,
+    ArrayItems, ComponentsObject, EnumValues, FormatModifier, OpenApiDataType, ReferenceObject,
     RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaObject, SchemaProperties,
     SchemasObject,
 };
@@ -38,7 +38,7 @@ fn to_schema_pair(kv: (String, YamlMap)) -> Result<(SchemaFieldName, SchemaCase)
 fn to_schema_case(mut map: YamlMap) -> Result<SchemaCase> {
     let case = match map.remove_if_exists::<String>("$ref")? {
         Some(reference) => SchemaCase::Reference(ReferenceObject::new(reference)),
-        None => SchemaCase::Schema(to_schema_object(map)?),
+        None => SchemaCase::Schema(Box::new(to_schema_object(map)?)),
     };
     Ok(case)
 }
@@ -69,12 +69,18 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         .map(to_array_items)
         .transpose()?;
 
+    let enum_values = map
+        .remove_if_exists::<YamlArray>("enum")?
+        .map(to_enum_values)
+        .transpose()?;
+
     Ok(SchemaObject {
         data_type,
         format,
         properties,
         required,
         items,
+        enum_values,
     })
 }
 
@@ -107,4 +113,11 @@ fn to_format_modifier(x: String) -> Result<FormatModifier> {
 fn to_array_items(map: YamlMap) -> Result<ArrayItems> {
     let case = to_schema_case(map)?;
     Ok(ArrayItems::new(case))
+}
+
+fn to_enum_values(array: YamlArray) -> Result<EnumValues> {
+    array
+        .into_iter()
+        .map(reify_value)
+        .collect::<Result<EnumValues>>()
 }
