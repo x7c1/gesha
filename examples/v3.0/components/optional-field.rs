@@ -3,4 +3,8 @@ pub mod schemas {
         pub id: i64,
         pub tag: Option<String>,
     }
+
+    pub struct OptionalRef {
+        pub pet: Option<Pet>,
+    }
 }

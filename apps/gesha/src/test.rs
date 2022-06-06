@@ -13,12 +13,12 @@ pub fn run(params: Params) -> gateway::Result<()> {
     let cases: Vec<TestCase<(v3_0::ComponentsObject, Modules)>> = match params.schema {
         None => TestCase::from(vec![
             "struct.yaml",
-            "optional-field.yaml",
             "numeric-fields.yaml",
             "boolean-field.yaml",
             "array.yaml",
             "ref-property.yaml",
             "ref-items.yaml",
+            "optional-field.yaml",
             "newtype.yaml",
             "newtype-numeric.yaml",
             "reserved-keywords.yaml",

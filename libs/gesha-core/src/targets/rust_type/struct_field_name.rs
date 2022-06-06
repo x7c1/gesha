@@ -18,11 +18,11 @@ impl Display for StructFieldName {
 /// append '_' if given string is reserved keyword.
 ///
 /// https://doc.rust-lang.org/reference/keywords.html
-fn to_rust_compatible_name(x: String) -> String {
-    // TODO: avoid other keywords
+fn to_rust_compatible_name(target: String) -> String {
+    // TODO: include other keywords
     ["type"]
         .into_iter()
-        .find(|y| &x == y)
-        .map(|y| y.to_string() + "_")
-        .unwrap_or(x)
+        .find(|x| &target == x)
+        .map(|x| x.to_string() + "_")
+        .unwrap_or(target)
 }

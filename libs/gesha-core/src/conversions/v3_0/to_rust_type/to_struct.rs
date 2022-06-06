@@ -60,10 +60,21 @@ impl FieldsFactory {
         name: SchemaFieldName,
         object: ReferenceObject,
     ) -> Result<StructField> {
+        let mut data_type = reference_to_data_type(object)?;
+        if !is_required(&self.required, &name) {
+            data_type = DataType::Option(Box::new(data_type));
+        }
         Ok(StructField {
             name: StructFieldName::new(name),
-            data_type: reference_to_data_type(object)?,
+            data_type,
         })
+    }
+}
+
+fn is_required(required: &Option<RequiredSchemaFields>, field_name: &SchemaFieldName) -> bool {
+    match required {
+        Some(required) => required.contains(field_name.as_ref()),
+        None => false,
     }
 }
 
@@ -86,7 +97,7 @@ struct FieldFactory<'a> {
 
 impl<'a> FieldFactory<'a> {
     fn apply(self, name: SchemaFieldName, data_type: OpenApiDataType) -> Result<StructField> {
-        let is_required = self.is_required(&name);
+        let is_required = is_required(self.required, &name);
         let mut field_type = self.to_type.apply(data_type)?;
         if !is_required {
             field_type = DataType::Option(Box::new(field_type))
@@ -95,12 +106,5 @@ impl<'a> FieldFactory<'a> {
             name: StructFieldName::new(name),
             data_type: field_type,
         })
-    }
-
-    fn is_required(&self, field_name: &SchemaFieldName) -> bool {
-        match self.required {
-            Some(required) => required.contains(field_name.as_ref()),
-            None => false,
-        }
     }
 }
