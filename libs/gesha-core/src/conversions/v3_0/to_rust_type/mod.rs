@@ -1,8 +1,7 @@
 mod to_struct;
-use to_struct::to_struct;
+use to_struct::{schema_object_to_data_type, to_struct};
 
 mod type_factory;
-use type_factory::TypeFactory;
 
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{
@@ -63,14 +62,9 @@ fn to_definition(name: SchemaFieldName, object: SchemaObject) -> Result<Definiti
 }
 
 fn to_newtype(name: SchemaFieldName, object: SchemaObject) -> Result<Definition> {
-    let to_type = TypeFactory {
-        format: object.format,
-        items: object.items,
-    };
-    let openapi_type = object.data_type.unwrap_or_else(|| unimplemented!());
     let def = NewTypeDef {
         name: name.into(),
-        data_type: to_type.apply(openapi_type)?,
+        data_type: schema_object_to_data_type(object)?,
     };
     Ok(def.into())
 }

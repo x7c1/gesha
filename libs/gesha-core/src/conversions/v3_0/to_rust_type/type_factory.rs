@@ -1,9 +1,8 @@
-use super::to_struct::reference_to_data_type;
+use super::to_struct::to_data_type;
 use crate::conversions::Error::UnknownFormat;
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
-use openapi_types::v3_0::SchemaCase::{Reference, Schema};
-use openapi_types::v3_0::{ArrayItems, FormatModifier, OpenApiDataType, SchemaCase};
+use openapi_types::v3_0::{ArrayItems, FormatModifier, OpenApiDataType};
 
 /// OpenApiDataType -> DataType
 pub(super) struct TypeFactory {
@@ -23,7 +22,7 @@ impl TypeFactory {
                     .items
                     .unwrap_or_else(|| unimplemented!("array must have items"));
 
-                let item_type = items_to_type(items)?;
+                let item_type = to_data_type(items.into())?;
                 Ok(tp::Vec(Box::new(item_type)))
             }
             (ot::Boolean, _) => Ok(tp::Bool),
@@ -41,20 +40,5 @@ impl TypeFactory {
                 format: x.to_string(),
             }),
         }
-    }
-}
-
-fn items_to_type(items: ArrayItems) -> Result<DataType> {
-    let case: SchemaCase = items.into();
-    match case {
-        Schema(object) => {
-            let factory = TypeFactory {
-                format: object.format,
-                items: object.items,
-            };
-            let data_type = object.data_type.unwrap_or_else(|| unimplemented!());
-            factory.apply(data_type)
-        }
-        Reference(object) => reference_to_data_type(object),
     }
 }
