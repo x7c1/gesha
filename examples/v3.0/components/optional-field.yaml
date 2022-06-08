@@ -8,3 +8,9 @@ schemas:
         type: integer
       tag:
         type: string
+
+  OptionalRef:
+    type: object
+    properties:
+      pet:
+        $ref: '#/components/schemas/Pet'

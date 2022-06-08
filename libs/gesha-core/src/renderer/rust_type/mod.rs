@@ -2,7 +2,8 @@ use crate::render;
 use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, ModuleName, Modules, NewTypeDef, StructDef, StructField,
+    DataType, Definition, EnumDef, EnumVariant, ModuleName, Modules, NewTypeDef, StructDef,
+    StructField,
 };
 use std::io::Write;
 
@@ -34,6 +35,7 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
     match x {
         Definition::StructDef(x) => render_struct(write, x)?,
         Definition::NewTypeDef(x) => render_newtype(write, x)?,
+        Definition::EnumDef(x) => render_enum(write, x)?,
     };
     Ok(())
 }
@@ -77,6 +79,24 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
         echo > "pub struct {name}", name = x.name;
         "()" > render_data_type => x.data_type;
         echo > ";\n\n";
+    }
+    Ok(())
+}
+
+fn render_enum<W: Write>(mut write: W, x: EnumDef) -> Result<()> {
+    render! { write =>
+        echo > "pub enum {name}", name = x.name;
+        "{}" > render_enum_variants => x.variants;
+        echo > "\n\n";
+    }
+    Ok(())
+}
+
+fn render_enum_variants<W: Write>(mut write: W, variants: Vec<EnumVariant>) -> Result<()> {
+    for variant in variants {
+        render! { write =>
+            echo > "{name},\n", name = variant.to_upper_camel();
+        }
     }
     Ok(())
 }

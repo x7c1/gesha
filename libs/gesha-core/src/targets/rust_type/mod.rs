@@ -1,3 +1,7 @@
+mod struct_field_name;
+pub use struct_field_name::StructFieldName;
+
+use heck::ToUpperCamelCase;
 use indexmap::IndexMap;
 use std::fmt::{Debug, Display, Formatter};
 
@@ -22,6 +26,7 @@ impl Display for ModuleName {
 pub enum Definition {
     StructDef(StructDef),
     NewTypeDef(NewTypeDef),
+    EnumDef(EnumDef),
 }
 
 #[derive(Debug)]
@@ -49,8 +54,34 @@ impl From<NewTypeDef> for Definition {
 }
 
 #[derive(Debug)]
-pub struct StructField {
+pub struct EnumDef {
     pub name: String,
+    pub variants: Vec<EnumVariant>,
+}
+
+impl From<EnumDef> for Definition {
+    fn from(this: EnumDef) -> Self {
+        Self::EnumDef(this)
+    }
+}
+
+#[derive(Debug)]
+pub struct EnumVariant(String);
+
+impl EnumVariant {
+    pub fn new(x: String) -> Self {
+        // TODO: replace x with Rust compatible chars if illegal chars are included.
+        EnumVariant(x)
+    }
+
+    pub fn to_upper_camel(&self) -> String {
+        self.0.to_upper_camel_case()
+    }
+}
+
+#[derive(Debug)]
+pub struct StructField {
+    pub name: StructFieldName,
     pub data_type: DataType,
 }
 

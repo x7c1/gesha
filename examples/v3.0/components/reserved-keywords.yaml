@@ -1,0 +1,8 @@
+schemas:
+  Pet:
+    type: object
+    required:
+      - type
+    properties:
+      type:
+        type: string

@@ -7,10 +7,19 @@ pub enum FormatModifier {
     Int64,
     Float,
     Double,
-    // TODO:
-    // > the format property is an open string-valued property,
-    // > and can have any value. Formats such as "email", "uuid", and so on,
-    // > MAY be used even though undefined by this specification.
+
+    /// > the format property is an open string-valued property,
+    /// > and can have any value. Formats such as "email", "uuid", and so on,
+    /// > MAY be used even though undefined by this specification.
+    Custom(String),
+    /*
+    // TODO: support formats defined by the OAS:
+    Byte,
+    Binary,
+    Date,
+    DateTime,
+    Password,
+    */
 }
 
 impl FormatModifier {
@@ -28,6 +37,7 @@ impl AsRef<str> for FormatModifier {
             Self::Int64 => "int64",
             Self::Float => "float",
             Self::Double => "double",
+            Self::Custom(x) => x,
         }
     }
 }

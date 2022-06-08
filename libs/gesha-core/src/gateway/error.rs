@@ -37,6 +37,7 @@ pub enum Error {
         path: PathBuf,
         detail: String,
     },
+    UnsupportedExampleLocation(String),
 }
 
 impl Error {
