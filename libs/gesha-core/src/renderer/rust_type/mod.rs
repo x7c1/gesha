@@ -86,16 +86,16 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
 fn render_enum<W: Write>(mut write: W, x: EnumDef) -> Result<()> {
     render! { write =>
         echo > "pub enum {name}", name = x.name;
-        "{}" > render_enum_values => x.variants;
+        "{}" > render_enum_variants => x.variants;
         echo > "\n\n";
     }
     Ok(())
 }
 
-fn render_enum_values<W: Write>(mut write: W, values: Vec<EnumVariant>) -> Result<()> {
-    for value in values {
+fn render_enum_variants<W: Write>(mut write: W, variants: Vec<EnumVariant>) -> Result<()> {
+    for variant in variants {
         render! { write =>
-            echo > "{name},\n", name = value.to_upper_camel();
+            echo > "{name},\n", name = variant.to_upper_camel();
         }
     }
     Ok(())

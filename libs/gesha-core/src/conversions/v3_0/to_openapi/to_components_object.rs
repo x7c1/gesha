@@ -116,8 +116,5 @@ fn to_array_items(map: YamlMap) -> Result<ArrayItems> {
 }
 
 fn to_enum_values(array: YamlArray) -> Result<EnumValues> {
-    array
-        .into_iter()
-        .map(reify_value)
-        .collect::<Result<EnumValues>>()
+    array.into_iter().map(reify_value).collect()
 }
