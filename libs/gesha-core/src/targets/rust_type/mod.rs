@@ -3,7 +3,6 @@ pub use struct_field_name::StructFieldName;
 
 use heck::ToUpperCamelCase;
 use indexmap::IndexMap;
-use openapi_types::v3_0::AllOf;
 use std::fmt::{Debug, Display, Formatter};
 
 pub type Modules = IndexMap<ModuleName, Vec<Definition>>;
@@ -28,7 +27,6 @@ pub enum Definition {
     StructDef(StructDef),
     NewTypeDef(NewTypeDef),
     EnumDef(EnumDef),
-    NeedPostProcess(PostProcess),
 }
 
 #[derive(Clone, Debug)]
@@ -78,17 +76,6 @@ impl EnumVariant {
 
     pub fn to_upper_camel(&self) -> String {
         self.0.to_upper_camel_case()
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum PostProcess {
-    AllOf { name: String, cases: AllOf },
-}
-
-impl From<PostProcess> for Definition {
-    fn from(this: PostProcess) -> Self {
-        Self::NeedPostProcess(this)
     }
 }
 

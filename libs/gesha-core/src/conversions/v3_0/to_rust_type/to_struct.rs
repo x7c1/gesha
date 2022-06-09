@@ -1,13 +1,15 @@
 use super::type_factory::TypeFactory;
+use crate::conversions::v3_0::to_rust_type::Fragment;
+use crate::conversions::v3_0::to_rust_type::Fragment::Fixed;
 use crate::conversions::Result;
-use crate::targets::rust_type::{DataType, Definition, StructDef, StructField, StructFieldName};
+use crate::targets::rust_type::{DataType, StructDef, StructField, StructFieldName};
 use openapi_types::v3_0::{
     ReferenceObject, RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaObject,
     SchemaProperties,
 };
 use SchemaCase::{Reference, Schema};
 
-pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> Result<Definition> {
+pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> Result<Fragment> {
     let to_fields = |properties| {
         let factory = FieldsFactory {
             required: object.required,
@@ -18,7 +20,7 @@ pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> Result<D
         name: name.into(),
         fields: object.properties.map(to_fields).unwrap_or(Ok(vec![]))?,
     };
-    Ok(def.into())
+    Ok(Fixed(def.into()))
 }
 
 /// SchemaProperties -> Vec<StructField>
