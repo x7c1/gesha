@@ -2,8 +2,9 @@ use super::{Fragment, PostProcess};
 use crate::conversions::v3_0::to_rust_type::ComponentFragments;
 use crate::conversions::v3_0::to_rust_type::Fragment::Fixed;
 use crate::conversions::Result;
-use crate::targets::rust_type::{Definition, StructDef, StructField};
+use crate::targets::rust_type::{StructDef, StructField};
 use openapi_types::v3_0::{AllOf, SchemaCase};
+use Fragment::InProcess;
 
 pub(super) fn post_process(modules: &mut ComponentFragments) -> Result<()> {
     let processor = Processor {
@@ -27,13 +28,14 @@ impl Processor {
     }
 
     fn replace(&self, fragment: &mut Fragment) -> Result<()> {
-        if let Fragment::InProcess(process) = fragment {
+        if let InProcess(process) = fragment {
             match process {
-                PostProcess::AllOf { name: name0, cases } => {
-                    *fragment = Fixed(Definition::StructDef(StructDef {
-                        name: name0.clone(),
+                PostProcess::AllOf { name, cases } => {
+                    let def = StructDef {
+                        name: name.clone(),
                         fields: self.merge_fields_all_of(cases)?,
-                    }))
+                    };
+                    *fragment = Fixed(def.into())
                 }
             }
         }
