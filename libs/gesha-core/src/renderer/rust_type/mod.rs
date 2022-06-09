@@ -36,6 +36,9 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
         Definition::StructDef(x) => render_struct(write, x)?,
         Definition::NewTypeDef(x) => render_newtype(write, x)?,
         Definition::EnumDef(x) => render_enum(write, x)?,
+        Definition::HasPostProcess(process) => {
+            unimplemented!("PostProcess not done: {:#?}", process)
+        }
     };
     Ok(())
 }

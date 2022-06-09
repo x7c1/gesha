@@ -5,11 +5,11 @@ mod type_factory;
 
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{
-    Definition, EnumDef, EnumVariant, ModuleName, Modules, NewTypeDef,
+    Definition, EnumDef, EnumVariant, ModuleName, Modules, NewTypeDef, PostProcess,
 };
 use indexmap::indexmap;
 use openapi_types::v3_0::{
-    ComponentsObject, Document, OpenApiDataType, SchemaCase, SchemaFieldName, SchemaObject,
+    AllOf, ComponentsObject, Document, OpenApiDataType, SchemaCase, SchemaFieldName, SchemaObject,
     SchemasObject,
 };
 
@@ -56,6 +56,8 @@ fn to_definition(name: SchemaFieldName, object: SchemaObject) -> Result<Definiti
         Some(ot::String | ot::Integer | ot::Number | ot::Boolean | ot::Array) => {
             to_newtype(name, object)
         }
+        _ if object.all_of.is_some() => reserve_all_of(name, object.all_of.unwrap()),
+
         // define it as 'object' if 'type' is not specified.
         None => to_struct(name, object),
     }
@@ -77,4 +79,12 @@ fn to_enum(name: SchemaFieldName, object: SchemaObject) -> Result<Definition> {
         variants,
     };
     Ok(def.into())
+}
+
+fn reserve_all_of(name: SchemaFieldName, cases: AllOf) -> Result<Definition> {
+    let process = PostProcess::AllOf {
+        name: name.into(),
+        cases,
+    };
+    Ok(process.into())
 }

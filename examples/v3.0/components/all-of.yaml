@@ -1,0 +1,21 @@
+# https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/
+schemas:
+  BasicErrorModel:
+    type: object
+    required:
+      - message
+      - code
+    properties:
+      message:
+        type: string
+      code:
+        type: integer
+  ExtendedErrorModel:
+    allOf:
+      - $ref: '#/components/schemas/BasicErrorModel'
+      - type: object
+        required:
+          - rootCause
+        properties:
+          rootCause:
+            type: string

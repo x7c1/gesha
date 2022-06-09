@@ -8,8 +8,8 @@ pub use paths_object::{PathFieldName, PathItemObject, PathsObject};
 
 mod components_object;
 pub use components_object::{
-    ArrayItems, ComponentsObject, EnumValues, RequiredSchemaFields, SchemaCase, SchemaFieldName,
-    SchemaObject, SchemaProperties, SchemasObject,
+    AllOf, ArrayItems, ComponentsObject, EnumValues, RequiredSchemaFields, SchemaCase,
+    SchemaFieldName, SchemaObject, SchemaProperties, SchemasObject,
 };
 
 mod format_modifier;

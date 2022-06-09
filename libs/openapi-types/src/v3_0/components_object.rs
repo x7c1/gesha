@@ -80,6 +80,17 @@ pub enum SchemaCase {
 ///   - "value2"
 /// ```
 ///
+/// ex.5
+/// ```yaml
+/// allOf:
+///   - $ref: '#/components/schemas/BasicErrorModel'
+///   - type: object
+///     required:
+///       - rootCause
+///     properties:
+///       rootCause:
+///         type: string
+/// ```
 /// rf. https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
 #[derive(Debug)]
 pub struct SchemaObject {
@@ -96,6 +107,8 @@ pub struct SchemaObject {
     pub items: Option<ArrayItems>,
 
     pub enum_values: Option<EnumValues>,
+
+    pub all_of: Option<AllOf>,
 }
 
 /// > properties - Property definitions MUST be a Schema Object
@@ -149,3 +162,7 @@ impl From<ArrayItems> for SchemaCase {
 /// > at least one element.  Elements in the array SHOULD be unique.
 /// > Elements in the array MAY be of any type, including null.
 pub type EnumValues = IndexSet<String>;
+
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
+/// > Inline or referenced schema MUST be of a Schema Object and not a standard JSON Schema.
+pub type AllOf = Vec<SchemaCase>;
