@@ -1,9 +1,10 @@
 use crate::conversions::Result;
-use crate::targets::rust_type::{Definition, ModuleName, PostProcess, StructDef, StructField};
-use indexmap::IndexMap;
+use crate::targets::rust_type::{
+    Definition, ModuleName, Modules, PostProcess, StructDef, StructField,
+};
 use openapi_types::v3_0::{AllOf, SchemaCase};
 
-pub fn post_process_components(modules: &mut IndexMap<ModuleName, Vec<Definition>>) -> Result<()> {
+pub fn post_process_components(modules: &mut Modules) -> Result<()> {
     let processor = Processor {
         original: Clone::clone(modules),
     };
@@ -11,11 +12,11 @@ pub fn post_process_components(modules: &mut IndexMap<ModuleName, Vec<Definition
 }
 
 struct Processor {
-    original: IndexMap<ModuleName, Vec<Definition>>,
+    original: Modules,
 }
 
 impl Processor {
-    fn run(self, modules: &mut IndexMap<ModuleName, Vec<Definition>>) -> Result<()> {
+    fn run(self, modules: &mut Modules) -> Result<()> {
         if let Some(xs) = modules.get_mut(&ModuleName::new("schemas")) {
             xs.iter_mut().try_for_each(|x| self.replace(x))?;
         }
