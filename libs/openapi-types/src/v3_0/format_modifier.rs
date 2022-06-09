@@ -1,7 +1,7 @@
 use std::fmt::{Display, Formatter};
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#dataTypes
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum FormatModifier {
     Int32,
     Int64,

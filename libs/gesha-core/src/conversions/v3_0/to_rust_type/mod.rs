@@ -1,6 +1,9 @@
 mod to_struct;
 use to_struct::{schema_object_to_data_type, to_struct};
 
+mod post_process;
+use post_process::post_process_components;
+
 mod type_factory;
 
 use crate::conversions::{Result, ToRustType};
@@ -15,9 +18,12 @@ use openapi_types::v3_0::{
 
 impl ToRustType<Document> for Modules {
     fn apply(this: Document) -> Result<Self> {
-        this.components
+        let module = this
+            .components
             .map(ToRustType::apply)
-            .unwrap_or_else(|| Ok(Modules::new()))
+            .unwrap_or_else(|| Ok(Modules::new()))?;
+
+        Ok(module)
     }
 }
 
@@ -25,19 +31,19 @@ impl ToRustType<ComponentsObject> for Modules {
     fn apply(this: ComponentsObject) -> Result<Self> {
         let schemas = this
             .schemas
-            .map(ToRustType::apply)
+            .map(from_schemas_object)
             .unwrap_or_else(|| Ok(vec![]))?;
 
-        Ok(indexmap! {
+        let mut modules = indexmap! {
              ModuleName::new("schemas") => schemas,
-        })
+        };
+        post_process_components(&mut modules)?;
+        Ok(modules)
     }
 }
 
-impl ToRustType<SchemasObject> for Vec<Definition> {
-    fn apply(this: SchemasObject) -> Result<Self> {
-        this.into_iter().map(from_schema_entry).collect()
-    }
+fn from_schemas_object(this: SchemasObject) -> Result<Vec<Definition>> {
+    this.into_iter().map(from_schema_entry).collect()
 }
 
 fn from_schema_entry(kv: (SchemaFieldName, SchemaCase)) -> Result<Definition> {

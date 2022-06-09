@@ -1,5 +1,5 @@
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#dataTypes
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum OpenApiDataType {
     Array,
     Boolean,

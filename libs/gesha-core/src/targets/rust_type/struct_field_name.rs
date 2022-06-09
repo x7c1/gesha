@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StructFieldName(String);
 
 impl StructFieldName {
