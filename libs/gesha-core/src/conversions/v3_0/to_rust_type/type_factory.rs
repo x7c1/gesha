@@ -1,10 +1,10 @@
-use super::to_struct::to_data_type;
-use crate::conversions::v3_0::to_rust_type::FragmentType;
+use super::to_struct::shape_type;
+use crate::conversions::v3_0::to_rust_type::TypeShape;
 use crate::conversions::Error::UnknownFormat;
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
 use openapi_types::v3_0::{ArrayItems, FormatModifier, OpenApiDataType};
-use FragmentType::Fixed;
+use TypeShape::Fixed;
 
 /// OpenApiDataType -> DataType
 pub(super) struct TypeFactory {
@@ -13,7 +13,7 @@ pub(super) struct TypeFactory {
 }
 
 impl TypeFactory {
-    pub fn apply(self, data_type: OpenApiDataType) -> Result<FragmentType> {
+    pub fn apply(self, data_type: OpenApiDataType) -> Result<TypeShape> {
         use DataType as tp;
         use FormatModifier as fm;
         use OpenApiDataType as ot;
@@ -24,10 +24,10 @@ impl TypeFactory {
                     .items
                     .unwrap_or_else(|| unimplemented!("array must have items"));
 
-                let item_type = to_data_type(items.into())?;
+                let item_type = shape_type(items.into())?;
                 match item_type {
                     Fixed(data_type) => Ok(Fixed(tp::Vec(Box::new(data_type)))),
-                    _ => Ok(FragmentType::Vec(Box::new(item_type))),
+                    _ => Ok(TypeShape::Vec(Box::new(item_type))),
                 }
             }
             (ot::Boolean, _) => Ok(Fixed(tp::Bool)),

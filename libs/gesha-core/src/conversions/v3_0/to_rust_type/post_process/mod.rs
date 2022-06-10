@@ -1,12 +1,12 @@
-use super::{Fragment, PostProcess};
-use crate::conversions::v3_0::to_rust_type::ComponentFragments;
-use crate::conversions::v3_0::to_rust_type::Fragment::Fixed;
+use super::{DefinitionShape, PostProcess};
+use crate::conversions::v3_0::to_rust_type::ComponentShapes;
+use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
 use crate::conversions::Result;
 use crate::targets::rust_type::{StructDef, StructField};
 use openapi_types::v3_0::{AllOf, SchemaCase};
-use Fragment::InProcess;
+use DefinitionShape::InProcess;
 
-pub(super) fn post_process(modules: &mut ComponentFragments) -> Result<()> {
+pub(super) fn post_process(modules: &mut ComponentShapes) -> Result<()> {
     let processor = Processor {
         original: Clone::clone(modules),
     };
@@ -14,11 +14,11 @@ pub(super) fn post_process(modules: &mut ComponentFragments) -> Result<()> {
 }
 
 struct Processor {
-    original: ComponentFragments,
+    original: ComponentShapes,
 }
 
 impl Processor {
-    fn run(self, modules: &mut ComponentFragments) -> Result<()> {
+    fn run(self, modules: &mut ComponentShapes) -> Result<()> {
         modules
             .schemas
             .iter_mut()
@@ -27,15 +27,15 @@ impl Processor {
         Ok(())
     }
 
-    fn replace(&self, fragment: &mut Fragment) -> Result<()> {
-        if let InProcess(process) = fragment {
+    fn replace(&self, shape: &mut DefinitionShape) -> Result<()> {
+        if let InProcess(process) = shape {
             match process {
                 PostProcess::AllOf { name, cases } => {
                     let def = StructDef {
                         name: name.clone(),
                         fields: self.merge_fields_all_of(cases)?,
                     };
-                    *fragment = Fixed(def.into())
+                    *shape = Fixed(def.into())
                 }
             }
         }

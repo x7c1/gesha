@@ -1,12 +1,12 @@
 mod to_struct;
-use to_struct::{schema_object_to_data_type, to_struct};
+use to_struct::{shape_schema_object_type, to_struct};
 
 mod post_process;
 use post_process::post_process;
 
 mod type_factory;
 
-use crate::conversions::v3_0::to_rust_type::Fragment::Fixed;
+use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
 use crate::conversions::Error::RequirePostProcess;
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{
@@ -18,7 +18,7 @@ use openapi_types::v3_0::{
     AllOf, ComponentsObject, Document, OpenApiDataType, SchemaCase, SchemaFieldName, SchemaObject,
     SchemasObject,
 };
-use Fragment::InProcess;
+use DefinitionShape::InProcess;
 
 impl ToRustType<Document> for Modules {
     fn apply(this: Document) -> Result<Self> {
@@ -38,17 +38,17 @@ impl ToRustType<ComponentsObject> for Modules {
             .map(from_schemas_object)
             .unwrap_or_else(|| Ok(vec![]))?;
 
-        let mut fragments = ComponentFragments { schemas };
-        post_process(&mut fragments)?;
-        fragments.into_modules()
+        let mut shapes = ComponentShapes { schemas };
+        post_process(&mut shapes)?;
+        shapes.into_modules()
     }
 }
 
-fn from_schemas_object(this: SchemasObject) -> Result<Vec<Fragment>> {
+fn from_schemas_object(this: SchemasObject) -> Result<Vec<DefinitionShape>> {
     this.into_iter().map(from_schema_entry).collect()
 }
 
-fn from_schema_entry(kv: (SchemaFieldName, SchemaCase)) -> Result<Fragment> {
+fn from_schema_entry(kv: (SchemaFieldName, SchemaCase)) -> Result<DefinitionShape> {
     let (field_name, schema_case) = kv;
     match schema_case {
         SchemaCase::Schema(obj) => to_definition(field_name, *obj),
@@ -56,7 +56,7 @@ fn from_schema_entry(kv: (SchemaFieldName, SchemaCase)) -> Result<Fragment> {
     }
 }
 
-fn to_definition(name: SchemaFieldName, object: SchemaObject) -> Result<Fragment> {
+fn to_definition(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionShape> {
     use OpenApiDataType as ot;
     match object.data_type.as_ref() {
         Some(ot::Object) => to_struct(name, object),
@@ -71,20 +71,20 @@ fn to_definition(name: SchemaFieldName, object: SchemaObject) -> Result<Fragment
     }
 }
 
-fn to_newtype(name: SchemaFieldName, object: SchemaObject) -> Result<Fragment> {
-    match schema_object_to_data_type(object)? {
-        FragmentType::Fixed(data_type) => {
+fn to_newtype(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionShape> {
+    match shape_schema_object_type(object)? {
+        TypeShape::Fixed(data_type) => {
             let def = NewTypeDef {
                 name: name.into(),
                 data_type,
             };
             Ok(Fixed(def.into()))
         }
-        FragmentType::Vec(_) => unimplemented!(),
+        TypeShape::Vec(_) => unimplemented!(),
     }
 }
 
-fn to_enum(name: SchemaFieldName, object: SchemaObject) -> Result<Fragment> {
+fn to_enum(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionShape> {
     let values = object.enum_values.expect("enum must be some");
     let variants = values.into_iter().map(EnumVariant::new).collect();
     let def = EnumDef {
@@ -94,7 +94,7 @@ fn to_enum(name: SchemaFieldName, object: SchemaObject) -> Result<Fragment> {
     Ok(Fixed(def.into()))
 }
 
-fn reserve_all_of(name: SchemaFieldName, cases: AllOf) -> Result<Fragment> {
+fn reserve_all_of(name: SchemaFieldName, cases: AllOf) -> Result<DefinitionShape> {
     let process = PostProcess::AllOf {
         name: name.into(),
         cases,
@@ -103,11 +103,11 @@ fn reserve_all_of(name: SchemaFieldName, cases: AllOf) -> Result<Fragment> {
 }
 
 #[derive(Clone, Debug)]
-struct ComponentFragments {
-    schemas: Vec<Fragment>,
+struct ComponentShapes {
+    schemas: Vec<DefinitionShape>,
 }
 
-impl ComponentFragments {
+impl ComponentShapes {
     fn into_modules(self) -> Result<Modules> {
         let schemas = self
             .schemas
@@ -125,7 +125,7 @@ impl ComponentFragments {
 }
 
 #[derive(Clone, Debug)]
-enum Fragment {
+enum DefinitionShape {
     Fixed(Definition),
     InProcess(PostProcess),
 }
@@ -135,23 +135,23 @@ pub enum PostProcess {
     AllOf { name: String, cases: AllOf },
 }
 
-impl From<PostProcess> for Fragment {
+impl From<PostProcess> for DefinitionShape {
     fn from(this: PostProcess) -> Self {
         InProcess(this)
     }
 }
 
 #[derive(Clone, Debug)]
-pub enum FragmentType {
+pub enum TypeShape {
     Fixed(DataType),
-    Vec(Box<FragmentType>),
+    Vec(Box<TypeShape>),
 }
 
 #[derive(Clone, Debug)]
-pub enum FragmentStructField {
+pub enum FieldShape {
     Fixed(StructField),
     InProcess {
         name: StructFieldName,
-        data_type: FragmentType,
+        type_shape: TypeShape,
     },
 }
