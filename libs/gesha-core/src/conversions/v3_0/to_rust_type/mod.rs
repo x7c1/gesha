@@ -10,7 +10,8 @@ use crate::conversions::v3_0::to_rust_type::Fragment::Fixed;
 use crate::conversions::Error::RequirePostProcess;
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{
-    Definition, EnumDef, EnumVariant, ModuleName, Modules, NewTypeDef,
+    DataType, Definition, EnumDef, EnumVariant, ModuleName, Modules, NewTypeDef, StructField,
+    StructFieldName,
 };
 use indexmap::indexmap;
 use openapi_types::v3_0::{
@@ -71,11 +72,16 @@ fn to_definition(name: SchemaFieldName, object: SchemaObject) -> Result<Fragment
 }
 
 fn to_newtype(name: SchemaFieldName, object: SchemaObject) -> Result<Fragment> {
-    let def = NewTypeDef {
-        name: name.into(),
-        data_type: schema_object_to_data_type(object)?,
-    };
-    Ok(Fixed(def.into()))
+    match schema_object_to_data_type(object)? {
+        FragmentType::Fixed(data_type) => {
+            let def = NewTypeDef {
+                name: name.into(),
+                data_type,
+            };
+            Ok(Fixed(def.into()))
+        }
+        FragmentType::Vec(_) => unimplemented!(),
+    }
 }
 
 fn to_enum(name: SchemaFieldName, object: SchemaObject) -> Result<Fragment> {
@@ -133,4 +139,19 @@ impl From<PostProcess> for Fragment {
     fn from(this: PostProcess) -> Self {
         InProcess(this)
     }
+}
+
+#[derive(Clone, Debug)]
+pub enum FragmentType {
+    Fixed(DataType),
+    Vec(Box<FragmentType>),
+}
+
+#[derive(Clone, Debug)]
+pub enum FragmentStructField {
+    Fixed(StructField),
+    InProcess {
+        name: StructFieldName,
+        data_type: FragmentType,
+    },
 }
