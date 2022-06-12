@@ -6,6 +6,7 @@ use post_process::post_process;
 
 mod type_factory;
 
+use crate::conversions::v3_0::to_rust_type::to_struct::FieldsFactory;
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
 use crate::conversions::Error::RequirePostProcess;
 use crate::conversions::{Result, ToRustType};
@@ -15,8 +16,8 @@ use crate::targets::rust_type::{
 };
 use indexmap::indexmap;
 use openapi_types::v3_0::{
-    AllOf, ComponentsObject, Document, OpenApiDataType, SchemaCase, SchemaFieldName, SchemaObject,
-    SchemasObject,
+    AllOf, ComponentsObject, Document, OpenApiDataType, ReferenceObject, SchemaCase,
+    SchemaFieldName, SchemaObject, SchemasObject,
 };
 use DefinitionShape::InProcess;
 
@@ -95,11 +96,37 @@ fn to_enum(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionShap
 }
 
 fn reserve_all_of(name: SchemaFieldName, cases: AllOf) -> Result<DefinitionShape> {
+    let shapes = cases
+        .into_iter()
+        .map(to_all_of_item_shape)
+        .collect::<Result<Vec<AllOfItemShape>>>()?;
+
     let process = PostProcess::AllOf {
         name: name.into(),
-        cases,
+        shapes,
     };
     Ok(process.into())
+}
+
+fn to_all_of_item_shape(case: SchemaCase) -> Result<AllOfItemShape> {
+    let shape = match case {
+        SchemaCase::Schema(object) => {
+            let shapes = object_to_field_shapes(*object)?;
+            AllOfItemShape::Object(shapes)
+        }
+        SchemaCase::Reference(x) => AllOfItemShape::Ref(x),
+    };
+    Ok(shape)
+}
+
+fn object_to_field_shapes(object: SchemaObject) -> Result<Vec<FieldShape>> {
+    let to_fields = |properties| {
+        let factory = FieldsFactory {
+            required: object.required,
+        };
+        factory.apply(properties)
+    };
+    object.properties.map(to_fields).unwrap_or(Ok(vec![]))
 }
 
 #[derive(Clone, Debug)]
@@ -132,13 +159,22 @@ enum DefinitionShape {
 
 #[derive(Clone, Debug)]
 pub enum PostProcess {
-    AllOf { name: String, cases: AllOf },
+    AllOf {
+        name: String,
+        shapes: Vec<AllOfItemShape>,
+    },
 }
 
 impl From<PostProcess> for DefinitionShape {
     fn from(this: PostProcess) -> Self {
         InProcess(this)
     }
+}
+
+#[derive(Clone, Debug)]
+pub enum AllOfItemShape {
+    Object(Vec<FieldShape>),
+    Ref(ReferenceObject),
 }
 
 #[derive(Clone, Debug)]

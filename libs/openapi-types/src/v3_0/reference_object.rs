@@ -13,3 +13,9 @@ impl From<ReferenceObject> for String {
         this.0
     }
 }
+
+impl AsRef<str> for ReferenceObject {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}

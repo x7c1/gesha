@@ -1,9 +1,9 @@
 use super::{DefinitionShape, PostProcess};
-use crate::conversions::v3_0::to_rust_type::ComponentShapes;
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
+use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, ComponentShapes, FieldShape};
 use crate::conversions::Result;
-use crate::targets::rust_type::{StructDef, StructField};
-use openapi_types::v3_0::{AllOf, SchemaCase};
+use crate::targets::rust_type::{Definition, StructDef, StructField};
+use openapi_types::v3_0::ReferenceObject;
 use DefinitionShape::InProcess;
 
 pub(super) fn post_process(modules: &mut ComponentShapes) -> Result<()> {
@@ -30,10 +30,10 @@ impl Processor {
     fn replace(&self, shape: &mut DefinitionShape) -> Result<()> {
         if let InProcess(process) = shape {
             match process {
-                PostProcess::AllOf { name, cases } => {
+                PostProcess::AllOf { name, shapes } => {
                     let def = StructDef {
                         name: name.clone(),
-                        fields: self.merge_fields_all_of(cases)?,
+                        fields: self.merge_fields_all_of(shapes)?,
                     };
                     *shape = Fixed(def.into())
                 }
@@ -42,16 +42,44 @@ impl Processor {
         Ok(())
     }
 
-    fn merge_fields_all_of(&self, cases: &AllOf) -> Result<Vec<StructField>> {
-        println!("original: {:#?}", self.original);
+    fn merge_fields_all_of(&self, shapes: &[AllOfItemShape]) -> Result<Vec<StructField>> {
+        let fields = shapes
+            .iter()
+            .flat_map(|shape| match shape {
+                AllOfItemShape::Object(x) => x
+                    .iter()
+                    .map(|field_shape| match field_shape {
+                        FieldShape::Fixed(field) => field.clone(),
+                        FieldShape::InProcess { .. } => unimplemented!(),
+                    })
+                    .collect::<Vec<StructField>>(),
+                AllOfItemShape::Ref(x) => self.find_struct_fields(x),
+            })
+            .collect::<Vec<StructField>>();
 
-        // TODO:
-        for case in cases {
-            match case {
-                SchemaCase::Schema(_) => {}
-                SchemaCase::Reference(_) => {}
-            }
+        Ok(fields)
+    }
+
+    fn find_struct_fields(&self, x: &ReferenceObject) -> Vec<StructField> {
+        // TODO: support locations other than 'schemas'
+        let prefix = "#/components/schemas/";
+        let type_ref = x.as_ref();
+        if type_ref.starts_with(prefix) {
+            let name = type_ref.replace(prefix, "");
+            self.traverse(&name, &self.original.schemas)
+        } else {
+            unimplemented!()
         }
-        Ok(vec![])
+    }
+
+    fn traverse(&self, name: &str, defs: &[DefinitionShape]) -> Vec<StructField> {
+        let xs = defs.iter().find_map(|def_shape| match def_shape {
+            Fixed(def) => match def {
+                Definition::StructDef(x) if x.name == name => Some(x.fields.clone()),
+                _ => None,
+            },
+            InProcess(_) => unimplemented!(),
+        });
+        xs.unwrap_or_else(|| unimplemented!())
     }
 }

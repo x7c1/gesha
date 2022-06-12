@@ -1,5 +1,7 @@
 use super::type_factory::TypeFactory;
-use crate::conversions::v3_0::to_rust_type::{DefinitionShape, FieldShape, TypeShape};
+use crate::conversions::v3_0::to_rust_type::{
+    object_to_field_shapes, DefinitionShape, FieldShape, TypeShape,
+};
 use crate::conversions::Result;
 use crate::targets::rust_type::{DataType, StructDef, StructField, StructFieldName};
 use openapi_types::v3_0::{
@@ -9,13 +11,7 @@ use openapi_types::v3_0::{
 use SchemaCase::{Reference, Schema};
 
 pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionShape> {
-    let to_fields = |properties| {
-        let factory = FieldsFactory {
-            required: object.required,
-        };
-        factory.apply(properties)
-    };
-    let field_shapes = object.properties.map(to_fields).unwrap_or(Ok(vec![]))?;
+    let field_shapes = object_to_field_shapes(object)?;
     let in_process = field_shapes
         .iter()
         .any(|x| matches!(x, FieldShape::InProcess { .. }));
@@ -41,12 +37,12 @@ pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> Result<D
 }
 
 /// SchemaProperties -> Vec<StructField>
-struct FieldsFactory {
-    required: Option<RequiredSchemaFields>,
+pub(super) struct FieldsFactory {
+    pub required: Option<RequiredSchemaFields>,
 }
 
 impl FieldsFactory {
-    fn apply(self, props: SchemaProperties) -> Result<Vec<FieldShape>> {
+    pub fn apply(self, props: SchemaProperties) -> Result<Vec<FieldShape>> {
         props
             .into_iter()
             .map(|(name, case)| self.to_field(name, case))
@@ -102,8 +98,8 @@ pub(super) fn shape_schema_object_type(object: SchemaObject) -> Result<TypeShape
 fn shape_schema_reference_type(object: ReferenceObject) -> Result<TypeShape> {
     let type_name = match String::from(object) {
         x if x.starts_with("#/components/schemas/") => {
-            // TODO: change location to relative paths if using "#/components/responses/" etc
-            // TODO: use ShapeType::Ref
+            // TODO: change location to relative paths by TypeShape::Ref
+            // if using "#/components/responses/" etc
             x.replace("#/components/schemas/", "")
         }
         x => unimplemented!("not implemented: {x}"),
