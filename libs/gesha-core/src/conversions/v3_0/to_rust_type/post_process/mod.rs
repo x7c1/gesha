@@ -50,7 +50,9 @@ impl Processor {
                     .iter()
                     .map(|field_shape| match field_shape {
                         FieldShape::Fixed(field) => field.clone(),
-                        FieldShape::InProcess { .. } => unimplemented!(),
+                        FieldShape::InProcess { name, type_shape } => {
+                            unimplemented!("{} {:?}", name, type_shape)
+                        }
                     })
                     .collect::<Vec<StructField>>(),
                 AllOfItemShape::Ref(x) => self.find_struct_fields(x),

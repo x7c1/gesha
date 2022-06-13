@@ -5,7 +5,7 @@ use openapi_types::v3_0::{
     RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaObject, SchemaProperties,
 };
 
-pub fn object_to_field_shapes(object: SchemaObject) -> Result<Vec<FieldShape>> {
+pub(super) fn object_to_field_shapes(object: SchemaObject) -> Result<Vec<FieldShape>> {
     let to_fields = |properties| {
         let factory = FieldsFactory {
             required: object.required,

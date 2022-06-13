@@ -137,7 +137,9 @@ impl ComponentShapes {
             .into_iter()
             .map(|x| match x {
                 Fixed(def) => Ok(def),
-                InProcess(process) => Err(RequirePostProcess(process)),
+                InProcess(process) => Err(RequirePostProcess {
+                    detail: format!("{:#?}", process),
+                }),
             })
             .collect::<Result<Vec<Definition>>>()?;
 
@@ -154,7 +156,7 @@ enum DefinitionShape {
 }
 
 #[derive(Clone, Debug)]
-pub enum PostProcess {
+enum PostProcess {
     AllOf {
         name: String,
         shapes: Vec<AllOfItemShape>,
@@ -168,7 +170,7 @@ impl From<PostProcess> for DefinitionShape {
 }
 
 #[derive(Clone, Debug)]
-pub enum AllOfItemShape {
+enum AllOfItemShape {
     Object(Vec<FieldShape>),
     Ref(ReferenceObject),
 }
@@ -180,7 +182,7 @@ pub enum TypeShape {
 }
 
 #[derive(Clone, Debug)]
-pub enum FieldShape {
+enum FieldShape {
     Fixed(StructField),
     InProcess {
         name: StructFieldName,

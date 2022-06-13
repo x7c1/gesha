@@ -5,7 +5,7 @@ use crate::targets::rust_type::DataType;
 use openapi_types::v3_0::SchemaCase::{Reference, Schema};
 use openapi_types::v3_0::{ReferenceObject, SchemaCase};
 
-pub fn shape_type(schema_case: SchemaCase) -> Result<TypeShape> {
+pub(super) fn shape_type(schema_case: SchemaCase) -> Result<TypeShape> {
     match schema_case {
         Schema(object) => shape_schema_object_type(*object),
         Reference(object) => shape_schema_reference_type(object),
