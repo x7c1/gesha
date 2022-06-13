@@ -1,12 +1,14 @@
 mod to_struct;
 use to_struct::{shape_schema_object_type, to_struct};
 
+mod object_to_field_shapes;
+use object_to_field_shapes::object_to_field_shapes;
+
 mod post_process;
 use post_process::post_process;
 
 mod type_factory;
 
-use crate::conversions::v3_0::to_rust_type::to_struct::FieldsFactory;
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
 use crate::conversions::Error::RequirePostProcess;
 use crate::conversions::{Result, ToRustType};
@@ -117,16 +119,6 @@ fn to_all_of_item_shape(case: SchemaCase) -> Result<AllOfItemShape> {
         SchemaCase::Reference(x) => AllOfItemShape::Ref(x),
     };
     Ok(shape)
-}
-
-fn object_to_field_shapes(object: SchemaObject) -> Result<Vec<FieldShape>> {
-    let to_fields = |properties| {
-        let factory = FieldsFactory {
-            required: object.required,
-        };
-        factory.apply(properties)
-    };
-    object.properties.map(to_fields).unwrap_or(Ok(vec![]))
 }
 
 #[derive(Clone, Debug)]
