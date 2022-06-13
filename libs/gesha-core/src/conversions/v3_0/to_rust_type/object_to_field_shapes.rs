@@ -6,22 +6,25 @@ use openapi_types::v3_0::{
 };
 
 pub(super) fn object_to_field_shapes(object: SchemaObject) -> Result<Vec<FieldShape>> {
-    let to_fields = |properties| {
-        let factory = FieldsFactory {
-            required: object.required,
-        };
-        factory.apply(properties)
-    };
-    object.properties.map(to_fields).unwrap_or(Ok(vec![]))
+    object
+        .properties
+        .map(ToFieldShapes::from(object.required))
+        .unwrap_or(Ok(vec![]))
 }
 
 /// SchemaProperties -> Vec<FieldShape>
-struct FieldsFactory {
-    pub required: Option<RequiredSchemaFields>,
+struct ToFieldShapes {
+    required: Option<RequiredSchemaFields>,
 }
 
-impl FieldsFactory {
-    pub fn apply(self, props: SchemaProperties) -> Result<Vec<FieldShape>> {
+impl ToFieldShapes {
+    fn from(
+        required: Option<RequiredSchemaFields>,
+    ) -> impl FnOnce(SchemaProperties) -> Result<Vec<FieldShape>> {
+        |props| ToFieldShapes { required }.apply(props)
+    }
+
+    fn apply(self, props: SchemaProperties) -> Result<Vec<FieldShape>> {
         props
             .into_iter()
             .map(|(name, case)| self.to_field(name, case))
