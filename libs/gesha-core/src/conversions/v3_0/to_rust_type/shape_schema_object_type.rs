@@ -31,31 +31,33 @@ impl TypeFactory {
         use OpenApiDataType as ot;
 
         match (&data_type, &self.format) {
-            (ot::Array, _) => {
-                let items = self
-                    .items
-                    .unwrap_or_else(|| unimplemented!("array must have items"));
-
-                let item_type = shape_type(items.into())?;
-                match item_type {
-                    Fixed(data_type) => Ok(Fixed(tp::Vec(Box::new(data_type)))),
-                    _ => Ok(TypeShape::Vec(Box::new(item_type))),
-                }
-            }
+            (ot::Array, _) => self.to_array_shape(),
             (ot::Boolean, _) => Ok(Fixed(tp::Bool)),
             (ot::Integer, Some(fm::Int32)) => Ok(Fixed(tp::Int32)),
             (ot::Integer, Some(fm::Int64) | None) => Ok(Fixed(tp::Int64)),
             (ot::Number, Some(fm::Float)) => Ok(Fixed(tp::Float32)),
             (ot::Number, Some(fm::Double) | None) => Ok(Fixed(tp::Float64)),
+            (ot::String, _) => Ok(Fixed(tp::String)),
             (ot::Object, _) => unimplemented! {
                 "inline object definition not implemented: {:?}",
                 data_type
             },
-            (ot::String, _) => Ok(Fixed(tp::String)),
             (_, Some(x)) => Err(UnknownFormat {
                 data_type,
                 format: x.to_string(),
             }),
+        }
+    }
+
+    fn to_array_shape(self) -> Result<TypeShape> {
+        let items = self
+            .items
+            .unwrap_or_else(|| unimplemented!("array must have items"));
+
+        let item_type = shape_type(items.into())?;
+        match item_type {
+            Fixed(data_type) => Ok(Fixed(DataType::Vec(Box::new(data_type)))),
+            _ => Ok(TypeShape::Vec(Box::new(item_type))),
         }
     }
 }
