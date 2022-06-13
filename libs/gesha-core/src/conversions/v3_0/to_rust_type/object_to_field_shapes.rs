@@ -33,14 +33,9 @@ impl ToFieldShapes {
 
     fn to_field(&self, name: SchemaFieldName, case: SchemaCase) -> Result<FieldShape> {
         match shape_type(case)? {
-            TypeShape::Fixed(mut data_type) => {
-                if !self.is_required(&name) {
-                    data_type = DataType::Option(Box::new(data_type));
-                }
-                Ok(FieldShape::Fixed(StructField {
-                    name: StructFieldName::new(name),
-                    data_type,
-                }))
+            TypeShape::Fixed(data_type) => {
+                let field = self.new_struct_field(name, data_type);
+                Ok(FieldShape::Fixed(field))
             }
             type_shape => Ok(FieldShape::InProcess {
                 name: StructFieldName::new(name),
@@ -53,6 +48,16 @@ impl ToFieldShapes {
         match &self.required {
             Some(required) => required.contains(name.as_ref()),
             None => false,
+        }
+    }
+
+    fn new_struct_field(&self, name: SchemaFieldName, mut data_type: DataType) -> StructField {
+        if !self.is_required(&name) {
+            data_type = DataType::Option(Box::new(data_type));
+        }
+        StructField {
+            name: StructFieldName::new(name),
+            data_type,
         }
     }
 }
