@@ -15,7 +15,7 @@ pub(super) fn object_to_field_shapes(object: SchemaObject) -> Result<Vec<FieldSh
     object.properties.map(to_fields).unwrap_or(Ok(vec![]))
 }
 
-/// SchemaProperties -> Vec<StructField>
+/// SchemaProperties -> Vec<FieldShape>
 struct FieldsFactory {
     pub required: Option<RequiredSchemaFields>,
 }

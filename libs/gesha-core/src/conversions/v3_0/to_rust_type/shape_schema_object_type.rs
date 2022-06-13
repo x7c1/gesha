@@ -18,7 +18,7 @@ pub fn shape_schema_object_type(object: SchemaObject) -> Result<TypeShape> {
     }
 }
 
-/// OpenApiDataType -> DataType
+/// OpenApiDataType -> TypeShape
 struct TypeFactory {
     pub format: Option<FormatModifier>,
     pub items: Option<ArrayItems>,
