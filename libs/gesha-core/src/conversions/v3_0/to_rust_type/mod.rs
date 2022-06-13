@@ -22,7 +22,7 @@ use crate::targets::rust_type::{
 };
 use indexmap::indexmap;
 use openapi_types::v3_0::{
-    AllOf, ComponentsObject, Document, OpenApiDataType, ReferenceObject, SchemaCase,
+    AllOf, ComponentsObject, Document, EnumValues, OpenApiDataType, ReferenceObject, SchemaCase,
     SchemaFieldName, SchemaObject, SchemasObject,
 };
 use DefinitionShape::InProcess;
@@ -40,19 +40,18 @@ impl ToRustType<Document> for Modules {
 
 impl ToRustType<ComponentsObject> for Modules {
     fn apply(this: ComponentsObject) -> Result<Self> {
-        let schemas = this
-            .schemas
-            .map(from_schemas_object)
-            .unwrap_or_else(|| Ok(vec![]))?;
-
-        let mut shapes = ComponentShapes { schemas };
+        let to_shapes = |object: SchemasObject| {
+            object
+                .into_iter()
+                .map(from_schema_entry)
+                .collect::<Result<Vec<DefinitionShape>>>()
+        };
+        let mut shapes = ComponentShapes {
+            schemas: this.schemas.map(to_shapes).unwrap_or_else(|| Ok(vec![]))?,
+        };
         post_process(&mut shapes)?;
         shapes.into_modules()
     }
-}
-
-fn from_schemas_object(this: SchemasObject) -> Result<Vec<DefinitionShape>> {
-    this.into_iter().map(from_schema_entry).collect()
 }
 
 fn from_schema_entry(kv: (SchemaFieldName, SchemaCase)) -> Result<DefinitionShape> {
@@ -71,10 +70,12 @@ fn to_definition(name: SchemaFieldName, object: SchemaObject) -> Result<Definiti
     use OpenApiDataType as ot;
     match object.data_type.as_ref() {
         Some(ot::Object) => to_struct(name, object),
-        Some(ot::String) if object.enum_values.is_some() => to_enum(name, object),
-        Some(ot::String | ot::Integer | ot::Number | ot::Boolean | ot::Array) => {
-            to_newtype(name, object)
-        }
+        Some(ot::String) => match object.enum_values {
+            Some(values) => to_enum(name, values),
+            None => to_newtype(name, object),
+        },
+        Some(ot::Integer | ot::Number | ot::Boolean | ot::Array) => to_newtype(name, object),
+
         // define it as 'object' if 'type' is not specified.
         None => to_struct(name, object),
     }
@@ -93,12 +94,10 @@ fn to_newtype(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionS
     }
 }
 
-fn to_enum(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionShape> {
-    let values = object.enum_values.expect("enum must be some");
-    let variants = values.into_iter().map(EnumVariant::new).collect();
+fn to_enum(name: SchemaFieldName, values: EnumValues) -> Result<DefinitionShape> {
     let def = EnumDef {
         name: name.into(),
-        variants,
+        variants: values.into_iter().map(EnumVariant::new).collect(),
     };
     Ok(Fixed(def.into()))
 }
