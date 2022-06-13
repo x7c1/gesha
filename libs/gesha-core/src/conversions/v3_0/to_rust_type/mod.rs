@@ -64,6 +64,10 @@ fn from_schema_entry(kv: (SchemaFieldName, SchemaCase)) -> Result<DefinitionShap
 }
 
 fn to_definition(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionShape> {
+    if let Some(all_of) = object.all_of {
+        return reserve_all_of(name, all_of);
+    }
+
     use OpenApiDataType as ot;
     match object.data_type.as_ref() {
         Some(ot::Object) => to_struct(name, object),
@@ -71,8 +75,6 @@ fn to_definition(name: SchemaFieldName, object: SchemaObject) -> Result<Definiti
         Some(ot::String | ot::Integer | ot::Number | ot::Boolean | ot::Array) => {
             to_newtype(name, object)
         }
-        _ if object.all_of.is_some() => reserve_all_of(name, object.all_of.unwrap()),
-
         // define it as 'object' if 'type' is not specified.
         None => to_struct(name, object),
     }
