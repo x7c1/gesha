@@ -20,12 +20,12 @@ pub fn shape_schema_object_type(object: SchemaObject) -> Result<TypeShape> {
 
 /// OpenApiDataType -> TypeShape
 struct TypeFactory {
-    pub format: Option<FormatModifier>,
-    pub items: Option<ArrayItems>,
+    format: Option<FormatModifier>,
+    items: Option<ArrayItems>,
 }
 
 impl TypeFactory {
-    pub fn apply(self, data_type: OpenApiDataType) -> Result<TypeShape> {
+    fn apply(self, data_type: OpenApiDataType) -> Result<TypeShape> {
         use DataType as tp;
         use FormatModifier as fm;
         use OpenApiDataType as ot;
@@ -54,10 +54,10 @@ impl TypeFactory {
             .items
             .unwrap_or_else(|| unimplemented!("array must have items"));
 
-        let item_type = shape_type(items.into())?;
-        match item_type {
-            Fixed(data_type) => Ok(Fixed(DataType::Vec(Box::new(data_type)))),
-            _ => Ok(TypeShape::Vec(Box::new(item_type))),
-        }
+        let type_shape = match shape_type(items.into())? {
+            Fixed(data_type) => Fixed(DataType::Vec(Box::new(data_type))),
+            shape => TypeShape::Vec(Box::new(shape)),
+        };
+        Ok(type_shape)
     }
 }
