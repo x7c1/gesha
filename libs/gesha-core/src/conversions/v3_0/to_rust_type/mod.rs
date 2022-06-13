@@ -65,7 +65,7 @@ fn from_schema_entry(kv: (SchemaFieldName, SchemaCase)) -> Result<DefinitionShap
 
 fn to_definition(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionShape> {
     if let Some(all_of) = object.all_of {
-        return reserve_all_of(name, all_of);
+        return to_all_of(name, all_of);
     }
 
     use OpenApiDataType as ot;
@@ -103,7 +103,7 @@ fn to_enum(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionShap
     Ok(Fixed(def.into()))
 }
 
-fn reserve_all_of(name: SchemaFieldName, cases: AllOf) -> Result<DefinitionShape> {
+fn to_all_of(name: SchemaFieldName, cases: AllOf) -> Result<DefinitionShape> {
     let shapes = cases
         .into_iter()
         .map(to_all_of_item_shape)
