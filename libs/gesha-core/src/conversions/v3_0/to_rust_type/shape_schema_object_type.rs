@@ -3,11 +3,24 @@ use crate::conversions::v3_0::to_rust_type::TypeShape;
 use crate::conversions::Error::UnknownFormat;
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
-use openapi_types::v3_0::{ArrayItems, FormatModifier, OpenApiDataType};
+use openapi_types::v3_0::{ArrayItems, FormatModifier, OpenApiDataType, SchemaObject};
 use TypeShape::Fixed;
 
+pub fn shape_schema_object_type(object: SchemaObject) -> Result<TypeShape> {
+    match object.data_type {
+        Some(data_type) => {
+            let to_type = TypeFactory {
+                format: object.format,
+                items: object.items,
+            };
+            to_type.apply(data_type)
+        }
+        None => unimplemented!(),
+    }
+}
+
 /// OpenApiDataType -> DataType
-pub(super) struct TypeFactory {
+struct TypeFactory {
     pub format: Option<FormatModifier>,
     pub items: Option<ArrayItems>,
 }

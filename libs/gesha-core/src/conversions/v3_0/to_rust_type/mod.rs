@@ -1,13 +1,14 @@
 mod to_struct;
-use to_struct::{shape_schema_object_type, to_struct};
+use to_struct::to_struct;
 
 mod object_to_field_shapes;
 use object_to_field_shapes::object_to_field_shapes;
 
+mod shape_schema_object_type;
+use shape_schema_object_type::shape_schema_object_type;
+
 mod post_process;
 use post_process::post_process;
-
-mod type_factory;
 
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
 use crate::conversions::Error::RequirePostProcess;

@@ -1,6 +1,5 @@
-use super::type_factory::TypeFactory;
 use crate::conversions::v3_0::to_rust_type::{
-    object_to_field_shapes, DefinitionShape, FieldShape, TypeShape,
+    object_to_field_shapes, shape_schema_object_type, DefinitionShape, FieldShape, TypeShape,
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::{DataType, StructDef};
@@ -37,19 +36,6 @@ pub(super) fn shape_type(schema_case: SchemaCase) -> Result<TypeShape> {
     match schema_case {
         Schema(object) => shape_schema_object_type(*object),
         Reference(object) => shape_schema_reference_type(object),
-    }
-}
-
-pub(super) fn shape_schema_object_type(object: SchemaObject) -> Result<TypeShape> {
-    match object.data_type {
-        Some(data_type) => {
-            let to_type = TypeFactory {
-                format: object.format,
-                items: object.items,
-            };
-            to_type.apply(data_type)
-        }
-        None => unimplemented!(),
     }
 }
 
