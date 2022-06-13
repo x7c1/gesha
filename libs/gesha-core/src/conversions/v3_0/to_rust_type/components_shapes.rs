@@ -15,16 +15,20 @@ impl ComponentsShapes {
         let schemas = self
             .schemas
             .into_iter()
-            .map(|x| match x {
-                Fixed(def) => Ok(def),
-                InProcess(process) => Err(RequirePostProcess {
-                    detail: format!("{:#?}", process),
-                }),
-            })
+            .map(to_definition)
             .collect::<Result<Vec<Definition>>>()?;
 
         Ok(indexmap! {
              ModuleName::new("schemas") => schemas,
         })
+    }
+}
+
+fn to_definition(shape: DefinitionShape) -> Result<Definition> {
+    match shape {
+        Fixed(def) => Ok(def),
+        InProcess(process) => Err(RequirePostProcess {
+            detail: format!("{:#?}", process),
+        }),
     }
 }
