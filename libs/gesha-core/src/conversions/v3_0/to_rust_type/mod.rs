@@ -10,6 +10,9 @@ use shape_schema_object_type::shape_schema_object_type;
 mod post_process;
 use post_process::post_process;
 
+mod shape_type;
+use shape_type::shape_type;
+
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
 use crate::conversions::Error::RequirePostProcess;
 use crate::conversions::{Result, ToRustType};

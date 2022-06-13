@@ -1,5 +1,4 @@
-use super::to_struct::shape_type;
-use crate::conversions::v3_0::to_rust_type::TypeShape;
+use crate::conversions::v3_0::to_rust_type::{shape_type, TypeShape};
 use crate::conversions::Error::UnknownFormat;
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;

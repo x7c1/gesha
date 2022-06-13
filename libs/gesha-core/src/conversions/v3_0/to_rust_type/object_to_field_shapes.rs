@@ -1,5 +1,4 @@
-use crate::conversions::v3_0::to_rust_type::to_struct::shape_type;
-use crate::conversions::v3_0::to_rust_type::{FieldShape, TypeShape};
+use crate::conversions::v3_0::to_rust_type::{shape_type, FieldShape, TypeShape};
 use crate::conversions::Result;
 use crate::targets::rust_type::{DataType, StructField, StructFieldName};
 use openapi_types::v3_0::{
