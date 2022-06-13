@@ -8,7 +8,7 @@ use openapi_types::v3_0::{
 pub(super) fn object_to_field_shapes(object: SchemaObject) -> Result<Vec<FieldShape>> {
     object
         .properties
-        .map(ToFieldShapes::from(object.required))
+        .map(ToFieldShapes::by(object.required))
         .unwrap_or(Ok(vec![]))
 }
 
@@ -18,7 +18,7 @@ struct ToFieldShapes {
 }
 
 impl ToFieldShapes {
-    fn from(
+    fn by(
         required: Option<RequiredSchemaFields>,
     ) -> impl FnOnce(SchemaProperties) -> Result<Vec<FieldShape>> {
         |props| ToFieldShapes { required }.apply(props)
