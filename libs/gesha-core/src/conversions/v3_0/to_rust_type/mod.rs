@@ -1,26 +1,26 @@
-mod to_struct;
-use to_struct::to_struct;
+mod components_shapes;
+use components_shapes::ComponentsShapes;
 
 mod object_to_field_shapes;
 use object_to_field_shapes::object_to_field_shapes;
 
-mod shape_schema_object_type;
-use shape_schema_object_type::shape_schema_object_type;
-
 mod post_process;
 use post_process::post_process;
+
+mod shape_schema_object_type;
+use shape_schema_object_type::shape_schema_object_type;
 
 mod shape_type;
 use shape_type::shape_type;
 
+mod to_struct;
+use to_struct::to_struct;
+
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
-use crate::conversions::Error::RequirePostProcess;
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{
-    DataType, Definition, EnumDef, EnumVariant, ModuleName, Modules, NewTypeDef, StructField,
-    StructFieldName,
+    DataType, Definition, EnumDef, EnumVariant, Modules, NewTypeDef, StructField, StructFieldName,
 };
-use indexmap::indexmap;
 use openapi_types::v3_0::{
     AllOf, ComponentsObject, Document, EnumValues, OpenApiDataType, ReferenceObject, SchemaCase,
     SchemaFieldName, SchemaObject, SchemasObject,
@@ -46,7 +46,7 @@ impl ToRustType<ComponentsObject> for Modules {
                 .map(from_schema_entry)
                 .collect::<Result<Vec<DefinitionShape>>>()
         };
-        let mut shapes = ComponentShapes {
+        let mut shapes = ComponentsShapes {
             schemas: this.schemas.map(to_shapes).unwrap_or_else(|| Ok(vec![]))?,
         };
         post_process(&mut shapes)?;
@@ -124,30 +124,6 @@ fn to_all_of_item_shape(case: SchemaCase) -> Result<AllOfItemShape> {
         SchemaCase::Reference(x) => AllOfItemShape::Ref(x),
     };
     Ok(shape)
-}
-
-#[derive(Clone, Debug)]
-struct ComponentShapes {
-    schemas: Vec<DefinitionShape>,
-}
-
-impl ComponentShapes {
-    fn into_modules(self) -> Result<Modules> {
-        let schemas = self
-            .schemas
-            .into_iter()
-            .map(|x| match x {
-                Fixed(def) => Ok(def),
-                InProcess(process) => Err(RequirePostProcess {
-                    detail: format!("{:#?}", process),
-                }),
-            })
-            .collect::<Result<Vec<Definition>>>()?;
-
-        Ok(indexmap! {
-             ModuleName::new("schemas") => schemas,
-        })
-    }
 }
 
 #[derive(Clone, Debug)]

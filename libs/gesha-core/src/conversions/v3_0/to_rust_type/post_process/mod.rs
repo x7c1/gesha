@@ -1,12 +1,12 @@
 use super::{DefinitionShape, PostProcess};
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
-use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, ComponentShapes, FieldShape};
+use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, ComponentsShapes, FieldShape};
 use crate::conversions::Result;
 use crate::targets::rust_type::{Definition, StructDef, StructField};
 use openapi_types::v3_0::ReferenceObject;
 use DefinitionShape::InProcess;
 
-pub(super) fn post_process(modules: &mut ComponentShapes) -> Result<()> {
+pub(super) fn post_process(modules: &mut ComponentsShapes) -> Result<()> {
     let processor = Processor {
         original: Clone::clone(modules),
     };
@@ -14,11 +14,11 @@ pub(super) fn post_process(modules: &mut ComponentShapes) -> Result<()> {
 }
 
 struct Processor {
-    original: ComponentShapes,
+    original: ComponentsShapes,
 }
 
 impl Processor {
-    fn run(self, modules: &mut ComponentShapes) -> Result<()> {
+    fn run(self, modules: &mut ComponentsShapes) -> Result<()> {
         modules
             .schemas
             .iter_mut()
