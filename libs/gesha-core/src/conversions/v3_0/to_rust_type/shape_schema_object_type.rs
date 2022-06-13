@@ -31,7 +31,7 @@ impl TypeFactory {
         use OpenApiDataType as ot;
 
         match (&data_type, &self.format) {
-            (ot::Array, _) => self.to_array_shape(),
+            (ot::Array, _) => self.items_to_shape(),
             (ot::Boolean, _) => Ok(Fixed(tp::Bool)),
             (ot::Integer, Some(fm::Int32)) => Ok(Fixed(tp::Int32)),
             (ot::Integer, Some(fm::Int64) | None) => Ok(Fixed(tp::Int64)),
@@ -49,7 +49,7 @@ impl TypeFactory {
         }
     }
 
-    fn to_array_shape(self) -> Result<TypeShape> {
+    fn items_to_shape(self) -> Result<TypeShape> {
         let items = self
             .items
             .unwrap_or_else(|| unimplemented!("array must have items"));
