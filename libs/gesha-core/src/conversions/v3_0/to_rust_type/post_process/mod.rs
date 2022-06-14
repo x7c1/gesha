@@ -19,40 +19,44 @@ impl PostProcessor {
 
     fn replace(&self, shape: &mut DefinitionShape) -> Result<()> {
         if let InProcess(process) = shape {
-            *shape = match process {
-                PostProcess::AllOf {
-                    struct_name,
-                    shapes,
-                } => {
-                    let def = StructDef {
-                        name: struct_name.clone(),
-                        fields: self.merge_fields_all_of(shapes)?,
-                    };
-                    Fixed(def.into())
-                }
-                PostProcess::Struct {
-                    struct_name,
-                    shapes,
-                } => {
-                    let def = StructDef {
-                        name: struct_name.clone(),
-                        fields: self.ref_to_fields(shapes)?,
-                    };
-                    Fixed(def.into())
-                }
-                PostProcess::NewType {
-                    struct_name,
-                    type_shape,
-                } => {
-                    let def = NewTypeDef {
-                        name: struct_name.clone(),
-                        data_type: self.reify_type_shape(type_shape),
-                    };
-                    Fixed(def.into())
-                }
+            *shape = self.shape_process(process)?;
+        };
+        Ok(())
+    }
+
+    fn shape_process(&self, process: &mut PostProcess) -> Result<DefinitionShape> {
+        match process {
+            PostProcess::AllOf {
+                struct_name,
+                shapes,
+            } => {
+                let def = StructDef {
+                    name: struct_name.clone(),
+                    fields: self.merge_fields_all_of(shapes)?,
+                };
+                Ok(Fixed(def.into()))
+            }
+            PostProcess::Struct {
+                struct_name,
+                shapes,
+            } => {
+                let def = StructDef {
+                    name: struct_name.clone(),
+                    fields: self.ref_to_fields(shapes)?,
+                };
+                Ok(Fixed(def.into()))
+            }
+            PostProcess::NewType {
+                struct_name,
+                type_shape,
+            } => {
+                let def = NewTypeDef {
+                    name: struct_name.clone(),
+                    data_type: self.reify_type_shape(type_shape),
+                };
+                Ok(Fixed(def.into()))
             }
         }
-        Ok(())
     }
 }
 
