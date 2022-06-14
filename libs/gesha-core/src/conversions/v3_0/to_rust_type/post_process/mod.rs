@@ -30,7 +30,7 @@ impl PostProcessor {
                     };
                     *shape = Fixed(def.into())
                 }
-                PostProcess::RefType {
+                PostProcess::LazyFields {
                     struct_name,
                     shapes,
                 } => {
@@ -51,20 +51,28 @@ impl PostProcessor {
     fn ref_to_fields(&self, shapes: &[FieldShape]) -> Result<Vec<StructField>> {
         let fields = shapes
             .iter()
-            .flat_map(|shape| self.resolve_ref(shape))
+            .map(|shape| self.resolve_ref(shape))
             .collect::<Vec<StructField>>();
 
         Ok(fields)
     }
 
-    fn resolve_ref(&self, shape: &FieldShape) -> Vec<StructField> {
+    fn resolve_ref(&self, shape: &FieldShape) -> StructField {
         match shape {
-            FieldShape::Fixed(x) => vec![x.clone()],
-            FieldShape::InProcess { name, type_shape } => {
-                vec![StructField {
+            FieldShape::Fixed(x) => x.clone(),
+            FieldShape::InProcess {
+                name,
+                type_shape,
+                is_optional,
+            } => {
+                let mut data_type = self.reify_type_shape(type_shape);
+                if *is_optional {
+                    data_type = DataType::Option(Box::new(data_type));
+                }
+                StructField {
                     name: name.clone(),
-                    data_type: self.reify_type_shape(type_shape),
-                }]
+                    data_type,
+                }
             }
         }
     }
@@ -102,8 +110,12 @@ impl PostProcessor {
     fn shape_to_fields(&self, item_shape: &AllOfItemShape) -> Vec<StructField> {
         let to_field = |shape: &FieldShape| match shape {
             FieldShape::Fixed(field) => field.clone(),
-            FieldShape::InProcess { name, type_shape } => {
-                unimplemented!("{} {:?}", name, type_shape)
+            FieldShape::InProcess {
+                name,
+                type_shape,
+                is_optional,
+            } => {
+                unimplemented!("{} {:?} {}", name, type_shape, is_optional)
             }
         };
         match item_shape {

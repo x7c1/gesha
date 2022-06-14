@@ -139,7 +139,7 @@ enum PostProcess {
         struct_name: String,
         shapes: Vec<AllOfItemShape>,
     },
-    RefType {
+    LazyFields {
         struct_name: String,
         shapes: Vec<FieldShape>,
     },
@@ -170,5 +170,6 @@ enum FieldShape {
     InProcess {
         name: StructFieldName,
         type_shape: TypeShape,
+        is_optional: bool,
     },
 }

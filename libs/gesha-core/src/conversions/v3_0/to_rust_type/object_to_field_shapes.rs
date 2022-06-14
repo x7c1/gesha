@@ -38,6 +38,7 @@ impl ToFieldShapes {
                 Ok(FieldShape::Fixed(field))
             }
             type_shape => Ok(FieldShape::InProcess {
+                is_optional: !self.is_required(&name),
                 name: StructFieldName::new(name),
                 type_shape,
             }),
