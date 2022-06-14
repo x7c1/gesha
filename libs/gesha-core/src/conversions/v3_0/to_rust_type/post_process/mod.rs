@@ -19,7 +19,7 @@ impl PostProcessor {
 
     fn replace(&self, shape: &mut DefinitionShape) -> Result<()> {
         if let InProcess(process) = shape {
-            match process {
+            *shape = match process {
                 PostProcess::AllOf {
                     struct_name,
                     shapes,
@@ -28,7 +28,7 @@ impl PostProcessor {
                         name: struct_name.clone(),
                         fields: self.merge_fields_all_of(shapes)?,
                     };
-                    *shape = Fixed(def.into())
+                    Fixed(def.into())
                 }
                 PostProcess::LazyFields {
                     struct_name,
@@ -38,7 +38,7 @@ impl PostProcessor {
                         name: struct_name.clone(),
                         fields: self.ref_to_fields(shapes)?,
                     };
-                    *shape = Fixed(def.into())
+                    Fixed(def.into())
                 }
                 PostProcess::NewType {
                     struct_name,
@@ -48,7 +48,7 @@ impl PostProcessor {
                         name: struct_name.clone(),
                         data_type: self.reify_type_shape(type_shape),
                     };
-                    *shape = Fixed(def.into())
+                    Fixed(def.into())
                 }
             }
         }
