@@ -5,7 +5,7 @@ mod object_to_field_shapes;
 use object_to_field_shapes::object_to_field_shapes;
 
 mod post_process;
-use post_process::post_process;
+use post_process::PostProcessor;
 
 mod shape_schema_object_type;
 use shape_schema_object_type::shape_schema_object_type;
@@ -49,7 +49,7 @@ impl ToRustType<ComponentsObject> for Modules {
         let mut shapes = ComponentsShapes {
             schemas: this.schemas.map(to_shapes).unwrap_or_else(|| Ok(vec![]))?,
         };
-        post_process(&mut shapes)?;
+        PostProcessor::run(&mut shapes)?;
         shapes.into_modules()
     }
 }

@@ -1,30 +1,19 @@
-use super::{DefinitionShape, PostProcess};
-use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
-use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, ComponentsShapes, FieldShape};
+use super::{AllOfItemShape, ComponentsShapes, DefinitionShape, FieldShape, PostProcess};
 use crate::conversions::Result;
 use crate::targets::rust_type::{Definition, StructDef, StructField};
 use openapi_types::v3_0::ReferenceObject;
-use DefinitionShape::InProcess;
+use DefinitionShape::{Fixed, InProcess};
 
-pub(super) fn post_process(modules: &mut ComponentsShapes) -> Result<()> {
-    let processor = Processor {
-        original: Clone::clone(modules),
-    };
-    processor.run(modules)
-}
-
-struct Processor {
+pub(super) struct PostProcessor {
     original: ComponentsShapes,
 }
 
-impl Processor {
-    fn run(self, modules: &mut ComponentsShapes) -> Result<()> {
-        modules
-            .schemas
-            .iter_mut()
-            .try_for_each(|x| self.replace(x))?;
-
-        Ok(())
+impl PostProcessor {
+    pub fn run(modules: &mut ComponentsShapes) -> Result<()> {
+        let this = Self {
+            original: modules.clone(),
+        };
+        modules.schemas.iter_mut().try_for_each(|x| this.replace(x))
     }
 
     fn replace(&self, shape: &mut DefinitionShape) -> Result<()> {
@@ -45,21 +34,23 @@ impl Processor {
     fn merge_fields_all_of(&self, shapes: &[AllOfItemShape]) -> Result<Vec<StructField>> {
         let fields = shapes
             .iter()
-            .flat_map(|shape| match shape {
-                AllOfItemShape::Object(x) => x
-                    .iter()
-                    .map(|field_shape| match field_shape {
-                        FieldShape::Fixed(field) => field.clone(),
-                        FieldShape::InProcess { name, type_shape } => {
-                            unimplemented!("{} {:?}", name, type_shape)
-                        }
-                    })
-                    .collect::<Vec<StructField>>(),
-                AllOfItemShape::Ref(x) => self.find_struct_fields(x),
-            })
+            .flat_map(|shape| self.shape_to_fields(shape))
             .collect::<Vec<StructField>>();
 
         Ok(fields)
+    }
+
+    fn shape_to_fields(&self, item_shape: &AllOfItemShape) -> Vec<StructField> {
+        let to_field = |shape: &FieldShape| match shape {
+            FieldShape::Fixed(field) => field.clone(),
+            FieldShape::InProcess { name, type_shape } => {
+                unimplemented!("{} {:?}", name, type_shape)
+            }
+        };
+        match item_shape {
+            AllOfItemShape::Object(shapes) => shapes.iter().map(to_field).collect(),
+            AllOfItemShape::Ref(object) => self.find_struct_fields(object),
+        }
     }
 
     fn find_struct_fields(&self, x: &ReferenceObject) -> Vec<StructField> {
