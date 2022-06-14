@@ -1,3 +1,4 @@
+use crate::conversions::v3_0::to_rust_type::PostProcess::RefType;
 use crate::conversions::v3_0::to_rust_type::{object_to_field_shapes, DefinitionShape, FieldShape};
 use crate::conversions::Result;
 use crate::targets::rust_type::StructDef;
@@ -10,7 +11,10 @@ pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> Result<D
         .any(|x| matches!(x, FieldShape::InProcess { .. }));
 
     let shape = if in_process {
-        unimplemented!()
+        DefinitionShape::InProcess(RefType {
+            struct_name: name.into(),
+            shapes: field_shapes,
+        })
     } else {
         let fields = field_shapes
             .into_iter()

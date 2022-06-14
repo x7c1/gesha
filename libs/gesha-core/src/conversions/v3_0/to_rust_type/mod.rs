@@ -91,6 +91,7 @@ fn to_newtype(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionS
             Ok(Fixed(def.into()))
         }
         TypeShape::Vec(_) => unimplemented!(),
+        TypeShape::Ref(_) => unimplemented!(),
     }
 }
 
@@ -109,7 +110,7 @@ fn to_all_of(name: SchemaFieldName, cases: AllOf) -> Result<DefinitionShape> {
         .collect::<Result<Vec<AllOfItemShape>>>()?;
 
     let process = PostProcess::AllOf {
-        name: name.into(),
+        struct_name: name.into(),
         shapes,
     };
     Ok(process.into())
@@ -135,8 +136,12 @@ enum DefinitionShape {
 #[derive(Clone, Debug)]
 enum PostProcess {
     AllOf {
-        name: String,
+        struct_name: String,
         shapes: Vec<AllOfItemShape>,
+    },
+    RefType {
+        struct_name: String,
+        shapes: Vec<FieldShape>,
     },
 }
 
@@ -156,6 +161,7 @@ enum AllOfItemShape {
 pub enum TypeShape {
     Fixed(DataType),
     Vec(Box<TypeShape>),
+    Ref(ReferenceObject),
 }
 
 #[derive(Clone, Debug)]

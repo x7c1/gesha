@@ -1,6 +1,7 @@
 use super::{AllOfItemShape, ComponentsShapes, DefinitionShape, FieldShape, PostProcess};
+use crate::conversions::v3_0::to_rust_type::TypeShape;
 use crate::conversions::Result;
-use crate::targets::rust_type::{Definition, StructDef, StructField};
+use crate::targets::rust_type::{DataType, Definition, StructDef, StructField};
 use openapi_types::v3_0::ReferenceObject;
 use DefinitionShape::{Fixed, InProcess};
 
@@ -19,10 +20,23 @@ impl PostProcessor {
     fn replace(&self, shape: &mut DefinitionShape) -> Result<()> {
         if let InProcess(process) = shape {
             match process {
-                PostProcess::AllOf { name, shapes } => {
+                PostProcess::AllOf {
+                    struct_name,
+                    shapes,
+                } => {
                     let def = StructDef {
-                        name: name.clone(),
+                        name: struct_name.clone(),
                         fields: self.merge_fields_all_of(shapes)?,
+                    };
+                    *shape = Fixed(def.into())
+                }
+                PostProcess::RefType {
+                    struct_name,
+                    shapes,
+                } => {
+                    let def = StructDef {
+                        name: struct_name.clone(),
+                        fields: self.ref_to_fields(shapes)?,
                     };
                     *shape = Fixed(def.into())
                 }
@@ -30,7 +44,52 @@ impl PostProcessor {
         }
         Ok(())
     }
+}
 
+// resolve '$ref'
+impl PostProcessor {
+    fn ref_to_fields(&self, shapes: &[FieldShape]) -> Result<Vec<StructField>> {
+        let fields = shapes
+            .iter()
+            .flat_map(|shape| self.resolve_ref(shape))
+            .collect::<Vec<StructField>>();
+
+        Ok(fields)
+    }
+
+    fn resolve_ref(&self, shape: &FieldShape) -> Vec<StructField> {
+        match shape {
+            FieldShape::Fixed(x) => vec![x.clone()],
+            FieldShape::InProcess { name, type_shape } => {
+                vec![StructField {
+                    name: name.clone(),
+                    data_type: self.reify_type_shape(type_shape),
+                }]
+            }
+        }
+    }
+
+    fn reify_type_shape(&self, shape: &TypeShape) -> DataType {
+        match shape {
+            TypeShape::Fixed(x) => x.clone(),
+            TypeShape::Vec(x) => DataType::Vec(Box::new(self.reify_type_shape(&*x))),
+            TypeShape::Ref(x) => {
+                let type_name = match String::from(x.clone()) {
+                    x if x.starts_with("#/components/schemas/") => {
+                        // TODO: change location to relative paths by checking self.original
+                        // if using "#/components/responses/" etc
+                        x.replace("#/components/schemas/", "")
+                    }
+                    x => unimplemented!("not implemented: {x}"),
+                };
+                DataType::Custom(type_name)
+            }
+        }
+    }
+}
+
+// resolve 'allOf'
+impl PostProcessor {
     fn merge_fields_all_of(&self, shapes: &[AllOfItemShape]) -> Result<Vec<StructField>> {
         let fields = shapes
             .iter()
