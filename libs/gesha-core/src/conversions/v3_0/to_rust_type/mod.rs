@@ -141,7 +141,7 @@ enum PostProcess {
         struct_name: String,
         shapes: Vec<AllOfItemShape>,
     },
-    LazyFields {
+    Struct {
         struct_name: String,
         shapes: Vec<FieldShape>,
     },

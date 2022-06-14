@@ -30,7 +30,7 @@ impl PostProcessor {
                     };
                     Fixed(def.into())
                 }
-                PostProcess::LazyFields {
+                PostProcess::Struct {
                     struct_name,
                     shapes,
                 } => {
