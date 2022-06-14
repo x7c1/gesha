@@ -90,8 +90,10 @@ fn to_newtype(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionS
             };
             Ok(Fixed(def.into()))
         }
-        TypeShape::Vec(_) => unimplemented!(),
-        TypeShape::Ref(_) => unimplemented!(),
+        type_shape => Ok(InProcess(PostProcess::NewType {
+            struct_name: name.into(),
+            type_shape,
+        })),
     }
 }
 
@@ -142,6 +144,10 @@ enum PostProcess {
     LazyFields {
         struct_name: String,
         shapes: Vec<FieldShape>,
+    },
+    NewType {
+        struct_name: String,
+        type_shape: TypeShape,
     },
 }
 

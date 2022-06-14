@@ -1,7 +1,7 @@
 use super::{AllOfItemShape, ComponentsShapes, DefinitionShape, FieldShape, PostProcess};
 use crate::conversions::v3_0::to_rust_type::TypeShape;
 use crate::conversions::Result;
-use crate::targets::rust_type::{DataType, Definition, StructDef, StructField};
+use crate::targets::rust_type::{DataType, Definition, NewTypeDef, StructDef, StructField};
 use openapi_types::v3_0::ReferenceObject;
 use DefinitionShape::{Fixed, InProcess};
 
@@ -37,6 +37,16 @@ impl PostProcessor {
                     let def = StructDef {
                         name: struct_name.clone(),
                         fields: self.ref_to_fields(shapes)?,
+                    };
+                    *shape = Fixed(def.into())
+                }
+                PostProcess::NewType {
+                    struct_name,
+                    type_shape,
+                } => {
+                    let def = NewTypeDef {
+                        name: struct_name.clone(),
+                        data_type: self.reify_type_shape(type_shape),
                     };
                     *shape = Fixed(def.into())
                 }
