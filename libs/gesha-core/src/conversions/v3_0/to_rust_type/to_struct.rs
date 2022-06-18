@@ -1,85 +1,30 @@
-use super::type_factory::TypeFactory;
+use crate::conversions::v3_0::to_rust_type::{object_to_field_shapes, DefinitionShape, FieldShape};
 use crate::conversions::Result;
-use crate::targets::rust_type::{DataType, Definition, StructDef, StructField, StructFieldName};
-use openapi_types::v3_0::{
-    ReferenceObject, RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaObject,
-    SchemaProperties,
-};
-use SchemaCase::{Reference, Schema};
+use crate::targets::rust_type::StructDef;
+use openapi_types::v3_0::{SchemaFieldName, SchemaObject};
 
-pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> Result<Definition> {
-    let to_fields = |properties| {
-        let factory = FieldsFactory {
-            required: object.required,
-        };
-        factory.apply(properties)
-    };
-    let def = StructDef {
-        name: name.into(),
-        fields: object.properties.map(to_fields).unwrap_or(Ok(vec![]))?,
-    };
-    Ok(def.into())
-}
+pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionShape> {
+    let field_shapes = object_to_field_shapes(object)?;
+    let in_process = field_shapes
+        .iter()
+        .any(|x| matches!(x, FieldShape::InProcess { .. }));
 
-/// SchemaProperties -> Vec<StructField>
-struct FieldsFactory {
-    required: Option<RequiredSchemaFields>,
-}
-
-impl FieldsFactory {
-    fn apply(self, props: SchemaProperties) -> Result<Vec<StructField>> {
-        props
+    let shape = if in_process {
+        unimplemented!()
+    } else {
+        let fields = field_shapes
             .into_iter()
-            .map(|(name, case)| self.to_field(name, case))
-            .collect()
-    }
+            .map(|x| match x {
+                FieldShape::Fixed(field) => field,
+                FieldShape::InProcess { .. } => unimplemented!(),
+            })
+            .collect();
 
-    fn to_field(&self, name: SchemaFieldName, case: SchemaCase) -> Result<StructField> {
-        let mut data_type = to_data_type(case)?;
-        if !self.is_required(&name) {
-            data_type = DataType::Option(Box::new(data_type));
-        }
-        Ok(StructField {
-            name: StructFieldName::new(name),
-            data_type,
-        })
-    }
-
-    fn is_required(&self, name: &SchemaFieldName) -> bool {
-        match &self.required {
-            Some(required) => required.contains(name.as_ref()),
-            None => false,
-        }
-    }
-}
-
-pub(super) fn to_data_type(schema_case: SchemaCase) -> Result<DataType> {
-    match schema_case {
-        Schema(object) => schema_object_to_data_type(*object),
-        Reference(object) => schema_ref_to_data_type(object),
-    }
-}
-
-pub(super) fn schema_object_to_data_type(object: SchemaObject) -> Result<DataType> {
-    match object.data_type {
-        Some(data_type) => {
-            let to_type = TypeFactory {
-                format: object.format,
-                items: object.items,
-            };
-            to_type.apply(data_type)
-        }
-        None => unimplemented!(),
-    }
-}
-
-fn schema_ref_to_data_type(object: ReferenceObject) -> Result<DataType> {
-    let type_name = match String::from(object) {
-        x if x.starts_with("#/components/schemas/") => {
-            // TODO: change location to relative paths if using "#/components/responses/" etc
-            x.replace("#/components/schemas/", "")
-        }
-        x => unimplemented!("not implemented: {x}"),
+        let def = StructDef {
+            name: name.into(),
+            fields,
+        };
+        DefinitionShape::Fixed(def.into())
     };
-    Ok(DataType::Custom(type_name))
+    Ok(shape)
 }

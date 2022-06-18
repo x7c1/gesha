@@ -1,6 +1,7 @@
+use heck::ToSnakeCase;
 use std::fmt::{Display, Formatter};
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StructFieldName(String);
 
 impl StructFieldName {
@@ -19,6 +20,8 @@ impl Display for StructFieldName {
 ///
 /// https://doc.rust-lang.org/reference/keywords.html
 fn to_rust_compatible_name(target: String) -> String {
+    let target = target.to_snake_case();
+
     // TODO: include other keywords
     ["type"]
         .into_iter()

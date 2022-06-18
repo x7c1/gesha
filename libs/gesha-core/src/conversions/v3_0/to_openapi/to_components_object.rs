@@ -3,9 +3,9 @@ use crate::conversions::{reify_entry, reify_value, Result, ToOpenApi};
 use crate::yaml::{YamlArray, YamlMap};
 use indexmap::IndexSet;
 use openapi_types::v3_0::{
-    ArrayItems, ComponentsObject, EnumValues, FormatModifier, OpenApiDataType, ReferenceObject,
-    RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaObject, SchemaProperties,
-    SchemasObject,
+    AllOf, ArrayItems, ComponentsObject, EnumValues, FormatModifier, OpenApiDataType,
+    ReferenceObject, RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaObject,
+    SchemaProperties, SchemasObject,
 };
 
 impl ToOpenApi for ComponentsObject {
@@ -74,6 +74,11 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         .map(to_enum_values)
         .transpose()?;
 
+    let all_of = map
+        .remove_if_exists::<YamlArray>("allOf")?
+        .map(to_all_of)
+        .transpose()?;
+
     Ok(SchemaObject {
         data_type,
         format,
@@ -81,6 +86,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         required,
         items,
         enum_values,
+        all_of,
     })
 }
 
@@ -117,4 +123,14 @@ fn to_array_items(map: YamlMap) -> Result<ArrayItems> {
 
 fn to_enum_values(array: YamlArray) -> Result<EnumValues> {
     array.into_iter().map(reify_value).collect()
+}
+
+fn to_all_of(array: YamlArray) -> Result<AllOf> {
+    array
+        .into_iter()
+        .map(reify_value)
+        .collect::<Result<Vec<YamlMap>>>()?
+        .into_iter()
+        .map(to_schema_case)
+        .collect()
 }

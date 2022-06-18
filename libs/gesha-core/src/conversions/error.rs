@@ -11,6 +11,9 @@ pub enum Error {
 
     // module errors
     IncompatibleVersion,
+    RequirePostProcess {
+        detail: String,
+    },
     UnknownFormat {
         data_type: OpenApiDataType,
         format: String,

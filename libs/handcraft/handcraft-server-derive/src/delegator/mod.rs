@@ -23,7 +23,7 @@ pub fn impl_delegate_macro(ast: &syn::DeriveInput) -> TokenStream {
 
             // dummy function to check whether handler implements BadRequestHandler or not.
             fn is_bad_request_handler<A: handcraft_server::BadRequestHandler>(handler: A) {
-                unimplemented!();
+                // nop
             }
 
             // make compile failed if handler doesn't implement BadRequestHandler.

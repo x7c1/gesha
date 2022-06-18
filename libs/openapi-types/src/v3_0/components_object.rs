@@ -12,7 +12,7 @@ pub type SchemasObject = IndexMap<SchemaFieldName, SchemaCase>;
 
 /// > All the fixed fields declared above are objects
 /// > that MUST use keys that match the regular expression: ^[a-zA-Z0-9\.\-_]+$.
-#[derive(Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct SchemaFieldName(String);
 
 impl SchemaFieldName {
@@ -40,7 +40,7 @@ impl Display for SchemaFieldName {
 }
 
 /// Schema Object | Reference Object
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum SchemaCase {
     Schema(Box<SchemaObject>),
     Reference(ReferenceObject),
@@ -80,8 +80,19 @@ pub enum SchemaCase {
 ///   - "value2"
 /// ```
 ///
+/// ex.5
+/// ```yaml
+/// allOf:
+///   - $ref: '#/components/schemas/BasicErrorModel'
+///   - type: object
+///     required:
+///       - rootCause
+///     properties:
+///       rootCause:
+///         type: string
+/// ```
 /// rf. https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SchemaObject {
     /// > type - Value MUST be a string.
     /// > Multiple types via an array are not supported.
@@ -96,6 +107,8 @@ pub struct SchemaObject {
     pub items: Option<ArrayItems>,
 
     pub enum_values: Option<EnumValues>,
+
+    pub all_of: Option<AllOf>,
 }
 
 /// > properties - Property definitions MUST be a Schema Object
@@ -108,7 +121,7 @@ pub type SchemaProperties = IndexMap<SchemaFieldName, SchemaCase>;
 /// >The value of this keyword MUST be an array.  This array MUST have at
 /// >least one element. Elements of this array MUST be strings, and MUST
 /// >be unique.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequiredSchemaFields(IndexSet<String>);
 
 impl RequiredSchemaFields {
@@ -129,7 +142,7 @@ impl RequiredSchemaFields {
 ///
 /// see also: https://swagger.io/docs/specification/data-models/data-types/
 ///
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ArrayItems(Box<SchemaCase>);
 
 impl ArrayItems {
@@ -149,3 +162,7 @@ impl From<ArrayItems> for SchemaCase {
 /// > at least one element.  Elements in the array SHOULD be unique.
 /// > Elements in the array MAY be of any type, including null.
 pub type EnumValues = IndexSet<String>;
+
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
+/// > Inline or referenced schema MUST be of a Schema Object and not a standard JSON Schema.
+pub type AllOf = Vec<SchemaCase>;

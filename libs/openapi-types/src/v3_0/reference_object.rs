@@ -1,5 +1,5 @@
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#referenceObject
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ReferenceObject(String);
 
 impl ReferenceObject {
@@ -11,5 +11,11 @@ impl ReferenceObject {
 impl From<ReferenceObject> for String {
     fn from(this: ReferenceObject) -> Self {
         this.0
+    }
+}
+
+impl AsRef<str> for ReferenceObject {
+    fn as_ref(&self) -> &str {
+        &self.0
     }
 }

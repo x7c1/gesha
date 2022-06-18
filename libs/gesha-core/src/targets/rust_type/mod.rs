@@ -7,7 +7,7 @@ use std::fmt::{Debug, Display, Formatter};
 
 pub type Modules = IndexMap<ModuleName, Vec<Definition>>;
 
-#[derive(Debug, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct ModuleName(String);
 
 impl ModuleName {
@@ -22,14 +22,14 @@ impl Display for ModuleName {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum Definition {
     StructDef(StructDef),
     NewTypeDef(NewTypeDef),
     EnumDef(EnumDef),
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StructDef {
     pub name: String,
     pub fields: Vec<StructField>,
@@ -41,7 +41,7 @@ impl From<StructDef> for Definition {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct NewTypeDef {
     pub name: String,
     pub data_type: DataType,
@@ -53,7 +53,7 @@ impl From<NewTypeDef> for Definition {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EnumDef {
     pub name: String,
     pub variants: Vec<EnumVariant>,
@@ -65,7 +65,7 @@ impl From<EnumDef> for Definition {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EnumVariant(String);
 
 impl EnumVariant {
@@ -79,13 +79,13 @@ impl EnumVariant {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StructField {
     pub name: StructFieldName,
     pub data_type: DataType,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub enum DataType {
     Bool,
     Int32,
