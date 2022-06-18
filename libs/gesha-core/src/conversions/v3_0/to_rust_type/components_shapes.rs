@@ -36,16 +36,21 @@ fn to_definition(shape: DefinitionShape) -> Result<Definition> {
 
 impl ComponentsShapes {
     pub(super) fn find_definition(&self, object: &ReferenceObject) -> Result<&DefinitionShape> {
-        // TODO: support locations other than 'schemas'
-        let prefix = "#/components/schemas/";
-        let type_ref = object.as_ref();
-        let def = if type_ref.starts_with(prefix) {
-            let name = type_ref.replace(prefix, "");
-            let defs = &self.schemas;
-            defs.iter().find(|shape| shape.is_struct_name(&name))
-        } else {
-            unimplemented!()
-        };
-        def.ok_or_else(|| unimplemented!())
+        // TODO: support other locations like 'components/responses' etc
+        find_shape("#/components/schemas/", &self.schemas, object).ok_or_else(|| unimplemented!())
+    }
+}
+
+fn find_shape<'a, 'b>(
+    prefix: &str,
+    defs: &'a [DefinitionShape],
+    target: &'b ReferenceObject,
+) -> Option<&'a DefinitionShape> {
+    let type_ref = target.as_ref();
+    if type_ref.starts_with(prefix) {
+        let name = type_ref.replace(prefix, "");
+        defs.iter().find(|shape| shape.is_struct_name(&name))
+    } else {
+        None
     }
 }
