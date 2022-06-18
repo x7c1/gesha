@@ -86,6 +86,9 @@ fn render_data_type<W: Write>(mut write: W, data_type: DataType) -> Result<()> {
 
 fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
     render! { write =>
+        echo > "#";
+        "[]" > render_derive_attrs => x.derive_attrs;
+        echo > "\n";
         echo > "pub struct {name}", name = x.name;
         "()" > render_data_type => x.data_type;
         echo > ";\n\n";

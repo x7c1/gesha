@@ -43,10 +43,10 @@ impl RefResolver {
                 struct_name,
                 type_shape,
             } => {
-                let def = NewTypeDef {
-                    name: struct_name.clone(),
-                    data_type: self.type_shape_to_data_type(type_shape),
-                };
+                let def = NewTypeDef::new(
+                    struct_name.clone(),
+                    self.type_shape_to_data_type(type_shape),
+                );
                 Ok(Fixed(def.into()))
             }
             PostProcess::AllOf { .. } => Err(PostProcessBroken {

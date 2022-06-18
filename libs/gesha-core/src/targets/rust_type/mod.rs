@@ -61,6 +61,19 @@ impl From<StructDef> for Definition {
 pub struct NewTypeDef {
     pub name: String,
     pub data_type: DataType,
+    pub derive_attrs: Vec<DeriveAttribute>,
+    _hide_default_constructor: bool,
+}
+
+impl NewTypeDef {
+    pub fn new<A: Into<String>>(name: A, data_type: DataType) -> Self {
+        Self {
+            name: name.into(),
+            data_type,
+            derive_attrs: DeriveAttribute::all(),
+            _hide_default_constructor: false
+        }
+    }
 }
 
 impl From<NewTypeDef> for Definition {

@@ -87,10 +87,7 @@ fn to_definition(name: SchemaFieldName, object: SchemaObject) -> Result<Definiti
 fn to_newtype(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionShape> {
     match shape_schema_object_type(object)? {
         TypeShape::Fixed(data_type) => {
-            let def = NewTypeDef {
-                name: name.into(),
-                data_type,
-            };
+            let def = NewTypeDef::new(name, data_type);
             Ok(Fixed(def.into()))
         }
         type_shape => Ok(InProcess(PostProcess::NewType {
