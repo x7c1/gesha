@@ -11,7 +11,6 @@ impl PostProcessor {
             if let Some(processed) = self.shape_all_of(process)? {
                 *shape = processed;
             }
-        } else {
         }
         Ok(())
     }
