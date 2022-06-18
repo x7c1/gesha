@@ -1,6 +1,9 @@
 mod components_shapes;
 use components_shapes::ComponentsShapes;
 
+mod definition_shape;
+use definition_shape::DefinitionShape;
+
 mod object_to_field_shapes;
 use object_to_field_shapes::object_to_field_shapes;
 
@@ -19,7 +22,7 @@ use to_struct::to_struct;
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{
-    DataType, Definition, EnumDef, EnumVariant, Modules, NewTypeDef, StructField, StructFieldName,
+    DataType, EnumDef, EnumVariant, Modules, NewTypeDef, StructField, StructFieldName,
 };
 use openapi_types::v3_0::{
     AllOf, ComponentsObject, Document, EnumValues, OpenApiDataType, ReferenceObject, SchemaCase,
@@ -90,7 +93,10 @@ fn to_newtype(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionS
             };
             Ok(Fixed(def.into()))
         }
-        TypeShape::Vec(_) => unimplemented!(),
+        type_shape => Ok(InProcess(PostProcess::NewType {
+            struct_name: name.into(),
+            type_shape,
+        })),
     }
 }
 
@@ -109,7 +115,7 @@ fn to_all_of(name: SchemaFieldName, cases: AllOf) -> Result<DefinitionShape> {
         .collect::<Result<Vec<AllOfItemShape>>>()?;
 
     let process = PostProcess::AllOf {
-        name: name.into(),
+        struct_name: name.into(),
         shapes,
     };
     Ok(process.into())
@@ -127,16 +133,18 @@ fn to_all_of_item_shape(case: SchemaCase) -> Result<AllOfItemShape> {
 }
 
 #[derive(Clone, Debug)]
-enum DefinitionShape {
-    Fixed(Definition),
-    InProcess(PostProcess),
-}
-
-#[derive(Clone, Debug)]
 enum PostProcess {
     AllOf {
-        name: String,
+        struct_name: String,
         shapes: Vec<AllOfItemShape>,
+    },
+    Struct {
+        struct_name: String,
+        shapes: Vec<FieldShape>,
+    },
+    NewType {
+        struct_name: String,
+        type_shape: TypeShape,
     },
 }
 
@@ -156,6 +164,7 @@ enum AllOfItemShape {
 pub enum TypeShape {
     Fixed(DataType),
     Vec(Box<TypeShape>),
+    Ref(ReferenceObject),
 }
 
 #[derive(Clone, Debug)]
@@ -164,5 +173,6 @@ enum FieldShape {
     InProcess {
         name: StructFieldName,
         type_shape: TypeShape,
+        is_optional: bool,
     },
 }

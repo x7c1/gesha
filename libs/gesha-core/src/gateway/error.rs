@@ -1,3 +1,4 @@
+use crate::conversions::Error::PostProcessBroken;
 use crate::{conversions, renderer, yaml};
 use console::Style;
 use std::path::PathBuf;
@@ -42,14 +43,14 @@ pub enum Error {
 
 impl Error {
     pub fn dump(&self) {
-        match self {
+        let message = match self {
             Error::DiffDetected {
                 output,
                 actual,
                 expected,
             } => {
-                println!(
-                    "[failed]\n {}   : {}\n {} : {}\n\n{}",
+                format!(
+                    "\n {}   : {}\n {} : {}\n\n{}",
                     Style::new().red().apply_to("- actual"),
                     actual.to_string_lossy(),
                     Style::new().green().apply_to("+ expected"),
@@ -58,12 +59,16 @@ impl Error {
                 )
             }
             Error::FormatFailed { detail, .. } => {
-                println!("[failed] rustfmt>\n{}", detail)
+                format!("rustfmt>\n{}", detail)
+            }
+            Error::Conversions(PostProcessBroken { detail }) => {
+                format!("internal error: post-process broken.\n{}", detail)
             }
             _ => {
-                println!("[failed] {:#?}", self)
+                format!("{:#?}", self)
             }
-        }
+        };
+        println!("[failed] {}", message)
     }
 }
 
