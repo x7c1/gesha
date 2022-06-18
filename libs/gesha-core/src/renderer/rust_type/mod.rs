@@ -2,8 +2,8 @@ use crate::render;
 use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, EnumDef, EnumVariant, ModuleName, Modules, NewTypeDef, StructDef,
-    StructField,
+    DataType, Definition, DeriveAttribute, EnumDef, EnumVariant, ModuleName, Modules, NewTypeDef,
+    StructDef, StructField,
 };
 use std::io::Write;
 
@@ -42,9 +42,19 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
 
 fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
     render! { write =>
+        echo > "#";
+        "[]" > render_derive_attrs => x.derive_attrs;
+        echo > "\n";
         echo > "pub struct {name}", name = x.name;
         "{}" > render_fields => x.fields;
         echo > "\n";
+    };
+    Ok(())
+}
+
+fn render_derive_attrs<W: Write>(mut write: W, attrs: Vec<DeriveAttribute>) -> Result<()> {
+    render! { write =>
+        echo > "{items}", items = format!("derive({})", attrs.join(","));
     };
     Ok(())
 }
