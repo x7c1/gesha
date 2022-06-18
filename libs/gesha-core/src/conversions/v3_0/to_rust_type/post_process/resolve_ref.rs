@@ -76,8 +76,7 @@ impl PostProcessor {
             TypeShape::Ref(x) => {
                 let type_name = match String::from(x.clone()) {
                     x if x.starts_with("#/components/schemas/") => {
-                        // TODO: change location to relative paths by checking self.original
-                        // if using "#/components/responses/" etc
+                        // TODO: support other locations like "#/components/responses/" etc
                         x.replace("#/components/schemas/", "")
                     }
                     x => unimplemented!("not implemented: {x}"),
