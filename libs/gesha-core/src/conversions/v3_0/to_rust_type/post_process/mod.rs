@@ -14,17 +14,9 @@ impl PostProcessor {
             original: modules.clone(),
         };
         // 1st process : resolve allOf
-        modules
-            .schemas
-            .iter_mut()
-            .try_for_each(|x| this.resolve_all_of(x))?;
+        this.process_all_of(modules)?;
 
         // 2nd process : resolve $ref
-        modules
-            .schemas
-            .iter_mut()
-            .try_for_each(|x| this.resolve_ref(x))?;
-
-        Ok(())
+        this.process_ref(modules)
     }
 }

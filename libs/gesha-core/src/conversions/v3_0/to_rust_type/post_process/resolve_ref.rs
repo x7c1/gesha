@@ -1,11 +1,29 @@
+use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
 use crate::conversions::v3_0::to_rust_type::post_process::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::{Fixed, InProcess};
 use crate::conversions::v3_0::to_rust_type::{DefinitionShape, FieldShape, PostProcess, TypeShape};
+use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{DataType, NewTypeDef, StructDef, StructField};
 
 impl PostProcessor {
-    pub(super) fn resolve_ref(&self, shape: &mut DefinitionShape) -> Result<()> {
+    pub(super) fn process_ref(&self, modules: &mut ComponentsShapes) -> Result<()> {
+        // TODO: support other locations like "#/components/responses/" etc
+        RefResolver::run("#/components/schemas/", &mut modules.schemas)
+    }
+}
+
+struct RefResolver {
+    prefix: &'static str,
+}
+
+impl RefResolver {
+    fn run(prefix: &'static str, shapes: &mut [DefinitionShape]) -> Result<()> {
+        let this = Self { prefix };
+        shapes.iter_mut().try_for_each(|x| this.resolve_ref(x))
+    }
+
+    fn resolve_ref(&self, shape: &mut DefinitionShape) -> Result<()> {
         if let InProcess(process) = shape {
             *shape = self.shape_ref(process)?;
         };
@@ -75,10 +93,7 @@ impl PostProcessor {
             TypeShape::Vec(x) => DataType::Vec(Box::new(self.type_shape_to_data_type(&*x))),
             TypeShape::Ref(x) => {
                 let type_name = match String::from(x.clone()) {
-                    x if x.starts_with("#/components/schemas/") => {
-                        // TODO: support other locations like "#/components/responses/" etc
-                        x.replace("#/components/schemas/", "")
-                    }
+                    x if x.starts_with(self.prefix) => x.replace(self.prefix, ""),
                     x => unimplemented!("not implemented: {x}"),
                 };
                 DataType::Custom(type_name)
