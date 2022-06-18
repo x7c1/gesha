@@ -1,3 +1,6 @@
+mod derive_attribute;
+pub use derive_attribute::DeriveAttribute;
+
 mod struct_field_name;
 pub use struct_field_name::StructFieldName;
 
@@ -33,6 +36,19 @@ pub enum Definition {
 pub struct StructDef {
     pub name: String,
     pub fields: Vec<StructField>,
+    pub derive_attrs: Vec<DeriveAttribute>,
+    _hide_default_constructor: bool,
+}
+
+impl StructDef {
+    pub fn new<A: Into<String>>(name: A, fields: Vec<StructField>) -> Self {
+        Self {
+            name: name.into(),
+            fields,
+            derive_attrs: DeriveAttribute::all(),
+            _hide_default_constructor: true,
+        }
+    }
 }
 
 impl From<StructDef> for Definition {

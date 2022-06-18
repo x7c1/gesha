@@ -15,10 +15,7 @@ pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> Result<D
         .collect::<Vec<StructField>>();
 
     let shape = if fields.len() == field_shapes.len() {
-        let def = StructDef {
-            name: name.into(),
-            fields,
-        };
+        let def = StructDef::new(name, fields);
         DefinitionShape::Fixed(def.into())
     } else {
         let process = Struct {
