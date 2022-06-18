@@ -98,6 +98,9 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
 
 fn render_enum<W: Write>(mut write: W, x: EnumDef) -> Result<()> {
     render! { write =>
+        echo > "#";
+        "[]" > render_derive_attrs => x.derive_attrs;
+        echo > "\n";
         echo > "pub enum {name}", name = x.name;
         "{}" > render_enum_variants => x.variants;
         echo > "\n\n";

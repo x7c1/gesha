@@ -71,7 +71,7 @@ impl NewTypeDef {
             name: name.into(),
             data_type,
             derive_attrs: DeriveAttribute::all(),
-            _hide_default_constructor: false
+            _hide_default_constructor: true,
         }
     }
 }
@@ -86,6 +86,19 @@ impl From<NewTypeDef> for Definition {
 pub struct EnumDef {
     pub name: String,
     pub variants: Vec<EnumVariant>,
+    pub derive_attrs: Vec<DeriveAttribute>,
+    _hide_default_constructor: bool,
+}
+
+impl EnumDef {
+    pub fn new<A: Into<String>>(name: A, variants: Vec<EnumVariant>) -> Self {
+        Self {
+            name: name.into(),
+            variants,
+            derive_attrs: DeriveAttribute::all(),
+            _hide_default_constructor: true,
+        }
+    }
 }
 
 impl From<EnumDef> for Definition {
