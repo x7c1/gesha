@@ -1,6 +1,9 @@
 mod components_shapes;
 use components_shapes::ComponentsShapes;
 
+mod definition_shape;
+use definition_shape::DefinitionShape;
+
 mod object_to_field_shapes;
 use object_to_field_shapes::object_to_field_shapes;
 
@@ -19,7 +22,7 @@ use to_struct::to_struct;
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{
-    DataType, Definition, EnumDef, EnumVariant, Modules, NewTypeDef, StructField, StructFieldName,
+    DataType, EnumDef, EnumVariant, Modules, NewTypeDef, StructField, StructFieldName,
 };
 use openapi_types::v3_0::{
     AllOf, ComponentsObject, Document, EnumValues, OpenApiDataType, ReferenceObject, SchemaCase,
@@ -127,48 +130,6 @@ fn to_all_of_item_shape(case: SchemaCase) -> Result<AllOfItemShape> {
         SchemaCase::Reference(x) => AllOfItemShape::Ref(x),
     };
     Ok(shape)
-}
-
-#[derive(Clone, Debug)]
-enum DefinitionShape {
-    Fixed(Definition),
-    InProcess(PostProcess),
-}
-
-impl DefinitionShape {
-    fn is_struct_name(&self, name: &str) -> bool {
-        match self {
-            Fixed(def) => match def {
-                Definition::StructDef(x) => x.name == name,
-                _ => false,
-            },
-            InProcess(process) => match process {
-                PostProcess::Struct { struct_name, .. } => struct_name == name,
-                PostProcess::AllOf { .. } => unimplemented!(),
-                PostProcess::NewType { .. } => unimplemented!(),
-            },
-        }
-    }
-
-    fn field_shapes(&self) -> Vec<FieldShape> {
-        match self {
-            Fixed(def) => match def {
-                Definition::StructDef(x) => x
-                    .fields
-                    .clone()
-                    .into_iter()
-                    .map(FieldShape::Fixed)
-                    .collect(),
-
-                _ => vec![],
-            },
-            InProcess(process) => match process {
-                PostProcess::Struct { shapes, .. } => shapes.clone(),
-                PostProcess::AllOf { .. } => unimplemented!(),
-                PostProcess::NewType { .. } => unimplemented!(),
-            },
-        }
-    }
 }
 
 #[derive(Clone, Debug)]
