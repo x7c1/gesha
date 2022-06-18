@@ -1,4 +1,5 @@
 pub mod schemas {
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Numeric {
         pub integer_without_format: i64,
         pub int1: i32,
