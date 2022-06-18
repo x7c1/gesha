@@ -10,7 +10,7 @@ use openapi_types::v3_0::ReferenceObject;
 impl PostProcessor {
     pub(super) fn resolve_all_of(&self, shape: &mut DefinitionShape) -> Result<()> {
         if let InProcess(process) = shape {
-            if let Some(processed) = self.shape_1st_process(process)? {
+            if let Some(processed) = self.shape_all_of(process)? {
                 *shape = processed;
             }
         } else {
@@ -18,7 +18,7 @@ impl PostProcessor {
         Ok(())
     }
 
-    fn shape_1st_process(&self, process: &mut PostProcess) -> Result<Option<DefinitionShape>> {
+    fn shape_all_of(&self, process: &mut PostProcess) -> Result<Option<DefinitionShape>> {
         match process {
             PostProcess::AllOf {
                 struct_name,

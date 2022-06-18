@@ -7,12 +7,12 @@ use crate::targets::rust_type::{DataType, NewTypeDef, StructDef, StructField};
 impl PostProcessor {
     pub(super) fn resolve_ref(&self, shape: &mut DefinitionShape) -> Result<()> {
         if let InProcess(process) = shape {
-            *shape = self.fix_definition(process)?;
+            *shape = self.shape_ref(process)?;
         };
         Ok(())
     }
 
-    fn fix_definition(&self, process: &mut PostProcess) -> Result<DefinitionShape> {
+    fn shape_ref(&self, process: &mut PostProcess) -> Result<DefinitionShape> {
         match process {
             PostProcess::Struct {
                 struct_name,
