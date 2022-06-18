@@ -135,6 +135,42 @@ enum DefinitionShape {
     InProcess(PostProcess),
 }
 
+impl DefinitionShape {
+    fn is_struct_name(&self, name: &str) -> bool {
+        match self {
+            Fixed(def) => match def {
+                Definition::StructDef(x) => x.name == name,
+                _ => false,
+            },
+            InProcess(process) => match process {
+                PostProcess::Struct { struct_name, .. } => struct_name == name,
+                PostProcess::AllOf { .. } => unimplemented!(),
+                PostProcess::NewType { .. } => unimplemented!(),
+            },
+        }
+    }
+
+    fn field_shapes(&self) -> Vec<FieldShape> {
+        match self {
+            Fixed(def) => match def {
+                Definition::StructDef(x) => x
+                    .fields
+                    .clone()
+                    .into_iter()
+                    .map(FieldShape::Fixed)
+                    .collect(),
+
+                _ => vec![],
+            },
+            InProcess(process) => match process {
+                PostProcess::Struct { shapes, .. } => shapes.clone(),
+                PostProcess::AllOf { .. } => unimplemented!(),
+                PostProcess::NewType { .. } => unimplemented!(),
+            },
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 enum PostProcess {
     AllOf {
