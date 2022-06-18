@@ -34,9 +34,9 @@ impl PostProcessor {
                 };
                 Ok(Fixed(def.into()))
             }
-            PostProcess::AllOf { .. } => {
-                unimplemented!()
-            }
+            PostProcess::AllOf { .. } => Err(PostProcessBroken {
+                detail: format!("'allOf' must be processed before '$ref'.\n{:#?}", process),
+            }),
         }
     }
 

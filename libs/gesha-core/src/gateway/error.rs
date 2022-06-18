@@ -1,4 +1,4 @@
-use crate::conversions::Error::RequirePostProcess;
+use crate::conversions::Error::PostProcessBroken;
 use crate::{conversions, renderer, yaml};
 use console::Style;
 use std::path::PathBuf;
@@ -61,8 +61,8 @@ impl Error {
             Error::FormatFailed { detail, .. } => {
                 format!("rustfmt>\n{}", detail)
             }
-            Error::Conversions(RequirePostProcess { detail }) => {
-                format!("internal error: post-process is required.\n{}", detail)
+            Error::Conversions(PostProcessBroken { detail }) => {
+                format!("internal error: post-process broken.\n{}", detail)
             }
             _ => {
                 format!("{:#?}", self)

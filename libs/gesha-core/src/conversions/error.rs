@@ -11,7 +11,7 @@ pub enum Error {
 
     // module errors
     IncompatibleVersion,
-    RequirePostProcess {
+    PostProcessBroken {
         detail: String,
     },
     UnknownFormat {

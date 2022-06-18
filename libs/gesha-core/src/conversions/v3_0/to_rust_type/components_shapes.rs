@@ -1,6 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::DefinitionShape;
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::{Fixed, InProcess};
-use crate::conversions::Error::RequirePostProcess;
+use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{Definition, ModuleName, Modules};
 use indexmap::indexmap;
@@ -28,8 +28,8 @@ impl ComponentsShapes {
 fn to_definition(shape: DefinitionShape) -> Result<Definition> {
     match shape {
         Fixed(def) => Ok(def),
-        InProcess(process) => Err(RequirePostProcess {
-            detail: format!("{:#?}", process),
+        InProcess(process) => Err(PostProcessBroken {
+            detail: format!("post-process has been left.\n{:#?}", process),
         }),
     }
 }
