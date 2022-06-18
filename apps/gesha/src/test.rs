@@ -24,6 +24,7 @@ pub fn run(params: Params) -> gateway::Result<()> {
             "reserved-keywords.yaml",
             "enum.yaml",
             "all-of.yaml",
+            "all-of-ref.yaml",
         ]),
         Some(x) => vec![TestCase::from_path(x)?],
     };
