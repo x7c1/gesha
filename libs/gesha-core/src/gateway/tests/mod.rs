@@ -80,8 +80,7 @@ where
 
     let writer = new_writer(target.output.clone());
     writer.create_file(rust_types)?;
-    detect_diff(target.output, target.expected)?;
-    Ok(())
+    detect_diff(target.output, target.expected)
 }
 
 pub fn new_writer(path: PathBuf) -> Writer {
