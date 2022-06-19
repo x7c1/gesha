@@ -3,3 +3,4 @@ members = [
     "apps/handcraft",
     "apps/gesha",
 ]
+exclude = ["examples/v3.0"]

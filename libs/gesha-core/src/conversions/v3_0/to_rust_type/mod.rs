@@ -98,7 +98,8 @@ fn to_newtype(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionS
 }
 
 fn to_enum(name: SchemaFieldName, values: EnumValues) -> Result<DefinitionShape> {
-    let def = EnumDef::new(name, values.into_iter().map(EnumVariant::new).collect());
+    let variants = values.into_iter().map(EnumVariant::new).collect();
+    let def = EnumDef::new(name, variants);
     Ok(Fixed(def.into()))
 }
 
