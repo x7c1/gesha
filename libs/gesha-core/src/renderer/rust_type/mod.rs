@@ -23,8 +23,10 @@ fn render_module<W: Write>(mut write: W, module: Module) -> Result<()> {
 }
 
 fn render_mod_body<W: Write>(mut write: W, module: Module) -> Result<()> {
-    render_use_statements(&mut write, module.use_statements)?;
-    render! { write => echo > "\n"; }
+    render! { write =>
+        call > render_use_statements => module.use_statements;
+        echo > "\n";
+    }
     module
         .definitions
         .into_iter()
