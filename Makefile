@@ -30,3 +30,4 @@ gesha-sample: ## debug : Sample gesha command
 
 gesha-test: ## test : Test gesha command
 	cargo run --bin gesha -- test
+	./scripts/build-examples.sh
