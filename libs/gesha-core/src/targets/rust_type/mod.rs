@@ -1,11 +1,36 @@
+mod derive_attribute;
+pub use derive_attribute::DeriveAttribute;
+
+mod modules;
+pub use modules::Modules;
+
 mod struct_field_name;
 pub use struct_field_name::StructFieldName;
 
 use heck::ToUpperCamelCase;
-use indexmap::IndexMap;
 use std::fmt::{Debug, Display, Formatter};
 
-pub type Modules = IndexMap<ModuleName, Vec<Definition>>;
+#[derive(Clone, Debug)]
+pub struct Module {
+    pub name: ModuleName,
+    pub definitions: Vec<Definition>,
+    pub use_statements: Vec<UseStatement>,
+    _hide_default_constructor: bool,
+}
+
+impl Module {
+    pub fn new(name: ModuleName, definitions: Vec<Definition>) -> Self {
+        Self {
+            name,
+            definitions,
+            use_statements: vec![
+                UseStatement::new("serde::Deserialize"),
+                UseStatement::new("serde::Serialize"),
+            ],
+            _hide_default_constructor: false,
+        }
+    }
+}
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct ModuleName(String);
@@ -33,6 +58,19 @@ pub enum Definition {
 pub struct StructDef {
     pub name: String,
     pub fields: Vec<StructField>,
+    pub derive_attrs: Vec<DeriveAttribute>,
+    _hide_default_constructor: bool,
+}
+
+impl StructDef {
+    pub fn new<A: Into<String>>(name: A, fields: Vec<StructField>) -> Self {
+        Self {
+            name: name.into(),
+            fields,
+            derive_attrs: DeriveAttribute::all(),
+            _hide_default_constructor: true,
+        }
+    }
 }
 
 impl From<StructDef> for Definition {
@@ -45,6 +83,19 @@ impl From<StructDef> for Definition {
 pub struct NewTypeDef {
     pub name: String,
     pub data_type: DataType,
+    pub derive_attrs: Vec<DeriveAttribute>,
+    _hide_default_constructor: bool,
+}
+
+impl NewTypeDef {
+    pub fn new<A: Into<String>>(name: A, data_type: DataType) -> Self {
+        Self {
+            name: name.into(),
+            data_type,
+            derive_attrs: DeriveAttribute::all(),
+            _hide_default_constructor: true,
+        }
+    }
 }
 
 impl From<NewTypeDef> for Definition {
@@ -57,6 +108,19 @@ impl From<NewTypeDef> for Definition {
 pub struct EnumDef {
     pub name: String,
     pub variants: Vec<EnumVariant>,
+    pub derive_attrs: Vec<DeriveAttribute>,
+    _hide_default_constructor: bool,
+}
+
+impl EnumDef {
+    pub fn new<A: Into<String>>(name: A, variants: Vec<EnumVariant>) -> Self {
+        Self {
+            name: name.into(),
+            variants,
+            derive_attrs: DeriveAttribute::all(),
+            _hide_default_constructor: true,
+        }
+    }
 }
 
 impl From<EnumDef> for Definition {
@@ -111,5 +175,20 @@ impl From<DataType> for String {
             DataType::Vec(x) => format!("Vec<{}>", String::from(*x)),
             DataType::Custom(x) => x,
         }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct UseStatement(String);
+
+impl UseStatement {
+    pub fn new<A: Into<String>>(a: A) -> Self {
+        Self(a.into())
+    }
+}
+
+impl From<UseStatement> for String {
+    fn from(x: UseStatement) -> Self {
+        x.0
     }
 }

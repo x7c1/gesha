@@ -2,33 +2,44 @@ use crate::render;
 use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, EnumDef, EnumVariant, ModuleName, Modules, NewTypeDef, StructDef,
-    StructField,
+    DataType, Definition, DeriveAttribute, EnumDef, EnumVariant, Module, Modules, NewTypeDef,
+    StructDef, StructField, UseStatement,
 };
 use std::io::Write;
 
 impl Renderer for Modules {
     fn render<W: Write>(self, mut write: W) -> Result<()> {
         self.into_iter()
-            .try_for_each(|(name, defs)| render_module(&mut write, name, defs))
+            .try_for_each(|module| render_module(&mut write, module))
     }
 }
 
-fn render_module<W: Write>(
-    mut write: W,
-    name: ModuleName,
-    definitions: Vec<Definition>,
-) -> Result<()> {
+fn render_module<W: Write>(mut write: W, module: Module) -> Result<()> {
     render! { write =>
-        echo > "pub mod {name}";
-        "{}" > render_definitions => definitions;
+        echo > "pub mod {name}", name = module.name;
+        "{}" > render_mod_body => module;
     };
     Ok(())
 }
 
-fn render_definitions<W: Write>(mut write: W, xs: Vec<Definition>) -> Result<()> {
-    xs.into_iter()
+fn render_mod_body<W: Write>(mut write: W, module: Module) -> Result<()> {
+    render! { write =>
+        call > render_use_statements => module.use_statements;
+        echo > "\n";
+    }
+    module
+        .definitions
+        .into_iter()
         .try_for_each(|def| render_definition(&mut write, def))
+}
+
+fn render_use_statements<W: Write>(mut write: W, xs: Vec<UseStatement>) -> Result<()> {
+    for x in xs {
+        render! { write =>
+            echo > "use {target};\n", target = String::from(x);
+        }
+    }
+    Ok(())
 }
 
 fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
@@ -42,9 +53,19 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
 
 fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
     render! { write =>
+        echo > "#";
+        "[]" > render_derive_attrs => x.derive_attrs;
+        echo > "\n";
         echo > "pub struct {name}", name = x.name;
         "{}" > render_fields => x.fields;
         echo > "\n";
+    };
+    Ok(())
+}
+
+fn render_derive_attrs<W: Write>(mut write: W, attrs: Vec<DeriveAttribute>) -> Result<()> {
+    render! { write =>
+        echo > "{items}", items = format!("derive({})", attrs.join(","));
     };
     Ok(())
 }
@@ -76,6 +97,9 @@ fn render_data_type<W: Write>(mut write: W, data_type: DataType) -> Result<()> {
 
 fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
     render! { write =>
+        echo > "#";
+        "[]" > render_derive_attrs => x.derive_attrs;
+        echo > "\n";
         echo > "pub struct {name}", name = x.name;
         "()" > render_data_type => x.data_type;
         echo > ";\n\n";
@@ -85,6 +109,9 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
 
 fn render_enum<W: Write>(mut write: W, x: EnumDef) -> Result<()> {
     render! { write =>
+        echo > "#";
+        "[]" > render_derive_attrs => x.derive_attrs;
+        echo > "\n";
         echo > "pub enum {name}", name = x.name;
         "{}" > render_enum_variants => x.variants;
         echo > "\n\n";

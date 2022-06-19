@@ -15,6 +15,11 @@ macro_rules! render {
         $func(&mut $write, $y)?;
         write!($write, ">")?;
     };
+    ($write:ident, "[]" > $func:expr => $y:expr) => {
+        write!($write, "[")?;
+        $func(&mut $write, $y)?;
+        write!($write, "]")?;
+    };
     ($write:ident, call > $func:expr => $y:expr) => {
         $func(&mut $write, $y)?;
     };

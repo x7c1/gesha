@@ -1,5 +1,5 @@
 mod error;
-pub use error::{Error, Result};
+pub use error::{DiffStyle, Error, ErrorTheme, Result};
 
 mod reader;
 pub use reader::{file_to_string, Reader};
@@ -10,5 +10,4 @@ pub use writer::Writer;
 mod diff;
 pub use diff::detect_diff;
 
-mod tests;
-pub use tests::{test_rust_type, TestCase};
+pub mod testing;

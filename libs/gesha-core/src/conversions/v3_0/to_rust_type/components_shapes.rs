@@ -2,8 +2,7 @@ use crate::conversions::v3_0::to_rust_type::DefinitionShape;
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::{Fixed, InProcess};
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
-use crate::targets::rust_type::{Definition, ModuleName, Modules};
-use indexmap::indexmap;
+use crate::targets::rust_type::{Definition, Module, ModuleName, Modules};
 use openapi_types::v3_0::ReferenceObject;
 
 #[derive(Clone, Debug)]
@@ -13,15 +12,14 @@ pub struct ComponentsShapes {
 
 impl ComponentsShapes {
     pub fn into_modules(self) -> Result<Modules> {
-        let schemas = self
+        let schemas_definitions = self
             .schemas
             .into_iter()
             .map(to_definition)
             .collect::<Result<Vec<Definition>>>()?;
 
-        Ok(indexmap! {
-             ModuleName::new("schemas") => schemas,
-        })
+        let schemas = Module::new(ModuleName::new("schemas"), schemas_definitions);
+        Ok(Modules::new(vec![schemas]))
     }
 }
 

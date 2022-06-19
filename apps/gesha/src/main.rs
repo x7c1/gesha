@@ -3,7 +3,7 @@ mod test;
 
 use clap::Parser;
 use std::process::exit;
-use Subcommand::{Generate, Test};
+use Subcommand::{Generate, Test, TestOverwrite};
 
 fn main() {
     let args: Args = Args::parse();
@@ -12,6 +12,7 @@ fn main() {
     let result = match args.sub {
         Generate(x) => generate::run(x),
         Test(x) => test::run(x),
+        TestOverwrite => test::overwrite(),
     };
     result.unwrap_or_else(|cause| {
         cause.dump();
@@ -31,4 +32,5 @@ struct Args {
 enum Subcommand {
     Generate(generate::Params),
     Test(test::Params),
+    TestOverwrite,
 }

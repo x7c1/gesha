@@ -6,19 +6,20 @@ pub mod schemas {
     use serde::Serialize;
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct StringValue(String);
+    pub enum StringEnum1 {
+        Error1,
+        Error2,
+    }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct BooleanValue(bool);
+    pub enum StringEnum2 {
+        ErrorFoo,
+        ErrorBar,
+    }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct ArrayValue(Vec<i64>);
-
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct ArrayCustomValue(Vec<Pet>);
-
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Pet {
-        pub id: i64,
+    pub enum StringEnum3 {
+        Asc,
+        Desc,
     }
 }

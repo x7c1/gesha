@@ -1,6 +1,6 @@
 use crate::conversions::Error::PostProcessBroken;
 use crate::{conversions, renderer, yaml};
-use console::Style;
+use console::{Style, StyledObject};
 use std::path::PathBuf;
 
 pub type Result<A> = std::result::Result<A, Error>;
@@ -34,6 +34,11 @@ pub enum Error {
         path: PathBuf,
         detail: String,
     },
+    CannotCopyFile {
+        from: PathBuf,
+        to: PathBuf,
+        detail: String,
+    },
     CannotRender {
         path: PathBuf,
         detail: String,
@@ -42,18 +47,19 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn dump(&self) {
-        let message = match self {
+    pub fn detail(&self, theme: ErrorTheme) -> String {
+        match self {
             Error::DiffDetected {
                 output,
                 actual,
                 expected,
             } => {
+                let style = theme.diff_style();
                 format!(
-                    "\n {}   : {}\n {} : {}\n\n{}",
-                    Style::new().red().apply_to("- actual"),
+                    "\n {: <10} : {}\n {} : {}\n\n{}",
+                    style.src_lines,
                     actual.to_string_lossy(),
-                    Style::new().green().apply_to("+ expected"),
+                    style.dst_lines,
                     expected.to_string_lossy(),
                     output
                 )
@@ -67,7 +73,10 @@ impl Error {
             _ => {
                 format!("{:#?}", self)
             }
-        };
+        }
+    }
+    pub fn dump(&self) {
+        let message = self.detail(ErrorTheme::Test);
         println!("[failed] {}", message)
     }
 }
@@ -87,5 +96,30 @@ impl From<conversions::Error> for Error {
 impl From<yaml::Error> for Error {
     fn from(cause: yaml::Error) -> Self {
         Self::Yaml(cause)
+    }
+}
+
+pub enum ErrorTheme {
+    Test,
+    Overwrite,
+}
+
+pub struct DiffStyle {
+    src_lines: StyledObject<&'static str>,
+    dst_lines: StyledObject<&'static str>,
+}
+
+impl ErrorTheme {
+    pub fn diff_style(&self) -> DiffStyle {
+        match self {
+            ErrorTheme::Test => DiffStyle {
+                src_lines: Style::new().red().apply_to("- actual"),
+                dst_lines: Style::new().green().apply_to("+ expected"),
+            },
+            ErrorTheme::Overwrite => DiffStyle {
+                src_lines: Style::new().red().apply_to("- current"),
+                dst_lines: Style::new().green().apply_to("+ modified"),
+            },
+        }
     }
 }

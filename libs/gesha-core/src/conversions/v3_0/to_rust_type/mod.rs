@@ -35,7 +35,7 @@ impl ToRustType<Document> for Modules {
         let module = this
             .components
             .map(ToRustType::apply)
-            .unwrap_or_else(|| Ok(Modules::new()))?;
+            .unwrap_or_else(|| Ok(Modules::empty()))?;
 
         Ok(module)
     }
@@ -87,10 +87,7 @@ fn to_definition(name: SchemaFieldName, object: SchemaObject) -> Result<Definiti
 fn to_newtype(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionShape> {
     match shape_schema_object_type(object)? {
         TypeShape::Fixed(data_type) => {
-            let def = NewTypeDef {
-                name: name.into(),
-                data_type,
-            };
+            let def = NewTypeDef::new(name, data_type);
             Ok(Fixed(def.into()))
         }
         type_shape => Ok(InProcess(PostProcess::NewType {
@@ -101,10 +98,8 @@ fn to_newtype(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionS
 }
 
 fn to_enum(name: SchemaFieldName, values: EnumValues) -> Result<DefinitionShape> {
-    let def = EnumDef {
-        name: name.into(),
-        variants: values.into_iter().map(EnumVariant::new).collect(),
-    };
+    let variants = values.into_iter().map(EnumVariant::new).collect();
+    let def = EnumDef::new(name, variants);
     Ok(Fixed(def.into()))
 }
 

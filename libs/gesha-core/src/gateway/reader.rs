@@ -5,7 +5,7 @@ use crate::gateway::Result;
 use crate::yaml::{load_from_str, YamlMap};
 use std::fs;
 use std::marker::PhantomData;
-use std::path::PathBuf;
+use std::path::Path;
 
 pub struct Reader<A>(PhantomData<A>);
 
@@ -21,7 +21,7 @@ where
 {
     pub fn open_rust_type<P, B>(&self, path: P) -> Result<B>
     where
-        P: Into<PathBuf>,
+        P: AsRef<Path>,
         B: ToRustType<A>,
     {
         let map = open_yaml_map(path)?;
@@ -31,16 +31,15 @@ where
     }
 }
 
-pub fn file_to_string<A: Into<PathBuf>>(path: A) -> Result<String> {
-    let path = path.into();
+pub fn file_to_string<A: AsRef<Path>>(path: A) -> Result<String> {
     let content = fs::read_to_string(&path).map_err(|cause| CannotReadFile {
-        path: path.clone(),
+        path: path.as_ref().into(),
         detail: format!("{:?}", cause),
     })?;
     Ok(content)
 }
 
-fn open_yaml_map<A: Into<PathBuf>>(path: A) -> Result<YamlMap> {
+fn open_yaml_map<A: AsRef<Path>>(path: A) -> Result<YamlMap> {
     let content = file_to_string(path)?;
     let map = load_from_str(&content)?;
     Ok(map)
