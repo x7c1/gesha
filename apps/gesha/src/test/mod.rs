@@ -1,8 +1,8 @@
 use gesha_core::gateway;
 use gesha_core::gateway::testing::{
-    generate_module_file, generate_rust_type, test_rust_type, TestCase,
+    generate_module_file, test_rust_type, test_rust_type_to_overwrite, TestCase,
 };
-use gesha_core::gateway::{detect_diff, Error, ErrorTheme};
+use gesha_core::gateway::{Error, ErrorTheme};
 use gesha_core::targets::rust_type::Modules;
 use openapi_types::v3_0;
 
@@ -57,8 +57,7 @@ pub fn overwrite() -> gateway::Result<()> {
 }
 
 fn run_and_catch_diff(case: SupportedTestCase) -> gateway::Result<Option<ModifiedCase>> {
-    generate_rust_type(case.clone())?;
-    match detect_diff(&case.example, &case.output) {
+    match test_rust_type_to_overwrite(case.clone()) {
         Ok(_) => Ok(None),
         Err(e @ Error::DiffDetected { .. }) => Ok(Some(ModifiedCase {
             case,

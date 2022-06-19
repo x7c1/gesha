@@ -67,7 +67,7 @@ impl TestCase<(v3_0::ComponentsObject, Modules)> {
     }
 }
 
-pub fn generate_rust_type<A, B>(target: TestCase<(A, B)>) -> gateway::Result<()>
+fn generate_rust_type<A, B>(target: TestCase<(A, B)>) -> gateway::Result<()>
 where
     A: Debug + ToOpenApi,
     B: Debug + ToRustType<A> + Renderer,
@@ -89,6 +89,18 @@ where
 {
     generate_rust_type(target.clone())?;
     detect_diff(&target.output, &target.example)
+}
+
+pub fn test_rust_type_to_overwrite<A, B>(target: TestCase<(A, B)>) -> gateway::Result<()>
+where
+    A: Debug + ToOpenApi,
+    B: Debug + ToRustType<A> + Renderer,
+{
+    generate_rust_type(target.clone())?;
+
+    // contrary to test_rust_type(),
+    // target.example is actual file, target.output modified is expected file.
+    detect_diff(&target.example, &target.output)
 }
 
 pub fn new_writer(path: PathBuf) -> Writer {
