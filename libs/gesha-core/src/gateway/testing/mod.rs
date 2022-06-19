@@ -17,7 +17,7 @@ use std::path::PathBuf;
 pub struct TestCase<A> {
     pub output: PathBuf,
     pub schema: PathBuf,
-    pub expected: PathBuf,
+    pub example: PathBuf,
     pub module_name: String,
     phantom: PhantomData<A>,
 }
@@ -27,7 +27,7 @@ impl<A> Clone for TestCase<A> {
         Self {
             output: self.output.clone(),
             schema: self.schema.clone(),
-            expected: self.expected.clone(),
+            example: self.example.clone(),
             module_name: self.module_name.clone(),
             phantom: Default::default(),
         }
@@ -60,14 +60,14 @@ impl TestCase<(v3_0::ComponentsObject, Modules)> {
         TestCase {
             output: format!("output/v3.0/components/{rs_name}").into(),
             schema: format!("examples/v3.0/components/{yaml_name}").into(),
-            expected: format!("examples/v3.0/components/{rs_name}").into(),
+            example: format!("examples/v3.0/components/{rs_name}").into(),
             module_name: yaml_name.replace(".yaml", ""),
             phantom: Default::default(),
         }
     }
 }
 
-pub fn test_rust_type<A, B>(target: TestCase<(A, B)>) -> gateway::Result<()>
+pub fn generate_rust_type<A, B>(target: TestCase<(A, B)>) -> gateway::Result<()>
 where
     A: Debug + ToOpenApi,
     B: Debug + ToRustType<A> + Renderer,
@@ -78,9 +78,17 @@ where
     let rust_types: B = reader.open_rust_type(target.schema)?;
     println!("rust_types> {:#?}", rust_types);
 
-    let writer = new_writer(target.output.clone());
-    writer.create_file(rust_types)?;
-    detect_diff(target.output, target.expected)
+    let writer = new_writer(target.output);
+    writer.create_file(rust_types)
+}
+
+pub fn test_rust_type<A, B>(target: TestCase<(A, B)>) -> gateway::Result<()>
+where
+    A: Debug + ToOpenApi,
+    B: Debug + ToRustType<A> + Renderer,
+{
+    generate_rust_type(target.clone())?;
+    detect_diff(&target.output, &target.example)
 }
 
 pub fn new_writer(path: PathBuf) -> Writer {

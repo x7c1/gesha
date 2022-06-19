@@ -1,5 +1,4 @@
-use crate::gateway::tests::new_writer;
-use crate::gateway::TestCase;
+use crate::gateway::testing::{new_writer, TestCase};
 use crate::renderer::Renderer;
 use crate::{gateway, render};
 use std::io::Write;

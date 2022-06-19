@@ -3,16 +3,20 @@ use crate::gateway::file_to_string;
 use crate::gateway::Error::DiffDetected;
 use console::Style;
 use similar::{Change, ChangeTag, TextDiff};
-use std::path::PathBuf;
+use std::path::Path;
 
 /// return DiffDetected error if the contents of given files are not same.
-pub fn detect_diff(src: PathBuf, dst: PathBuf) -> Result<()> {
-    let diff = Diff::load(src.clone(), dst.clone())?;
+pub fn detect_diff<A, B>(src: A, dst: B) -> Result<()>
+where
+    A: AsRef<Path>,
+    B: AsRef<Path>,
+{
+    let diff = Diff::load(&src, &dst)?;
     if diff.has_change {
         Err(DiffDetected {
             output: diff.output,
-            actual: src,
-            expected: dst,
+            actual: src.as_ref().into(),
+            expected: dst.as_ref().into(),
         })
     } else {
         Ok(())
@@ -25,7 +29,11 @@ pub struct Diff {
 }
 
 impl Diff {
-    pub fn load(src: PathBuf, dst: PathBuf) -> Result<Diff> {
+    pub fn load<A, B>(src: A, dst: B) -> Result<Diff>
+    where
+        A: AsRef<Path>,
+        B: AsRef<Path>,
+    {
         let src_lines = file_to_string(src)?;
         let dst_lines = file_to_string(dst)?;
         let raw = TextDiff::from_lines(src_lines.as_str(), dst_lines.as_str());

@@ -1,5 +1,8 @@
 use gesha_core::gateway;
-use gesha_core::gateway::{generate_module_file, test_rust_type, Error, TestCase};
+use gesha_core::gateway::testing::{
+    generate_module_file, generate_rust_type, test_rust_type, TestCase,
+};
+use gesha_core::gateway::{detect_diff, Error, ErrorTheme};
 use gesha_core::targets::rust_type::Modules;
 use openapi_types::v3_0;
 
@@ -43,7 +46,7 @@ fn new_test_cases() -> Vec<SupportedTestCase> {
 pub fn overwrite() -> gateway::Result<()> {
     let cases = new_test_cases()
         .into_iter()
-        .filter_map(run_and_catch_diff)
+        .filter_map(|x| run_and_catch_diff(x).transpose())
         .collect::<gateway::Result<Vec<ModifiedCase>>>()?;
 
     for case in cases {
@@ -53,14 +56,15 @@ pub fn overwrite() -> gateway::Result<()> {
     Ok(())
 }
 
-fn run_and_catch_diff(case: SupportedTestCase) -> Option<gateway::Result<ModifiedCase>> {
-    match test_rust_type(case.clone()) {
-        Ok(_) => None,
-        Err(e @ Error::DiffDetected { .. }) => Some(Ok(ModifiedCase {
+fn run_and_catch_diff(case: SupportedTestCase) -> gateway::Result<Option<ModifiedCase>> {
+    generate_rust_type(case.clone())?;
+    match detect_diff(&case.example, &case.output) {
+        Ok(_) => Ok(None),
+        Err(e @ Error::DiffDetected { .. }) => Ok(Some(ModifiedCase {
             case,
-            diff: e.detail(),
+            diff: e.detail(ErrorTheme::Overwrite),
         })),
-        Err(e) => Some(Err(e)),
+        Err(e) => Err(e),
     }
 }
 
