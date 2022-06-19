@@ -3,7 +3,7 @@ use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
     DataType, Definition, DeriveAttribute, EnumDef, EnumVariant, Module, Modules, NewTypeDef,
-    StructDef, StructField,
+    StructDef, StructField, UseStatement,
 };
 use std::io::Write;
 
@@ -17,14 +17,27 @@ impl Renderer for Modules {
 fn render_module<W: Write>(mut write: W, module: Module) -> Result<()> {
     render! { write =>
         echo > "pub mod {name}", name = module.name;
-        "{}" > render_definitions => module.definitions;
+        "{}" > render_mod_body => module;
     };
     Ok(())
 }
 
-fn render_definitions<W: Write>(mut write: W, xs: Vec<Definition>) -> Result<()> {
-    xs.into_iter()
+fn render_mod_body<W: Write>(mut write: W, module: Module) -> Result<()> {
+    render_use_statements(&mut write, module.use_statements)?;
+    render! { write => echo > "\n"; }
+    module
+        .definitions
+        .into_iter()
         .try_for_each(|def| render_definition(&mut write, def))
+}
+
+fn render_use_statements<W: Write>(mut write: W, xs: Vec<UseStatement>) -> Result<()> {
+    for x in xs {
+        render! { write =>
+            echo > "use {target};\n", target = String::from(x);
+        }
+    }
+    Ok(())
 }
 
 fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {

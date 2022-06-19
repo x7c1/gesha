@@ -1,4 +1,7 @@
 pub mod schemas {
+    use serde::Deserialize;
+    use serde::Serialize;
+
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Numeric {
         pub integer_without_format: i64,

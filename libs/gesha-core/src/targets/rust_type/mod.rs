@@ -14,6 +14,22 @@ use std::fmt::{Debug, Display, Formatter};
 pub struct Module {
     pub name: ModuleName,
     pub definitions: Vec<Definition>,
+    pub use_statements: Vec<UseStatement>,
+    _hide_default_constructor: bool,
+}
+
+impl Module {
+    pub fn new(name: ModuleName, definitions: Vec<Definition>) -> Self {
+        Self {
+            name,
+            definitions,
+            use_statements: vec![
+                UseStatement::new("serde::Deserialize"),
+                UseStatement::new("serde::Serialize"),
+            ],
+            _hide_default_constructor: false,
+        }
+    }
 }
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
@@ -159,5 +175,20 @@ impl From<DataType> for String {
             DataType::Vec(x) => format!("Vec<{}>", String::from(*x)),
             DataType::Custom(x) => x,
         }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct UseStatement(String);
+
+impl UseStatement {
+    pub fn new<A: Into<String>>(a: A) -> Self {
+        Self(a.into())
+    }
+}
+
+impl From<UseStatement> for String {
+    fn from(x: UseStatement) -> Self {
+        x.0
     }
 }

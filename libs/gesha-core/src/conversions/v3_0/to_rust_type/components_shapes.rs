@@ -18,10 +18,7 @@ impl ComponentsShapes {
             .map(to_definition)
             .collect::<Result<Vec<Definition>>>()?;
 
-        let schemas = Module {
-            name: ModuleName::new("schemas"),
-            definitions: schemas_definitions,
-        };
+        let schemas = Module::new(ModuleName::new("schemas"), schemas_definitions);
         Ok(Modules::new(vec![schemas]))
     }
 }

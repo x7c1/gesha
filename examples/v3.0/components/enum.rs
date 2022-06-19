@@ -1,4 +1,7 @@
 pub mod schemas {
+    use serde::Deserialize;
+    use serde::Serialize;
+
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum StringEnum1 {
         Error1,
