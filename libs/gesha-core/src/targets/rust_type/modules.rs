@@ -1,5 +1,5 @@
-use std::vec::IntoIter;
 use crate::targets::rust_type::Module;
+use std::vec::IntoIter;
 
 #[derive(Clone, Debug)]
 pub struct Modules(Vec<Module>);
