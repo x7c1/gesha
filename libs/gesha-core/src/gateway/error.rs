@@ -42,8 +42,8 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn dump(&self) {
-        let message = match self {
+    pub fn detail(&self) -> String {
+        match self {
             Error::DiffDetected {
                 output,
                 actual,
@@ -67,7 +67,10 @@ impl Error {
             _ => {
                 format!("{:#?}", self)
             }
-        };
+        }
+    }
+    pub fn dump(&self) {
+        let message = self.detail();
         println!("[failed] {}", message)
     }
 }

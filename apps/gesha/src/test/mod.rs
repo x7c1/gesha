@@ -1,5 +1,5 @@
 use gesha_core::gateway;
-use gesha_core::gateway::{generate_module_file, test_rust_type, TestCase};
+use gesha_core::gateway::{generate_module_file, test_rust_type, Error, TestCase};
 use gesha_core::targets::rust_type::Modules;
 use openapi_types::v3_0;
 
@@ -17,7 +17,13 @@ pub fn run(params: Params) -> gateway::Result<()> {
         test_rust_type(case)?;
         return Ok(());
     }
-    let cases = SupportedTestCase::from(vec![
+    let cases = new_test_cases();
+    cases.clone().into_iter().try_for_each(test_rust_type)?;
+    generate_module_file("examples/v3.0/components.rs", cases)
+}
+
+fn new_test_cases() -> Vec<SupportedTestCase> {
+    SupportedTestCase::from(vec![
         "struct_simple.yaml",
         "numeric_fields.yaml",
         "boolean_field.yaml",
@@ -31,7 +37,34 @@ pub fn run(params: Params) -> gateway::Result<()> {
         "enums.yaml",
         "all_of.yaml",
         "all_of_ref.yaml",
-    ]);
-    cases.clone().into_iter().try_for_each(test_rust_type)?;
-    generate_module_file("examples/v3.0/components.rs", cases)
+    ])
+}
+
+pub fn overwrite() -> gateway::Result<()> {
+    let cases = new_test_cases()
+        .into_iter()
+        .filter_map(run_and_catch_diff)
+        .collect::<gateway::Result<Vec<ModifiedCase>>>()?;
+
+    for case in cases {
+        println!("Diff detected: {} {}", case.case.module_name, case.diff);
+    }
+
+    Ok(())
+}
+
+fn run_and_catch_diff(case: SupportedTestCase) -> Option<gateway::Result<ModifiedCase>> {
+    match test_rust_type(case.clone()) {
+        Ok(_) => None,
+        Err(e @ Error::DiffDetected { .. }) => Some(Ok(ModifiedCase {
+            case,
+            diff: e.detail(),
+        })),
+        Err(e) => Some(Err(e)),
+    }
+}
+
+struct ModifiedCase {
+    case: SupportedTestCase,
+    diff: String,
 }

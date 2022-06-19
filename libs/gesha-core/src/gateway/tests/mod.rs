@@ -15,10 +15,10 @@ use std::path::PathBuf;
 
 #[derive(Debug)]
 pub struct TestCase<A> {
-    output: PathBuf,
-    schema: PathBuf,
-    expected: PathBuf,
-    module_name: String,
+    pub output: PathBuf,
+    pub schema: PathBuf,
+    pub expected: PathBuf,
+    pub module_name: String,
     phantom: PhantomData<A>,
 }
 
