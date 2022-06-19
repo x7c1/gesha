@@ -1,8 +1,8 @@
+mod overwrite;
+pub use overwrite::overwrite;
+
 use gesha_core::gateway;
-use gesha_core::gateway::testing::{
-    generate_module_file, test_rust_type, test_rust_type_to_overwrite, TestCase,
-};
-use gesha_core::gateway::{Error, ErrorTheme};
+use gesha_core::gateway::testing::{generate_module_file, test_rust_type, TestCase};
 use gesha_core::targets::rust_type::Modules;
 use openapi_types::v3_0;
 
@@ -41,33 +41,4 @@ fn new_test_cases() -> Vec<SupportedTestCase> {
         "all_of.yaml",
         "all_of_ref.yaml",
     ])
-}
-
-pub fn overwrite() -> gateway::Result<()> {
-    let cases = new_test_cases()
-        .into_iter()
-        .filter_map(|x| run_and_catch_diff(x).transpose())
-        .collect::<gateway::Result<Vec<ModifiedCase>>>()?;
-
-    for case in cases {
-        println!("Diff detected: {} {}", case.case.module_name, case.diff);
-    }
-
-    Ok(())
-}
-
-fn run_and_catch_diff(case: SupportedTestCase) -> gateway::Result<Option<ModifiedCase>> {
-    match test_rust_type_to_overwrite(case.clone()) {
-        Ok(_) => Ok(None),
-        Err(e @ Error::DiffDetected { .. }) => Ok(Some(ModifiedCase {
-            case,
-            diff: e.detail(ErrorTheme::Overwrite),
-        })),
-        Err(e) => Err(e),
-    }
-}
-
-struct ModifiedCase {
-    case: SupportedTestCase,
-    diff: String,
 }
