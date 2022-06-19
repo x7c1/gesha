@@ -2,7 +2,7 @@ mod overwrite;
 pub use overwrite::overwrite;
 
 use gesha_core::gateway;
-use gesha_core::gateway::testing::{generate_module_file, test_rust_type, TestCase};
+use gesha_core::gateway::testing::{test_rust_type, TestCase};
 use gesha_core::targets::rust_type::Modules;
 use openapi_types::v3_0;
 
@@ -21,8 +21,7 @@ pub fn run(params: Params) -> gateway::Result<()> {
         return Ok(());
     }
     let cases = new_test_cases();
-    cases.clone().into_iter().try_for_each(test_rust_type)?;
-    generate_module_file("examples/v3.0/components.rs", cases)
+    cases.into_iter().try_for_each(test_rust_type)
 }
 
 fn new_test_cases() -> Vec<SupportedTestCase> {

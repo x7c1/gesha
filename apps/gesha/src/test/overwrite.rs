@@ -1,7 +1,7 @@
 use crate::test;
 use crate::test::SupportedTestCase;
 use gesha_core::gateway;
-use gesha_core::gateway::testing::test_rust_type_to_overwrite;
+use gesha_core::gateway::testing::{generate_module_file, test_rust_type_to_overwrite};
 use gesha_core::gateway::{Error, ErrorTheme, Writer};
 
 pub fn overwrite() -> gateway::Result<()> {
@@ -21,7 +21,7 @@ pub fn overwrite() -> gateway::Result<()> {
         };
         writer.copy_file(case.target.output)?;
     }
-    Ok(())
+    generate_module_file("examples/v3.0/components.rs", test::new_test_cases())
 }
 
 fn run_and_catch_diff(target: SupportedTestCase) -> gateway::Result<Option<ModifiedCase>> {
