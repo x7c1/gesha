@@ -34,6 +34,11 @@ pub enum Error {
         path: PathBuf,
         detail: String,
     },
+    CannotCopyFile {
+        from: PathBuf,
+        to: PathBuf,
+        detail: String,
+    },
     CannotRender {
         path: PathBuf,
         detail: String,
@@ -76,6 +81,24 @@ impl Error {
     }
 }
 
+impl From<renderer::Error> for Error {
+    fn from(cause: renderer::Error) -> Self {
+        Self::Renderer(cause)
+    }
+}
+
+impl From<conversions::Error> for Error {
+    fn from(cause: conversions::Error) -> Self {
+        Self::Conversions(cause)
+    }
+}
+
+impl From<yaml::Error> for Error {
+    fn from(cause: yaml::Error) -> Self {
+        Self::Yaml(cause)
+    }
+}
+
 pub enum ErrorTheme {
     Test,
     Overwrite,
@@ -98,23 +121,5 @@ impl ErrorTheme {
                 dst_lines: Style::new().green().apply_to("+ modified"),
             },
         }
-    }
-}
-
-impl From<renderer::Error> for Error {
-    fn from(cause: renderer::Error) -> Self {
-        Self::Renderer(cause)
-    }
-}
-
-impl From<conversions::Error> for Error {
-    fn from(cause: conversions::Error) -> Self {
-        Self::Conversions(cause)
-    }
-}
-
-impl From<yaml::Error> for Error {
-    fn from(cause: yaml::Error) -> Self {
-        Self::Yaml(cause)
     }
 }

@@ -1,9 +1,11 @@
-use crate::gateway::Error::{CannotCreateFile, CannotRender, CannotWriteFile, FormatFailed};
+use crate::gateway::Error::{
+    CannotCopyFile, CannotCreateFile, CannotRender, CannotWriteFile, FormatFailed,
+};
 use crate::gateway::Result;
 use crate::renderer::Renderer;
 use std::fs::File;
 use std::io::Write;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 pub struct Writer {
@@ -33,6 +35,15 @@ impl Writer {
 
         let output = format(self.path)?;
         println!("rustfmt>\n{}", output);
+        Ok(())
+    }
+
+    pub fn copy_file<A: AsRef<Path>>(self, from: A) -> Result<()> {
+        std::fs::copy(&from, &self.path).map_err(|cause| CannotCopyFile {
+            from: from.as_ref().into(),
+            to: self.path,
+            detail: format!("{:?}", cause),
+        })?;
         Ok(())
     }
 }
