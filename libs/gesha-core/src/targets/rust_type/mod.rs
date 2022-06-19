@@ -1,14 +1,20 @@
 mod derive_attribute;
 pub use derive_attribute::DeriveAttribute;
 
+mod modules;
+pub use modules::Modules;
+
 mod struct_field_name;
 pub use struct_field_name::StructFieldName;
 
 use heck::ToUpperCamelCase;
-use indexmap::IndexMap;
 use std::fmt::{Debug, Display, Formatter};
 
-pub type Modules = IndexMap<ModuleName, Vec<Definition>>;
+#[derive(Clone, Debug)]
+pub struct Module {
+    pub name: ModuleName,
+    pub definitions: Vec<Definition>,
+}
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct ModuleName(String);

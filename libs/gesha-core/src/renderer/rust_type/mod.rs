@@ -2,7 +2,7 @@ use crate::render;
 use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, DeriveAttribute, EnumDef, EnumVariant, ModuleName, Modules, NewTypeDef,
+    DataType, Definition, DeriveAttribute, EnumDef, EnumVariant, Module, Modules, NewTypeDef,
     StructDef, StructField,
 };
 use std::io::Write;
@@ -10,18 +10,14 @@ use std::io::Write;
 impl Renderer for Modules {
     fn render<W: Write>(self, mut write: W) -> Result<()> {
         self.into_iter()
-            .try_for_each(|(name, defs)| render_module(&mut write, name, defs))
+            .try_for_each(|module| render_module(&mut write, module))
     }
 }
 
-fn render_module<W: Write>(
-    mut write: W,
-    name: ModuleName,
-    definitions: Vec<Definition>,
-) -> Result<()> {
+fn render_module<W: Write>(mut write: W, module: Module) -> Result<()> {
     render! { write =>
-        echo > "pub mod {name}";
-        "{}" > render_definitions => definitions;
+        echo > "pub mod {name}", name = module.name;
+        "{}" > render_definitions => module.definitions;
     };
     Ok(())
 }

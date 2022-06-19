@@ -35,7 +35,7 @@ impl ToRustType<Document> for Modules {
         let module = this
             .components
             .map(ToRustType::apply)
-            .unwrap_or_else(|| Ok(Modules::new()))?;
+            .unwrap_or_else(|| Ok(Modules::empty()))?;
 
         Ok(module)
     }
