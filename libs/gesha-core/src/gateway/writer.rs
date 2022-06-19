@@ -8,7 +8,6 @@ use std::process::Command;
 
 pub struct Writer {
     pub path: PathBuf,
-    // e.g. "Generated file, do not edit by hand.";
     pub preamble: Option<String>,
 }
 

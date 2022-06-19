@@ -11,4 +11,4 @@ mod diff;
 pub use diff::detect_diff;
 
 mod tests;
-pub use tests::{test_rust_type, TestCase};
+pub use tests::{generate_module_file, test_rust_type, TestCase};

@@ -1,3 +1,6 @@
+mod generate_components_file;
+pub use generate_components_file::generate_module_file;
+
 use crate::conversions::{ToOpenApi, ToRustType};
 use crate::gateway;
 use crate::gateway::Error::UnsupportedExampleLocation;
@@ -15,7 +18,20 @@ pub struct TestCase<A> {
     output: PathBuf,
     schema: PathBuf,
     expected: PathBuf,
+    module_name: String,
     phantom: PhantomData<A>,
+}
+
+impl<A> Clone for TestCase<A> {
+    fn clone(&self) -> Self {
+        Self {
+            output: self.output.clone(),
+            schema: self.schema.clone(),
+            expected: self.expected.clone(),
+            module_name: self.module_name.clone(),
+            phantom: Default::default(),
+        }
+    }
 }
 
 impl TestCase<(v3_0::ComponentsObject, Modules)> {
@@ -45,6 +61,7 @@ impl TestCase<(v3_0::ComponentsObject, Modules)> {
             output: format!("output/v3.0/components/{rs_name}").into(),
             schema: format!("examples/v3.0/components/{yaml_name}").into(),
             expected: format!("examples/v3.0/components/{rs_name}").into(),
+            module_name: yaml_name.replace(".yaml", ""),
             phantom: Default::default(),
         }
     }
