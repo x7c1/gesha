@@ -30,7 +30,7 @@ gesha-sample: ## debug : Sample command
 
 gesha-test: ## test : Test gesha command
 	cargo run --bin gesha -- test
-	./scripts/build-examples.sh
+	./scripts/test-examples.sh
 
 gesha-test-overwrite: ## test : Overwrite examples by generated files
 	cargo run --bin gesha -- test-overwrite
