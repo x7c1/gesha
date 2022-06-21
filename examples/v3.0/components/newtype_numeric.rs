@@ -7,49 +7,49 @@ pub mod schemas {
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct IntegerDefaultValue(i64);
-    impl IntegerDefaultValue {
-        pub fn new<A: Into<i64>>(a: A) -> Self {
-            Self(a.into())
+    impl From<i64> for IntegerDefaultValue {
+        fn from(a: i64) -> IntegerDefaultValue {
+            Self(a)
         }
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Int64Value(i64);
-    impl Int64Value {
-        pub fn new<A: Into<i64>>(a: A) -> Self {
-            Self(a.into())
+    impl From<i64> for Int64Value {
+        fn from(a: i64) -> Int64Value {
+            Self(a)
         }
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Int32Value(i32);
-    impl Int32Value {
-        pub fn new<A: Into<i32>>(a: A) -> Self {
-            Self(a.into())
+    impl From<i32> for Int32Value {
+        fn from(a: i32) -> Int32Value {
+            Self(a)
         }
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct NumberDefaultValue(f64);
-    impl NumberDefaultValue {
-        pub fn new<A: Into<f64>>(a: A) -> Self {
-            Self(a.into())
+    impl From<f64> for NumberDefaultValue {
+        fn from(a: f64) -> NumberDefaultValue {
+            Self(a)
         }
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct FloatValue(f32);
-    impl FloatValue {
-        pub fn new<A: Into<f32>>(a: A) -> Self {
-            Self(a.into())
+    impl From<f32> for FloatValue {
+        fn from(a: f32) -> FloatValue {
+            Self(a)
         }
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct DoubleValue(f64);
-    impl DoubleValue {
-        pub fn new<A: Into<f64>>(a: A) -> Self {
-            Self(a.into())
+    impl From<f64> for DoubleValue {
+        fn from(a: f64) -> DoubleValue {
+            Self(a)
         }
     }
 }

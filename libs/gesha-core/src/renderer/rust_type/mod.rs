@@ -103,17 +103,21 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
         echo > "pub struct {name}", name = x.name;
         "()" > render_data_type => x.data_type.clone();
         echo > ";";
-        echo > "impl {name}", name = x.name;
-        "{}" > render_newtype_impl => x;
+        echo > "impl From<{data_type}> for {name}",
+            data_type = String::from(x.data_type.clone()),
+            name = x.name.clone();
+        "{}" > render_newtype_impl_from => x;
         echo > "\n";
     }
     Ok(())
 }
 
-fn render_newtype_impl<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
+fn render_newtype_impl_from<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
     render! { write =>
-        echo > "pub fn new<A: Into<{x}>>(a: A) -> Self", x = String::from(x.data_type);
-        echo > "{{ Self(a.into()) }}"
+        echo > "fn from(a: {data_type}) -> {name}",
+            data_type = String::from(x.data_type),
+            name = x.name;
+        echo > "{{ Self(a) }}"
     }
     Ok(())
 }
