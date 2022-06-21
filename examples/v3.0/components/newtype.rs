@@ -8,32 +8,32 @@ pub mod schemas {
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct StringValue(String);
     impl From<String> for StringValue {
-        fn from(a: String) -> StringValue {
-            Self(a)
+        fn from(x: String) -> StringValue {
+            Self(x)
         }
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct BooleanValue(bool);
     impl From<bool> for BooleanValue {
-        fn from(a: bool) -> BooleanValue {
-            Self(a)
+        fn from(x: bool) -> BooleanValue {
+            Self(x)
         }
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct ArrayValue(Vec<i64>);
     impl From<Vec<i64>> for ArrayValue {
-        fn from(a: Vec<i64>) -> ArrayValue {
-            Self(a)
+        fn from(x: Vec<i64>) -> ArrayValue {
+            Self(x)
         }
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct ArrayCustomValue(Vec<Pet>);
     impl From<Vec<Pet>> for ArrayCustomValue {
-        fn from(a: Vec<Pet>) -> ArrayCustomValue {
-            Self(a)
+        fn from(x: Vec<Pet>) -> ArrayCustomValue {
+            Self(x)
         }
     }
 

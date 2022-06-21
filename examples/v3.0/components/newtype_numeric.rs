@@ -8,48 +8,48 @@ pub mod schemas {
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct IntegerDefaultValue(i64);
     impl From<i64> for IntegerDefaultValue {
-        fn from(a: i64) -> IntegerDefaultValue {
-            Self(a)
+        fn from(x: i64) -> IntegerDefaultValue {
+            Self(x)
         }
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Int64Value(i64);
     impl From<i64> for Int64Value {
-        fn from(a: i64) -> Int64Value {
-            Self(a)
+        fn from(x: i64) -> Int64Value {
+            Self(x)
         }
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Int32Value(i32);
     impl From<i32> for Int32Value {
-        fn from(a: i32) -> Int32Value {
-            Self(a)
+        fn from(x: i32) -> Int32Value {
+            Self(x)
         }
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct NumberDefaultValue(f64);
     impl From<f64> for NumberDefaultValue {
-        fn from(a: f64) -> NumberDefaultValue {
-            Self(a)
+        fn from(x: f64) -> NumberDefaultValue {
+            Self(x)
         }
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct FloatValue(f32);
     impl From<f32> for FloatValue {
-        fn from(a: f32) -> FloatValue {
-            Self(a)
+        fn from(x: f32) -> FloatValue {
+            Self(x)
         }
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct DoubleValue(f64);
     impl From<f64> for DoubleValue {
-        fn from(a: f64) -> DoubleValue {
-            Self(a)
+        fn from(x: f64) -> DoubleValue {
+            Self(x)
         }
     }
 }

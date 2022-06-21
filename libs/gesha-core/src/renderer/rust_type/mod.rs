@@ -114,10 +114,10 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
 
 fn render_newtype_impl_from<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
     render! { write =>
-        echo > "fn from(a: {data_type}) -> {name}",
+        echo > "fn from(x: {data_type}) -> {name}",
             data_type = String::from(x.data_type),
             name = x.name;
-        echo > "{{ Self(a) }}"
+        echo > "{{ Self(x) }}"
     }
     Ok(())
 }
