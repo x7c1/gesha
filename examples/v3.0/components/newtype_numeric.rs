@@ -7,19 +7,49 @@ pub mod schemas {
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct IntegerDefaultValue(i64);
+    impl IntegerDefaultValue {
+        pub fn new<A: Into<i64>>(a: A) -> Self {
+            Self(a.into())
+        }
+    }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Int64Value(i64);
+    impl Int64Value {
+        pub fn new<A: Into<i64>>(a: A) -> Self {
+            Self(a.into())
+        }
+    }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Int32Value(i32);
+    impl Int32Value {
+        pub fn new<A: Into<i32>>(a: A) -> Self {
+            Self(a.into())
+        }
+    }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct NumberDefaultValue(f64);
+    impl NumberDefaultValue {
+        pub fn new<A: Into<f64>>(a: A) -> Self {
+            Self(a.into())
+        }
+    }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct FloatValue(f32);
+    impl FloatValue {
+        pub fn new<A: Into<f32>>(a: A) -> Self {
+            Self(a.into())
+        }
+    }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct DoubleValue(f64);
+    impl DoubleValue {
+        pub fn new<A: Into<f64>>(a: A) -> Self {
+            Self(a.into())
+        }
+    }
 }

@@ -7,15 +7,35 @@ pub mod schemas {
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct StringValue(String);
+    impl StringValue {
+        pub fn new<A: Into<String>>(a: A) -> Self {
+            Self(a.into())
+        }
+    }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct BooleanValue(bool);
+    impl BooleanValue {
+        pub fn new<A: Into<bool>>(a: A) -> Self {
+            Self(a.into())
+        }
+    }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct ArrayValue(Vec<i64>);
+    impl ArrayValue {
+        pub fn new<A: Into<Vec<i64>>>(a: A) -> Self {
+            Self(a.into())
+        }
+    }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct ArrayCustomValue(Vec<Pet>);
+    impl ArrayCustomValue {
+        pub fn new<A: Into<Vec<Pet>>>(a: A) -> Self {
+            Self(a.into())
+        }
+    }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Pet {
