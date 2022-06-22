@@ -17,6 +17,7 @@ pub mod schemas {
             this.0
         }
     }
+
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct BooleanValue(bool);
     impl From<bool> for BooleanValue {
@@ -29,6 +30,7 @@ pub mod schemas {
             this.0
         }
     }
+
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct ArrayValue(Vec<i64>);
     impl From<Vec<i64>> for ArrayValue {
@@ -41,6 +43,7 @@ pub mod schemas {
             this.0
         }
     }
+
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct ArrayCustomValue(Vec<Pet>);
     impl From<Vec<Pet>> for ArrayCustomValue {
@@ -53,6 +56,7 @@ pub mod schemas {
             this.0
         }
     }
+
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Pet {
         pub id: i64,

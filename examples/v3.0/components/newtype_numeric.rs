@@ -17,6 +17,7 @@ pub mod schemas {
             this.0
         }
     }
+
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Int64Value(i64);
     impl From<i64> for Int64Value {
@@ -29,6 +30,7 @@ pub mod schemas {
             this.0
         }
     }
+
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Int32Value(i32);
     impl From<i32> for Int32Value {
@@ -41,6 +43,7 @@ pub mod schemas {
             this.0
         }
     }
+
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct NumberDefaultValue(f64);
     impl From<f64> for NumberDefaultValue {
@@ -53,6 +56,7 @@ pub mod schemas {
             this.0
         }
     }
+
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct FloatValue(f32);
     impl From<f32> for FloatValue {
@@ -65,6 +69,7 @@ pub mod schemas {
             this.0
         }
     }
+
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct DoubleValue(f64);
     impl From<f64> for DoubleValue {

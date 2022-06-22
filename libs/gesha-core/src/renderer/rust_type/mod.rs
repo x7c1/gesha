@@ -115,7 +115,7 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
             data_type = x.data_type,
             name = x.name;
 
-        echo > "\n";
+        echo > "\n\n";
     }
     Ok(())
 }
