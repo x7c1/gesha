@@ -162,6 +162,13 @@ pub enum DataType {
     Custom(String),
 }
 
+impl Display for DataType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let x = String::from(self.clone());
+        Display::fmt(&x, f)
+    }
+}
+
 impl From<DataType> for String {
     fn from(x: DataType) -> Self {
         match x {

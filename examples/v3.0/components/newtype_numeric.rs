@@ -8,78 +8,73 @@ pub mod schemas {
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct IntegerDefaultValue(i64);
     impl From<i64> for IntegerDefaultValue {
-        fn from(x: i64) -> Self {
-            Self(x)
+        fn from(this: i64) -> Self {
+            Self(this)
         }
     }
     impl From<IntegerDefaultValue> for i64 {
-        fn from(x: IntegerDefaultValue) -> Self {
-            x.0
+        fn from(this: IntegerDefaultValue) -> Self {
+            this.0
         }
     }
-
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Int64Value(i64);
     impl From<i64> for Int64Value {
-        fn from(x: i64) -> Self {
-            Self(x)
+        fn from(this: i64) -> Self {
+            Self(this)
         }
     }
     impl From<Int64Value> for i64 {
-        fn from(x: Int64Value) -> Self {
-            x.0
+        fn from(this: Int64Value) -> Self {
+            this.0
         }
     }
-
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Int32Value(i32);
     impl From<i32> for Int32Value {
-        fn from(x: i32) -> Self {
-            Self(x)
+        fn from(this: i32) -> Self {
+            Self(this)
         }
     }
     impl From<Int32Value> for i32 {
-        fn from(x: Int32Value) -> Self {
-            x.0
+        fn from(this: Int32Value) -> Self {
+            this.0
         }
     }
-
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct NumberDefaultValue(f64);
     impl From<f64> for NumberDefaultValue {
-        fn from(x: f64) -> Self {
-            Self(x)
+        fn from(this: f64) -> Self {
+            Self(this)
         }
     }
     impl From<NumberDefaultValue> for f64 {
-        fn from(x: NumberDefaultValue) -> Self {
-            x.0
+        fn from(this: NumberDefaultValue) -> Self {
+            this.0
         }
     }
-
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct FloatValue(f32);
     impl From<f32> for FloatValue {
-        fn from(x: f32) -> Self {
-            Self(x)
+        fn from(this: f32) -> Self {
+            Self(this)
         }
     }
     impl From<FloatValue> for f32 {
-        fn from(x: FloatValue) -> Self {
-            x.0
+        fn from(this: FloatValue) -> Self {
+            this.0
         }
     }
-
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct DoubleValue(f64);
     impl From<f64> for DoubleValue {
-        fn from(x: f64) -> Self {
-            Self(x)
+        fn from(this: f64) -> Self {
+            Self(this)
         }
     }
     impl From<DoubleValue> for f64 {
-        fn from(x: DoubleValue) -> Self {
-            x.0
+        fn from(this: DoubleValue) -> Self {
+            this.0
         }
     }
 }
