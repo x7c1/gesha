@@ -53,9 +53,7 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
 
 fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
     render! { write =>
-        echo > "#";
-        "[]" > render_derive_attrs => &x.derive_attrs;
-        echo > "\n";
+        call > render_derive_attrs => &x.derive_attrs;
         echo > "pub struct {name}", name = x.name;
         "{}" > render_fields => x.fields;
         echo > "\n";
@@ -65,7 +63,8 @@ fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
 
 fn render_derive_attrs<W: Write>(mut write: W, attrs: &[DeriveAttribute]) -> Result<()> {
     render! { write =>
-        echo > "derive({items})", items = attrs.join(",");
+        echo > "#[derive({items})]", items = attrs.join(",");
+        echo > "\n";
     };
     Ok(())
 }
@@ -97,10 +96,7 @@ fn render_data_type<W: Write>(mut write: W, data_type: &DataType) -> Result<()> 
 
 fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
     render! { write =>
-        echo > "#";
-        "[]" > render_derive_attrs => &x.derive_attrs;
-        echo > "\n";
-
+        call > render_derive_attrs => &x.derive_attrs;
         echo > "pub struct {name}", name = x.name;
         "()" > render_data_type => &x.data_type;
         echo > ";";
@@ -126,9 +122,7 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
 
 fn render_enum<W: Write>(mut write: W, x: EnumDef) -> Result<()> {
     render! { write =>
-        echo > "#";
-        "[]" > render_derive_attrs => &x.derive_attrs;
-        echo > "\n";
+        call > render_derive_attrs => &x.derive_attrs;
         echo > "pub enum {name}", name = x.name;
         "{}" > render_enum_variants => x.variants;
         echo > "\n\n";
