@@ -100,24 +100,38 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
         echo > "#";
         "[]" > render_derive_attrs => x.derive_attrs.clone();
         echo > "\n";
+
         echo > "pub struct {name}", name = x.name;
         "()" > render_data_type => x.data_type.clone();
         echo > ";";
+
         echo > "impl From<{data_type}> for {name}",
             data_type = String::from(x.data_type.clone()),
             name = x.name.clone();
-        "{}" > render_newtype_impl_from => x;
+        "{}" > render_newtype_impl_from_primitive => x.clone();
+
+        echo > "impl From<{name}> for {data_type}",
+            data_type = String::from(x.data_type.clone()),
+            name = x.name.clone();
+        "{}" > render_newtype_impl_from_typed => x.clone();
+
         echo > "\n";
     }
     Ok(())
 }
 
-fn render_newtype_impl_from<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
+fn render_newtype_impl_from_primitive<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
     render! { write =>
-        echo > "fn from(x: {data_type}) -> {name}",
-            data_type = String::from(x.data_type),
-            name = x.name;
+        echo > "fn from(x: {data_type}) -> Self", data_type = String::from(x.data_type);
         echo > "{{ Self(x) }}"
+    }
+    Ok(())
+}
+
+fn render_newtype_impl_from_typed<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
+    render! { write =>
+        echo > "fn from(x: {name}) -> Self", name = x.name;
+        echo > "{{ x.0 }}"
     }
     Ok(())
 }

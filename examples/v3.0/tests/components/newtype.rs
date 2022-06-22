@@ -14,3 +14,11 @@ fn to_json_bool() {
     let actual = serde_json::to_value(&x1).unwrap();
     assert_eq!(actual, Value::Bool(true))
 }
+
+#[test]
+fn into_string() {
+    let x1 = "x1".to_string();
+    let typed = StringValue::from(x1);
+    let actual: String = typed.into();
+    assert_eq!(actual, "x1")
+}

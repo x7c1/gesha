@@ -8,32 +8,52 @@ pub mod schemas {
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct StringValue(String);
     impl From<String> for StringValue {
-        fn from(x: String) -> StringValue {
+        fn from(x: String) -> Self {
             Self(x)
+        }
+    }
+    impl From<StringValue> for String {
+        fn from(x: StringValue) -> Self {
+            x.0
         }
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct BooleanValue(bool);
     impl From<bool> for BooleanValue {
-        fn from(x: bool) -> BooleanValue {
+        fn from(x: bool) -> Self {
             Self(x)
+        }
+    }
+    impl From<BooleanValue> for bool {
+        fn from(x: BooleanValue) -> Self {
+            x.0
         }
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct ArrayValue(Vec<i64>);
     impl From<Vec<i64>> for ArrayValue {
-        fn from(x: Vec<i64>) -> ArrayValue {
+        fn from(x: Vec<i64>) -> Self {
             Self(x)
+        }
+    }
+    impl From<ArrayValue> for Vec<i64> {
+        fn from(x: ArrayValue) -> Self {
+            x.0
         }
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct ArrayCustomValue(Vec<Pet>);
     impl From<Vec<Pet>> for ArrayCustomValue {
-        fn from(x: Vec<Pet>) -> ArrayCustomValue {
+        fn from(x: Vec<Pet>) -> Self {
             Self(x)
+        }
+    }
+    impl From<ArrayCustomValue> for Vec<Pet> {
+        fn from(x: ArrayCustomValue) -> Self {
+            x.0
         }
     }
 
