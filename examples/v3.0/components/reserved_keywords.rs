@@ -7,7 +7,7 @@ pub mod schemas {
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct ReservedKeywords {
-        pub type_: Option<String>,
-        pub ref_: Option<String>,
+        pub ref_: String,
+        pub type_: String,
     }
 }
