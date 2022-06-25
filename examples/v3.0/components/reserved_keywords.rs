@@ -6,7 +6,8 @@ pub mod schemas {
     use serde::Serialize;
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Pet {
-        pub type_: String,
+    pub struct ReservedKeywords {
+        pub type_: Option<String>,
+        pub ref_: Option<String>,
     }
 }
