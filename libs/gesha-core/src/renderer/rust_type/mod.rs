@@ -53,9 +53,7 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
 
 fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
     render! { write =>
-        echo > "#";
-        "[]" > render_derive_attrs => x.derive_attrs;
-        echo > "\n";
+        call > render_derive_attrs => &x.derive_attrs;
         echo > "pub struct {name}", name = x.name;
         "{}" > render_fields => x.fields;
         echo > "\n";
@@ -63,9 +61,10 @@ fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
     Ok(())
 }
 
-fn render_derive_attrs<W: Write>(mut write: W, attrs: Vec<DeriveAttribute>) -> Result<()> {
+fn render_derive_attrs<W: Write>(mut write: W, attrs: &[DeriveAttribute]) -> Result<()> {
     render! { write =>
-        echo > "{items}", items = format!("derive({})", attrs.join(","));
+        echo > "#[derive({items})]", items = attrs.join(",");
+        echo > "\n";
     };
     Ok(())
 }
@@ -83,35 +82,47 @@ fn render_fields<W: Write>(mut write: W, fields: Vec<StructField>) -> Result<()>
 fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
     render! { write =>
         echo > "pub {name}: ", name = field.name;
-        call > render_data_type => field.data_type;
+        call > render_data_type => &field.data_type;
     };
     Ok(())
 }
 
-fn render_data_type<W: Write>(mut write: W, data_type: DataType) -> Result<()> {
+fn render_data_type<W: Write>(mut write: W, data_type: &DataType) -> Result<()> {
     render! { write =>
-        echo > "{type_name}", type_name = String::from(data_type);
+        echo > "{type_name}", type_name = data_type;
     }
     Ok(())
 }
 
 fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
     render! { write =>
-        echo > "#";
-        "[]" > render_derive_attrs => x.derive_attrs;
-        echo > "\n";
+        call > render_derive_attrs => &x.derive_attrs;
         echo > "pub struct {name}", name = x.name;
-        "()" > render_data_type => x.data_type;
-        echo > ";\n\n";
+        "()" > render_data_type => &x.data_type;
+        echo > ";";
+
+        echo >
+            "impl From<{data_type}> for {name} {{
+                fn from(this: {data_type}) -> Self {{
+                    Self(this)
+                }}
+            }}
+            impl From<{name}> for {data_type} {{
+                fn from(this: {name}) -> Self {{
+                    this.0
+                }}
+            }}",
+            data_type = x.data_type,
+            name = x.name;
+
+        echo > "\n\n";
     }
     Ok(())
 }
 
 fn render_enum<W: Write>(mut write: W, x: EnumDef) -> Result<()> {
     render! { write =>
-        echo > "#";
-        "[]" > render_derive_attrs => x.derive_attrs;
-        echo > "\n";
+        call > render_derive_attrs => &x.derive_attrs;
         echo > "pub enum {name}", name = x.name;
         "{}" > render_enum_variants => x.variants;
         echo > "\n\n";
