@@ -10,5 +10,7 @@ pub mod schemas {
         pub id: i64,
         #[serde(rename = "lowerCamelCase")]
         pub lower_camel_case: String,
+        #[serde(rename = "UpperCamelCase")]
+        pub upper_camel_case: String,
     }
 }
