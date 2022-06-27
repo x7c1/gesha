@@ -1,5 +1,5 @@
-use serde_json::Value;
 use examples_v3_0::components::newtype::schemas::{BooleanValue, StringValue};
+use serde_json::Value;
 
 #[test]
 fn to_json_string() {
