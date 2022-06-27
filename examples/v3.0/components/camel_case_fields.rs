@@ -6,8 +6,7 @@ pub mod schemas {
     use serde::Serialize;
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Pet {
-        pub id: i64,
+    pub struct CamelCaseFields {
         #[serde(rename = "lowerCamelCase")]
         pub lower_camel_case: String,
         #[serde(rename = "UpperCamelCase")]

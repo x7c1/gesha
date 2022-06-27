@@ -1,13 +1,10 @@
 schemas:
-  Pet:
+  CamelCaseFields:
     type: object
     required:
-      - id
       - lowerCamelCase
       - UpperCamelCase
     properties:
-      id:
-        type: integer
       lowerCamelCase:
         type: string
       UpperCamelCase:
