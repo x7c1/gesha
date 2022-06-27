@@ -4,8 +4,21 @@ use gesha_core::gateway;
 use gesha_core::gateway::testing::{generate_module_file, test_rust_type_to_overwrite};
 use gesha_core::gateway::{Error, ErrorTheme, Writer};
 
-pub fn overwrite() -> gateway::Result<()> {
-    let cases = test::new_test_cases()
+#[derive(clap::Args, Debug)]
+pub struct Params {
+    #[clap(long)]
+    schema: Option<String>,
+}
+
+pub fn run(params: Params) -> gateway::Result<()> {
+    let test_cases = if let Some(schema) = params.schema {
+        let case = SupportedTestCase::from_path(schema)?;
+        vec![case]
+    } else {
+        test::new_test_cases()
+    };
+
+    let cases = test_cases
         .into_iter()
         .filter_map(|x| run_and_catch_diff(x).transpose())
         .collect::<gateway::Result<Vec<ModifiedCase>>>()?;

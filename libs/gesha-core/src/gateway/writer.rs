@@ -14,6 +14,14 @@ pub struct Writer {
 }
 
 impl Writer {
+    pub fn touch(self) -> Result<()> {
+        File::create(&self.path).map_err(|cause| CannotCreateFile {
+            path: self.path.clone(),
+            detail: format!("{:?}", cause),
+        })?;
+        Ok(())
+    }
+
     pub fn create_file<A: Renderer>(self, a: A) -> Result<()> {
         let mut file = File::create(&self.path).map_err(|cause| CannotCreateFile {
             path: self.path.clone(),
