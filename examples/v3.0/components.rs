@@ -5,6 +5,7 @@ pub mod all_of;
 pub mod all_of_ref;
 pub mod array;
 pub mod boolean_field;
+pub mod camel_case_fields;
 pub mod enums;
 pub mod newtype;
 pub mod newtype_numeric;

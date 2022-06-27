@@ -1,0 +1,11 @@
+schemas:
+  Pet:
+    type: object
+    required:
+      - id
+      - lowerCamelCase
+    properties:
+      id:
+        type: integer
+      lowerCamelCase:
+        type: string

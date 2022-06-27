@@ -38,5 +38,6 @@ fn new_test_cases() -> Vec<SupportedTestCase> {
         "enums.yaml",
         "all_of.yaml",
         "all_of_ref.yaml",
+        "camel_case_fields.yaml",
     ])
 }
