@@ -80,6 +80,12 @@ fn render_fields<W: Write>(mut write: W, fields: Vec<StructField>) -> Result<()>
 }
 
 fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
+    if let Some(original) = field.name.find_to_rename() {
+        render! { write =>
+            echo > r#"#[serde(rename="{name}")]"#, name = original;
+            echo > "\n";
+        }
+    }
     render! { write =>
         echo > "pub {name}: ", name = field.name;
         call > render_data_type => &field.data_type;
