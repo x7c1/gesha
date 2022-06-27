@@ -99,7 +99,6 @@ where
     generate_rust_type(target.clone())?;
 
     // example doesn't exist at first attempt.
-    // let not_exist = !Path::new(&target.example).exists();
     let not_exist = !target.example.exists();
     if not_exist {
         new_writer(&target.example).touch()?;
