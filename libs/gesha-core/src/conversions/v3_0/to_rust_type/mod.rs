@@ -119,7 +119,8 @@ fn to_all_of(name: SchemaFieldName, cases: AllOf) -> Result<DefinitionShape> {
 fn to_all_of_item_shape(case: SchemaCase) -> Result<AllOfItemShape> {
     let shape = match case {
         SchemaCase::Schema(object) => {
-            let shapes = object_to_field_shapes(*object)?;
+            let object = *object;
+            let shapes = object_to_field_shapes(object.properties, object.required)?;
             AllOfItemShape::Object(shapes)
         }
         SchemaCase::Reference(x) => AllOfItemShape::Ref(x),

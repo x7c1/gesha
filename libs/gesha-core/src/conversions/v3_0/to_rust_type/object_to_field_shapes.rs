@@ -1,14 +1,14 @@
 use crate::conversions::v3_0::to_rust_type::{shape_type, FieldShape, TypeShape};
 use crate::conversions::Result;
 use crate::targets::rust_type::{DataType, StructField, StructFieldName};
-use openapi_types::v3_0::{
-    RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaObject, SchemaProperties,
-};
+use openapi_types::v3_0::{RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaProperties};
 
-pub(super) fn object_to_field_shapes(object: SchemaObject) -> Result<Vec<FieldShape>> {
-    object
-        .properties
-        .map(ToFieldShapes::by(object.required))
+pub(super) fn object_to_field_shapes(
+    properties: Option<SchemaProperties>,
+    required: Option<RequiredSchemaFields>,
+) -> Result<Vec<FieldShape>> {
+    properties
+        .map(ToFieldShapes::by(required))
         .unwrap_or(Ok(vec![]))
 }
 

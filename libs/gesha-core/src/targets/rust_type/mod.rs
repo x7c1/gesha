@@ -59,15 +59,21 @@ pub struct StructDef {
     pub name: String,
     pub fields: Vec<StructField>,
     pub derive_attrs: Vec<DeriveAttribute>,
+    pub doc_comments: Option<String>,
     _hide_default_constructor: bool,
 }
 
 impl StructDef {
-    pub fn new<A: Into<String>>(name: A, fields: Vec<StructField>) -> Self {
+    pub fn new<A: Into<String>>(
+        name: A,
+        fields: Vec<StructField>,
+        doc_comments: Option<String>,
+    ) -> Self {
         Self {
             name: name.into(),
             fields,
             derive_attrs: DeriveAttribute::all(),
+            doc_comments,
             _hide_default_constructor: true,
         }
     }

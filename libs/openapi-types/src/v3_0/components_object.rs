@@ -94,6 +94,10 @@ pub enum SchemaCase {
 /// rf. https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
 #[derive(Clone, Debug)]
 pub struct SchemaObject {
+    pub title: Option<String>,
+
+    pub description: Option<String>,
+
     /// > type - Value MUST be a string.
     /// > Multiple types via an array are not supported.
     pub data_type: Option<OpenApiDataType>,

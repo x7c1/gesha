@@ -80,6 +80,8 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         .transpose()?;
 
     Ok(SchemaObject {
+        title: map.remove_if_exists::<String>("title")?,
+        description: map.remove_if_exists::<String>("description")?,
         data_type,
         format,
         properties,

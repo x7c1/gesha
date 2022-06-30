@@ -36,7 +36,12 @@ impl RefResolver {
                 struct_name,
                 shapes,
             } => {
-                let def = StructDef::new(struct_name.clone(), self.shapes_to_fields(shapes)?);
+                let doc_comments = Some("TODO".to_string());
+                let def = StructDef::new(
+                    struct_name.clone(),
+                    self.shapes_to_fields(shapes)?,
+                    doc_comments,
+                );
                 Ok(Fixed(def.into()))
             }
             PostProcess::NewType {

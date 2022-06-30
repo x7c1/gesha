@@ -5,7 +5,7 @@ use crate::targets::rust_type::{StructDef, StructField};
 use openapi_types::v3_0::{SchemaFieldName, SchemaObject};
 
 pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionShape> {
-    let field_shapes = object_to_field_shapes(object)?;
+    let field_shapes = object_to_field_shapes(object.properties, object.required)?;
     let fields = field_shapes
         .iter()
         .filter_map(|x| match x {
@@ -15,7 +15,11 @@ pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> Result<D
         .collect::<Vec<StructField>>();
 
     let shape = if fields.len() == field_shapes.len() {
-        let def = StructDef::new(name, fields);
+        let def = StructDef::new(
+            name,
+            fields,
+            to_doc_comments(object.title, object.description),
+        );
         DefinitionShape::Fixed(def.into())
     } else {
         let process = Struct {
@@ -25,4 +29,13 @@ pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> Result<D
         process.into()
     };
     Ok(shape)
+}
+
+fn to_doc_comments(title: Option<String>, description: Option<String>) -> Option<String> {
+    let maybe = match (title, description) {
+        (t, None) => t,
+        (None, d) => d,
+        (Some(t), Some(d)) => Some(format!("{t}\n\n{d}")),
+    };
+    maybe.map(|x| x.trim().to_string())
 }
