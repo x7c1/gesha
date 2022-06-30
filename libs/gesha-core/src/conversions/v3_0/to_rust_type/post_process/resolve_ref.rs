@@ -36,7 +36,7 @@ impl RefResolver {
                 struct_name,
                 shapes,
             } => {
-                let doc_comments = Some("TODO".to_string());
+                let doc_comments = Some("TODO: extract doc_comments".to_string());
                 let def = StructDef::new(
                     struct_name.clone(),
                     self.shapes_to_fields(shapes)?,
