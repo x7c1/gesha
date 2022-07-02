@@ -20,7 +20,10 @@ use openapi_types::v3_0::{SchemaCase, SchemaFieldName, SchemaObject};
 pub(super) fn from_schema_entry(kv: (SchemaFieldName, SchemaCase)) -> Result<DefinitionShape> {
     let (field_name, schema_case) = kv;
     match schema_case {
-        SchemaCase::Schema(obj) => Shaper::run(field_name, *obj),
+        SchemaCase::Schema(obj) => {
+            let (name, object) = (field_name, *obj);
+            Shaper { name, object }.run()
+        }
         SchemaCase::Reference(_) => todo!(),
     }
 }
@@ -31,11 +34,7 @@ struct Shaper {
 }
 
 impl Shaper {
-    fn run(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionShape> {
-        Self { name, object }.shape()
-    }
-
-    fn shape(self) -> Result<DefinitionShape> {
+    fn run(self) -> Result<DefinitionShape> {
         if self.object.all_of.is_some() {
             return self.for_all_of();
         }
