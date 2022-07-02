@@ -11,7 +11,7 @@ use crate::conversions::v3_0::to_rust_type::{
     AllOfItemShape, DefinitionShape, PostProcess, TypeShape,
 };
 use crate::conversions::Result;
-use crate::targets::rust_type::{EnumDef, EnumVariant, NewTypeDef, TypeHeader};
+use crate::targets::rust_type::{DocComments, EnumDef, EnumVariant, NewTypeDef, TypeHeader};
 use openapi_types::v3_0::{SchemaCase, SchemaFieldName, SchemaObject};
 
 pub(super) fn to_shape(kv: (SchemaFieldName, SchemaCase)) -> Result<DefinitionShape> {
@@ -98,11 +98,14 @@ fn to_all_of_item_shape(case: SchemaCase) -> Result<AllOfItemShape> {
     Ok(shape)
 }
 
-fn to_doc_comments(title: Option<String>, description: Option<String>) -> Option<String> {
+fn to_doc_comments(title: Option<String>, description: Option<String>) -> DocComments {
     let maybe = match (title, description) {
         (t, None) => t,
         (None, d) => d,
         (Some(t), Some(d)) => Some(format!("{t}\n\n{d}")),
     };
-    maybe.map(|x| x.trim().to_string())
+    DocComments::new(maybe.map(|x| {
+        let text = x.trim().to_string();
+        format!("/**\n{text}\n*/\n")
+    }))
 }

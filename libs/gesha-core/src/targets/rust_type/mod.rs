@@ -57,16 +57,34 @@ pub enum Definition {
 #[derive(Clone, Debug)]
 pub struct TypeHeader {
     pub name: String,
-    pub doc_comments: Option<String>,
+    pub doc_comments: DocComments,
     _hide_default_constructor: bool,
 }
 
 impl TypeHeader {
-    pub fn new<A: Into<String>>(name: A, doc_comments: Option<String>) -> Self {
+    pub fn new<A: Into<String>>(name: A, doc_comments: DocComments) -> Self {
         Self {
             name: name.into(),
             doc_comments,
             _hide_default_constructor: true,
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct DocComments(Option<String>);
+
+impl DocComments {
+    pub fn new(this: Option<String>) -> Self {
+        Self(this)
+    }
+}
+
+impl Display for DocComments {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match &self.0 {
+            Some(text) => Display::fmt(text, f),
+            None => Ok(()),
         }
     }
 }

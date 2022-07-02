@@ -52,12 +52,8 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
 }
 
 fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
-    if let Some(doc_comments) = x.header.doc_comments {
-        render! { write =>
-            echo > "/**\n{text}\n*/\n", text = doc_comments;
-        }
-    }
     render! { write =>
+        echo > "{comments}", comments = x.header.doc_comments;
         call > render_derive_attrs => &x.derive_attrs;
         echo > "pub struct {name}", name = x.header.name;
         "{}" > render_fields => x.fields;
