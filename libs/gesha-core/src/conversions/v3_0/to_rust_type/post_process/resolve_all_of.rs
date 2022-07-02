@@ -5,7 +5,6 @@ use crate::conversions::v3_0::to_rust_type::{
     AllOfItemShape, DefinitionShape, FieldShape, PostProcess,
 };
 use crate::conversions::Result;
-use crate::targets::rust_type::TypeHeader;
 
 impl PostProcessor {
     pub(super) fn process_all_of(&self, modules: &mut ComponentsShapes) -> Result<()> {
@@ -26,14 +25,9 @@ impl PostProcessor {
 
     fn shape_all_of(&self, process: &mut PostProcess) -> Result<Option<DefinitionShape>> {
         match process {
-            PostProcess::AllOf {
-                struct_name,
-                shapes,
-            } => {
-                let doc_comments = Some("TODO: extract doc_comments".to_string());
-                let header = TypeHeader::new(struct_name.clone(), doc_comments);
+            PostProcess::AllOf { header, shapes } => {
                 let process = PostProcess::Struct {
-                    header,
+                    header: header.clone(),
                     shapes: self.merge_fields_all_of(shapes)?,
                 };
                 Ok(Some(process.into()))
