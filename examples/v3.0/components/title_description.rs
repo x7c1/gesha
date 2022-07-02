@@ -10,7 +10,7 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct OnlyTitle {
-        pub id: i64,
+        pub x1: Option<i64>,
     }
 
     /**
@@ -18,7 +18,7 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct OnlyDescription {
-        pub id: i64,
+        pub x2: Option<i64>,
     }
 
     /**
@@ -28,6 +28,48 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct TitleAndDescription {
-        pub id: i64,
+        pub foo: Option<i64>,
+    }
+
+    /**
+    Pet
+    */
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct SameText {
+        pub bar: Option<i64>,
+    }
+
+    /**
+    Sample1
+    */
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub enum EnumWithTitle {
+        Error1,
+        Error2,
+    }
+
+    /**
+    Sample2
+    */
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct WrappedValueWithTitle(String);
+    impl From<String> for WrappedValueWithTitle {
+        fn from(this: String) -> Self {
+            Self(this)
+        }
+    }
+    impl From<WrappedValueWithTitle> for String {
+        fn from(this: WrappedValueWithTitle) -> Self {
+            this.0
+        }
+    }
+
+    /**
+    Sample3
+    */
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct AllOfWithTitle {
+        pub x1: Option<i64>,
+        pub x2: Option<i64>,
     }
 }

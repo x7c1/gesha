@@ -15,3 +15,4 @@ pub mod ref_items;
 pub mod ref_property;
 pub mod reserved_keywords;
 pub mod struct_simple;
+pub mod title_description;

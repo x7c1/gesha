@@ -103,8 +103,9 @@ fn render_data_type<W: Write>(mut write: W, data_type: &DataType) -> Result<()> 
 
 fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
     render! { write =>
+        echo > "{comments}", comments = x.header.doc_comments;
         call > render_derive_attrs => &x.derive_attrs;
-        echo > "pub struct {name}", name = x.name;
+        echo > "pub struct {name}", name = x.header.name;
         "()" > render_data_type => &x.data_type;
         echo > ";";
 
@@ -120,7 +121,7 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
                 }}
             }}",
             data_type = x.data_type,
-            name = x.name;
+            name = x.header.name;
 
         echo > "\n\n";
     }
@@ -129,8 +130,9 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
 
 fn render_enum<W: Write>(mut write: W, x: EnumDef) -> Result<()> {
     render! { write =>
+        echo > "{comments}", comments = x.header.doc_comments;
         call > render_derive_attrs => &x.derive_attrs;
-        echo > "pub enum {name}", name = x.name;
+        echo > "pub enum {name}", name = x.header.name;
         "{}" > render_enum_variants => x.variants;
         echo > "\n\n";
     }

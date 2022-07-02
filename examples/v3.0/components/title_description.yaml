@@ -2,25 +2,46 @@ schemas:
   OnlyTitle:
     title: Pet
     type: object
-    required:
-      - id
     properties:
-      id:
+      x1:
         type: integer
+
   OnlyDescription:
     description: A pet for sale in the pet store
     type: object
-    required:
-      - id
     properties:
-      id:
+      x2:
         type: integer
+
   TitleAndDescription:
     title: Pet
     description: A pet for sale in the pet store
     type: object
-    required:
-      - id
     properties:
-      id:
+      foo:
         type: integer
+
+  SameText:
+    title: Pet
+    description: Pet
+    type: object
+    properties:
+      bar:
+        type: integer
+
+  EnumWithTitle:
+    title: Sample1
+    type: string
+    enum:
+      - "ERROR1"
+      - "ERROR2"
+
+  WrappedValueWithTitle:
+    title: Sample2
+    type: string
+
+  AllOfWithTitle:
+    title: Sample3
+    allOf:
+      - $ref: '#/components/schemas/OnlyTitle'
+      - $ref: '#/components/schemas/OnlyDescription'
