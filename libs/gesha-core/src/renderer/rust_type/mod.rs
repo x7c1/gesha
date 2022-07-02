@@ -53,8 +53,9 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
 
 fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
     render! { write =>
+        echo > "{comments}", comments = x.header.doc_comments;
         call > render_derive_attrs => &x.derive_attrs;
-        echo > "pub struct {name}", name = x.name;
+        echo > "pub struct {name}", name = x.header.name;
         "{}" > render_fields => x.fields;
         echo > "\n";
     };
@@ -80,6 +81,12 @@ fn render_fields<W: Write>(mut write: W, fields: Vec<StructField>) -> Result<()>
 }
 
 fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
+    if let Some(original) = field.name.find_to_rename() {
+        render! { write =>
+            echo > r#"#[serde(rename="{name}")]"#, name = original;
+            echo > "\n";
+        }
+    }
     render! { write =>
         echo > "pub {name}: ", name = field.name;
         call > render_data_type => &field.data_type;

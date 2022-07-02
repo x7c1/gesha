@@ -6,10 +6,10 @@ pub mod schemas {
     use serde::Serialize;
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct ReservedKeywords {
-        #[serde(rename = "ref")]
-        pub ref_: String,
-        #[serde(rename = "type")]
-        pub type_: String,
+    pub struct CamelCaseFields {
+        #[serde(rename = "lowerCamelCase")]
+        pub lower_camel_case: String,
+        #[serde(rename = "UpperCamelCase")]
+        pub upper_camel_case: String,
     }
 }

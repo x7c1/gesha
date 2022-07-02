@@ -4,7 +4,7 @@ use crate::{gateway, render};
 use std::io::Write;
 
 pub fn generate_module_file<A>(path: &str, cases: Vec<TestCase<A>>) -> gateway::Result<()> {
-    let writer = new_writer(path.into());
+    let writer = new_writer(path);
     writer.create_file(ModuleFile { cases })
 }
 

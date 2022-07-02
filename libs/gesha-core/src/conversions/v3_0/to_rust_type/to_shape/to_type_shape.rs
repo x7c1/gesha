@@ -1,11 +1,20 @@
-use crate::conversions::v3_0::to_rust_type::{shape_type, TypeShape};
+use crate::conversions::v3_0::to_rust_type::TypeShape;
 use crate::conversions::Error::UnknownFormat;
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
+use openapi_types::v3_0::SchemaCase;
+use openapi_types::v3_0::SchemaCase::{Reference, Schema};
 use openapi_types::v3_0::{ArrayItems, FormatModifier, OpenApiDataType, SchemaObject};
 use TypeShape::Fixed;
 
-pub fn shape_schema_object_type(object: SchemaObject) -> Result<TypeShape> {
+pub(super) fn to_type_shape(schema_case: SchemaCase) -> Result<TypeShape> {
+    match schema_case {
+        Schema(object) => from_object(*object),
+        Reference(object) => Ok(TypeShape::Ref(object)),
+    }
+}
+
+pub(super) fn from_object(object: SchemaObject) -> Result<TypeShape> {
     match object.data_type {
         Some(data_type) => {
             let to_type = TypeFactory {
@@ -54,7 +63,7 @@ impl TypeFactory {
             .items
             .unwrap_or_else(|| unimplemented!("array must have items"));
 
-        let type_shape = match shape_type(items.into())? {
+        let type_shape = match to_type_shape(items.into())? {
             Fixed(data_type) => Fixed(DataType::Vec(Box::new(data_type))),
             shape => TypeShape::Vec(Box::new(shape)),
         };

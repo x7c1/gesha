@@ -55,17 +55,52 @@ pub enum Definition {
 }
 
 #[derive(Clone, Debug)]
-pub struct StructDef {
+pub struct TypeHeader {
     pub name: String,
+    pub doc_comments: DocComments,
+    _hide_default_constructor: bool,
+}
+
+impl TypeHeader {
+    pub fn new<A: Into<String>>(name: A, doc_comments: DocComments) -> Self {
+        Self {
+            name: name.into(),
+            doc_comments,
+            _hide_default_constructor: true,
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct DocComments(Option<String>);
+
+impl DocComments {
+    pub fn new(this: Option<String>) -> Self {
+        Self(this)
+    }
+}
+
+impl Display for DocComments {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match &self.0 {
+            Some(text) => Display::fmt(text, f),
+            None => Ok(()),
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct StructDef {
+    pub header: TypeHeader,
     pub fields: Vec<StructField>,
     pub derive_attrs: Vec<DeriveAttribute>,
     _hide_default_constructor: bool,
 }
 
 impl StructDef {
-    pub fn new<A: Into<String>>(name: A, fields: Vec<StructField>) -> Self {
+    pub fn new(header: TypeHeader, fields: Vec<StructField>) -> Self {
         Self {
-            name: name.into(),
+            header,
             fields,
             derive_attrs: DeriveAttribute::all(),
             _hide_default_constructor: true,

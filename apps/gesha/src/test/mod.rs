@@ -1,5 +1,4 @@
-mod overwrite;
-pub use overwrite::overwrite;
+pub mod overwrite;
 
 use gesha_core::gateway;
 use gesha_core::gateway::testing::{test_rust_type, TestCase};
@@ -39,5 +38,7 @@ fn new_test_cases() -> Vec<SupportedTestCase> {
         "enums.yaml",
         "all_of.yaml",
         "all_of_ref.yaml",
+        "camel_case_fields.yaml",
+        "title_description.yaml",
     ])
 }

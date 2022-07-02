@@ -15,9 +15,9 @@ schemas:
       - $ref: '#/components/schemas/BasicErrorModel'
       - type: object
         required:
-          - rootCause
+          - root_cause
         properties:
-          rootCause:
+          root_cause:
             type: string
   ErrorDetail:
     type: object

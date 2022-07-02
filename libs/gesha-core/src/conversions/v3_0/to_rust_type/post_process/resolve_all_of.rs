@@ -25,12 +25,9 @@ impl PostProcessor {
 
     fn shape_all_of(&self, process: &mut PostProcess) -> Result<Option<DefinitionShape>> {
         match process {
-            PostProcess::AllOf {
-                struct_name,
-                shapes,
-            } => {
+            PostProcess::AllOf { header, shapes } => {
                 let process = PostProcess::Struct {
-                    struct_name: struct_name.clone(),
+                    header: header.clone(),
                     shapes: self.merge_fields_all_of(shapes)?,
                 };
                 Ok(Some(process.into()))

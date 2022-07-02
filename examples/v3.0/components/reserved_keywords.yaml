@@ -1,8 +1,11 @@
 schemas:
-  Pet:
+  ReservedKeywords:
     type: object
     required:
+      - ref
       - type
     properties:
+      ref:
+        type: string
       type:
         type: string

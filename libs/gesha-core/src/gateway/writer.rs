@@ -14,12 +14,15 @@ pub struct Writer {
 }
 
 impl Writer {
-    pub fn create_file<A: Renderer>(self, a: A) -> Result<()> {
-        let mut file = File::create(&self.path).map_err(|cause| CannotCreateFile {
+    pub fn touch(&self) -> Result<File> {
+        File::create(&self.path).map_err(|cause| CannotCreateFile {
             path: self.path.clone(),
             detail: format!("{:?}", cause),
-        })?;
+        })
+    }
 
+    pub fn create_file<A: Renderer>(self, a: A) -> Result<()> {
+        let mut file = self.touch()?;
         if let Some(preamble) = self.preamble {
             let bytes = preamble.as_bytes();
             file.write(bytes).map_err(|cause| CannotWriteFile {

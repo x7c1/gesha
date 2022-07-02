@@ -1,0 +1,11 @@
+schemas:
+  CamelCaseFields:
+    type: object
+    required:
+      - lowerCamelCase
+      - UpperCamelCase
+    properties:
+      lowerCamelCase:
+        type: string
+      UpperCamelCase:
+        type: string

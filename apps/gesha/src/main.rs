@@ -12,7 +12,7 @@ fn main() {
     let result = match args.sub {
         Generate(x) => generate::run(x),
         Test(x) => test::run(x),
-        TestOverwrite => test::overwrite(),
+        TestOverwrite(x) => test::overwrite::run(x),
     };
     result.unwrap_or_else(|cause| {
         cause.dump();
@@ -32,5 +32,5 @@ struct Args {
 enum Subcommand {
     Generate(generate::Params),
     Test(test::Params),
-    TestOverwrite,
+    TestOverwrite(test::overwrite::Params),
 }

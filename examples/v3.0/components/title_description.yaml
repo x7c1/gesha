@@ -1,0 +1,26 @@
+schemas:
+  OnlyTitle:
+    title: Pet
+    type: object
+    required:
+      - id
+    properties:
+      id:
+        type: integer
+  OnlyDescription:
+    description: A pet for sale in the pet store
+    type: object
+    required:
+      - id
+    properties:
+      id:
+        type: integer
+  TitleAndDescription:
+    title: Pet
+    description: A pet for sale in the pet store
+    type: object
+    required:
+      - id
+    properties:
+      id:
+        type: integer

@@ -12,11 +12,11 @@ impl DefinitionShape {
     pub fn is_struct_name(&self, name: &str) -> bool {
         match self {
             Fixed(def) => match def {
-                Definition::StructDef(x) => x.name == name,
+                Definition::StructDef(x) => x.header.name == name,
                 _ => false,
             },
             InProcess(process) => match process {
-                PostProcess::Struct { struct_name, .. } => struct_name == name,
+                PostProcess::Struct { header, .. } => header.name == name,
                 PostProcess::AllOf { .. } => unimplemented!(),
                 PostProcess::NewType { .. } => unimplemented!(),
             },
