@@ -30,4 +30,13 @@ pub mod schemas {
     pub struct TitleAndDescription {
         pub id: i64,
     }
+
+    /**
+    Sample
+    */
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub enum EnumWithTitle {
+        Error1,
+        Error2,
+    }
 }

@@ -79,9 +79,13 @@ impl Shaper {
     }
 
     fn for_enum(self) -> Result<DefinitionShape> {
+        let header = TypeHeader::new(
+            self.name,
+            to_doc_comments(self.object.title, self.object.description),
+        );
         let values = self.object.enum_values.expect("enum_values must be Some.");
         let variants = values.into_iter().map(EnumVariant::new).collect();
-        let def = EnumDef::new(self.name, variants);
+        let def = EnumDef::new(header, variants);
         Ok(Fixed(def.into()))
     }
 }

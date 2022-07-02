@@ -141,16 +141,16 @@ impl From<NewTypeDef> for Definition {
 
 #[derive(Clone, Debug)]
 pub struct EnumDef {
-    pub name: String,
+    pub header: TypeHeader,
     pub variants: Vec<EnumVariant>,
     pub derive_attrs: Vec<DeriveAttribute>,
     _hide_default_constructor: bool,
 }
 
 impl EnumDef {
-    pub fn new<A: Into<String>>(name: A, variants: Vec<EnumVariant>) -> Self {
+    pub fn new(header: TypeHeader, variants: Vec<EnumVariant>) -> Self {
         Self {
-            name: name.into(),
+            header,
             variants,
             derive_attrs: DeriveAttribute::all(),
             _hide_default_constructor: true,

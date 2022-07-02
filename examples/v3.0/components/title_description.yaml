@@ -24,3 +24,9 @@ schemas:
     properties:
       id:
         type: integer
+  EnumWithTitle:
+    title: Sample
+    type: string
+    enum:
+      - "ERROR1"
+      - "ERROR2"
