@@ -1,16 +1,21 @@
-use crate::conversions::v3_0::to_rust_type::definition_shape::DefinitionShape;
-use crate::conversions::v3_0::to_rust_type::definition_shape::DefinitionShape::{Fixed, InProcess};
-use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, PostProcess, TypeShape};
-use crate::conversions::Result;
-use crate::targets::rust_type::{EnumDef, EnumVariant, NewTypeDef, TypeHeader};
+mod object_to_field_shapes;
 use object_to_field_shapes::object_to_field_shapes;
-use openapi_types::v3_0::{SchemaCase, SchemaFieldName, SchemaObject};
+
+mod shape_schema_object_type;
 use shape_schema_object_type::shape_schema_object_type;
 
-mod object_to_field_shapes;
-mod shape_schema_object_type;
 mod shape_type;
-mod to_struct;
+use shape_type::shape_type;
+
+mod for_struct;
+
+use crate::conversions::v3_0::to_rust_type::DefinitionShape::{Fixed, InProcess};
+use crate::conversions::v3_0::to_rust_type::{
+    AllOfItemShape, DefinitionShape, PostProcess, TypeShape,
+};
+use crate::conversions::Result;
+use crate::targets::rust_type::{EnumDef, EnumVariant, NewTypeDef, TypeHeader};
+use openapi_types::v3_0::{SchemaCase, SchemaFieldName, SchemaObject};
 
 pub(super) fn from_schema_entry(kv: (SchemaFieldName, SchemaCase)) -> Result<DefinitionShape> {
     let (field_name, schema_case) = kv;

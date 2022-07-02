@@ -1,10 +1,10 @@
-use crate::conversions::v3_0::to_rust_type::shaper::shape_type::shape_type;
+use super::shape_type;
 use crate::conversions::v3_0::to_rust_type::{FieldShape, TypeShape};
 use crate::conversions::Result;
 use crate::targets::rust_type::{DataType, StructField, StructFieldName};
 use openapi_types::v3_0::{RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaProperties};
 
-pub(in crate::conversions::v3_0::to_rust_type) fn object_to_field_shapes(
+pub(super) fn object_to_field_shapes(
     properties: Option<SchemaProperties>,
     required: Option<RequiredSchemaFields>,
 ) -> Result<Vec<FieldShape>> {

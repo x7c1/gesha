@@ -1,4 +1,4 @@
-use crate::conversions::v3_0::to_rust_type::shaper::object_to_field_shapes::object_to_field_shapes;
+use crate::conversions::v3_0::to_rust_type::shaper::object_to_field_shapes;
 use crate::conversions::v3_0::to_rust_type::shaper::Shaper;
 use crate::conversions::v3_0::to_rust_type::PostProcess::Struct;
 use crate::conversions::v3_0::to_rust_type::{DefinitionShape, FieldShape};
