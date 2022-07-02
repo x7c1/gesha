@@ -3,18 +3,20 @@ schemas:
     title: Pet
     type: object
     required:
-      - id
+      - id1
     properties:
-      id:
+      id1:
         type: integer
+
   OnlyDescription:
     description: A pet for sale in the pet store
     type: object
     required:
-      - id
+      - id2
     properties:
-      id:
+      id2:
         type: integer
+
   TitleAndDescription:
     title: Pet
     description: A pet for sale in the pet store
@@ -24,12 +26,20 @@ schemas:
     properties:
       id:
         type: integer
+
   EnumWithTitle:
     title: Sample1
     type: string
     enum:
       - "ERROR1"
       - "ERROR2"
+
   WrappedValueWithTitle:
     title: Sample2
     type: string
+
+  AllOfWithTitle:
+    title: Sample3
+    allOf:
+      - $ref: '#/components/schemas/OnlyTitle'
+      - $ref: '#/components/schemas/OnlyDescription'

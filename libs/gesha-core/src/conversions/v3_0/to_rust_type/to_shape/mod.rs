@@ -51,16 +51,13 @@ impl Shaper {
     }
 
     fn for_all_of(self) -> Result<DefinitionShape> {
+        let header = self.create_type_header();
         let cases = self.object.all_of.expect("all_of must be Some.");
         let shapes = cases
             .into_iter()
             .map(to_all_of_item_shape)
             .collect::<Result<Vec<AllOfItemShape>>>()?;
 
-        let header = TypeHeader::new(
-            self.name,
-            to_doc_comments(self.object.title, self.object.description),
-        );
         let process = PostProcess::AllOf { header, shapes };
         Ok(process.into())
     }

@@ -10,7 +10,7 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct OnlyTitle {
-        pub id: i64,
+        pub id1: i64,
     }
 
     /**
@@ -18,7 +18,7 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct OnlyDescription {
-        pub id: i64,
+        pub id2: i64,
     }
 
     /**
@@ -54,5 +54,14 @@ pub mod schemas {
         fn from(this: WrappedValueWithTitle) -> Self {
             this.0
         }
+    }
+
+    /**
+    Sample3
+    */
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct AllOfWithTitle {
+        pub id1: i64,
+        pub id2: i64,
     }
 }
