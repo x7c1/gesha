@@ -2,29 +2,31 @@ schemas:
   OnlyTitle:
     title: Pet
     type: object
-    required:
-      - id1
     properties:
-      id1:
+      x1:
         type: integer
 
   OnlyDescription:
     description: A pet for sale in the pet store
     type: object
-    required:
-      - id2
     properties:
-      id2:
+      x2:
         type: integer
 
   TitleAndDescription:
     title: Pet
     description: A pet for sale in the pet store
     type: object
-    required:
-      - id
     properties:
-      id:
+      foo:
+        type: integer
+
+  SameText:
+    title: Pet
+    description: Pet
+    type: object
+    properties:
+      bar:
         type: integer
 
   EnumWithTitle:

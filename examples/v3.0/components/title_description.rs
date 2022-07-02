@@ -10,7 +10,7 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct OnlyTitle {
-        pub id1: i64,
+        pub x1: Option<i64>,
     }
 
     /**
@@ -18,7 +18,7 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct OnlyDescription {
-        pub id2: i64,
+        pub x2: Option<i64>,
     }
 
     /**
@@ -28,7 +28,15 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct TitleAndDescription {
-        pub id: i64,
+        pub foo: Option<i64>,
+    }
+
+    /**
+    Pet
+    */
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct SameText {
+        pub bar: Option<i64>,
     }
 
     /**
@@ -61,7 +69,7 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct AllOfWithTitle {
-        pub id1: i64,
-        pub id2: i64,
+        pub x1: Option<i64>,
+        pub x2: Option<i64>,
     }
 }

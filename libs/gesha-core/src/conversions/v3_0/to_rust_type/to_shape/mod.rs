@@ -105,6 +105,7 @@ fn to_doc_comments(title: Option<String>, description: Option<String>) -> DocCom
     let maybe = match (title, description) {
         (t, None) => t,
         (None, d) => d,
+        (t, d) if t == d => t,
         (Some(t), Some(d)) => Some(format!("{t}\n\n{d}")),
     };
     DocComments::new(maybe.map(|x| {
