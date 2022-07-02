@@ -25,8 +25,11 @@ schemas:
       id:
         type: integer
   EnumWithTitle:
-    title: Sample
+    title: Sample1
     type: string
     enum:
       - "ERROR1"
       - "ERROR2"
+  WrappedValueWithTitle:
+    title: Sample2
+    type: string

@@ -53,7 +53,7 @@ enum PostProcess {
         shapes: Vec<FieldShape>,
     },
     NewType {
-        struct_name: String,
+        header: TypeHeader,
         type_shape: TypeShape,
     },
 }

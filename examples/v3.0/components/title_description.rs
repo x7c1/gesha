@@ -32,11 +32,27 @@ pub mod schemas {
     }
 
     /**
-    Sample
+    Sample1
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum EnumWithTitle {
         Error1,
         Error2,
+    }
+
+    /**
+    Sample2
+    */
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct WrappedValueWithTitle(String);
+    impl From<String> for WrappedValueWithTitle {
+        fn from(this: String) -> Self {
+            Self(this)
+        }
+    }
+    impl From<WrappedValueWithTitle> for String {
+        fn from(this: WrappedValueWithTitle) -> Self {
+            this.0
+        }
     }
 }

@@ -66,27 +66,29 @@ impl Shaper {
     }
 
     fn for_newtype(self) -> Result<DefinitionShape> {
+        let header = self.create_type_header();
         match to_type_shape::from_object(self.object)? {
             TypeShape::Fixed(data_type) => {
-                let def = NewTypeDef::new(self.name, data_type);
+                let def = NewTypeDef::new(header, data_type);
                 Ok(Fixed(def.into()))
             }
-            type_shape => Ok(InProcess(PostProcess::NewType {
-                struct_name: self.name.into(),
-                type_shape,
-            })),
+            type_shape => Ok(InProcess(PostProcess::NewType { header, type_shape })),
         }
     }
 
     fn for_enum(self) -> Result<DefinitionShape> {
-        let header = TypeHeader::new(
-            self.name,
-            to_doc_comments(self.object.title, self.object.description),
-        );
+        let header = self.create_type_header();
         let values = self.object.enum_values.expect("enum_values must be Some.");
         let variants = values.into_iter().map(EnumVariant::new).collect();
         let def = EnumDef::new(header, variants);
         Ok(Fixed(def.into()))
+    }
+
+    fn create_type_header(&self) -> TypeHeader {
+        TypeHeader::new(
+            self.name.clone(),
+            to_doc_comments(self.object.title.clone(), self.object.description.clone()),
+        )
     }
 }
 
