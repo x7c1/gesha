@@ -1,11 +1,8 @@
-mod object_to_field_shapes;
-use object_to_field_shapes::object_to_field_shapes;
+mod to_field_shapes;
+use to_field_shapes::to_field_shapes;
 
-mod shape_schema_object_type;
-use shape_schema_object_type::shape_schema_object_type;
-
-mod shape_type;
-use shape_type::shape_type;
+mod to_type_shape;
+use to_type_shape::to_type_shape;
 
 mod for_struct;
 
@@ -17,7 +14,7 @@ use crate::conversions::Result;
 use crate::targets::rust_type::{EnumDef, EnumVariant, NewTypeDef, TypeHeader};
 use openapi_types::v3_0::{SchemaCase, SchemaFieldName, SchemaObject};
 
-pub(super) fn from_schema_entry(kv: (SchemaFieldName, SchemaCase)) -> Result<DefinitionShape> {
+pub(super) fn to_shape(kv: (SchemaFieldName, SchemaCase)) -> Result<DefinitionShape> {
     let (field_name, schema_case) = kv;
     match schema_case {
         SchemaCase::Schema(obj) => {
@@ -67,7 +64,7 @@ impl Shaper {
     }
 
     fn for_newtype(self) -> Result<DefinitionShape> {
-        match shape_schema_object_type(self.object)? {
+        match to_type_shape::from_object(self.object)? {
             TypeShape::Fixed(data_type) => {
                 let def = NewTypeDef::new(self.name, data_type);
                 Ok(Fixed(def.into()))
@@ -91,7 +88,7 @@ fn to_all_of_item_shape(case: SchemaCase) -> Result<AllOfItemShape> {
     let shape = match case {
         SchemaCase::Schema(object) => {
             let object = *object;
-            let shapes = object_to_field_shapes(object.properties, object.required)?;
+            let shapes = to_field_shapes(object.properties, object.required)?;
             AllOfItemShape::Object(shapes)
         }
         SchemaCase::Reference(x) => AllOfItemShape::Ref(x),

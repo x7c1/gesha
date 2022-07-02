@@ -1,5 +1,5 @@
-use crate::conversions::v3_0::to_rust_type::shaper::object_to_field_shapes;
-use crate::conversions::v3_0::to_rust_type::shaper::Shaper;
+use crate::conversions::v3_0::to_rust_type::to_shape::to_field_shapes;
+use crate::conversions::v3_0::to_rust_type::to_shape::Shaper;
 use crate::conversions::v3_0::to_rust_type::PostProcess::Struct;
 use crate::conversions::v3_0::to_rust_type::{DefinitionShape, FieldShape};
 use crate::conversions::Result;
@@ -7,7 +7,7 @@ use crate::targets::rust_type::{StructDef, StructField, TypeHeader};
 
 impl Shaper {
     pub(super) fn for_struct(self) -> Result<DefinitionShape> {
-        let field_shapes = object_to_field_shapes(self.object.properties, self.object.required)?;
+        let field_shapes = to_field_shapes(self.object.properties, self.object.required)?;
         let fields = field_shapes
             .iter()
             .filter_map(|x| match x {

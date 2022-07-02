@@ -1,10 +1,10 @@
-use super::shape_type;
+use super::to_type_shape;
 use crate::conversions::v3_0::to_rust_type::{FieldShape, TypeShape};
 use crate::conversions::Result;
 use crate::targets::rust_type::{DataType, StructField, StructFieldName};
 use openapi_types::v3_0::{RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaProperties};
 
-pub(super) fn object_to_field_shapes(
+pub(super) fn to_field_shapes(
     properties: Option<SchemaProperties>,
     required: Option<RequiredSchemaFields>,
 ) -> Result<Vec<FieldShape>> {
@@ -33,7 +33,7 @@ impl ToFieldShapes {
     }
 
     fn to_field(&self, name: SchemaFieldName, case: SchemaCase) -> Result<FieldShape> {
-        match shape_type(case)? {
+        match to_type_shape(case)? {
             TypeShape::Fixed(data_type) => {
                 let field = self.new_struct_field(name, data_type);
                 Ok(FieldShape::Fixed(field))

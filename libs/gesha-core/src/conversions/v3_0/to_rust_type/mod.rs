@@ -7,7 +7,8 @@ use definition_shape::DefinitionShape;
 mod post_process;
 use post_process::PostProcessor;
 
-mod shaper;
+mod to_shape;
+use to_shape::to_shape;
 
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{DataType, Modules, StructField, StructFieldName, TypeHeader};
@@ -30,7 +31,7 @@ impl ToRustType<ComponentsObject> for Modules {
         let to_shapes = |object: SchemasObject| {
             object
                 .into_iter()
-                .map(shaper::from_schema_entry)
+                .map(to_shape)
                 .collect::<Result<Vec<DefinitionShape>>>()
         };
         let mut shapes = ComponentsShapes {
