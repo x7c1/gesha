@@ -9,6 +9,8 @@ pub mod schemas {
     pub struct ReservedKeywords {
         #[serde(rename = "break")]
         pub break_: String,
+        #[serde(rename = "continue")]
+        pub continue_: String,
         #[serde(rename = "ref")]
         pub ref_: String,
         #[serde(rename = "type")]
