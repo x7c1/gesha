@@ -57,8 +57,10 @@ impl Shaper {
             .map(to_all_of_item_shape)
             .collect::<Result<Vec<AllOfItemShape>>>()?;
 
-        let doc_comments = Some("TODO: extract doc_comments".to_string());
-        let header = TypeHeader::new(self.name, doc_comments);
+        let header = TypeHeader::new(
+            self.name,
+            to_doc_comments(self.object.title, self.object.description),
+        );
         let process = PostProcess::AllOf { header, shapes };
         Ok(process.into())
     }
@@ -94,4 +96,13 @@ fn to_all_of_item_shape(case: SchemaCase) -> Result<AllOfItemShape> {
         SchemaCase::Reference(x) => AllOfItemShape::Ref(x),
     };
     Ok(shape)
+}
+
+fn to_doc_comments(title: Option<String>, description: Option<String>) -> Option<String> {
+    let maybe = match (title, description) {
+        (t, None) => t,
+        (None, d) => d,
+        (Some(t), Some(d)) => Some(format!("{t}\n\n{d}")),
+    };
+    maybe.map(|x| x.trim().to_string())
 }

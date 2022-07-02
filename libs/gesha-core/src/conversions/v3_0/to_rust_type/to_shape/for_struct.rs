@@ -1,5 +1,4 @@
-use crate::conversions::v3_0::to_rust_type::to_shape::to_field_shapes;
-use crate::conversions::v3_0::to_rust_type::to_shape::Shaper;
+use super::{to_doc_comments, to_field_shapes, Shaper};
 use crate::conversions::v3_0::to_rust_type::PostProcess::Struct;
 use crate::conversions::v3_0::to_rust_type::{DefinitionShape, FieldShape};
 use crate::conversions::Result;
@@ -32,13 +31,4 @@ impl Shaper {
         };
         Ok(shape)
     }
-}
-
-fn to_doc_comments(title: Option<String>, description: Option<String>) -> Option<String> {
-    let maybe = match (title, description) {
-        (t, None) => t,
-        (None, d) => d,
-        (Some(t), Some(d)) => Some(format!("{t}\n\n{d}")),
-    };
-    maybe.map(|x| x.trim().to_string())
 }
