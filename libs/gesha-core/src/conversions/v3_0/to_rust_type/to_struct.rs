@@ -1,7 +1,7 @@
 use crate::conversions::v3_0::to_rust_type::PostProcess::Struct;
 use crate::conversions::v3_0::to_rust_type::{object_to_field_shapes, DefinitionShape, FieldShape};
 use crate::conversions::Result;
-use crate::targets::rust_type::{StructDef, StructField};
+use crate::targets::rust_type::{StructDef, StructField, TypeHeader};
 use openapi_types::v3_0::{SchemaFieldName, SchemaObject};
 
 pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> Result<DefinitionShape> {
@@ -14,16 +14,13 @@ pub(super) fn to_struct(name: SchemaFieldName, object: SchemaObject) -> Result<D
         })
         .collect::<Vec<StructField>>();
 
+    let header = TypeHeader::new(name, to_doc_comments(object.title, object.description));
     let shape = if fields.len() == field_shapes.len() {
-        let def = StructDef::new(
-            name,
-            fields,
-            to_doc_comments(object.title, object.description),
-        );
+        let def = StructDef::new(header, fields);
         DefinitionShape::Fixed(def.into())
     } else {
         let process = Struct {
-            struct_name: name.into(),
+            header,
             shapes: field_shapes,
         };
         process.into()

@@ -21,9 +21,7 @@ use to_struct::to_struct;
 
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
 use crate::conversions::{Result, ToRustType};
-use crate::targets::rust_type::{
-    DataType, EnumDef, EnumVariant, Modules, NewTypeDef, StructField, StructFieldName,
-};
+use crate::targets::rust_type::{DataType, EnumDef, EnumVariant, Modules, NewTypeDef, StructField, StructFieldName, TypeHeader};
 use openapi_types::v3_0::{
     AllOf, ComponentsObject, Document, EnumValues, OpenApiDataType, ReferenceObject, SchemaCase,
     SchemaFieldName, SchemaObject, SchemasObject,
@@ -135,7 +133,7 @@ enum PostProcess {
         shapes: Vec<AllOfItemShape>,
     },
     Struct {
-        struct_name: String,
+        header: TypeHeader,
         shapes: Vec<FieldShape>,
     },
     NewType {

@@ -32,16 +32,8 @@ impl RefResolver {
 
     fn shape_ref(&self, process: &mut PostProcess) -> Result<DefinitionShape> {
         match process {
-            PostProcess::Struct {
-                struct_name,
-                shapes,
-            } => {
-                let doc_comments = Some("TODO: extract doc_comments".to_string());
-                let def = StructDef::new(
-                    struct_name.clone(),
-                    self.shapes_to_fields(shapes)?,
-                    doc_comments,
-                );
+            PostProcess::Struct { header, shapes } => {
+                let def = StructDef::new(header.clone(), self.shapes_to_fields(shapes)?);
                 Ok(Fixed(def.into()))
             }
             PostProcess::NewType {
