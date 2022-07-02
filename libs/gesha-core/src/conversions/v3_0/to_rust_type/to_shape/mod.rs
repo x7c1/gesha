@@ -51,7 +51,7 @@ impl Shaper {
     }
 
     fn for_all_of(self) -> Result<DefinitionShape> {
-        let cases = self.object.all_of.unwrap();
+        let cases = self.object.all_of.expect("all_of must be Some.");
         let shapes = cases
             .into_iter()
             .map(to_all_of_item_shape)
@@ -77,7 +77,7 @@ impl Shaper {
     }
 
     fn for_enum(self) -> Result<DefinitionShape> {
-        let values = self.object.enum_values.unwrap();
+        let values = self.object.enum_values.expect("enum_values must be Some.");
         let variants = values.into_iter().map(EnumVariant::new).collect();
         let def = EnumDef::new(self.name, variants);
         Ok(Fixed(def.into()))
