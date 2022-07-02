@@ -2,9 +2,12 @@ schemas:
   ReservedKeywords:
     type: object
     required:
+      - break
       - ref
       - type
     properties:
+      break:
+        type: string
       ref:
         type: string
       type:

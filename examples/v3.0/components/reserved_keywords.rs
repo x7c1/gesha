@@ -7,6 +7,8 @@ pub mod schemas {
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct ReservedKeywords {
+        #[serde(rename = "break")]
+        pub break_: String,
         #[serde(rename = "ref")]
         pub ref_: String,
         #[serde(rename = "type")]
