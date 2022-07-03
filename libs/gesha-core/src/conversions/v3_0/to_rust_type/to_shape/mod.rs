@@ -85,8 +85,8 @@ impl Shaper {
         TypeHeader::new(
             self.name.clone(),
             to_doc_comments(
-                self.object.title.as_ref().map(|x| x.as_str()),
-                self.object.description.as_ref().map(|x| x.as_str()),
+                self.object.title.as_deref(),
+                self.object.description.as_deref(),
             ),
         )
     }
@@ -112,8 +112,5 @@ fn to_doc_comments(title: Option<&str>, description: Option<&str>) -> DocComment
         (t, d) if t == d => t,
         (Some(t), Some(d)) => Some(format!("{t}\n\n{d}")),
     };
-    DocComments::new(maybe.map(|x| {
-        let text = x.to_string();
-        format!("/**\n{text}\n*/\n")
-    }))
+    DocComments::new(maybe.map(|text| format!("/**\n{text}\n*/\n")))
 }
