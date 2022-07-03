@@ -110,7 +110,7 @@ fn to_doc_comments(title: Option<&str>, description: Option<&str>) -> DocComment
         (t, None) => t,
         (None, d) => d,
         (t, d) if t == d => t,
-        (Some(t), Some(d)) => Some(format!("{t}\n\n{d}",)),
+        (Some(t), Some(d)) => Some(format!("{t}\n\n{d}")),
     };
     DocComments::new(maybe.map(|x| {
         let text = x.to_string();
