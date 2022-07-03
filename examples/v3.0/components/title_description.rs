@@ -33,10 +33,28 @@ pub mod schemas {
 
     /**
     Pet
+
+    A pet for sale in the pet store
+    */
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct WithWhiteSpaces {
+        pub foo: Option<i64>,
+    }
+
+    /**
+    Pet
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct SameText {
         pub bar: Option<i64>,
+    }
+
+    /**
+    The quick brown fox jumps over the lazy dog.
+    */
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct HasLineBreak {
+        pub foo: Option<i64>,
     }
 
     /**
