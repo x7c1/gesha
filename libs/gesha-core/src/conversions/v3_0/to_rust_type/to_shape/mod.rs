@@ -4,8 +4,6 @@ use to_field_shapes::to_field_shapes;
 mod to_type_shape;
 use to_type_shape::to_type_shape;
 
-mod for_struct;
-
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::{Fixed, InProcess};
 use crate::conversions::v3_0::to_rust_type::{
     AllOfItemShape, DefinitionShape, PostProcess, TypeShape,
@@ -48,6 +46,14 @@ impl Shaper {
             // define it as 'object' if 'type' is not specified.
             None => self.for_struct(),
         }
+    }
+
+    fn for_struct(self) -> Result<DefinitionShape> {
+        let process = PostProcess::Struct {
+            header: self.create_type_header(),
+            shapes: to_field_shapes(self.object.properties, self.object.required)?,
+        };
+        Ok(process.into())
     }
 
     fn for_all_of(self) -> Result<DefinitionShape> {
