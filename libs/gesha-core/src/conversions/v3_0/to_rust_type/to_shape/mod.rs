@@ -4,7 +4,7 @@ use to_field_shapes::to_field_shapes;
 mod to_type_shape;
 use to_type_shape::to_type_shape;
 
-use crate::conversions::v3_0::to_rust_type::DefinitionShape::{Fixed, InProcess};
+use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
 use crate::conversions::v3_0::to_rust_type::{
     AllOfItemShape, DefinitionShape, PostProcess, TypeShape,
 };
@@ -75,7 +75,10 @@ impl Shaper {
                 let def = NewTypeDef::new(header, data_type);
                 Ok(Fixed(def.into()))
             }
-            type_shape => Ok(InProcess(PostProcess::NewType { header, type_shape })),
+            type_shape => {
+                let process = PostProcess::NewType { header, type_shape };
+                Ok(process.into())
+            }
         }
     }
 

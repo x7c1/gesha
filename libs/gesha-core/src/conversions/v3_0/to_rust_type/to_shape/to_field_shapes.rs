@@ -8,9 +8,8 @@ pub(super) fn to_field_shapes(
     properties: Option<SchemaProperties>,
     required: Option<RequiredSchemaFields>,
 ) -> Result<Vec<FieldShape>> {
-    properties
-        .map(ToFieldShapes::by(required))
-        .unwrap_or(Ok(vec![]))
+    let to_field_shapes = |props| ToFieldShapes { required }.apply(props);
+    properties.map(to_field_shapes).unwrap_or(Ok(vec![]))
 }
 
 /// SchemaProperties -> Vec<FieldShape>
@@ -19,12 +18,6 @@ struct ToFieldShapes {
 }
 
 impl ToFieldShapes {
-    fn by(
-        required: Option<RequiredSchemaFields>,
-    ) -> impl FnOnce(SchemaProperties) -> Result<Vec<FieldShape>> {
-        |props| ToFieldShapes { required }.apply(props)
-    }
-
     fn apply(self, props: SchemaProperties) -> Result<Vec<FieldShape>> {
         props
             .into_iter()
