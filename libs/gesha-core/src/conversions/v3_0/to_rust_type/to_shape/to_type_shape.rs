@@ -24,6 +24,7 @@ pub(super) fn from_object(object: SchemaObject) -> Result<TypeShape> {
             let to_type = TypeFactory {
                 format: object.format,
                 items: object.items,
+                nullable: object.nullable,
             };
             to_type.apply(data_type)
         }
@@ -35,6 +36,9 @@ pub(super) fn from_object(object: SchemaObject) -> Result<TypeShape> {
 struct TypeFactory {
     format: Option<FormatModifier>,
     items: Option<ArrayItems>,
+    // TODO:
+    #[allow(dead_code)]
+    nullable: Option<bool>,
 }
 
 impl TypeFactory {

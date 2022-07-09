@@ -4,6 +4,7 @@ use crate::yaml::{Error, Result, YamlArray, YamlMap};
 #[derive(Debug)]
 pub enum YamlValue {
     Array(YamlArray),
+    Boolean(bool),
     String(String),
     Map(YamlMap),
 }
@@ -16,6 +17,7 @@ impl TryFrom<yaml_rust::Yaml> for YamlValue {
             yaml_rust::Yaml::Array(x) => Ok(YamlValue::Array(YamlArray(x))),
             yaml_rust::Yaml::String(x) => Ok(YamlValue::String(x)),
             yaml_rust::Yaml::Hash(x) => Ok(YamlValue::Map(YamlMap(x))),
+            yaml_rust::Yaml::Boolean(x) => Ok(YamlValue::Boolean(x)),
             unknown => {
                 unimplemented!("unsupported type found: {unknown:#?}")
             }
@@ -40,6 +42,17 @@ impl TryFrom<YamlValue> for String {
     fn try_from(value: YamlValue) -> Result<Self> {
         match value {
             YamlValue::String(x) => Ok(x),
+            _ => Err(TypeMismatch),
+        }
+    }
+}
+
+impl TryFrom<YamlValue> for bool {
+    type Error = Error;
+
+    fn try_from(value: YamlValue) -> Result<Self> {
+        match value {
+            YamlValue::Boolean(x) => Ok(x),
             _ => Err(TypeMismatch),
         }
     }
