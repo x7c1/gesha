@@ -73,6 +73,7 @@ enum AllOfItemShape {
 #[derive(Clone, Debug)]
 pub enum TypeShape {
     Fixed(DataType),
+    Option(Box<TypeShape>),
     Vec(Box<TypeShape>),
     Ref(ReferenceObject),
 }
@@ -83,6 +84,5 @@ enum FieldShape {
     InProcess {
         name: StructFieldName,
         type_shape: TypeShape,
-        is_optional: bool,
     },
 }

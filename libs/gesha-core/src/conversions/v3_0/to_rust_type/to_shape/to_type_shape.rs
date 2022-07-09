@@ -7,11 +7,15 @@ use openapi_types::v3_0::SchemaCase::{Reference, Schema};
 use openapi_types::v3_0::{ArrayItems, FormatModifier, OpenApiDataType, SchemaObject};
 use TypeShape::Fixed;
 
-pub(super) fn to_type_shape(schema_case: SchemaCase) -> Result<TypeShape> {
-    match schema_case {
+pub(super) fn to_type_shape(schema_case: SchemaCase, is_required: bool) -> Result<TypeShape> {
+    let mut shape = match schema_case {
         Schema(object) => from_object(*object),
         Reference(object) => Ok(TypeShape::Ref(object)),
+    }?;
+    if !is_required {
+        shape = TypeShape::Option(Box::new(shape));
     }
+    Ok(shape)
 }
 
 pub(super) fn from_object(object: SchemaObject) -> Result<TypeShape> {
@@ -63,7 +67,11 @@ impl TypeFactory {
             .items
             .unwrap_or_else(|| unimplemented!("array must have items"));
 
-        let type_shape = match to_type_shape(items.into())? {
+        let items_shape = match SchemaCase::from(items) {
+            Schema(object) => from_object(*object),
+            Reference(object) => Ok(TypeShape::Ref(object)),
+        }?;
+        let type_shape = match items_shape {
             Fixed(data_type) => Fixed(DataType::Vec(Box::new(data_type))),
             shape => TypeShape::Vec(Box::new(shape)),
         };

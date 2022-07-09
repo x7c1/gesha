@@ -27,7 +27,7 @@ impl Module {
                 UseStatement::new("serde::Deserialize"),
                 UseStatement::new("serde::Serialize"),
             ],
-            _hide_default_constructor: false,
+            _hide_default_constructor: true,
         }
     }
 }

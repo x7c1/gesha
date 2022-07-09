@@ -58,26 +58,17 @@ impl RefResolver {
     fn field_shape_to_struct_field(&self, shape: &FieldShape) -> StructField {
         match shape {
             FieldShape::Fixed(x) => x.clone(),
-            FieldShape::InProcess {
-                name,
-                type_shape,
-                is_optional,
-            } => {
-                let mut data_type = self.type_shape_to_data_type(type_shape);
-                if *is_optional {
-                    data_type = DataType::Option(Box::new(data_type));
-                }
-                StructField {
-                    name: name.clone(),
-                    data_type,
-                }
-            }
+            FieldShape::InProcess { name, type_shape } => StructField {
+                name: name.clone(),
+                data_type: self.type_shape_to_data_type(type_shape),
+            },
         }
     }
 
     fn type_shape_to_data_type(&self, shape: &TypeShape) -> DataType {
         match shape {
             TypeShape::Fixed(x) => x.clone(),
+            TypeShape::Option(x) => DataType::Option(Box::new(self.type_shape_to_data_type(&*x))),
             TypeShape::Vec(x) => DataType::Vec(Box::new(self.type_shape_to_data_type(&*x))),
             TypeShape::Ref(x) => {
                 let type_name = match String::from(x.clone()) {
