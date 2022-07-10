@@ -92,13 +92,7 @@ impl TypeFactory {
             .items
             .unwrap_or_else(|| unimplemented!("array must have items"));
 
-        let items_shape = match SchemaCase::from(items) {
-            Schema(object) => from_object(*object, /* is_required */ true),
-            Reference(object) => Ok(TypeShape::Ref {
-                object,
-                is_required: true,
-            }),
-        }?;
+        let items_shape = to_type_shape(items.into(), /* is_required */ true)?;
         let type_shape = TypeShape::Vec {
             type_shape: Box::new(items_shape),
             is_required: self.is_required,

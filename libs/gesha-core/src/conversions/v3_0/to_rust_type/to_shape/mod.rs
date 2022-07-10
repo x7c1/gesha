@@ -5,11 +5,9 @@ mod to_type_shape;
 use to_type_shape::to_type_shape;
 
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
-use crate::conversions::v3_0::to_rust_type::{
-    AllOfItemShape, DefinitionShape, PostProcess, TypeShape,
-};
+use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, DefinitionShape, PostProcess};
 use crate::conversions::Result;
-use crate::targets::rust_type::{DocComments, EnumDef, EnumVariant, NewTypeDef, TypeHeader};
+use crate::targets::rust_type::{DocComments, EnumDef, EnumVariant, TypeHeader};
 use openapi_types::v3_0::{SchemaCase, SchemaFieldName, SchemaObject};
 
 pub(super) fn to_shape(kv: (SchemaFieldName, SchemaCase)) -> Result<DefinitionShape> {
@@ -69,17 +67,11 @@ impl Shaper {
     }
 
     fn for_newtype(self) -> Result<DefinitionShape> {
-        let header = self.create_type_header();
-        match to_type_shape::from_object(self.object, /* is_required */ true)? {
-            TypeShape::Fixed { data_type, .. } => {
-                let def = NewTypeDef::new(header, data_type);
-                Ok(Fixed(def.into()))
-            }
-            type_shape => {
-                let process = PostProcess::NewType { header, type_shape };
-                Ok(process.into())
-            }
-        }
+        let process = PostProcess::NewType {
+            header: self.create_type_header(),
+            type_shape: to_type_shape::from_object(self.object, /* is_required */ true)?,
+        };
+        Ok(process.into())
     }
 
     fn for_enum(self) -> Result<DefinitionShape> {
