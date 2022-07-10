@@ -12,24 +12,32 @@ pub struct ComponentsShapes {
 
 impl ComponentsShapes {
     pub fn into_modules(self) -> Result<Modules> {
-        let schemas_definitions = self
-            .schemas
-            .into_iter()
-            .map(to_definition)
-            .collect::<Result<Vec<Definition>>>()?;
-
-        let schemas = Module::new(ModuleName::new("schemas"), schemas_definitions);
-        let mut modules = vec![schemas];
-
-        let is_patch_used = modules.iter().any(|x| x.is_patch_used);
-        if is_patch_used {
-            modules.push(Module::init(
-                ModuleName::new("core"),
-                vec![Definition::generate_patch()],
-            ));
-        }
-        Ok(Modules::new(modules))
+        let modules = setup_modules(vec![create_module("schemas", self.schemas)?]);
+        Ok(modules)
     }
+}
+
+fn create_module<A: Into<String>>(name: A, shapes: Vec<DefinitionShape>) -> Result<Module> {
+    let definitions = shapes
+        .into_iter()
+        .map(to_definition)
+        .collect::<Result<Vec<Definition>>>()?;
+
+    let module = Module::new(ModuleName::new(name), definitions);
+    Ok(module)
+}
+
+fn setup_modules(modules: Vec<Module>) -> Modules {
+    let mut modules = Modules::setup(modules);
+    let mut core_defs = vec![];
+
+    if modules.is_patch_used() {
+        core_defs.push(Definition::generate_patch());
+    }
+    if !core_defs.is_empty() {
+        modules.push(Module::init(ModuleName::new("core"), core_defs))
+    }
+    modules
 }
 
 fn to_definition(shape: DefinitionShape) -> Result<Definition> {
