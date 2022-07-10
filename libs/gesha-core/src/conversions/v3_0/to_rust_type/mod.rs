@@ -75,10 +75,13 @@ pub enum TypeShape {
     Fixed {
         data_type: DataType,
         is_required: bool,
+        is_nullable: bool,
     },
     Vec {
         type_shape: Box<TypeShape>,
         is_required: bool,
+        // TODO:
+        // is_nullable: bool,
     },
     Ref {
         object: ReferenceObject,

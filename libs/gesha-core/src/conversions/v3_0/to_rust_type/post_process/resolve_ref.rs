@@ -67,6 +67,7 @@ impl RefResolver {
 
     fn type_shape_to_data_type(&self, shape: &TypeShape) -> DataType {
         let is_required = shape.is_required();
+        let is_nullable = self.is_nullable(shape);
         let mut data_type = match shape {
             TypeShape::Fixed { data_type, .. } => data_type.clone(),
             TypeShape::Vec { type_shape, .. } => {
@@ -80,10 +81,31 @@ impl RefResolver {
                 DataType::Custom(type_name)
             }
         };
-        // TODO: assign DataType::Patch if !is_required && shape.is_nullable
-        if !is_required {
-            data_type = DataType::Option(Box::new(data_type));
+        match (is_required, is_nullable) {
+            (true, true) | (false, false) => {
+                data_type = DataType::Option(Box::new(data_type));
+            }
+            (false, true) => {
+                data_type = DataType::Patch(Box::new(data_type));
+            }
+            (true, false) => {
+                // nop
+            }
         }
         data_type
+    }
+
+    fn is_nullable(&self, shape: &TypeShape) -> bool {
+        match shape {
+            TypeShape::Fixed { is_nullable, .. } => *is_nullable,
+            TypeShape::Vec { .. } => {
+                // TODO:
+                false
+            }
+            TypeShape::Ref { .. } => {
+                // TODO:
+                false
+            }
+        }
     }
 }

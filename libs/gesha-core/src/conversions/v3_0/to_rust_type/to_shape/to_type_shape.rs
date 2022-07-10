@@ -50,31 +50,38 @@ impl TypeFactory {
         use OpenApiDataType as ot;
 
         let is_required = self.is_required;
+        let is_nullable = self.nullable.unwrap_or(false);
         match (&data_type, &self.format) {
             (ot::Array, _) => self.items_to_shape(),
             (ot::Boolean, _) => Ok(Fixed {
                 data_type: tp::Bool,
                 is_required,
+                is_nullable,
             }),
             (ot::Integer, Some(fm::Int32)) => Ok(Fixed {
                 data_type: tp::Int32,
                 is_required,
+                is_nullable,
             }),
             (ot::Integer, Some(fm::Int64) | None) => Ok(Fixed {
                 data_type: tp::Int64,
                 is_required,
+                is_nullable,
             }),
             (ot::Number, Some(fm::Float)) => Ok(Fixed {
                 data_type: tp::Float32,
                 is_required,
+                is_nullable,
             }),
             (ot::Number, Some(fm::Double) | None) => Ok(Fixed {
                 data_type: tp::Float64,
                 is_required,
+                is_nullable,
             }),
             (ot::String, _) => Ok(Fixed {
                 data_type: tp::String,
                 is_required,
+                is_nullable,
             }),
             (ot::Object, _) => unimplemented! {
                 "inline object definition not implemented: {:?}",

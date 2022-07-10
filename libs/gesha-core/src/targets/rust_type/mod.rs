@@ -214,7 +214,7 @@ impl From<DataType> for String {
             DataType::Float32 => "f32".to_string(),
             DataType::Float64 => "f64".to_string(),
             DataType::Option(x) => format!("Option<{}>", String::from(*x)),
-            DataType::Patch(x) => format!("Patch<{}>", String::from(*x)),
+            DataType::Patch(x) => format!("super::core::Patch<{}>", String::from(*x)),
             DataType::String => "String".to_string(),
             DataType::Vec(x) => format!("Vec<{}>", String::from(*x)),
             DataType::Custom(x) => x,
