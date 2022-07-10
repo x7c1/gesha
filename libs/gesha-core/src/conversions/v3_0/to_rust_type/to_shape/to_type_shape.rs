@@ -13,7 +13,7 @@ pub(super) fn to_type_shape(schema_case: SchemaCase, is_required: bool) -> Resul
         Reference(object) => Ok(TypeShape::Ref(object)),
     }?;
     if !is_required {
-        shape = TypeShape::Option(Box::new(shape));
+        shape = TypeShape::Maybe(Box::new(shape));
     }
     Ok(shape)
 }

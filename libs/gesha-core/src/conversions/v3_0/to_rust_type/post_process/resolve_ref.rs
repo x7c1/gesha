@@ -68,7 +68,11 @@ impl RefResolver {
     fn type_shape_to_data_type(&self, shape: &TypeShape) -> DataType {
         match shape {
             TypeShape::Fixed(x) => x.clone(),
-            TypeShape::Option(x) => DataType::Option(Box::new(self.type_shape_to_data_type(&*x))),
+            TypeShape::Maybe(x) => {
+                // TODO:
+                // return DataType::Patch if x is nullable
+                DataType::Option(Box::new(self.type_shape_to_data_type(&*x)))
+            }
             TypeShape::Vec(x) => DataType::Vec(Box::new(self.type_shape_to_data_type(&*x))),
             TypeShape::Ref(x) => {
                 let type_name = match String::from(x.clone()) {

@@ -73,7 +73,7 @@ enum AllOfItemShape {
 #[derive(Clone, Debug)]
 pub enum TypeShape {
     Fixed(DataType),
-    Option(Box<TypeShape>),
+    Maybe(Box<TypeShape>),
     Vec(Box<TypeShape>),
     Ref(ReferenceObject),
 }
