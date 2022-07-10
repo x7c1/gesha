@@ -24,3 +24,7 @@ schemas:
           type: array
           items:
             type: integer
+      not_required:
+        type: array
+        items:
+          type: integer
