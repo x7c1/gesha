@@ -1,0 +1,7 @@
+schemas:
+  Sample1:
+    type: object
+    properties:
+      x1:
+        type: string
+        nullable: true

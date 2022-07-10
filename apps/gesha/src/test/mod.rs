@@ -40,5 +40,6 @@ fn new_test_cases() -> Vec<SupportedTestCase> {
         "all_of_ref.yaml",
         "camel_case_fields.yaml",
         "title_description.yaml",
+        "nullable_field.yaml",
     ])
 }
