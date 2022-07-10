@@ -15,11 +15,24 @@ pub struct Module {
     pub name: ModuleName,
     pub definitions: Vec<Definition>,
     pub use_statements: Vec<UseStatement>,
+    pub is_patch_used: bool,
     _hide_default_constructor: bool,
 }
 
 impl Module {
     pub fn new(name: ModuleName, definitions: Vec<Definition>) -> Self {
+        let mut module = Self::init(name, definitions);
+        let is_patch_used = module.definitions.iter().any(|x| x.is_patch_used());
+        if is_patch_used {
+            module.is_patch_used = true;
+            module
+                .use_statements
+                .push(UseStatement::new("super::core::Patch"));
+        }
+        module
+    }
+
+    pub fn init(name: ModuleName, definitions: Vec<Definition>) -> Self {
         Self {
             name,
             definitions,
@@ -27,6 +40,7 @@ impl Module {
                 UseStatement::new("serde::Deserialize"),
                 UseStatement::new("serde::Serialize"),
             ],
+            is_patch_used: false,
             _hide_default_constructor: true,
         }
     }
@@ -52,6 +66,35 @@ pub enum Definition {
     StructDef(StructDef),
     NewTypeDef(NewTypeDef),
     EnumDef(EnumDef),
+    Embedded(PresetType),
+}
+
+impl Definition {
+    pub fn is_patch_used(&self) -> bool {
+        match self {
+            Definition::StructDef(x) => x.fields.iter().any(|x| x.data_type.is_patch_used()),
+            Definition::NewTypeDef(x) => x.data_type.is_patch_used(),
+            Definition::EnumDef(_) => false,
+            Definition::Embedded(PresetType::Patch(_)) => true,
+        }
+    }
+    pub fn generate_patch() -> Definition {
+        let code = include_str!("patch.rs.tpl");
+        Definition::Embedded(PresetType::Patch(code.to_string()))
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum PresetType {
+    Patch(String),
+}
+
+impl Display for PresetType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            PresetType::Patch(x) => Display::fmt(x, f),
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -198,6 +241,23 @@ pub enum DataType {
     Custom(String),
 }
 
+impl DataType {
+    pub fn is_patch_used(&self) -> bool {
+        match self {
+            DataType::Option(x) => x.is_patch_used(),
+            DataType::Vec(x) => x.is_patch_used(),
+            DataType::Patch(_) => true,
+            DataType::Bool => false,
+            DataType::Int32 => false,
+            DataType::Int64 => false,
+            DataType::Float32 => false,
+            DataType::Float64 => false,
+            DataType::String => false,
+            DataType::Custom(_) => false,
+        }
+    }
+}
+
 impl Display for DataType {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let x = String::from(self.clone());
@@ -214,7 +274,7 @@ impl From<DataType> for String {
             DataType::Float32 => "f32".to_string(),
             DataType::Float64 => "f64".to_string(),
             DataType::Option(x) => format!("Option<{}>", String::from(*x)),
-            DataType::Patch(x) => format!("super::core::Patch<{}>", String::from(*x)),
+            DataType::Patch(x) => format!("Patch<{}>", String::from(*x)),
             DataType::String => "String".to_string(),
             DataType::Vec(x) => format!("Vec<{}>", String::from(*x)),
             DataType::Custom(x) => x,

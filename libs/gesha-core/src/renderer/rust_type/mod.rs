@@ -3,7 +3,7 @@ use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
     DataType, Definition, DeriveAttribute, EnumDef, EnumVariant, Module, Modules, NewTypeDef,
-    StructDef, StructField, UseStatement,
+    PresetType, StructDef, StructField, UseStatement,
 };
 use std::io::Write;
 
@@ -18,6 +18,7 @@ fn render_module<W: Write>(mut write: W, module: Module) -> Result<()> {
     render! { write =>
         echo > "pub mod {name}", name = module.name;
         "{}" > render_mod_body => module;
+        echo > "\n";
     };
     Ok(())
 }
@@ -47,6 +48,7 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
         Definition::StructDef(x) => render_struct(write, x)?,
         Definition::NewTypeDef(x) => render_newtype(write, x)?,
         Definition::EnumDef(x) => render_enum(write, x)?,
+        Definition::Embedded(x) => render_preset_type(write, x)?,
     };
     Ok(())
 }
@@ -144,6 +146,13 @@ fn render_enum_variants<W: Write>(mut write: W, variants: Vec<EnumVariant>) -> R
         render! { write =>
             echo > "{name},\n", name = variant.to_upper_camel();
         }
+    }
+    Ok(())
+}
+
+fn render_preset_type<W: Write>(mut write: W, x: PresetType) -> Result<()> {
+    render! { write =>
+        echo > "{x}";
     }
     Ok(())
 }

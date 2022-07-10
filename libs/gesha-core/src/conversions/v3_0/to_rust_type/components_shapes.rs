@@ -19,7 +19,16 @@ impl ComponentsShapes {
             .collect::<Result<Vec<Definition>>>()?;
 
         let schemas = Module::new(ModuleName::new("schemas"), schemas_definitions);
-        Ok(Modules::new(vec![schemas]))
+        let mut modules = vec![schemas];
+
+        let is_patch_used = modules.iter().any(|x| x.is_patch_used);
+        if is_patch_used {
+            modules.push(Module::init(
+                ModuleName::new("core"),
+                vec![Definition::generate_patch()],
+            ));
+        }
+        Ok(Modules::new(modules))
     }
 }
 
