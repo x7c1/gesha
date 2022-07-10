@@ -66,21 +66,24 @@ impl RefResolver {
     }
 
     fn type_shape_to_data_type(&self, shape: &TypeShape) -> DataType {
-        match shape {
-            TypeShape::Fixed(x) => x.clone(),
-            TypeShape::Maybe(x) => {
-                // TODO:
-                // return DataType::Patch if x is nullable
-                DataType::Option(Box::new(self.type_shape_to_data_type(&*x)))
+        let is_required = shape.is_required();
+        let mut data_type = match shape {
+            TypeShape::Fixed { data_type, .. } => data_type.clone(),
+            TypeShape::Vec { type_shape, .. } => {
+                DataType::Vec(Box::new(self.type_shape_to_data_type(&*type_shape)))
             }
-            TypeShape::Vec(x) => DataType::Vec(Box::new(self.type_shape_to_data_type(&*x))),
-            TypeShape::Ref(x) => {
-                let type_name = match String::from(x.clone()) {
+            TypeShape::Ref { object, .. } => {
+                let type_name = match String::from(object.clone()) {
                     x if x.starts_with(self.prefix) => x.replace(self.prefix, ""),
                     x => unimplemented!("not implemented: {x}"),
                 };
                 DataType::Custom(type_name)
             }
+        };
+        // TODO: assign DataType::Patch if !is_required && shape.is_nullable
+        if !is_required {
+            data_type = DataType::Option(Box::new(data_type));
         }
+        data_type
     }
 }

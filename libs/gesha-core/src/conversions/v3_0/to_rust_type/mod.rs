@@ -72,10 +72,28 @@ enum AllOfItemShape {
 
 #[derive(Clone, Debug)]
 pub enum TypeShape {
-    Fixed(DataType),
-    Maybe(Box<TypeShape>),
-    Vec(Box<TypeShape>),
-    Ref(ReferenceObject),
+    Fixed {
+        data_type: DataType,
+        is_required: bool,
+    },
+    Vec {
+        type_shape: Box<TypeShape>,
+        is_required: bool,
+    },
+    Ref {
+        object: ReferenceObject,
+        is_required: bool,
+    },
+}
+
+impl TypeShape {
+    pub fn is_required(&self) -> bool {
+        match self {
+            TypeShape::Fixed { is_required, .. } => *is_required,
+            TypeShape::Vec { is_required, .. } => *is_required,
+            TypeShape::Ref { is_required, .. } => *is_required,
+        }
+    }
 }
 
 #[derive(Clone, Debug)]

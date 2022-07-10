@@ -70,8 +70,8 @@ impl Shaper {
 
     fn for_newtype(self) -> Result<DefinitionShape> {
         let header = self.create_type_header();
-        match to_type_shape::from_object(self.object)? {
-            TypeShape::Fixed(data_type) => {
+        match to_type_shape::from_object(self.object, /* is_required */ true)? {
+            TypeShape::Fixed { data_type, .. } => {
                 let def = NewTypeDef::new(header, data_type);
                 Ok(Fixed(def.into()))
             }

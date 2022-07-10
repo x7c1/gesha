@@ -8,23 +8,24 @@ use openapi_types::v3_0::{ArrayItems, FormatModifier, OpenApiDataType, SchemaObj
 use TypeShape::Fixed;
 
 pub(super) fn to_type_shape(schema_case: SchemaCase, is_required: bool) -> Result<TypeShape> {
-    let mut shape = match schema_case {
-        Schema(object) => from_object(*object),
-        Reference(object) => Ok(TypeShape::Ref(object)),
-    }?;
-    if !is_required {
-        shape = TypeShape::Maybe(Box::new(shape));
-    }
+    let shape = match schema_case {
+        Schema(object) => from_object(*object, is_required)?,
+        Reference(object) => TypeShape::Ref {
+            object,
+            is_required,
+        },
+    };
     Ok(shape)
 }
 
-pub(super) fn from_object(object: SchemaObject) -> Result<TypeShape> {
+pub(super) fn from_object(object: SchemaObject, is_required: bool) -> Result<TypeShape> {
     match object.data_type {
         Some(data_type) => {
             let to_type = TypeFactory {
                 format: object.format,
                 items: object.items,
                 nullable: object.nullable,
+                is_required,
             };
             to_type.apply(data_type)
         }
@@ -39,6 +40,7 @@ struct TypeFactory {
     // TODO:
     #[allow(dead_code)]
     nullable: Option<bool>,
+    is_required: bool,
 }
 
 impl TypeFactory {
@@ -47,14 +49,33 @@ impl TypeFactory {
         use FormatModifier as fm;
         use OpenApiDataType as ot;
 
+        let is_required = self.is_required;
         match (&data_type, &self.format) {
             (ot::Array, _) => self.items_to_shape(),
-            (ot::Boolean, _) => Ok(Fixed(tp::Bool)),
-            (ot::Integer, Some(fm::Int32)) => Ok(Fixed(tp::Int32)),
-            (ot::Integer, Some(fm::Int64) | None) => Ok(Fixed(tp::Int64)),
-            (ot::Number, Some(fm::Float)) => Ok(Fixed(tp::Float32)),
-            (ot::Number, Some(fm::Double) | None) => Ok(Fixed(tp::Float64)),
-            (ot::String, _) => Ok(Fixed(tp::String)),
+            (ot::Boolean, _) => Ok(Fixed {
+                data_type: tp::Bool,
+                is_required,
+            }),
+            (ot::Integer, Some(fm::Int32)) => Ok(Fixed {
+                data_type: tp::Int32,
+                is_required,
+            }),
+            (ot::Integer, Some(fm::Int64) | None) => Ok(Fixed {
+                data_type: tp::Int64,
+                is_required,
+            }),
+            (ot::Number, Some(fm::Float)) => Ok(Fixed {
+                data_type: tp::Float32,
+                is_required,
+            }),
+            (ot::Number, Some(fm::Double) | None) => Ok(Fixed {
+                data_type: tp::Float64,
+                is_required,
+            }),
+            (ot::String, _) => Ok(Fixed {
+                data_type: tp::String,
+                is_required,
+            }),
             (ot::Object, _) => unimplemented! {
                 "inline object definition not implemented: {:?}",
                 data_type
@@ -72,12 +93,15 @@ impl TypeFactory {
             .unwrap_or_else(|| unimplemented!("array must have items"));
 
         let items_shape = match SchemaCase::from(items) {
-            Schema(object) => from_object(*object),
-            Reference(object) => Ok(TypeShape::Ref(object)),
+            Schema(object) => from_object(*object, /* is_required */ true),
+            Reference(object) => Ok(TypeShape::Ref {
+                object,
+                is_required: true,
+            }),
         }?;
-        let type_shape = match items_shape {
-            Fixed(data_type) => Fixed(DataType::Vec(Box::new(data_type))),
-            shape => TypeShape::Vec(Box::new(shape)),
+        let type_shape = TypeShape::Vec {
+            type_shape: Box::new(items_shape),
+            is_required: self.is_required,
         };
         Ok(type_shape)
     }
