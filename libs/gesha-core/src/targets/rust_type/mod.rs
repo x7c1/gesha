@@ -53,7 +53,7 @@ pub enum Definition {
     StructDef(StructDef),
     NewTypeDef(NewTypeDef),
     EnumDef(EnumDef),
-    Embedded(PresetType),
+    PresetDef(PresetDef),
 }
 
 impl Definition {
@@ -65,26 +65,34 @@ impl Definition {
             Definition::StructDef(x) => x.fields.iter().any(|x| f(&x.data_type)),
             Definition::NewTypeDef(x) => f(&x.data_type),
             Definition::EnumDef(_) => false,
-            Definition::Embedded(PresetType::Patch(_)) => false,
+            Definition::PresetDef(_) => false,
         }
-    }
-
-    pub fn patch() -> Definition {
-        let code = include_str!("patch.rs.tpl");
-        Definition::Embedded(PresetType::Patch(code.to_string()))
     }
 }
 
 #[derive(Clone, Debug)]
-pub enum PresetType {
+pub enum PresetDef {
     Patch(String),
 }
 
-impl Display for PresetType {
+impl PresetDef {
+    pub fn patch() -> Self {
+        let code = include_str!("patch.rs.tpl");
+        Self::Patch(code.to_string())
+    }
+}
+
+impl Display for PresetDef {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            PresetType::Patch(x) => Display::fmt(x, f),
+            PresetDef::Patch(x) => Display::fmt(x, f),
         }
+    }
+}
+
+impl From<PresetDef> for Definition {
+    fn from(this: PresetDef) -> Self {
+        Definition::PresetDef(this)
     }
 }
 

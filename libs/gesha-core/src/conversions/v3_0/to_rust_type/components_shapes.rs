@@ -2,7 +2,9 @@ use crate::conversions::v3_0::to_rust_type::DefinitionShape;
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::{Fixed, InProcess};
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
-use crate::targets::rust_type::{DataType, Definition, Module, ModuleName, Modules, UseStatement};
+use crate::targets::rust_type::{
+    DataType, Definition, Module, ModuleName, Modules, PresetDef, UseStatement,
+};
 use openapi_types::v3_0::ReferenceObject;
 
 #[derive(Clone, Debug)]
@@ -12,7 +14,7 @@ pub struct ComponentsShapes {
 
 impl ComponentsShapes {
     pub fn into_modules(self) -> Result<Modules> {
-        let modules = setup_modules(vec![create_module("schemas", self.schemas)?]);
+        let modules = create_modules(vec![create_module("schemas", self.schemas)?]);
         Ok(modules)
     }
 
@@ -36,7 +38,7 @@ fn create_module<A: Into<String>>(name: A, shapes: Vec<DefinitionShape>) -> Resu
     Ok(module)
 }
 
-fn setup_modules(modules: Vec<Module>) -> Modules {
+fn create_modules(modules: Vec<Module>) -> Modules {
     let mut modules = Modules::new(modules);
     if let Some(core) = create_core_module(&modules) {
         modules.push(core);
@@ -48,7 +50,7 @@ fn create_core_module(modules: &Modules) -> Option<Module> {
     let mut core_defs = vec![];
 
     if modules.is_using_type(is_patch) {
-        core_defs.push(Definition::patch());
+        core_defs.push(PresetDef::patch().into());
     }
 
     if core_defs.is_empty() {

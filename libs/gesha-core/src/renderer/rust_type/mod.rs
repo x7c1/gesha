@@ -3,7 +3,7 @@ use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
     DataType, Definition, DeriveAttribute, EnumDef, EnumVariant, Module, Modules, NewTypeDef,
-    PresetType, StructDef, StructField, UseStatement,
+    PresetDef, StructDef, StructField, UseStatement,
 };
 use std::io::Write;
 
@@ -48,7 +48,7 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
         Definition::StructDef(x) => render_struct(write, x)?,
         Definition::NewTypeDef(x) => render_newtype(write, x)?,
         Definition::EnumDef(x) => render_enum(write, x)?,
-        Definition::Embedded(x) => render_preset_type(write, x)?,
+        Definition::PresetDef(x) => render_preset(write, x)?,
     };
     Ok(())
 }
@@ -150,7 +150,7 @@ fn render_enum_variants<W: Write>(mut write: W, variants: Vec<EnumVariant>) -> R
     Ok(())
 }
 
-fn render_preset_type<W: Write>(mut write: W, x: PresetType) -> Result<()> {
+fn render_preset<W: Write>(mut write: W, x: PresetDef) -> Result<()> {
     render! { write =>
         echo > "{x}";
     }
