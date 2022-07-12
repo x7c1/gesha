@@ -15,32 +15,19 @@ pub struct Module {
     pub name: ModuleName,
     pub definitions: Vec<Definition>,
     pub use_statements: Vec<UseStatement>,
-    pub is_patch_used: bool,
     _hide_default_constructor: bool,
 }
 
 impl Module {
-    pub fn new(name: ModuleName, definitions: Vec<Definition>) -> Self {
-        let mut module = Self::init(name, definitions);
-        let is_patch_used = module.definitions.iter().any(|x| x.is_patch_used());
-        if is_patch_used {
-            module.is_patch_used = true;
-            module
-                .use_statements
-                .push(UseStatement::new("super::core::Patch"));
-        }
-        module
-    }
-
-    pub fn init(name: ModuleName, definitions: Vec<Definition>) -> Self {
+    pub fn new(
+        name: ModuleName,
+        definitions: Vec<Definition>,
+        use_statements: Vec<UseStatement>,
+    ) -> Self {
         Self {
             name,
             definitions,
-            use_statements: vec![
-                UseStatement::new("serde::Deserialize"),
-                UseStatement::new("serde::Serialize"),
-            ],
-            is_patch_used: false,
+            use_statements,
             _hide_default_constructor: true,
         }
     }
@@ -75,7 +62,7 @@ impl Definition {
             Definition::StructDef(x) => x.fields.iter().any(|x| x.data_type.is_patch_used()),
             Definition::NewTypeDef(x) => x.data_type.is_patch_used(),
             Definition::EnumDef(_) => false,
-            Definition::Embedded(PresetType::Patch(_)) => true,
+            Definition::Embedded(PresetType::Patch(_)) => false,
         }
     }
     pub fn generate_patch() -> Definition {

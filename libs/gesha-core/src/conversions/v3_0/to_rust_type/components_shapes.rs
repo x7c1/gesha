@@ -2,7 +2,7 @@ use crate::conversions::v3_0::to_rust_type::DefinitionShape;
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::{Fixed, InProcess};
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
-use crate::targets::rust_type::{Definition, Module, ModuleName, Modules};
+use crate::targets::rust_type::{Definition, Module, ModuleName, Modules, UseStatement};
 use openapi_types::v3_0::ReferenceObject;
 
 #[derive(Clone, Debug)]
@@ -15,6 +15,11 @@ impl ComponentsShapes {
         let modules = setup_modules(vec![create_module("schemas", self.schemas)?]);
         Ok(modules)
     }
+
+    pub(super) fn find_definition(&self, object: &ReferenceObject) -> Result<&DefinitionShape> {
+        // TODO: support other locations like 'components/responses' etc
+        find_shape("#/components/schemas/", &self.schemas, object).ok_or_else(|| unimplemented!())
+    }
 }
 
 fn create_module<A: Into<String>>(name: A, shapes: Vec<DefinitionShape>) -> Result<Module> {
@@ -23,7 +28,14 @@ fn create_module<A: Into<String>>(name: A, shapes: Vec<DefinitionShape>) -> Resu
         .map(to_definition)
         .collect::<Result<Vec<Definition>>>()?;
 
-    let module = Module::new(ModuleName::new(name), definitions);
+    let mut use_statements = vec![
+        UseStatement::new("serde::Deserialize"),
+        UseStatement::new("serde::Serialize"),
+    ];
+    if definitions.iter().any(|x| x.is_patch_used()) {
+        use_statements.push(UseStatement::new("super::core::Patch"));
+    }
+    let module = Module::new(ModuleName::new(name), definitions, use_statements);
     Ok(module)
 }
 
@@ -31,11 +43,18 @@ fn setup_modules(modules: Vec<Module>) -> Modules {
     let mut modules = Modules::setup(modules);
     let mut core_defs = vec![];
 
-    if modules.is_patch_used() {
+    if modules.any_def(|x| x.is_patch_used()) {
         core_defs.push(Definition::generate_patch());
     }
     if !core_defs.is_empty() {
-        modules.push(Module::init(ModuleName::new("core"), core_defs))
+        modules.push(Module::new(
+            ModuleName::new("core"),
+            core_defs,
+            vec![
+                UseStatement::new("serde::Deserialize"),
+                UseStatement::new("serde::Serialize"),
+            ],
+        ))
     }
     modules
 }
@@ -46,13 +65,6 @@ fn to_definition(shape: DefinitionShape) -> Result<Definition> {
         InProcess(process) => Err(PostProcessBroken {
             detail: format!("post-process has been left.\n{:#?}", process),
         }),
-    }
-}
-
-impl ComponentsShapes {
-    pub(super) fn find_definition(&self, object: &ReferenceObject) -> Result<&DefinitionShape> {
-        // TODO: support other locations like 'components/responses' etc
-        find_shape("#/components/schemas/", &self.schemas, object).ok_or_else(|| unimplemented!())
     }
 }
 

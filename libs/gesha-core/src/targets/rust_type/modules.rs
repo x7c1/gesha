@@ -17,9 +17,6 @@ impl Modules {
         })
     }
 
-    pub fn is_patch_used(&self) -> bool {
-        self.0.iter().any(|x| x.is_patch_used)
-    }
     pub fn push(&mut self, module: Module) {
         self.0.push(module)
     }
