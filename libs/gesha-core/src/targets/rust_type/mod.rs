@@ -57,15 +57,19 @@ pub enum Definition {
 }
 
 impl Definition {
-    pub fn is_patch_used(&self) -> bool {
+    pub fn any_type<F>(&self, f: F) -> bool
+    where
+        F: Fn(&DataType) -> bool,
+    {
         match self {
-            Definition::StructDef(x) => x.fields.iter().any(|x| x.data_type.is_patch_used()),
-            Definition::NewTypeDef(x) => x.data_type.is_patch_used(),
+            Definition::StructDef(x) => x.fields.iter().any(|x| f(&x.data_type)),
+            Definition::NewTypeDef(x) => f(&x.data_type),
             Definition::EnumDef(_) => false,
             Definition::Embedded(PresetType::Patch(_)) => false,
         }
     }
-    pub fn generate_patch() -> Definition {
+
+    pub fn patch() -> Definition {
         let code = include_str!("patch.rs.tpl");
         Definition::Embedded(PresetType::Patch(code.to_string()))
     }
@@ -226,23 +230,6 @@ pub enum DataType {
     String,
     Vec(Box<DataType>),
     Custom(String),
-}
-
-impl DataType {
-    pub fn is_patch_used(&self) -> bool {
-        match self {
-            DataType::Option(x) => x.is_patch_used(),
-            DataType::Vec(x) => x.is_patch_used(),
-            DataType::Patch(_) => true,
-            DataType::Bool => false,
-            DataType::Int32 => false,
-            DataType::Int64 => false,
-            DataType::Float32 => false,
-            DataType::Float64 => false,
-            DataType::String => false,
-            DataType::Custom(_) => false,
-        }
-    }
 }
 
 impl Display for DataType {

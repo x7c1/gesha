@@ -1,10 +1,17 @@
-use crate::targets::rust_type::{Definition, Module};
+use crate::targets::rust_type::{DataType, Definition, Module};
 use std::vec::IntoIter;
 
 #[derive(Clone, Debug)]
 pub struct Modules(Vec<Module>);
 
 impl Modules {
+    pub fn is_using_type<F>(&self, f: F) -> bool
+    where
+        F: Fn(&DataType) -> bool,
+    {
+        self.any_def(|x| x.any_type(|y| f(y)))
+    }
+
     pub fn any_def<F>(&self, f: F) -> bool
     where
         F: Fn(&Definition) -> bool,
@@ -27,7 +34,7 @@ impl Modules {
         Self(vec![])
     }
 
-    pub fn setup(module: Vec<Module>) -> Self {
+    pub fn new(module: Vec<Module>) -> Self {
         Self(module)
     }
 }

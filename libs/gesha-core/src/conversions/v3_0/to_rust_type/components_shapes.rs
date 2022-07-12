@@ -2,7 +2,7 @@ use crate::conversions::v3_0::to_rust_type::DefinitionShape;
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::{Fixed, InProcess};
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
-use crate::targets::rust_type::{Definition, Module, ModuleName, Modules, UseStatement};
+use crate::targets::rust_type::{DataType, Definition, Module, ModuleName, Modules, UseStatement};
 use openapi_types::v3_0::ReferenceObject;
 
 #[derive(Clone, Debug)]
@@ -32,7 +32,7 @@ fn create_module<A: Into<String>>(name: A, shapes: Vec<DefinitionShape>) -> Resu
         UseStatement::new("serde::Deserialize"),
         UseStatement::new("serde::Serialize"),
     ];
-    if definitions.iter().any(|x| x.is_patch_used()) {
+    if definitions.iter().any(|x| x.any_type(is_patch)) {
         use_statements.push(UseStatement::new("super::core::Patch"));
     }
     let module = Module::new(ModuleName::new(name), definitions, use_statements);
@@ -40,23 +40,50 @@ fn create_module<A: Into<String>>(name: A, shapes: Vec<DefinitionShape>) -> Resu
 }
 
 fn setup_modules(modules: Vec<Module>) -> Modules {
-    let mut modules = Modules::setup(modules);
+    let mut modules = Modules::new(modules);
+
+    if let Some(core) = create_core_module(&modules) {
+        modules.push(core);
+    }
+
+    modules
+}
+
+fn create_core_module(modules: &Modules) -> Option<Module> {
     let mut core_defs = vec![];
 
-    if modules.any_def(|x| x.is_patch_used()) {
-        core_defs.push(Definition::generate_patch());
+    if modules.is_using_type(is_patch) {
+        core_defs.push(Definition::patch());
     }
-    if !core_defs.is_empty() {
-        modules.push(Module::new(
+
+    if core_defs.is_empty() {
+        None
+    } else {
+        let module = Module::new(
             ModuleName::new("core"),
             core_defs,
             vec![
                 UseStatement::new("serde::Deserialize"),
                 UseStatement::new("serde::Serialize"),
             ],
-        ))
+        );
+        Some(module)
     }
-    modules
+}
+
+fn is_patch(x: &DataType) -> bool {
+    match x {
+        DataType::Bool => false,
+        DataType::Int32 => false,
+        DataType::Int64 => false,
+        DataType::Float32 => false,
+        DataType::Float64 => false,
+        DataType::Option(x) => is_patch(x),
+        DataType::Patch(_) => true,
+        DataType::String => false,
+        DataType::Vec(x) => is_patch(x),
+        DataType::Custom(_) => false,
+    }
 }
 
 fn to_definition(shape: DefinitionShape) -> Result<Definition> {
