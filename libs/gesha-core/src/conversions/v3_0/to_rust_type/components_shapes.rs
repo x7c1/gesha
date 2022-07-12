@@ -28,24 +28,19 @@ fn create_module<A: Into<String>>(name: A, shapes: Vec<DefinitionShape>) -> Resu
         .map(to_definition)
         .collect::<Result<Vec<Definition>>>()?;
 
-    let mut use_statements = vec![
-        UseStatement::new("serde::Deserialize"),
-        UseStatement::new("serde::Serialize"),
-    ];
+    let mut imports = default_imports();
     if definitions.iter().any(|x| x.any_type(is_patch)) {
-        use_statements.push(UseStatement::new("super::core::Patch"));
+        imports.push(UseStatement::new("super::core::Patch"));
     }
-    let module = Module::new(ModuleName::new(name), definitions, use_statements);
+    let module = Module::new(ModuleName::new(name), definitions, imports);
     Ok(module)
 }
 
 fn setup_modules(modules: Vec<Module>) -> Modules {
     let mut modules = Modules::new(modules);
-
     if let Some(core) = create_core_module(&modules) {
         modules.push(core);
     }
-
     modules
 }
 
@@ -59,16 +54,16 @@ fn create_core_module(modules: &Modules) -> Option<Module> {
     if core_defs.is_empty() {
         None
     } else {
-        let module = Module::new(
-            ModuleName::new("core"),
-            core_defs,
-            vec![
-                UseStatement::new("serde::Deserialize"),
-                UseStatement::new("serde::Serialize"),
-            ],
-        );
+        let module = Module::new(ModuleName::new("core"), core_defs, default_imports());
         Some(module)
     }
+}
+
+fn default_imports() -> Vec<UseStatement> {
+    vec![
+        UseStatement::new("serde::Deserialize"),
+        UseStatement::new("serde::Serialize"),
+    ]
 }
 
 fn is_patch(x: &DataType) -> bool {
