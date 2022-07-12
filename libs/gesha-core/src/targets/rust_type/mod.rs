@@ -1,5 +1,7 @@
 mod definition;
-pub use definition::{Definition, EnumDef, EnumVariant, NewTypeDef, PresetDef, StructDef};
+pub use definition::{
+    Definition, EnumDef, EnumVariant, NewTypeDef, PresetDef, StructDef, StructField,
+};
 
 mod derive_attribute;
 pub use derive_attribute::DeriveAttribute;
@@ -83,12 +85,6 @@ impl Display for DocComments {
             None => Ok(()),
         }
     }
-}
-
-#[derive(Clone, Debug)]
-pub struct StructField {
-    pub name: StructFieldName,
-    pub data_type: DataType,
 }
 
 #[derive(Clone, Debug)]

@@ -1,4 +1,4 @@
-use crate::targets::rust_type::{DataType, DeriveAttribute, StructField, TypeHeader};
+use crate::targets::rust_type::{DataType, DeriveAttribute, StructFieldName, TypeHeader};
 use heck::ToUpperCamelCase;
 use std::fmt::{Debug, Display, Formatter};
 
@@ -73,6 +73,12 @@ impl From<StructDef> for Definition {
     fn from(x: StructDef) -> Self {
         Self::StructDef(x)
     }
+}
+
+#[derive(Clone, Debug)]
+pub struct StructField {
+    pub name: StructFieldName,
+    pub data_type: DataType,
 }
 
 #[derive(Clone, Debug)]
