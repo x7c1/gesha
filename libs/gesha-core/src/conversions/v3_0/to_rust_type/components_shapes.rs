@@ -49,7 +49,7 @@ fn create_modules(modules: Vec<Module>) -> Modules {
 fn create_core_module(modules: &Modules) -> Option<Module> {
     let mut core_defs = vec![];
 
-    if modules.is_using_type(is_patch) {
+    if modules.any_type(is_patch) {
         core_defs.push(PresetDef::patch().into());
     }
 

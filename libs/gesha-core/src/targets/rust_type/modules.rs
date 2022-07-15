@@ -5,7 +5,7 @@ use std::vec::IntoIter;
 pub struct Modules(Vec<Module>);
 
 impl Modules {
-    pub fn is_using_type<F>(&self, f: F) -> bool
+    pub fn any_type<F>(&self, f: F) -> bool
     where
         F: Fn(&DataType) -> bool,
     {
