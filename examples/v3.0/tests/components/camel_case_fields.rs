@@ -1,3 +1,4 @@
+use crate::components::flatten;
 use examples_v3_0::components::camel_case_fields::schemas::CamelCaseFields;
 
 #[test]
@@ -8,12 +9,12 @@ fn to_json_string() {
     })
     .unwrap();
 
-    let expected = r#"{
-        "lowerCamelCase": "foo",
-        "UpperCamelCase": "bar"
-    }"#
-    .replace(&[' ', '\n'], "");
-
+    let expected = flatten(
+        r#"{
+            "lowerCamelCase": "foo",
+            "UpperCamelCase": "bar"
+        }"#,
+    );
     assert_eq!(actual, expected)
 }
 

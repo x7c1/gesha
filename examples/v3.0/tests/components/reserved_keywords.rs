@@ -1,3 +1,4 @@
+use crate::components::flatten;
 use examples_v3_0::components::reserved_keywords::schemas::ReservedKeywords;
 
 #[test]
@@ -9,13 +10,14 @@ fn to_json_string() {
         type_: "type-value".to_string(),
     };
     let actual = serde_json::to_string(&x1).unwrap();
-    let expected = r#"{
-        "break": "break-value",
-        "continue": "continue-value",
-        "ref": "ref-value",
-        "type": "type-value"
-    }"#
-    .replace(&[' ', '\n'], "");
+    let expected = flatten(
+        r#"{
+            "break": "break-value",
+            "continue": "continue-value",
+            "ref": "ref-value",
+            "type": "type-value"
+        }"#,
+    );
 
     assert_eq!(actual, expected)
 }
