@@ -37,8 +37,6 @@ pub(super) fn from_object(object: SchemaObject, is_required: bool) -> Result<Typ
 struct TypeFactory {
     format: Option<FormatModifier>,
     items: Option<ArrayItems>,
-    // TODO:
-    #[allow(dead_code)]
     nullable: Option<bool>,
     is_required: bool,
 }
