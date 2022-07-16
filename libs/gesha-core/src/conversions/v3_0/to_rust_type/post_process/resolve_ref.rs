@@ -115,10 +115,7 @@ impl RefResolver {
     fn is_nullable(&self, shape: &TypeShape) -> bool {
         match shape {
             TypeShape::Fixed { is_nullable, .. } => *is_nullable,
-            TypeShape::Vec { .. } => {
-                // TODO:
-                false
-            }
+            TypeShape::Vec { is_nullable, .. } => *is_nullable,
             TypeShape::Ref { .. } => {
                 // TODO:
                 false

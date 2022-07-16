@@ -101,6 +101,7 @@ impl TypeFactory {
         let type_shape = TypeShape::Vec {
             type_shape: Box::new(items_shape),
             is_required: self.is_required,
+            is_nullable: self.nullable.unwrap_or(false),
         };
         Ok(type_shape)
     }

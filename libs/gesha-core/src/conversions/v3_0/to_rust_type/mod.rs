@@ -80,8 +80,7 @@ pub enum TypeShape {
     Vec {
         type_shape: Box<TypeShape>,
         is_required: bool,
-        // TODO:
-        // is_nullable: bool,
+        is_nullable: bool,
     },
     Ref {
         object: ReferenceObject,

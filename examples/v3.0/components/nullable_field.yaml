@@ -15,11 +15,11 @@ schemas:
         type: string
         nullable: true
 
-#  Sample3:
-#    type: object
-#    properties:
-#      string_values:
-#        type: array
-#        nullable: true
-#        items:
-#          type: string
+  Sample3:
+    type: object
+    properties:
+      string_values:
+        type: array
+        nullable: true
+        items:
+          type: string
