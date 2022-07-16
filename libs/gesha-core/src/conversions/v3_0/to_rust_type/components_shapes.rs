@@ -1,5 +1,5 @@
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::{Fixed, InProcess};
-use crate::conversions::v3_0::to_rust_type::{is_patch, DefinitionShape};
+use crate::conversions::v3_0::to_rust_type::{contains_patch, DefinitionShape};
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{Definition, Module, ModuleName, Modules, PresetDef, UseStatement};
@@ -29,7 +29,7 @@ fn create_module<A: Into<String>>(name: A, shapes: Vec<DefinitionShape>) -> Resu
         .collect::<Result<Vec<Definition>>>()?;
 
     let mut imports = default_imports();
-    if definitions.iter().any(|x| x.any_type(is_patch)) {
+    if definitions.iter().any(|x| x.any_type(contains_patch)) {
         imports.push(UseStatement::new("super::core::Patch"));
     }
     let module = Module::new(ModuleName::new(name), definitions, imports);
@@ -48,7 +48,7 @@ fn create_core_module(modules: &Modules) -> Option<Module> {
     let mut core_defs = vec![];
     let mut imports = default_imports();
 
-    if modules.any_type(is_patch) {
+    if modules.any_type(contains_patch) {
         core_defs.push(PresetDef::patch().into());
         imports.push(UseStatement::new("serde::Deserializer"));
         imports.push(UseStatement::new("serde::Serializer"));

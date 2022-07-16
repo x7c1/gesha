@@ -108,17 +108,21 @@ enum FieldShape {
     },
 }
 
-pub fn is_patch(x: &DataType) -> bool {
+pub fn contains_patch(x: &DataType) -> bool {
     match x {
         DataType::Bool => false,
         DataType::Int32 => false,
         DataType::Int64 => false,
         DataType::Float32 => false,
         DataType::Float64 => false,
-        DataType::Option(x) => is_patch(x),
+        DataType::Option(x) => contains_patch(x),
         DataType::Patch(_) => true,
         DataType::String => false,
-        DataType::Vec(x) => is_patch(x),
+        DataType::Vec(x) => contains_patch(x),
         DataType::Custom(_) => false,
     }
+}
+
+pub fn is_patch(x: &DataType) -> bool {
+    matches!(x, DataType::Patch(_))
 }
