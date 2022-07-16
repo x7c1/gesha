@@ -48,15 +48,19 @@ fn create_modules(modules: Vec<Module>) -> Modules {
 
 fn create_core_module(modules: &Modules) -> Option<Module> {
     let mut core_defs = vec![];
+    let mut imports = default_imports();
 
     if modules.any_type(is_patch) {
         core_defs.push(PresetDef::patch().into());
+        imports.push(UseStatement::new("serde::Deserializer"));
+        imports.push(UseStatement::new("serde::Serializer"));
+        imports.push(UseStatement::new("serde::ser::Error"));
     }
 
     if core_defs.is_empty() {
         None
     } else {
-        let module = Module::new(ModuleName::new("core"), core_defs, default_imports());
+        let module = Module::new(ModuleName::new("core"), core_defs, imports);
         Some(module)
     }
 }
