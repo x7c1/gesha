@@ -1,10 +1,8 @@
-use crate::conversions::v3_0::to_rust_type::DefinitionShape;
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::{Fixed, InProcess};
+use crate::conversions::v3_0::to_rust_type::{is_patch, DefinitionShape};
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
-use crate::targets::rust_type::{
-    DataType, Definition, Module, ModuleName, Modules, PresetDef, UseStatement,
-};
+use crate::targets::rust_type::{Definition, Module, ModuleName, Modules, PresetDef, UseStatement};
 use openapi_types::v3_0::ReferenceObject;
 
 #[derive(Clone, Debug)]
@@ -70,21 +68,6 @@ fn default_imports() -> Vec<UseStatement> {
         UseStatement::new("serde::Deserialize"),
         UseStatement::new("serde::Serialize"),
     ]
-}
-
-fn is_patch(x: &DataType) -> bool {
-    match x {
-        DataType::Bool => false,
-        DataType::Int32 => false,
-        DataType::Int64 => false,
-        DataType::Float32 => false,
-        DataType::Float64 => false,
-        DataType::Option(x) => is_patch(x),
-        DataType::Patch(_) => true,
-        DataType::String => false,
-        DataType::Vec(x) => is_patch(x),
-        DataType::Custom(_) => false,
-    }
 }
 
 fn to_definition(shape: DefinitionShape) -> Result<Definition> {

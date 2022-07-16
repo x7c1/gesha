@@ -1,10 +1,14 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
 use crate::conversions::v3_0::to_rust_type::post_process::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::{Fixed, InProcess};
-use crate::conversions::v3_0::to_rust_type::{DefinitionShape, FieldShape, PostProcess, TypeShape};
+use crate::conversions::v3_0::to_rust_type::{
+    is_patch, DefinitionShape, FieldShape, PostProcess, TypeShape,
+};
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
-use crate::targets::rust_type::{DataType, NewTypeDef, StructDef, StructField};
+use crate::targets::rust_type::{
+    DataType, NewTypeDef, StructDef, StructField, StructFieldAttribute,
+};
 
 impl PostProcessor {
     pub(super) fn process_ref(&self, modules: &mut ComponentsShapes) -> Result<()> {
@@ -58,15 +62,23 @@ impl RefResolver {
     fn field_shape_to_struct_field(&self, shape: &FieldShape) -> StructField {
         match shape {
             FieldShape::Fixed(x) => x.clone(),
-            FieldShape::InProcess {
-                name,
-                type_shape,
-                attributes,
-            } => StructField::new(
-                name.clone(),
-                self.type_shape_to_data_type(type_shape),
-                attributes.clone(),
-            ),
+            FieldShape::InProcess { name, type_shape } => {
+                let field_name = name.clone();
+                let data_type = self.type_shape_to_data_type(type_shape);
+
+                let mut attributes = vec![];
+                if let Some(original_name) = field_name.find_to_rename() {
+                    attributes.push(StructFieldAttribute::new(format!(
+                        r#"serde(rename="{original_name}")"#
+                    )));
+                }
+                if is_patch(&data_type) {
+                    attributes.push(StructFieldAttribute::new(
+                        r#"serde(default, skip_serializing_if = "Patch::is_absent")"#,
+                    ));
+                }
+                StructField::new(field_name, data_type, attributes)
+            }
         }
     }
 

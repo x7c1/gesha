@@ -93,7 +93,7 @@ fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
 
 fn render_field_attrs<W: Write>(mut write: W, attrs: Vec<StructFieldAttribute>) -> Result<()> {
     for attr in attrs.into_iter() {
-        render! { write => echo > "{attr}"; }
+        render! { write => echo > "#[{attr}]"; }
     }
     Ok(())
 }

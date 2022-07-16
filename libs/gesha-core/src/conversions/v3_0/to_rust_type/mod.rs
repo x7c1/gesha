@@ -11,9 +11,7 @@ mod to_shape;
 use to_shape::to_shape;
 
 use crate::conversions::{Result, ToRustType};
-use crate::targets::rust_type::{
-    DataType, Modules, StructField, StructFieldAttribute, StructFieldName, TypeHeader,
-};
+use crate::targets::rust_type::{DataType, Modules, StructField, StructFieldName, TypeHeader};
 use openapi_types::v3_0::{ComponentsObject, Document, ReferenceObject, SchemasObject};
 use DefinitionShape::InProcess;
 
@@ -106,7 +104,21 @@ enum FieldShape {
     Fixed(StructField),
     InProcess {
         name: StructFieldName,
-        attributes: Vec<StructFieldAttribute>,
         type_shape: TypeShape,
     },
+}
+
+pub fn is_patch(x: &DataType) -> bool {
+    match x {
+        DataType::Bool => false,
+        DataType::Int32 => false,
+        DataType::Int64 => false,
+        DataType::Float32 => false,
+        DataType::Float64 => false,
+        DataType::Option(x) => is_patch(x),
+        DataType::Patch(_) => true,
+        DataType::String => false,
+        DataType::Vec(x) => is_patch(x),
+        DataType::Custom(_) => false,
+    }
 }
