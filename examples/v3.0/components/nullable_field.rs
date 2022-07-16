@@ -16,6 +16,12 @@ pub mod schemas {
     pub struct Sample2 {
         pub x1: Option<String>,
     }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct Sample3 {
+        #[serde(default, skip_serializing_if = "Patch::is_absent")]
+        pub string_values: Patch<Vec<String>>,
+    }
 }
 
 pub mod core {
