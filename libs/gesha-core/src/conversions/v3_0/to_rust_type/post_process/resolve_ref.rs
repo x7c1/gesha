@@ -7,7 +7,7 @@ use crate::conversions::v3_0::to_rust_type::{
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
-    DataType, NewTypeDef, StructDef, StructField, StructFieldAttribute,
+    DataType, NewTypeDef, StructDef, StructField, StructFieldAttribute, StructFieldName,
 };
 
 impl PostProcessor {
@@ -69,24 +69,12 @@ impl RefResolver<'_> {
 
     fn field_shape_to_struct_field(&self, shape: &FieldShape) -> Result<StructField> {
         let field = match shape {
-            FieldShape::Fixed(x) => x.clone(),
             FieldShape::InProcess { name, type_shape } => {
-                let field_name = name.clone();
                 let data_type = self.type_shape_to_data_type(type_shape)?;
-
-                let mut attributes = vec![];
-                if let Some(original_name) = field_name.find_to_rename() {
-                    attributes.push(StructFieldAttribute::new(format!(
-                        r#"serde(rename="{original_name}")"#
-                    )));
-                }
-                if is_patch(&data_type) {
-                    attributes.push(StructFieldAttribute::new(
-                        r#"serde(default, skip_serializing_if = "Patch::is_absent")"#,
-                    ));
-                }
-                StructField::new(field_name, data_type, attributes)
+                let attrs = to_field_attrs(name, &data_type);
+                StructField::new(name.clone(), data_type, attrs)
             }
+            FieldShape::Fixed(x) => x.clone(),
         };
         Ok(field)
     }
@@ -95,7 +83,6 @@ impl RefResolver<'_> {
         let is_required = shape.is_required();
         let is_nullable = self.is_nullable(shape)?;
         let mut data_type = match shape {
-            TypeShape::Fixed { data_type, .. } => data_type.clone(),
             TypeShape::Vec { type_shape, .. } => {
                 DataType::Vec(Box::new(self.type_shape_to_data_type(&*type_shape)?))
             }
@@ -106,6 +93,7 @@ impl RefResolver<'_> {
                 };
                 DataType::Custom(type_name)
             }
+            TypeShape::Fixed { data_type, .. } => data_type.clone(),
         };
         match (is_required, is_nullable) {
             (true, true) | (false, false) => {
@@ -131,4 +119,19 @@ impl RefResolver<'_> {
                 .map(|def| def.is_nullable()),
         }
     }
+}
+
+fn to_field_attrs(name: &StructFieldName, tpe: &DataType) -> Vec<StructFieldAttribute> {
+    let mut attributes = vec![];
+    if let Some(original) = name.find_to_rename() {
+        attributes.push(StructFieldAttribute::new(format!(
+            r#"serde(rename="{original}")"#
+        )));
+    }
+    if is_patch(tpe) {
+        attributes.push(StructFieldAttribute::new(
+            r#"serde(default, skip_serializing_if = "Patch::is_absent")"#,
+        ));
+    }
+    attributes
 }
