@@ -34,7 +34,7 @@ where
     where
         D: Deserializer<'de>,
     {
-        Option::deserialize(deserializer).map(Into::into)
+        Option::deserialize(deserializer).map(Patch::from)
     }
 }
 
@@ -46,9 +46,10 @@ impl<T: Serialize> Serialize for Patch<T> {
         match self {
             Patch::Null => serializer.serialize_none(),
             Patch::Value(v) => v.serialize(serializer),
-            Patch::Absent => Err(Error::custom(
-                r#"Maybe fields need to be annotated with: #[serde(default, skip_serializing_if = "Patch::is_absent")]"#,
-            )),
+            Patch::Absent => Err(Error::custom(format!(
+                "Maybe fields need to be annotated with: {}",
+                r#"#[serde(default, skip_serializing_if = "Patch::is_absent")]"#
+            ))),
         }
     }
 }
