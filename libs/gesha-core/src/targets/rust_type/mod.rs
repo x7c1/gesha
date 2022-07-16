@@ -2,15 +2,16 @@ mod data_type;
 pub use data_type::DataType;
 
 mod definition;
-pub use definition::{
-    Definition, EnumDef, EnumVariant, NewTypeDef, PresetDef, StructDef, StructField,
-};
+pub use definition::{Definition, EnumDef, EnumVariant, NewTypeDef, PresetDef, StructDef};
 
 mod derive_attribute;
 pub use derive_attribute::DeriveAttribute;
 
 mod modules;
 pub use modules::Modules;
+
+mod struct_field;
+pub use struct_field::StructField;
 
 mod struct_field_name;
 pub use struct_field_name::StructFieldName;

@@ -1,4 +1,4 @@
-use crate::targets::rust_type::{DataType, DeriveAttribute, StructFieldName, TypeHeader};
+use crate::targets::rust_type::{DataType, DeriveAttribute, StructField, TypeHeader};
 use heck::ToUpperCamelCase;
 use std::fmt::{Debug, Display, Formatter};
 
@@ -31,6 +31,7 @@ pub enum PresetDef {
 
 impl PresetDef {
     pub fn patch() -> Self {
+        // rf. https://stackoverflow.com/q/44331037
         let code = include_str!("patch.rs.tpl");
         Self::Patch(code.to_string())
     }
@@ -73,12 +74,6 @@ impl From<StructDef> for Definition {
     fn from(x: StructDef) -> Self {
         Self::StructDef(x)
     }
-}
-
-#[derive(Clone, Debug)]
-pub struct StructField {
-    pub name: StructFieldName,
-    pub data_type: DataType,
 }
 
 #[derive(Clone, Debug)]
