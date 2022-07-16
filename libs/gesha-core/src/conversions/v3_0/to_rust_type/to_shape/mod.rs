@@ -4,14 +4,10 @@ use to_field_shapes::to_field_shapes;
 mod to_type_shape;
 use to_type_shape::to_type_shape;
 
-mod for_struct;
-
-use crate::conversions::v3_0::to_rust_type::DefinitionShape::{Fixed, InProcess};
-use crate::conversions::v3_0::to_rust_type::{
-    AllOfItemShape, DefinitionShape, PostProcess, TypeShape,
-};
+use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
+use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, DefinitionShape, PostProcess};
 use crate::conversions::Result;
-use crate::targets::rust_type::{DocComments, EnumDef, EnumVariant, NewTypeDef, TypeHeader};
+use crate::targets::rust_type::{DocComments, EnumDef, EnumVariant, TypeHeader};
 use openapi_types::v3_0::{SchemaCase, SchemaFieldName, SchemaObject};
 
 pub(super) fn to_shape(kv: (SchemaFieldName, SchemaCase)) -> Result<DefinitionShape> {
@@ -50,6 +46,14 @@ impl Shaper {
         }
     }
 
+    fn for_struct(self) -> Result<DefinitionShape> {
+        let process = PostProcess::Struct {
+            header: self.create_type_header(),
+            shapes: to_field_shapes(self.object.properties, self.object.required)?,
+        };
+        Ok(process.into())
+    }
+
     fn for_all_of(self) -> Result<DefinitionShape> {
         let header = self.create_type_header();
         let cases = self.object.all_of.expect("all_of must be Some.");
@@ -63,14 +67,11 @@ impl Shaper {
     }
 
     fn for_newtype(self) -> Result<DefinitionShape> {
-        let header = self.create_type_header();
-        match to_type_shape::from_object(self.object)? {
-            TypeShape::Fixed(data_type) => {
-                let def = NewTypeDef::new(header, data_type);
-                Ok(Fixed(def.into()))
-            }
-            type_shape => Ok(InProcess(PostProcess::NewType { header, type_shape })),
-        }
+        let process = PostProcess::NewType {
+            header: self.create_type_header(),
+            type_shape: to_type_shape::from_object(self.object, /* is_required */ true)?,
+        };
+        Ok(process.into())
     }
 
     fn for_enum(self) -> Result<DefinitionShape> {
@@ -84,7 +85,10 @@ impl Shaper {
     fn create_type_header(&self) -> TypeHeader {
         TypeHeader::new(
             self.name.clone(),
-            to_doc_comments(self.object.title.clone(), self.object.description.clone()),
+            to_doc_comments(
+                self.object.title.as_deref(),
+                self.object.description.as_deref(),
+            ),
         )
     }
 }
@@ -101,15 +105,13 @@ fn to_all_of_item_shape(case: SchemaCase) -> Result<AllOfItemShape> {
     Ok(shape)
 }
 
-fn to_doc_comments(title: Option<String>, description: Option<String>) -> DocComments {
-    let maybe = match (title, description) {
+fn to_doc_comments(title: Option<&str>, description: Option<&str>) -> DocComments {
+    let trim = |x: &str| x.trim().to_string();
+    let maybe = match (title.map(trim), description.map(trim)) {
         (t, None) => t,
         (None, d) => d,
         (t, d) if t == d => t,
         (Some(t), Some(d)) => Some(format!("{t}\n\n{d}")),
     };
-    DocComments::new(maybe.map(|x| {
-        let text = x.trim().to_string();
-        format!("/**\n{text}\n*/\n")
-    }))
+    DocComments::new(maybe.map(|text| format!("/**\n{text}\n*/\n")))
 }

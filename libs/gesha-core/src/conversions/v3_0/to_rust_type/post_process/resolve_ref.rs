@@ -1,10 +1,14 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
 use crate::conversions::v3_0::to_rust_type::post_process::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::DefinitionShape::{Fixed, InProcess};
-use crate::conversions::v3_0::to_rust_type::{DefinitionShape, FieldShape, PostProcess, TypeShape};
+use crate::conversions::v3_0::to_rust_type::{
+    is_patch, DefinitionShape, FieldShape, PostProcess, TypeShape,
+};
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
-use crate::targets::rust_type::{DataType, NewTypeDef, StructDef, StructField};
+use crate::targets::rust_type::{
+    DataType, NewTypeDef, StructDef, StructField, StructFieldAttribute,
+};
 
 impl PostProcessor {
     pub(super) fn process_ref(&self, modules: &mut ComponentsShapes) -> Result<()> {
@@ -58,33 +62,66 @@ impl RefResolver {
     fn field_shape_to_struct_field(&self, shape: &FieldShape) -> StructField {
         match shape {
             FieldShape::Fixed(x) => x.clone(),
-            FieldShape::InProcess {
-                name,
-                type_shape,
-                is_optional,
-            } => {
-                let mut data_type = self.type_shape_to_data_type(type_shape);
-                if *is_optional {
-                    data_type = DataType::Option(Box::new(data_type));
+            FieldShape::InProcess { name, type_shape } => {
+                let field_name = name.clone();
+                let data_type = self.type_shape_to_data_type(type_shape);
+
+                let mut attributes = vec![];
+                if let Some(original_name) = field_name.find_to_rename() {
+                    attributes.push(StructFieldAttribute::new(format!(
+                        r#"serde(rename="{original_name}")"#
+                    )));
                 }
-                StructField {
-                    name: name.clone(),
-                    data_type,
+                if is_patch(&data_type) {
+                    attributes.push(StructFieldAttribute::new(
+                        r#"serde(default, skip_serializing_if = "Patch::is_absent")"#,
+                    ));
                 }
+                StructField::new(field_name, data_type, attributes)
             }
         }
     }
 
     fn type_shape_to_data_type(&self, shape: &TypeShape) -> DataType {
-        match shape {
-            TypeShape::Fixed(x) => x.clone(),
-            TypeShape::Vec(x) => DataType::Vec(Box::new(self.type_shape_to_data_type(&*x))),
-            TypeShape::Ref(x) => {
-                let type_name = match String::from(x.clone()) {
+        let is_required = shape.is_required();
+        let is_nullable = self.is_nullable(shape);
+        let mut data_type = match shape {
+            TypeShape::Fixed { data_type, .. } => data_type.clone(),
+            TypeShape::Vec { type_shape, .. } => {
+                DataType::Vec(Box::new(self.type_shape_to_data_type(&*type_shape)))
+            }
+            TypeShape::Ref { object, .. } => {
+                let type_name = match String::from(object.clone()) {
                     x if x.starts_with(self.prefix) => x.replace(self.prefix, ""),
                     x => unimplemented!("not implemented: {x}"),
                 };
                 DataType::Custom(type_name)
+            }
+        };
+        match (is_required, is_nullable) {
+            (true, true) | (false, false) => {
+                data_type = DataType::Option(Box::new(data_type));
+            }
+            (false, true) => {
+                data_type = DataType::Patch(Box::new(data_type));
+            }
+            (true, false) => {
+                // nop
+            }
+        }
+        data_type
+    }
+
+    fn is_nullable(&self, shape: &TypeShape) -> bool {
+        match shape {
+            TypeShape::Fixed { is_nullable, .. } => *is_nullable,
+            TypeShape::Vec { .. } => {
+                // TODO:
+                false
+            }
+            TypeShape::Ref { .. } => {
+                // TODO:
+                false
             }
         }
     }

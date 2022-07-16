@@ -64,6 +64,8 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         .map(to_format_modifier)
         .transpose()?;
 
+    let nullable = map.remove_if_exists::<bool>("nullable")?;
+
     let items = map
         .remove_if_exists::<YamlMap>("items")?
         .map(to_array_items)
@@ -84,6 +86,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         description: map.remove_if_exists::<String>("description")?,
         data_type,
         format,
+        nullable,
         properties,
         required,
         items,

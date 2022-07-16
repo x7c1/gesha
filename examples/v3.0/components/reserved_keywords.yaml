@@ -3,10 +3,13 @@ schemas:
     type: object
     required:
       - break
+      - continue
       - ref
       - type
     properties:
       break:
+        type: string
+      continue:
         type: string
       ref:
         type: string

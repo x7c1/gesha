@@ -21,12 +21,39 @@ schemas:
       foo:
         type: integer
 
+  WithWhiteSpaces:
+    title: |
+
+
+      Pet
+
+
+    description: |
+
+
+      A pet for sale in the pet store
+
+
+    type: object
+    properties:
+      foo:
+        type: integer
+
   SameText:
     title: Pet
     description: Pet
     type: object
     properties:
       bar:
+        type: integer
+
+  HasLineBreak:
+    title: The quick brown fox jumps over the lazy dog.
+    description: |
+      The quick brown fox jumps over the lazy dog.
+    type: object
+    properties:
+      foo:
         type: integer
 
   EnumWithTitle:

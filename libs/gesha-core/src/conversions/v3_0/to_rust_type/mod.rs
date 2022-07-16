@@ -72,9 +72,31 @@ enum AllOfItemShape {
 
 #[derive(Clone, Debug)]
 pub enum TypeShape {
-    Fixed(DataType),
-    Vec(Box<TypeShape>),
-    Ref(ReferenceObject),
+    Fixed {
+        data_type: DataType,
+        is_required: bool,
+        is_nullable: bool,
+    },
+    Vec {
+        type_shape: Box<TypeShape>,
+        is_required: bool,
+        // TODO:
+        // is_nullable: bool,
+    },
+    Ref {
+        object: ReferenceObject,
+        is_required: bool,
+    },
+}
+
+impl TypeShape {
+    pub fn is_required(&self) -> bool {
+        match self {
+            TypeShape::Fixed { is_required, .. } => *is_required,
+            TypeShape::Vec { is_required, .. } => *is_required,
+            TypeShape::Ref { is_required, .. } => *is_required,
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -83,6 +105,24 @@ enum FieldShape {
     InProcess {
         name: StructFieldName,
         type_shape: TypeShape,
-        is_optional: bool,
     },
+}
+
+pub fn contains_patch(x: &DataType) -> bool {
+    match x {
+        DataType::Bool => false,
+        DataType::Int32 => false,
+        DataType::Int64 => false,
+        DataType::Float32 => false,
+        DataType::Float64 => false,
+        DataType::Option(x) => contains_patch(x),
+        DataType::Patch(_) => true,
+        DataType::String => false,
+        DataType::Vec(x) => contains_patch(x),
+        DataType::Custom(_) => false,
+    }
+}
+
+pub fn is_patch(x: &DataType) -> bool {
+    matches!(x, DataType::Patch(_))
 }

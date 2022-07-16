@@ -104,6 +104,9 @@ pub struct SchemaObject {
 
     pub format: Option<FormatModifier>,
 
+    /// rf. https://swagger.io/docs/specification/data-models/data-types/
+    pub nullable: Option<bool>,
+
     pub required: Option<RequiredSchemaFields>,
 
     pub properties: Option<SchemaProperties>,

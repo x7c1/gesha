@@ -1,0 +1,25 @@
+schemas:
+  Sample1:
+    type: object
+    properties:
+      x1:
+        type: string
+        nullable: true
+
+  Sample2:
+    type: object
+    required:
+      - x1
+    properties:
+      x1:
+        type: string
+        nullable: true
+
+#  Sample3:
+#    type: object
+#    properties:
+#      string_values:
+#        type: array
+#        nullable: true
+#        items:
+#          type: string
