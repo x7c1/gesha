@@ -11,6 +11,11 @@ pub mod schemas {
         #[serde(default, skip_serializing_if = "Patch::is_absent")]
         pub x1: Patch<String>,
     }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct Sample2 {
+        pub x1: Option<String>,
+    }
 }
 
 pub mod core {

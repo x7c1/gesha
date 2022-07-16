@@ -6,7 +6,16 @@ schemas:
         type: string
         nullable: true
 
-#  Sample2:
+  Sample2:
+    type: object
+    required:
+      - x1
+    properties:
+      x1:
+        type: string
+        nullable: true
+
+#  Sample3:
 #    type: object
 #    properties:
 #      string_values:
