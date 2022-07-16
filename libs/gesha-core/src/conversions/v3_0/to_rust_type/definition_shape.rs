@@ -17,10 +17,15 @@ impl DefinitionShape {
             },
             InProcess(process) => match process {
                 PostProcess::Struct { header, .. } => header.name == name,
-                PostProcess::AllOf { .. } => unimplemented!(),
-                PostProcess::NewType { .. } => unimplemented!(),
+                PostProcess::AllOf { header, .. } => header.name == name,
+                PostProcess::NewType { header, .. } => header.name == name,
             },
         }
+    }
+
+    pub fn is_nullable(&self) -> bool {
+        // TODO:
+        false
     }
 
     pub fn field_shapes(&self) -> Vec<FieldShape> {

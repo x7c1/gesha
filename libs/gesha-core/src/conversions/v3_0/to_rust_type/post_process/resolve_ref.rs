@@ -13,17 +13,26 @@ use crate::targets::rust_type::{
 impl PostProcessor {
     pub(super) fn process_ref(&self, modules: &mut ComponentsShapes) -> Result<()> {
         // TODO: support other locations like "#/components/responses/" etc
-        RefResolver::run("#/components/schemas/", &mut modules.schemas)
+        RefResolver::run(
+            "#/components/schemas/",
+            &mut modules.schemas,
+            &self.original,
+        )
     }
 }
 
-struct RefResolver {
+struct RefResolver<'a> {
     prefix: &'static str,
+    original: &'a ComponentsShapes,
 }
 
-impl RefResolver {
-    fn run(prefix: &'static str, shapes: &mut [DefinitionShape]) -> Result<()> {
-        let this = Self { prefix };
+impl RefResolver<'_> {
+    fn run(
+        prefix: &'static str,
+        shapes: &mut [DefinitionShape],
+        original: &ComponentsShapes,
+    ) -> Result<()> {
+        let this = RefResolver { prefix, original };
         shapes.iter_mut().try_for_each(|x| this.resolve_ref(x))
     }
 
@@ -41,7 +50,8 @@ impl RefResolver {
                 Ok(Fixed(def.into()))
             }
             PostProcess::NewType { header, type_shape } => {
-                let def = NewTypeDef::new(header.clone(), self.type_shape_to_data_type(type_shape));
+                let def_type = self.type_shape_to_data_type(type_shape)?;
+                let def = NewTypeDef::new(header.clone(), def_type);
                 Ok(Fixed(def.into()))
             }
             PostProcess::AllOf { .. } => Err(PostProcessBroken {
@@ -51,20 +61,18 @@ impl RefResolver {
     }
 
     fn shapes_to_fields(&self, shapes: &[FieldShape]) -> Result<Vec<StructField>> {
-        let fields = shapes
+        shapes
             .iter()
             .map(|shape| self.field_shape_to_struct_field(shape))
-            .collect::<Vec<StructField>>();
-
-        Ok(fields)
+            .collect()
     }
 
-    fn field_shape_to_struct_field(&self, shape: &FieldShape) -> StructField {
-        match shape {
+    fn field_shape_to_struct_field(&self, shape: &FieldShape) -> Result<StructField> {
+        let field = match shape {
             FieldShape::Fixed(x) => x.clone(),
             FieldShape::InProcess { name, type_shape } => {
                 let field_name = name.clone();
-                let data_type = self.type_shape_to_data_type(type_shape);
+                let data_type = self.type_shape_to_data_type(type_shape)?;
 
                 let mut attributes = vec![];
                 if let Some(original_name) = field_name.find_to_rename() {
@@ -79,16 +87,17 @@ impl RefResolver {
                 }
                 StructField::new(field_name, data_type, attributes)
             }
-        }
+        };
+        Ok(field)
     }
 
-    fn type_shape_to_data_type(&self, shape: &TypeShape) -> DataType {
+    fn type_shape_to_data_type(&self, shape: &TypeShape) -> Result<DataType> {
         let is_required = shape.is_required();
-        let is_nullable = self.is_nullable(shape);
+        let is_nullable = self.is_nullable(shape)?;
         let mut data_type = match shape {
             TypeShape::Fixed { data_type, .. } => data_type.clone(),
             TypeShape::Vec { type_shape, .. } => {
-                DataType::Vec(Box::new(self.type_shape_to_data_type(&*type_shape)))
+                DataType::Vec(Box::new(self.type_shape_to_data_type(&*type_shape)?))
             }
             TypeShape::Ref { object, .. } => {
                 let type_name = match String::from(object.clone()) {
@@ -109,17 +118,17 @@ impl RefResolver {
                 // nop
             }
         }
-        data_type
+        Ok(data_type)
     }
 
-    fn is_nullable(&self, shape: &TypeShape) -> bool {
+    fn is_nullable(&self, shape: &TypeShape) -> Result<bool> {
         match shape {
-            TypeShape::Fixed { is_nullable, .. } => *is_nullable,
-            TypeShape::Vec { is_nullable, .. } => *is_nullable,
-            TypeShape::Ref { .. } => {
-                // TODO:
-                false
-            }
+            TypeShape::Fixed { is_nullable, .. } => Ok(*is_nullable),
+            TypeShape::Vec { is_nullable, .. } => Ok(*is_nullable),
+            TypeShape::Ref { object, .. } => self
+                .original
+                .find_definition(object)
+                .map(|def| def.is_nullable()),
         }
     }
 }
