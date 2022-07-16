@@ -11,7 +11,7 @@ mod modules;
 pub use modules::Modules;
 
 mod struct_field;
-pub use struct_field::StructField;
+pub use struct_field::{StructField, StructFieldAttribute};
 
 mod struct_field_name;
 pub use struct_field_name::StructFieldName;

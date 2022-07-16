@@ -3,7 +3,7 @@ use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
     DataType, Definition, DeriveAttribute, EnumDef, EnumVariant, Module, Modules, NewTypeDef,
-    PresetDef, StructDef, StructField, UseStatement,
+    PresetDef, StructDef, StructField, StructFieldAttribute, UseStatement,
 };
 use std::io::Write;
 
@@ -83,16 +83,18 @@ fn render_fields<W: Write>(mut write: W, fields: Vec<StructField>) -> Result<()>
 }
 
 fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
-    if let Some(original) = field.name.find_to_rename() {
-        render! { write =>
-            echo > r#"#[serde(rename="{name}")]"#, name = original;
-            echo > "\n";
-        }
-    }
     render! { write =>
+        call > render_field_attrs => field.attributes;
         echo > "pub {name}: ", name = field.name;
         call > render_data_type => &field.data_type;
     };
+    Ok(())
+}
+
+fn render_field_attrs<W: Write>(mut write: W, attrs: Vec<StructFieldAttribute>) -> Result<()> {
+    for attr in attrs.into_iter() {
+        render! { write => echo > "{attr}"; }
+    }
     Ok(())
 }
 
