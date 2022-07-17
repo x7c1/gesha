@@ -23,3 +23,18 @@ schemas:
         nullable: true
         items:
           type: string
+
+  Sample4:
+    type: object
+    properties:
+      pet1:
+        $ref: '#/components/schemas/Pet1'
+
+  Pet1:
+    type: object
+    nullable: true
+    required:
+      - id
+    properties:
+      id:
+        type: integer
