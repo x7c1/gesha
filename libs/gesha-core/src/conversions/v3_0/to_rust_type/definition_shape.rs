@@ -13,6 +13,7 @@ impl DefinitionShape {
         match self {
             Fixed(def) => match def {
                 Definition::StructDef(x) => x.header.name == name,
+                // TODO:
                 _ => false,
             },
             InProcess(process) => match process {
