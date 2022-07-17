@@ -71,7 +71,7 @@ fn find_shape<'a, 'b>(
     let type_ref = target.as_ref();
     if type_ref.starts_with(prefix) {
         let name = type_ref.replace(prefix, "");
-        defs.iter().find(|shape| shape.is_struct_name(&name))
+        defs.iter().find(|shape| shape.is_type_name(&name))
     } else {
         None
     }

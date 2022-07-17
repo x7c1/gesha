@@ -24,10 +24,8 @@ pub(super) enum DefinitionShape {
 }
 
 impl DefinitionShape {
-    // TODO: rename -> is_type_name
-    pub fn is_struct_name(&self, name: &str) -> bool {
-        let header = self.type_header();
-        header.name.as_ref() == name
+    pub fn is_type_name(&self, name: &str) -> bool {
+        self.type_header().name.as_ref() == name
     }
 
     pub fn is_nullable(&self) -> bool {
