@@ -112,14 +112,9 @@ impl RefResolver<'_> {
     }
 
     fn field_shape_to_struct_field(&self, shape: &FieldShape) -> Result<StructField> {
-        let field = match shape {
-            FieldShape::InProcess { name, type_shape } => {
-                let data_type = self.type_shape_to_data_type(type_shape)?;
-                let attrs = to_field_attrs(name, &data_type);
-                StructField::new(name.clone(), data_type, attrs)
-            }
-            FieldShape::Fixed(x) => x.clone(),
-        };
+        let data_type = self.type_shape_to_data_type(&shape.type_shape)?;
+        let attrs = to_field_attrs(&shape.name, &data_type);
+        let field = StructField::new(shape.name.clone(), data_type, attrs);
         Ok(field)
     }
 

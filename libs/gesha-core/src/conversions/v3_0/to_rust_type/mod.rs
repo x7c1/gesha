@@ -11,7 +11,7 @@ mod to_shape;
 use to_shape::to_shape;
 
 use crate::conversions::{Result, ToRustType};
-use crate::targets::rust_type::{DataType, Modules, StructField, StructFieldName};
+use crate::targets::rust_type::{DataType, Modules, StructFieldName};
 use openapi_types::v3_0::{ComponentsObject, Document, ReferenceObject, SchemasObject};
 
 impl ToRustType<Document> for Modules {
@@ -101,12 +101,9 @@ impl TypeShape {
 }
 
 #[derive(Clone, Debug)]
-enum FieldShape {
-    Fixed(StructField),
-    InProcess {
-        name: StructFieldName,
-        type_shape: TypeShape,
-    },
+struct FieldShape {
+    name: StructFieldName,
+    type_shape: TypeShape,
 }
 
 pub fn contains_patch(x: &DataType) -> bool {

@@ -27,7 +27,7 @@ impl ToFieldShapes {
 
     fn to_field(&self, name: SchemaFieldName, case: SchemaCase) -> Result<FieldShape> {
         let is_required = self.is_required(&name);
-        Ok(FieldShape::InProcess {
+        Ok(FieldShape {
             name: StructFieldName::new(name),
             type_shape: to_type_shape(case, is_required)?,
         })
