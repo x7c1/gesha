@@ -11,7 +11,7 @@ mod to_shape;
 use to_shape::to_shape;
 
 use crate::conversions::{Result, ToRustType};
-use crate::targets::rust_type::{DataType, Modules, StructField, StructFieldName, TypeHeader};
+use crate::targets::rust_type::{DataType, Modules, StructField, StructFieldName};
 use openapi_types::v3_0::{ComponentsObject, Document, ReferenceObject, SchemasObject};
 
 impl ToRustType<Document> for Modules {

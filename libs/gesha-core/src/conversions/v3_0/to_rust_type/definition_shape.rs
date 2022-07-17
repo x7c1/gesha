@@ -1,5 +1,5 @@
 use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, FieldShape, TypeShape};
-use crate::targets::rust_type::{Definition, TypeHeader};
+use crate::targets::rust_type::TypeHeader;
 use openapi_types::v3_0::EnumValues;
 
 // use DefinitionShape::{Fixed, InProcess};

@@ -48,14 +48,14 @@ impl PostProcessor {
         Ok(())
     }
 
-    fn shape_all_of(&self, process: &mut DefinitionShape) -> Result<Option<DefinitionShape>> {
-        match process {
+    fn shape_all_of(&self, def_shape: &mut DefinitionShape) -> Result<Option<DefinitionShape>> {
+        match def_shape {
             DefinitionShape::AllOf { header, shapes } => {
-                let process = DefinitionShape::Struct {
+                let shape = DefinitionShape::Struct {
                     header: header.clone(),
                     shapes: self.merge_fields_all_of(shapes)?,
                 };
-                Ok(Some(process.into()))
+                Ok(Some(shape))
             }
             // shaped in next processes.
             DefinitionShape::Struct { .. }

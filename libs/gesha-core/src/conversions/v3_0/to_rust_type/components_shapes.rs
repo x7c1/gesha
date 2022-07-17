@@ -1,5 +1,4 @@
 use crate::conversions::v3_0::to_rust_type::{contains_patch, DefinitionShape};
-use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{Definition, Module, ModuleName, Modules, PresetDef, UseStatement};
 use openapi_types::v3_0::ReferenceObject;
