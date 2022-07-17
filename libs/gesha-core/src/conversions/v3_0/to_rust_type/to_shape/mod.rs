@@ -4,9 +4,9 @@ use to_field_shapes::to_field_shapes;
 mod to_type_shape;
 use to_type_shape::to_type_shape;
 
-use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, DefinitionShape};
+use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, DefinitionShape, TypeHeaderShape};
 use crate::conversions::Result;
-use crate::targets::rust_type::{DocComments, TypeHeader};
+use crate::targets::rust_type::DocComments;
 use openapi_types::v3_0::{SchemaCase, SchemaFieldName, SchemaObject};
 
 pub(super) fn to_shape(kv: (SchemaFieldName, SchemaCase)) -> Result<DefinitionShape> {
@@ -81,14 +81,14 @@ impl Shaper {
         Ok(shape)
     }
 
-    fn create_type_header(&self) -> TypeHeader {
-        TypeHeader::new(
-            self.name.clone(),
-            to_doc_comments(
+    fn create_type_header(&self) -> TypeHeaderShape {
+        TypeHeaderShape {
+            name: self.name.clone(),
+            doc_comments: to_doc_comments(
                 self.object.title.as_deref(),
                 self.object.description.as_deref(),
             ),
-        )
+        }
     }
 }
 

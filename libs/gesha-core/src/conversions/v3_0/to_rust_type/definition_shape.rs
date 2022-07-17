@@ -1,23 +1,24 @@
-use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, FieldShape, TypeShape};
-use crate::targets::rust_type::TypeHeader;
+use crate::conversions::v3_0::to_rust_type::{
+    AllOfItemShape, FieldShape, TypeHeaderShape, TypeShape,
+};
 use openapi_types::v3_0::EnumValues;
 
 #[derive(Clone, Debug)]
 pub(super) enum DefinitionShape {
     AllOf {
-        header: TypeHeader,
+        header: TypeHeaderShape,
         shapes: Vec<AllOfItemShape>,
     },
     Struct {
-        header: TypeHeader,
+        header: TypeHeaderShape,
         shapes: Vec<FieldShape>,
     },
     NewType {
-        header: TypeHeader,
+        header: TypeHeaderShape,
         type_shape: TypeShape,
     },
     Enum {
-        header: TypeHeader,
+        header: TypeHeaderShape,
         values: EnumValues,
     },
 }
@@ -31,7 +32,7 @@ impl DefinitionShape {
             DefinitionShape::NewType { header, .. } => header,
             DefinitionShape::Enum { header, .. } => header,
         };
-        header.name == name
+        header.name.as_ref() == name
     }
 
     pub fn is_nullable(&self) -> bool {

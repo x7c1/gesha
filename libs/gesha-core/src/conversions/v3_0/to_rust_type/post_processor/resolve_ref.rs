@@ -1,11 +1,13 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
 use crate::conversions::v3_0::to_rust_type::post_processor::PostProcessor;
-use crate::conversions::v3_0::to_rust_type::{is_patch, DefinitionShape, FieldShape, TypeShape};
+use crate::conversions::v3_0::to_rust_type::{
+    is_patch, DefinitionShape, FieldShape, TypeHeaderShape, TypeShape,
+};
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
     DataType, Definition, EnumDef, EnumVariant, NewTypeDef, StructDef, StructField,
-    StructFieldAttribute, StructFieldName,
+    StructFieldAttribute, StructFieldName, TypeHeader,
 };
 
 impl PostProcessor {
@@ -37,12 +39,15 @@ impl RefResolver<'_> {
     fn resolve_ref(&self, shape: &mut DefinitionShape) -> Result<Definition> {
         match shape {
             DefinitionShape::Struct { header, shapes } => {
-                let def = StructDef::new(header.clone(), self.shapes_to_fields(shapes)?);
+                let def = StructDef::new(
+                    to_type_header(header.clone()),
+                    self.shapes_to_fields(shapes)?,
+                );
                 Ok(def.into())
             }
             DefinitionShape::NewType { header, type_shape } => {
                 let def_type = self.type_shape_to_data_type(type_shape)?;
-                let def = NewTypeDef::new(header.clone(), def_type);
+                let def = NewTypeDef::new(to_type_header(header.clone()), def_type);
                 Ok(def.into())
             }
             DefinitionShape::Enum { header, values } => {
@@ -51,7 +56,7 @@ impl RefResolver<'_> {
                     .map(EnumVariant::new)
                     .collect();
 
-                let def = EnumDef::new(header.clone(), variants);
+                let def = EnumDef::new(to_type_header(header.clone()), variants);
                 Ok(def.into())
             }
             DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
@@ -59,9 +64,7 @@ impl RefResolver<'_> {
             }),
         }
     }
-}
 
-impl RefResolver<'_> {
     fn shapes_to_fields(&self, shapes: &[FieldShape]) -> Result<Vec<StructField>> {
         shapes
             .iter()
@@ -131,4 +134,8 @@ fn to_field_attrs(name: &StructFieldName, tpe: &DataType) -> Vec<StructFieldAttr
         ));
     }
     attributes
+}
+
+fn to_type_header(shape: TypeHeaderShape) -> TypeHeader {
+    TypeHeader::new(shape.name, shape.doc_comments)
 }
