@@ -13,7 +13,6 @@ use to_shape::to_shape;
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{DataType, Modules, StructField, StructFieldName, TypeHeader};
 use openapi_types::v3_0::{ComponentsObject, Document, ReferenceObject, SchemasObject};
-use DefinitionShape::InProcess;
 
 impl ToRustType<Document> for Modules {
     fn apply(this: Document) -> Result<Self> {
@@ -37,32 +36,35 @@ impl ToRustType<ComponentsObject> for Modules {
         let mut shapes = ComponentsShapes {
             schemas: this.schemas.map(to_shapes).unwrap_or_else(|| Ok(vec![]))?,
         };
-        PostProcessor::run(&mut shapes)?;
-        shapes.into_modules()
+        let defs = PostProcessor::run2(&mut shapes)?;
+        shapes.into_modules2(defs)
+
+        // PostProcessor::run(&mut shapes)?;
+        // shapes.into_modules()
     }
 }
 
-#[derive(Clone, Debug)]
-enum PostProcess {
-    AllOf {
-        header: TypeHeader,
-        shapes: Vec<AllOfItemShape>,
-    },
-    Struct {
-        header: TypeHeader,
-        shapes: Vec<FieldShape>,
-    },
-    NewType {
-        header: TypeHeader,
-        type_shape: TypeShape,
-    },
-}
-
-impl From<PostProcess> for DefinitionShape {
-    fn from(this: PostProcess) -> Self {
-        InProcess(this)
-    }
-}
+// #[derive(Clone, Debug)]
+// enum PostProcess {
+//     AllOf {
+//         header: TypeHeader,
+//         shapes: Vec<AllOfItemShape>,
+//     },
+//     Struct {
+//         header: TypeHeader,
+//         shapes: Vec<FieldShape>,
+//     },
+//     NewType {
+//         header: TypeHeader,
+//         type_shape: TypeShape,
+//     },
+// }
+//
+// impl From<PostProcess> for DefinitionShape {
+//     fn from(this: PostProcess) -> Self {
+//         InProcess(this)
+//     }
+// }
 
 #[derive(Clone, Debug)]
 enum AllOfItemShape {

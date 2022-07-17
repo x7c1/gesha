@@ -4,8 +4,7 @@ use to_field_shapes::to_field_shapes;
 mod to_type_shape;
 use to_type_shape::to_type_shape;
 
-use crate::conversions::v3_0::to_rust_type::DefinitionShape::Fixed;
-use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, DefinitionShape, PostProcess};
+use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, DefinitionShape};
 use crate::conversions::Result;
 use crate::targets::rust_type::{DocComments, EnumDef, EnumVariant, TypeHeader};
 use openapi_types::v3_0::{SchemaCase, SchemaFieldName, SchemaObject};
@@ -47,7 +46,7 @@ impl Shaper {
     }
 
     fn for_struct(self) -> Result<DefinitionShape> {
-        let process = PostProcess::Struct {
+        let process = DefinitionShape::Struct {
             header: self.create_type_header(),
             shapes: to_field_shapes(self.object.properties, self.object.required)?,
         };
@@ -62,12 +61,12 @@ impl Shaper {
             .map(to_all_of_item_shape)
             .collect::<Result<Vec<AllOfItemShape>>>()?;
 
-        let process = PostProcess::AllOf { header, shapes };
+        let process = DefinitionShape::AllOf { header, shapes };
         Ok(process.into())
     }
 
     fn for_newtype(self) -> Result<DefinitionShape> {
-        let process = PostProcess::NewType {
+        let process = DefinitionShape::NewType {
             header: self.create_type_header(),
             type_shape: to_type_shape::from_object(self.object, /* is_required */ true)?,
         };
@@ -77,9 +76,11 @@ impl Shaper {
     fn for_enum(self) -> Result<DefinitionShape> {
         let header = self.create_type_header();
         let values = self.object.enum_values.expect("enum_values must be Some.");
-        let variants = values.into_iter().map(EnumVariant::new).collect();
-        let def = EnumDef::new(header, variants);
-        Ok(Fixed(def.into()))
+        // let variants = values.into_iter().map(EnumVariant::new).collect();
+        // let def = EnumDef::new(header, variants);
+        // Ok(def.into())
+        let shape = DefinitionShape::Enum { header, values };
+        Ok(shape)
     }
 
     fn create_type_header(&self) -> TypeHeader {

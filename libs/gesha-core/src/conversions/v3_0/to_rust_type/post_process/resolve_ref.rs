@@ -1,24 +1,31 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
 use crate::conversions::v3_0::to_rust_type::post_process::PostProcessor;
-use crate::conversions::v3_0::to_rust_type::DefinitionShape::{Fixed, InProcess};
-use crate::conversions::v3_0::to_rust_type::{
-    is_patch, DefinitionShape, FieldShape, PostProcess, TypeShape,
-};
+use crate::conversions::v3_0::to_rust_type::{is_patch, DefinitionShape, FieldShape, TypeShape};
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
-    DataType, NewTypeDef, StructDef, StructField, StructFieldAttribute, StructFieldName,
+    DataType, Definition, EnumDef, EnumVariant, NewTypeDef, StructDef, StructField,
+    StructFieldAttribute, StructFieldName,
 };
 
 impl PostProcessor {
-    pub(super) fn process_ref(&self, modules: &mut ComponentsShapes) -> Result<()> {
+    pub(super) fn process_ref2(&self, modules: &mut ComponentsShapes) -> Result<Vec<Definition>> {
         // TODO: support other locations like "#/components/responses/" etc
-        RefResolver::run(
+        RefResolver::run2(
             "#/components/schemas/",
             &mut modules.schemas,
             &self.original,
         )
     }
+
+    // pub(super) fn process_ref(&self, modules: &mut ComponentsShapes) -> Result<()> {
+    //     // TODO: support other locations like "#/components/responses/" etc
+    //     RefResolver::run(
+    //         "#/components/schemas/",
+    //         &mut modules.schemas,
+    //         &self.original,
+    //     )
+    // }
 }
 
 struct RefResolver<'a> {
@@ -27,38 +34,75 @@ struct RefResolver<'a> {
 }
 
 impl RefResolver<'_> {
-    fn run(
+    fn run2(
         prefix: &'static str,
         shapes: &mut [DefinitionShape],
         original: &ComponentsShapes,
-    ) -> Result<()> {
+    ) -> Result<Vec<Definition>> {
         let this = RefResolver { prefix, original };
-        shapes.iter_mut().try_for_each(|x| this.resolve_ref(x))
+        shapes.iter_mut().map(|x| this.resolve_ref2(x)).collect()
     }
 
-    fn resolve_ref(&self, shape: &mut DefinitionShape) -> Result<()> {
-        if let InProcess(process) = shape {
-            *shape = self.shape_ref(process)?;
-        };
-        Ok(())
-    }
-
-    fn shape_ref(&self, process: &mut PostProcess) -> Result<DefinitionShape> {
-        match process {
-            PostProcess::Struct { header, shapes } => {
+    fn resolve_ref2(&self, shape: &mut DefinitionShape) -> Result<Definition> {
+        match shape {
+            DefinitionShape::Struct { header, shapes } => {
                 let def = StructDef::new(header.clone(), self.shapes_to_fields(shapes)?);
-                Ok(Fixed(def.into()))
+                Ok(def.into())
             }
-            PostProcess::NewType { header, type_shape } => {
+            DefinitionShape::NewType { header, type_shape } => {
                 let def_type = self.type_shape_to_data_type(type_shape)?;
                 let def = NewTypeDef::new(header.clone(), def_type);
-                Ok(Fixed(def.into()))
+                Ok(def.into())
             }
-            PostProcess::AllOf { .. } => Err(PostProcessBroken {
-                detail: format!("'allOf' must be processed before '$ref'.\n{:#?}", process),
+            DefinitionShape::Enum { header, values } => {
+                let variants = Clone::clone(values)
+                    .into_iter()
+                    .map(EnumVariant::new)
+                    .collect();
+
+                let def = EnumDef::new(header.clone(), variants);
+                Ok(def.into())
+            }
+            DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
+                detail: format!("'allOf' must be processed before '$ref'.\n{:#?}", shape),
             }),
         }
     }
+}
+
+impl RefResolver<'_> {
+    // fn run(
+    //     prefix: &'static str,
+    //     shapes: &mut [DefinitionShape],
+    //     original: &ComponentsShapes,
+    // ) -> Result<()> {
+    //     let this = RefResolver { prefix, original };
+    //     shapes.iter_mut().try_for_each(|x| this.resolve_ref(x))
+    // }
+
+    // fn resolve_ref(&self, shape: &mut DefinitionShape) -> Result<()> {
+    //     if let InProcess(process) = shape {
+    //         *shape = self.shape_ref(process)?;
+    //     };
+    //     Ok(())
+    // }
+
+    // fn shape_ref(&self, process: &mut PostProcess) -> Result<DefinitionShape> {
+    //     match process {
+    //         DefinitionShape::Struct { header, shapes } => {
+    //             let def = StructDef::new(header.clone(), self.shapes_to_fields(shapes)?);
+    //             Ok(def.into())
+    //         }
+    //         DefinitionShape::NewType { header, type_shape } => {
+    //             let def_type = self.type_shape_to_data_type(type_shape)?;
+    //             let def = NewTypeDef::new(header.clone(), def_type);
+    //             Ok(def.into())
+    //         }
+    //         DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
+    //             detail: format!("'allOf' must be processed before '$ref'.\n{:#?}", process),
+    //         }),
+    //     }
+    // }
 
     fn shapes_to_fields(&self, shapes: &[FieldShape]) -> Result<Vec<StructField>> {
         shapes
