@@ -23,10 +23,21 @@ pub mod schemas {
         pub string_values: Patch<Vec<String>>,
     }
 
+    /**
+    Pet1 is defined as nullable, and the property pet1 is not required.
+    */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Sample4 {
         #[serde(default, skip_serializing_if = "Patch::is_absent")]
         pub pet1: Patch<Pet1>,
+    }
+
+    /**
+    Pet1 is defined as nullable, but the property pet1 is required.
+    */
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct Sample5 {
+        pub pet1: Option<Pet1>,
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
