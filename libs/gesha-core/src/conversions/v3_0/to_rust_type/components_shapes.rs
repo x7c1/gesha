@@ -1,3 +1,4 @@
+use crate::conversions::v3_0::to_rust_type::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::{contains_patch, DefinitionShape};
 use crate::conversions::Result;
 use crate::targets::rust_type::{Definition, Module, ModuleName, Modules, PresetDef, UseStatement};
@@ -9,8 +10,15 @@ pub struct ComponentsShapes {
 }
 
 impl ComponentsShapes {
-    pub(crate) fn into_modules(self, defs: Vec<Definition>) -> Result<Modules> {
-        let modules = create_modules(vec![create_module("schemas", defs)?]);
+    pub fn into_modules(mut self) -> Result<Modules> {
+        let processor = PostProcessor::new(self.clone());
+
+        // TODO: support other locations like "#/components/responses/" etc
+        let schemas = create_module(
+            "schemas",
+            processor.run(&mut self.schemas, "#/components/schemas/")?,
+        )?;
+        let modules = create_modules(vec![schemas]);
         Ok(modules)
     }
 

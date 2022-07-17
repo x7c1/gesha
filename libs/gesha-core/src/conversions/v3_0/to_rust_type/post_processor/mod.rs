@@ -2,6 +2,7 @@ mod resolve_all_of;
 mod resolve_ref;
 
 use super::ComponentsShapes;
+use crate::conversions::v3_0::to_rust_type::definition_shape::DefinitionShape;
 use crate::conversions::Result;
 use crate::targets::rust_type::Definition;
 
@@ -10,14 +11,19 @@ pub(super) struct PostProcessor {
 }
 
 impl PostProcessor {
-    pub fn run(modules: &mut ComponentsShapes) -> Result<Vec<Definition>> {
-        let this = Self {
-            original: modules.clone(),
-        };
+    pub fn new(original: ComponentsShapes) -> Self {
+        Self { original }
+    }
+
+    pub fn run(
+        &self,
+        shapes: &mut [DefinitionShape],
+        prefix: &'static str,
+    ) -> Result<Vec<Definition>> {
         // 1st process : resolve allOf
-        this.process_all_of(modules)?;
+        self.process_all_of(shapes)?;
 
         // 2nd process : resolve $ref
-        this.process_ref(modules)
+        self.process_ref(prefix, shapes)
     }
 }

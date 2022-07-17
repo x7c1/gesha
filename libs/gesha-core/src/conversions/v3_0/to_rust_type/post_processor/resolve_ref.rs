@@ -11,13 +11,16 @@ use crate::targets::rust_type::{
 };
 
 impl PostProcessor {
-    pub(super) fn process_ref(&self, modules: &mut ComponentsShapes) -> Result<Vec<Definition>> {
-        // TODO: support other locations like "#/components/responses/" etc
-        RefResolver::run(
-            "#/components/schemas/",
-            &mut modules.schemas,
-            &self.original,
-        )
+    pub(super) fn process_ref(
+        &self,
+        prefix: &'static str,
+        shapes: &mut [DefinitionShape],
+    ) -> Result<Vec<Definition>> {
+        let resolver = RefResolver {
+            prefix,
+            original: &self.original,
+        };
+        shapes.iter_mut().map(|x| resolver.resolve_ref(x)).collect()
     }
 }
 
@@ -27,15 +30,6 @@ struct RefResolver<'a> {
 }
 
 impl RefResolver<'_> {
-    fn run(
-        prefix: &'static str,
-        shapes: &mut [DefinitionShape],
-        original: &ComponentsShapes,
-    ) -> Result<Vec<Definition>> {
-        let this = RefResolver { prefix, original };
-        shapes.iter_mut().map(|x| this.resolve_ref(x)).collect()
-    }
-
     fn resolve_ref(&self, shape: &mut DefinitionShape) -> Result<Definition> {
         match shape {
             DefinitionShape::Struct { header, shapes } => {
