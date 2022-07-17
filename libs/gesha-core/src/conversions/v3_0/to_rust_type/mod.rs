@@ -37,34 +37,9 @@ impl ToRustType<ComponentsObject> for Modules {
             schemas: this.schemas.map(to_shapes).unwrap_or_else(|| Ok(vec![]))?,
         };
         let defs = PostProcessor::run2(&mut shapes)?;
-        shapes.into_modules2(defs)
-
-        // PostProcessor::run(&mut shapes)?;
-        // shapes.into_modules()
+        shapes.into_modules(defs)
     }
 }
-
-// #[derive(Clone, Debug)]
-// enum PostProcess {
-//     AllOf {
-//         header: TypeHeader,
-//         shapes: Vec<AllOfItemShape>,
-//     },
-//     Struct {
-//         header: TypeHeader,
-//         shapes: Vec<FieldShape>,
-//     },
-//     NewType {
-//         header: TypeHeader,
-//         type_shape: TypeShape,
-//     },
-// }
-//
-// impl From<PostProcess> for DefinitionShape {
-//     fn from(this: PostProcess) -> Self {
-//         InProcess(this)
-//     }
-// }
 
 #[derive(Clone, Debug)]
 enum AllOfItemShape {

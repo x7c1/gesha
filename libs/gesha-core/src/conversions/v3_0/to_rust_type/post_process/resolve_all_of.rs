@@ -1,6 +1,5 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
 use crate::conversions::v3_0::to_rust_type::post_process::PostProcessor;
-// use crate::conversions::v3_0::to_rust_type::DefinitionShape::InProcess;
 use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, DefinitionShape, FieldShape};
 use crate::conversions::Result;
 
@@ -11,35 +10,6 @@ impl PostProcessor {
             .iter_mut()
             .try_for_each(|x| self.resolve_all_of(x))
     }
-
-    // fn resolve_all_of(&self, shape: &mut DefinitionShape) -> Result<()> {
-    //     if let InProcess(process) = shape {
-    //         if let Some(processed) = self.shape_all_of(process)? {
-    //             *shape = processed;
-    //         }
-    //     }
-    //     Ok(())
-    // }
-
-    // fn shape_all_of(&self, process: &mut PostProcess) -> Result<Option<DefinitionShape>> {
-    //     match process {
-    //         PostProcess::AllOf { header, shapes } => {
-    //             let process = PostProcess::Struct {
-    //                 header: header.clone(),
-    //                 shapes: self.merge_fields_all_of(shapes)?,
-    //             };
-    //             Ok(Some(process.into()))
-    //         }
-    //         PostProcess::Struct { .. } => {
-    //             // shaped in next process.
-    //             Ok(None)
-    //         }
-    //         PostProcess::NewType { .. } => {
-    //             // shaped in next process.
-    //             Ok(None)
-    //         }
-    //     }
-    // }
 
     fn resolve_all_of(&self, shape: &mut DefinitionShape) -> Result<()> {
         if let Some(processed) = self.shape_all_of(shape)? {

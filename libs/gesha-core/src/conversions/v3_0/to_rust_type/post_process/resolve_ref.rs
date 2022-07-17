@@ -9,7 +9,7 @@ use crate::targets::rust_type::{
 };
 
 impl PostProcessor {
-    pub(super) fn process_ref2(&self, modules: &mut ComponentsShapes) -> Result<Vec<Definition>> {
+    pub(super) fn process_ref(&self, modules: &mut ComponentsShapes) -> Result<Vec<Definition>> {
         // TODO: support other locations like "#/components/responses/" etc
         RefResolver::run2(
             "#/components/schemas/",
@@ -17,15 +17,6 @@ impl PostProcessor {
             &self.original,
         )
     }
-
-    // pub(super) fn process_ref(&self, modules: &mut ComponentsShapes) -> Result<()> {
-    //     // TODO: support other locations like "#/components/responses/" etc
-    //     RefResolver::run(
-    //         "#/components/schemas/",
-    //         &mut modules.schemas,
-    //         &self.original,
-    //     )
-    // }
 }
 
 struct RefResolver<'a> {
@@ -71,39 +62,6 @@ impl RefResolver<'_> {
 }
 
 impl RefResolver<'_> {
-    // fn run(
-    //     prefix: &'static str,
-    //     shapes: &mut [DefinitionShape],
-    //     original: &ComponentsShapes,
-    // ) -> Result<()> {
-    //     let this = RefResolver { prefix, original };
-    //     shapes.iter_mut().try_for_each(|x| this.resolve_ref(x))
-    // }
-
-    // fn resolve_ref(&self, shape: &mut DefinitionShape) -> Result<()> {
-    //     if let InProcess(process) = shape {
-    //         *shape = self.shape_ref(process)?;
-    //     };
-    //     Ok(())
-    // }
-
-    // fn shape_ref(&self, process: &mut PostProcess) -> Result<DefinitionShape> {
-    //     match process {
-    //         DefinitionShape::Struct { header, shapes } => {
-    //             let def = StructDef::new(header.clone(), self.shapes_to_fields(shapes)?);
-    //             Ok(def.into())
-    //         }
-    //         DefinitionShape::NewType { header, type_shape } => {
-    //             let def_type = self.type_shape_to_data_type(type_shape)?;
-    //             let def = NewTypeDef::new(header.clone(), def_type);
-    //             Ok(def.into())
-    //         }
-    //         DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
-    //             detail: format!("'allOf' must be processed before '$ref'.\n{:#?}", process),
-    //         }),
-    //     }
-    // }
-
     fn shapes_to_fields(&self, shapes: &[FieldShape]) -> Result<Vec<StructField>> {
         shapes
             .iter()

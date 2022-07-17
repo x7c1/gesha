@@ -18,17 +18,6 @@ impl PostProcessor {
         this.process_all_of(modules)?;
 
         // 2nd process : resolve $ref
-        this.process_ref2(modules)
+        this.process_ref(modules)
     }
-
-    // pub fn run(modules: &mut ComponentsShapes) -> Result<()> {
-    //     let this = Self {
-    //         original: modules.clone(),
-    //     };
-    //     // 1st process : resolve allOf
-    //     this.process_all_of(modules)?;
-    //
-    //     // 2nd process : resolve $ref
-    //     this.process_ref(modules)
-    // }
 }

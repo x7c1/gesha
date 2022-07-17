@@ -9,15 +9,10 @@ pub struct ComponentsShapes {
 }
 
 impl ComponentsShapes {
-    pub(crate) fn into_modules2(self, defs: Vec<Definition>) -> Result<Modules> {
-        let modules = create_modules(vec![create_module2("schemas", defs)?]);
+    pub(crate) fn into_modules(self, defs: Vec<Definition>) -> Result<Modules> {
+        let modules = create_modules(vec![create_module("schemas", defs)?]);
         Ok(modules)
     }
-
-    // pub fn into_modules(self) -> Result<Modules> {
-    //     let modules = create_modules(vec![create_module("schemas", self.schemas)?]);
-    //     Ok(modules)
-    // }
 
     pub(super) fn find_definition(&self, object: &ReferenceObject) -> Result<&DefinitionShape> {
         // TODO: support other locations like 'components/responses' etc
@@ -25,7 +20,7 @@ impl ComponentsShapes {
     }
 }
 
-fn create_module2<A: Into<String>>(name: A, definitions: Vec<Definition>) -> Result<Module> {
+fn create_module<A: Into<String>>(name: A, definitions: Vec<Definition>) -> Result<Module> {
     let mut imports = default_imports();
     if definitions.iter().any(|x| x.any_type(contains_patch)) {
         imports.push(UseStatement::new("super::core::Patch"));
@@ -33,20 +28,6 @@ fn create_module2<A: Into<String>>(name: A, definitions: Vec<Definition>) -> Res
     let module = Module::new(ModuleName::new(name), definitions, imports);
     Ok(module)
 }
-
-// fn create_module<A: Into<String>>(name: A, shapes: Vec<DefinitionShape>) -> Result<Module> {
-//     let definitions = shapes
-//         .into_iter()
-//         .map(to_definition)
-//         .collect::<Result<Vec<Definition>>>()?;
-//
-//     let mut imports = default_imports();
-//     if definitions.iter().any(|x| x.any_type(contains_patch)) {
-//         imports.push(UseStatement::new("super::core::Patch"));
-//     }
-//     let module = Module::new(ModuleName::new(name), definitions, imports);
-//     Ok(module)
-// }
 
 fn create_modules(modules: Vec<Module>) -> Modules {
     let mut modules = Modules::new(modules);
@@ -81,15 +62,6 @@ fn default_imports() -> Vec<UseStatement> {
         UseStatement::new("serde::Serialize"),
     ]
 }
-
-// fn to_definition(shape: DefinitionShape) -> Result<Definition> {
-//     match shape {
-//         Fixed(def) => Ok(def),
-//         InProcess(process) => Err(PostProcessBroken {
-//             detail: format!("post-process has been left.\n{:#?}", process),
-//         }),
-//     }
-// }
 
 fn find_shape<'a, 'b>(
     prefix: &str,
