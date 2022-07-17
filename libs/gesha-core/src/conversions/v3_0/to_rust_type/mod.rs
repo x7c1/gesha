@@ -53,6 +53,7 @@ enum AllOfItemShape {
 pub struct TypeHeaderShape {
     pub name: SchemaFieldName,
     pub doc_comments: DocComments,
+    pub is_nullable: bool,
 }
 
 #[derive(Clone, Debug)]

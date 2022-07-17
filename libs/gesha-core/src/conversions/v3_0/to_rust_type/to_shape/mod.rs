@@ -88,6 +88,7 @@ impl Shaper {
                 self.object.title.as_deref(),
                 self.object.description.as_deref(),
             ),
+            is_nullable: self.object.nullable.unwrap_or(false),
         }
     }
 }

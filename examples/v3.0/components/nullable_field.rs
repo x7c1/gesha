@@ -22,6 +22,17 @@ pub mod schemas {
         #[serde(default, skip_serializing_if = "Patch::is_absent")]
         pub string_values: Patch<Vec<String>>,
     }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct Sample4 {
+        #[serde(default, skip_serializing_if = "Patch::is_absent")]
+        pub pet1: Patch<Pet1>,
+    }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct Pet1 {
+        pub id: i64,
+    }
 }
 
 pub mod core {
