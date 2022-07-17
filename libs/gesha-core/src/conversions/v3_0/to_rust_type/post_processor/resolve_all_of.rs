@@ -1,5 +1,5 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
-use crate::conversions::v3_0::to_rust_type::post_process::PostProcessor;
+use crate::conversions::v3_0::to_rust_type::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, DefinitionShape, FieldShape};
 use crate::conversions::Result;
 

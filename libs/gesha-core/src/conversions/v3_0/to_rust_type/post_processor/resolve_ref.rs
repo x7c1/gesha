@@ -1,5 +1,5 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
-use crate::conversions::v3_0::to_rust_type::post_process::PostProcessor;
+use crate::conversions::v3_0::to_rust_type::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::{is_patch, DefinitionShape, FieldShape, TypeShape};
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
@@ -11,7 +11,7 @@ use crate::targets::rust_type::{
 impl PostProcessor {
     pub(super) fn process_ref(&self, modules: &mut ComponentsShapes) -> Result<Vec<Definition>> {
         // TODO: support other locations like "#/components/responses/" etc
-        RefResolver::run2(
+        RefResolver::run(
             "#/components/schemas/",
             &mut modules.schemas,
             &self.original,
@@ -25,16 +25,16 @@ struct RefResolver<'a> {
 }
 
 impl RefResolver<'_> {
-    fn run2(
+    fn run(
         prefix: &'static str,
         shapes: &mut [DefinitionShape],
         original: &ComponentsShapes,
     ) -> Result<Vec<Definition>> {
         let this = RefResolver { prefix, original };
-        shapes.iter_mut().map(|x| this.resolve_ref2(x)).collect()
+        shapes.iter_mut().map(|x| this.resolve_ref(x)).collect()
     }
 
-    fn resolve_ref2(&self, shape: &mut DefinitionShape) -> Result<Definition> {
+    fn resolve_ref(&self, shape: &mut DefinitionShape) -> Result<Definition> {
         match shape {
             DefinitionShape::Struct { header, shapes } => {
                 let def = StructDef::new(header.clone(), self.shapes_to_fields(shapes)?);

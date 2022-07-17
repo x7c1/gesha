@@ -10,7 +10,7 @@ pub(super) struct PostProcessor {
 }
 
 impl PostProcessor {
-    pub fn run2(modules: &mut ComponentsShapes) -> Result<Vec<Definition>> {
+    pub fn run(modules: &mut ComponentsShapes) -> Result<Vec<Definition>> {
         let this = Self {
             original: modules.clone(),
         };

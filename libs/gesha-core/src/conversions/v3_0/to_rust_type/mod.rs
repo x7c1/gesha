@@ -4,8 +4,8 @@ use components_shapes::ComponentsShapes;
 mod definition_shape;
 use definition_shape::DefinitionShape;
 
-mod post_process;
-use post_process::PostProcessor;
+mod post_processor;
+use post_processor::PostProcessor;
 
 mod to_shape;
 use to_shape::to_shape;
@@ -36,7 +36,7 @@ impl ToRustType<ComponentsObject> for Modules {
         let mut shapes = ComponentsShapes {
             schemas: this.schemas.map(to_shapes).unwrap_or_else(|| Ok(vec![]))?,
         };
-        let defs = PostProcessor::run2(&mut shapes)?;
+        let defs = PostProcessor::run(&mut shapes)?;
         shapes.into_modules(defs)
     }
 }
