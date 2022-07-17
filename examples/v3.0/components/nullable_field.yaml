@@ -15,11 +15,38 @@ schemas:
         type: string
         nullable: true
 
-#  Sample3:
-#    type: object
-#    properties:
-#      string_values:
-#        type: array
-#        nullable: true
-#        items:
-#          type: string
+  Sample3:
+    type: object
+    properties:
+      string_values:
+        type: array
+        nullable: true
+        items:
+          type: string
+
+  Sample4:
+    type: object
+    description: |
+      Pet1 is defined as nullable, and the property pet1 is not required.
+    properties:
+      pet1:
+        $ref: '#/components/schemas/Pet1'
+
+  Sample5:
+    type: object
+    description: |
+      Pet1 is defined as nullable, but the property pet1 is required.
+    required:
+      - pet1
+    properties:
+      pet1:
+        $ref: '#/components/schemas/Pet1'
+
+  Pet1:
+    type: object
+    nullable: true
+    required:
+      - id
+    properties:
+      id:
+        type: integer

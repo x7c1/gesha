@@ -1,6 +1,5 @@
-use crate::conversions::v3_0::to_rust_type::DefinitionShape::{Fixed, InProcess};
+use crate::conversions::v3_0::to_rust_type::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::{contains_patch, DefinitionShape};
-use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{Definition, Module, ModuleName, Modules, PresetDef, UseStatement};
 use openapi_types::v3_0::ReferenceObject;
@@ -11,8 +10,15 @@ pub struct ComponentsShapes {
 }
 
 impl ComponentsShapes {
-    pub fn into_modules(self) -> Result<Modules> {
-        let modules = create_modules(vec![create_module("schemas", self.schemas)?]);
+    pub fn into_modules(mut self) -> Result<Modules> {
+        let processor = PostProcessor::new(self.clone());
+
+        // TODO: support other locations like "#/components/responses/" etc
+        let schemas = create_module(
+            "schemas",
+            processor.run(&mut self.schemas, "#/components/schemas/")?,
+        )?;
+        let modules = create_modules(vec![schemas]);
         Ok(modules)
     }
 
@@ -22,12 +28,7 @@ impl ComponentsShapes {
     }
 }
 
-fn create_module<A: Into<String>>(name: A, shapes: Vec<DefinitionShape>) -> Result<Module> {
-    let definitions = shapes
-        .into_iter()
-        .map(to_definition)
-        .collect::<Result<Vec<Definition>>>()?;
-
+fn create_module<A: Into<String>>(name: A, definitions: Vec<Definition>) -> Result<Module> {
     let mut imports = default_imports();
     if definitions.iter().any(|x| x.any_type(contains_patch)) {
         imports.push(UseStatement::new("super::core::Patch"));
@@ -70,15 +71,6 @@ fn default_imports() -> Vec<UseStatement> {
     ]
 }
 
-fn to_definition(shape: DefinitionShape) -> Result<Definition> {
-    match shape {
-        Fixed(def) => Ok(def),
-        InProcess(process) => Err(PostProcessBroken {
-            detail: format!("post-process has been left.\n{:#?}", process),
-        }),
-    }
-}
-
 fn find_shape<'a, 'b>(
     prefix: &str,
     defs: &'a [DefinitionShape],
@@ -87,7 +79,7 @@ fn find_shape<'a, 'b>(
     let type_ref = target.as_ref();
     if type_ref.starts_with(prefix) {
         let name = type_ref.replace(prefix, "");
-        defs.iter().find(|shape| shape.is_struct_name(&name))
+        defs.iter().find(|shape| shape.is_type_name(&name))
     } else {
         None
     }
