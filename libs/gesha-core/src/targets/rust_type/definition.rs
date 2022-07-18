@@ -127,15 +127,19 @@ impl From<EnumDef> for Definition {
 }
 
 #[derive(Clone, Debug)]
-pub struct EnumVariant(String);
+pub struct EnumVariant {
+    pub compatible: String,
+    pub original: String,
+    _hide_default_constructor: bool,
+}
 
 impl EnumVariant {
-    pub fn new(x: String) -> Self {
+    pub fn new(original: String) -> Self {
         // TODO: replace x with Rust compatible chars if illegal chars are included.
-        EnumVariant(x)
-    }
-
-    pub fn to_upper_camel(&self) -> String {
-        self.0.to_upper_camel_case()
+        EnumVariant {
+            compatible: original.to_upper_camel_case(),
+            original,
+            _hide_default_constructor: true,
+        }
     }
 }

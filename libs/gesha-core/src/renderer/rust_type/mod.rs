@@ -146,7 +146,7 @@ fn render_enum<W: Write>(mut write: W, x: EnumDef) -> Result<()> {
 fn render_enum_variants<W: Write>(mut write: W, variants: Vec<EnumVariant>) -> Result<()> {
     for variant in variants {
         render! { write =>
-            echo > "{name},\n", name = variant.to_upper_camel();
+            echo > "{name},\n", name = variant.compatible;
         }
     }
     Ok(())
