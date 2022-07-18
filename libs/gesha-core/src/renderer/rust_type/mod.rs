@@ -85,7 +85,7 @@ fn render_fields<W: Write>(mut write: W, fields: Vec<StructField>) -> Result<()>
 fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
     render! { write =>
         call > render_field_attrs => field.attributes;
-        echo > "pub {name}: ", name = field.name;
+        echo > "pub {name}: ", name = field.name.compatible;
         call > render_data_type => &field.data_type;
     };
     Ok(())

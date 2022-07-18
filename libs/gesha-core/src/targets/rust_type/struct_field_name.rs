@@ -1,10 +1,10 @@
 use heck::ToSnakeCase;
-use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug)]
 pub struct StructFieldName {
-    compatible: String,
-    original: String,
+    pub compatible: String,
+    pub original: String,
+    _hide_default_constructor: bool,
 }
 
 impl StructFieldName {
@@ -23,13 +23,8 @@ impl StructFieldName {
         Self {
             compatible: to_rust_compatible_name(&original),
             original,
+            _hide_default_constructor: true,
         }
-    }
-}
-
-impl Display for StructFieldName {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        Display::fmt(&self.compatible, f)
     }
 }
 
