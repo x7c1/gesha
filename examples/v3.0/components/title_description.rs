@@ -62,10 +62,8 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum EnumWithTitle {
-        #[serde(rename = "ERROR1")]
-        Error1,
-        #[serde(rename = "ERROR2")]
-        Error2,
+        Foo,
+        Bar,
     }
 
     /**
