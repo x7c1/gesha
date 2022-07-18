@@ -70,7 +70,7 @@ impl Responder for Response {
             Response::OK { headers, content } => {
                 let mut response = HttpResponse::Ok();
                 if let Some(value) = headers.x_next {
-                    response.set_header("x-next", value);
+                    response.insert_header(("x-next", value));
                 }
                 response.json(content)
             }

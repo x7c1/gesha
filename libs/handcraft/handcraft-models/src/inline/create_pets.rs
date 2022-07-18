@@ -1,6 +1,5 @@
 use crate::errors::RequestError;
 use crate::schemas::Error;
-use actix_web::body::Body;
 use actix_web::{HttpRequest, HttpResponse};
 
 #[derive(Debug)]
@@ -29,7 +28,7 @@ impl Responder for Response {
         match self {
             Response::Created => {
                 let mut response = HttpResponse::Created();
-                response.body(Body::Empty)
+                response.body(())
             }
             Response::InternalServerError { content } => {
                 let mut response = HttpResponse::InternalServerError();

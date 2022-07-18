@@ -1,9 +1,10 @@
 use crate::errors::RequestError;
 use crate::schemas::{Error, MultiPartFormDataResponse, MultipartFormDataParameters};
 use actix_multipart::Multipart;
+use actix_web::body::BoxBody;
 use actix_web::dev::Payload;
 use actix_web::{FromRequest, HttpRequest, HttpResponse, Responder};
-use futures_util::future::{ok, LocalBoxFuture, Ready};
+use futures_util::future::LocalBoxFuture;
 use futures_util::FutureExt;
 
 #[derive(Debug)]
@@ -15,7 +16,6 @@ pub struct Request {
 impl FromRequest for Request {
     type Error = actix_web::Error;
     type Future = LocalBoxFuture<'static, Result<Request, actix_web::Error>>;
-    type Config = ();
 
     fn from_request(req: &HttpRequest, payload: &mut Payload) -> Self::Future {
         let multipart = Multipart::new(req.headers(), payload.take());
@@ -33,11 +33,10 @@ pub enum Response {
 }
 
 impl Responder for Response {
-    type Error = actix_web::Error;
-    type Future = Ready<Result<HttpResponse, Self::Error>>;
+    type Body = BoxBody;
 
-    fn respond_to(self, _: &HttpRequest) -> Self::Future {
-        let response = match self {
+    fn respond_to(self, _: &HttpRequest) -> HttpResponse<Self::Body> {
+        match self {
             Response::Created { content } => {
                 let mut response = HttpResponse::Created();
                 response.json(content)
@@ -46,7 +45,6 @@ impl Responder for Response {
                 let mut response = HttpResponse::InternalServerError();
                 response.json(content)
             }
-        };
-        ok(response)
+        }
     }
 }
