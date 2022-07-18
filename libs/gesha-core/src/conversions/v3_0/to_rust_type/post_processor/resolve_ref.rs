@@ -9,6 +9,7 @@ use crate::targets::rust_type::{
     DataType, Definition, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName, NewTypeDef,
     StructDef, StructField, StructFieldAttribute, StructFieldName, TypeHeader,
 };
+use openapi_types::v3_0::SchemaFieldName;
 
 impl PostProcessor {
     pub(super) fn process_ref(
@@ -68,8 +69,9 @@ impl RefResolver<'_> {
 
     fn field_shape_to_struct_field(&self, shape: &FieldShape) -> Result<StructField> {
         let data_type = self.type_shape_to_data_type(&shape.type_shape)?;
-        let attrs = to_field_attrs(&shape.name, &data_type);
-        let field = StructField::new(shape.name.clone(), data_type, attrs);
+        let name = StructFieldName::new(shape.name.as_ref());
+        let attrs = to_field_attrs(&shape.name, &name, &data_type);
+        let field = StructField::new(name, data_type, attrs);
         Ok(field)
     }
 
@@ -115,9 +117,13 @@ impl RefResolver<'_> {
     }
 }
 
-fn to_field_attrs(name: &StructFieldName, tpe: &DataType) -> Vec<StructFieldAttribute> {
+fn to_field_attrs(
+    original: &SchemaFieldName,
+    name: &StructFieldName,
+    tpe: &DataType,
+) -> Vec<StructFieldAttribute> {
     let mut attrs = vec![];
-    if let Some(original) = name.find_to_rename() {
+    if original.as_ref() != name.as_str() {
         attrs.push(StructFieldAttribute::new(format!(
             r#"serde(rename="{original}")"#
         )));
@@ -135,9 +141,9 @@ fn to_type_header(shape: TypeHeaderShape) -> TypeHeader {
 }
 
 fn to_enum_variant(original: String) -> EnumVariant {
-    let name = EnumVariantName::new(original);
+    let name = EnumVariantName::new(original.as_str());
     let mut attrs = vec![];
-    if let Some(original) = name.find_to_rename() {
+    if name.as_str() != original {
         attrs.push(EnumVariantAttribute::new(format!(
             r#"serde(rename="{original}")"#
         )))

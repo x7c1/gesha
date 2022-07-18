@@ -85,7 +85,7 @@ fn render_fields<W: Write>(mut write: W, fields: Vec<StructField>) -> Result<()>
 fn render_field<W: Write>(mut write: W, field: StructField) -> Result<()> {
     render! { write =>
         call > render_field_attrs => field.attributes;
-        echo > "pub {name}: ", name = field.name.compatible;
+        echo > "pub {name}: ", name = field.name;
         call > render_data_type => &field.data_type;
     };
     Ok(())
@@ -147,7 +147,7 @@ fn render_enum_variants<W: Write>(mut write: W, variants: Vec<EnumVariant>) -> R
     for variant in variants {
         render! { write =>
             call > render_variant_attrs => variant.attributes;
-            echo > "{name},\n", name = variant.name.compatible;
+            echo > "{name},\n", name = variant.name;
         }
     }
     Ok(())

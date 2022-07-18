@@ -10,7 +10,6 @@ pub struct EnumVariant {
 
 impl EnumVariant {
     pub fn new(name: EnumVariantName, attributes: Vec<EnumVariantAttribute>) -> Self {
-        // TODO: replace original with Rust compatible chars if illegal chars are included.
         EnumVariant {
             name,
             attributes,
@@ -18,27 +17,24 @@ impl EnumVariant {
         }
     }
 }
+
 #[derive(Clone, Debug)]
-pub struct EnumVariantName {
-    pub compatible: String,
-    pub original: String,
-    _hide_default_constructor: bool,
-}
+pub struct EnumVariantName(String);
 
 impl EnumVariantName {
-    pub fn new(original: String) -> Self {
-        Self {
-            compatible: original.to_upper_camel_case(),
-            original,
-            _hide_default_constructor: true,
-        }
+    pub fn new(original: &str) -> Self {
+        let x = original.to_upper_camel_case();
+        // TODO: replace x with Rust compatible chars if illegal chars are included
+        Self(x)
     }
-    pub(crate) fn find_to_rename(&self) -> Option<&str> {
-        if self.compatible == self.original {
-            None
-        } else {
-            Some(&self.original)
-        }
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
+impl Display for EnumVariantName {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        Display::fmt(&self.0, f)
     }
 }
 

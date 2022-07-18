@@ -1,28 +1,21 @@
 use heck::ToSnakeCase;
+use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug)]
-pub struct StructFieldName {
-    pub compatible: String,
-    pub original: String,
-    _hide_default_constructor: bool,
-}
+pub struct StructFieldName(String);
 
 impl StructFieldName {
-    pub fn new<A: Into<String>>(a: A) -> Self {
-        let original = a.into();
-        Self {
-            compatible: to_rust_compatible_name(&original),
-            original,
-            _hide_default_constructor: true,
-        }
+    pub fn new(x: &str) -> Self {
+        Self(to_rust_compatible_name(x))
     }
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
 
-    pub(crate) fn find_to_rename(&self) -> Option<&str> {
-        if self.compatible == self.original {
-            None
-        } else {
-            Some(&self.original)
-        }
+impl Display for StructFieldName {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        Display::fmt(&self.0, f)
     }
 }
 
