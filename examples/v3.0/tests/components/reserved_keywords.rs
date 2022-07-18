@@ -6,6 +6,7 @@ fn to_json_string() {
     let x1 = ReservedKeywords {
         break_: "break-value".to_string(),
         continue_: "continue-value".to_string(),
+        move_: "move-value".to_string(),
         ref_: "ref-value".to_string(),
         type_: "type-value".to_string(),
     };
@@ -14,6 +15,7 @@ fn to_json_string() {
         r#"{
             "break": "break-value",
             "continue": "continue-value",
+            "move": "move-value",
             "ref": "ref-value",
             "type": "type-value"
         }"#,

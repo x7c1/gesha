@@ -11,6 +11,8 @@ pub mod schemas {
         pub break_: String,
         #[serde(rename = "continue")]
         pub continue_: String,
+        #[serde(rename = "move")]
+        pub move_: String,
         #[serde(rename = "ref")]
         pub ref_: String,
         #[serde(rename = "type")]
