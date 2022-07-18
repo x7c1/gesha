@@ -8,22 +8,20 @@ pub struct StructFieldName {
 }
 
 impl StructFieldName {
-    pub(crate) fn find_to_rename(&self) -> Option<&str> {
-        if self.compatible == self.original {
-            None
-        } else {
-            Some(&self.original)
-        }
-    }
-}
-
-impl StructFieldName {
     pub fn new<A: Into<String>>(a: A) -> Self {
         let original = a.into();
         Self {
             compatible: to_rust_compatible_name(&original),
             original,
             _hide_default_constructor: true,
+        }
+    }
+
+    pub(crate) fn find_to_rename(&self) -> Option<&str> {
+        if self.compatible == self.original {
+            None
+        } else {
+            Some(&self.original)
         }
     }
 }
