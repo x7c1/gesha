@@ -10,7 +10,7 @@ mod to_shape;
 use to_shape::to_shape;
 
 use crate::conversions::{Result, ToRustType};
-use crate::targets::rust_type::{DataType, DocComments, Modules, StructFieldName};
+use crate::targets::rust_type::{DataType, DocComments, Modules};
 use openapi_types::v3_0::{
     ComponentsObject, Document, ReferenceObject, SchemaFieldName, SchemasObject,
 };
@@ -84,7 +84,7 @@ impl TypeShape {
 
 #[derive(Clone, Debug)]
 struct FieldShape {
-    name: StructFieldName,
+    name: SchemaFieldName,
     type_shape: TypeShape,
 }
 

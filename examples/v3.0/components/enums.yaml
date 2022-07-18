@@ -17,6 +17,12 @@ schemas:
       - asc
       - desc
 
+  StringEnum4:
+    type: string
+    enum:
+      - Foo
+      - Bar
+
 # TODO:
 #  Int32Enum:
 #    type: integer

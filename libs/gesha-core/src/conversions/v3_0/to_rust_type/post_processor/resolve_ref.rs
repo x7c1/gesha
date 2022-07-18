@@ -6,9 +6,10 @@ use crate::conversions::v3_0::to_rust_type::{
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, EnumDef, EnumVariant, NewTypeDef, StructDef, StructField,
-    StructFieldAttribute, StructFieldName, TypeHeader,
+    DataType, Definition, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName, NewTypeDef,
+    StructDef, StructField, StructFieldAttribute, StructFieldName, TypeHeader,
 };
+use openapi_types::v3_0::SchemaFieldName;
 
 impl PostProcessor {
     pub(super) fn process_ref(
@@ -47,7 +48,7 @@ impl RefResolver<'_> {
             DefinitionShape::Enum { header, values } => {
                 let variants = Clone::clone(values)
                     .into_iter()
-                    .map(EnumVariant::new)
+                    .map(to_enum_variant)
                     .collect();
 
                 let def = EnumDef::new(to_type_header(header.clone()), variants);
@@ -68,8 +69,9 @@ impl RefResolver<'_> {
 
     fn field_shape_to_struct_field(&self, shape: &FieldShape) -> Result<StructField> {
         let data_type = self.type_shape_to_data_type(&shape.type_shape)?;
-        let attrs = to_field_attrs(&shape.name, &data_type);
-        let field = StructField::new(shape.name.clone(), data_type, attrs);
+        let name = StructFieldName::new(shape.name.as_ref());
+        let attrs = to_field_attrs(&shape.name, &name, &data_type);
+        let field = StructField::new(name, data_type, attrs);
         Ok(field)
     }
 
@@ -115,21 +117,36 @@ impl RefResolver<'_> {
     }
 }
 
-fn to_field_attrs(name: &StructFieldName, tpe: &DataType) -> Vec<StructFieldAttribute> {
-    let mut attributes = vec![];
-    if let Some(original) = name.find_to_rename() {
-        attributes.push(StructFieldAttribute::new(format!(
+fn to_field_attrs(
+    original: &SchemaFieldName,
+    name: &StructFieldName,
+    tpe: &DataType,
+) -> Vec<StructFieldAttribute> {
+    let mut attrs = vec![];
+    if original.as_ref() != name.as_str() {
+        attrs.push(StructFieldAttribute::new(format!(
             r#"serde(rename="{original}")"#
         )));
     }
     if is_patch(tpe) {
-        attributes.push(StructFieldAttribute::new(
+        attrs.push(StructFieldAttribute::new(
             r#"serde(default, skip_serializing_if = "Patch::is_absent")"#,
         ));
     }
-    attributes
+    attrs
 }
 
 fn to_type_header(shape: TypeHeaderShape) -> TypeHeader {
     TypeHeader::new(shape.name, shape.doc_comments)
+}
+
+fn to_enum_variant(original: String) -> EnumVariant {
+    let name = EnumVariantName::new(original.as_str());
+    let mut attrs = vec![];
+    if name.as_str() != original {
+        attrs.push(EnumVariantAttribute::new(format!(
+            r#"serde(rename="{original}")"#
+        )))
+    }
+    EnumVariant::new(name, attrs)
 }

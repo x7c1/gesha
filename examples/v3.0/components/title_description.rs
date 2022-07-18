@@ -62,8 +62,8 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum EnumWithTitle {
-        Error1,
-        Error2,
+        Foo,
+        Bar,
     }
 
     /**

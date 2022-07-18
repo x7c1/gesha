@@ -2,8 +2,8 @@ use crate::render;
 use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, DeriveAttribute, EnumDef, EnumVariant, Module, Modules, NewTypeDef,
-    PresetDef, StructDef, StructField, StructFieldAttribute, UseStatement,
+    DataType, Definition, DeriveAttribute, EnumDef, EnumVariant, EnumVariantAttribute, Module,
+    Modules, NewTypeDef, PresetDef, StructDef, StructField, StructFieldAttribute, UseStatement,
 };
 use std::io::Write;
 
@@ -146,8 +146,16 @@ fn render_enum<W: Write>(mut write: W, x: EnumDef) -> Result<()> {
 fn render_enum_variants<W: Write>(mut write: W, variants: Vec<EnumVariant>) -> Result<()> {
     for variant in variants {
         render! { write =>
-            echo > "{name},\n", name = variant.to_upper_camel();
+            call > render_variant_attrs => variant.attributes;
+            echo > "{name},\n", name = variant.name;
         }
+    }
+    Ok(())
+}
+
+fn render_variant_attrs<W: Write>(mut write: W, attrs: Vec<EnumVariantAttribute>) -> Result<()> {
+    for attr in attrs.into_iter() {
+        render! { write => echo > "#[{attr}]"; }
     }
     Ok(())
 }

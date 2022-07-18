@@ -60,8 +60,8 @@ schemas:
     title: Sample1
     type: string
     enum:
-      - "ERROR1"
-      - "ERROR2"
+      - Foo
+      - Bar
 
   WrappedValueWithTitle:
     title: Sample2

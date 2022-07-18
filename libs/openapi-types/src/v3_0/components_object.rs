@@ -172,4 +172,9 @@ pub type EnumValues = IndexSet<String>;
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
 /// > Inline or referenced schema MUST be of a Schema Object and not a standard JSON Schema.
+///
+/// https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.22
+/// > This keyword's value MUST be an array.  This array MUST have at least one element.
+///
+/// > Elements of the array MUST be objects.  Each object MUST be a valid JSON Schema.
 pub type AllOf = Vec<SchemaCase>;

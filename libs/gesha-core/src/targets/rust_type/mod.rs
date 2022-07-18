@@ -2,10 +2,13 @@ mod data_type;
 pub use data_type::DataType;
 
 mod definition;
-pub use definition::{Definition, EnumDef, EnumVariant, NewTypeDef, PresetDef, StructDef};
+pub use definition::{Definition, EnumDef, NewTypeDef, PresetDef, StructDef};
 
 mod derive_attribute;
 pub use derive_attribute::DeriveAttribute;
+
+mod enum_variant;
+pub use enum_variant::{EnumVariant, EnumVariantAttribute, EnumVariantName};
 
 mod modules;
 pub use modules::Modules;

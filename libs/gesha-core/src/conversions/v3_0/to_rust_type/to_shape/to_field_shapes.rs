@@ -1,7 +1,6 @@
 use super::to_type_shape;
 use crate::conversions::v3_0::to_rust_type::FieldShape;
 use crate::conversions::Result;
-use crate::targets::rust_type::StructFieldName;
 use openapi_types::v3_0::{RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaProperties};
 
 pub(super) fn to_field_shapes(
@@ -28,7 +27,7 @@ impl ToFieldShapes {
     fn to_field(&self, name: SchemaFieldName, case: SchemaCase) -> Result<FieldShape> {
         let is_required = self.is_required(&name);
         Ok(FieldShape {
-            name: StructFieldName::new(name),
+            name,
             type_shape: to_type_shape(case, is_required)?,
         })
     }
