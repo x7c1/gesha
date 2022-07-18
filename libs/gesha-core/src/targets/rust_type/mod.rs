@@ -8,7 +8,7 @@ mod derive_attribute;
 pub use derive_attribute::DeriveAttribute;
 
 mod enum_variant;
-pub use enum_variant::EnumVariant;
+pub use enum_variant::{EnumVariant, EnumVariantAttribute, EnumVariantName};
 
 mod modules;
 pub use modules::Modules;

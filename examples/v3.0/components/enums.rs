@@ -7,19 +7,31 @@ pub mod schemas {
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum StringEnum1 {
+        #[serde(rename = "ERROR1")]
         Error1,
+        #[serde(rename = "ERROR2")]
         Error2,
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum StringEnum2 {
+        #[serde(rename = "ERROR_FOO")]
         ErrorFoo,
+        #[serde(rename = "ERROR_BAR")]
         ErrorBar,
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum StringEnum3 {
+        #[serde(rename = "asc")]
         Asc,
+        #[serde(rename = "desc")]
         Desc,
+    }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub enum StringEnum4 {
+        Foo,
+        Bar,
     }
 }

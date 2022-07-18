@@ -6,8 +6,8 @@ use crate::conversions::v3_0::to_rust_type::{
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, EnumDef, EnumVariant, NewTypeDef, StructDef, StructField,
-    StructFieldAttribute, StructFieldName, TypeHeader,
+    DataType, Definition, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName, NewTypeDef,
+    StructDef, StructField, StructFieldAttribute, StructFieldName, TypeHeader,
 };
 
 impl PostProcessor {
@@ -47,7 +47,7 @@ impl RefResolver<'_> {
             DefinitionShape::Enum { header, values } => {
                 let variants = Clone::clone(values)
                     .into_iter()
-                    .map(EnumVariant::new)
+                    .map(to_enum_variant)
                     .collect();
 
                 let def = EnumDef::new(to_type_header(header.clone()), variants);
@@ -116,20 +116,31 @@ impl RefResolver<'_> {
 }
 
 fn to_field_attrs(name: &StructFieldName, tpe: &DataType) -> Vec<StructFieldAttribute> {
-    let mut attributes = vec![];
+    let mut attrs = vec![];
     if let Some(original) = name.find_to_rename() {
-        attributes.push(StructFieldAttribute::new(format!(
+        attrs.push(StructFieldAttribute::new(format!(
             r#"serde(rename="{original}")"#
         )));
     }
     if is_patch(tpe) {
-        attributes.push(StructFieldAttribute::new(
+        attrs.push(StructFieldAttribute::new(
             r#"serde(default, skip_serializing_if = "Patch::is_absent")"#,
         ));
     }
-    attributes
+    attrs
 }
 
 fn to_type_header(shape: TypeHeaderShape) -> TypeHeader {
     TypeHeader::new(shape.name, shape.doc_comments)
+}
+
+fn to_enum_variant(original: String) -> EnumVariant {
+    let name = EnumVariantName::new(original);
+    let mut attrs = vec![];
+    if let Some(original) = name.find_to_rename() {
+        attrs.push(EnumVariantAttribute::new(format!(
+            r#"serde(rename="{original}")"#
+        )))
+    }
+    EnumVariant::new(name, attrs)
 }
