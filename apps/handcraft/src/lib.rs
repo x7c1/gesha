@@ -44,9 +44,6 @@ fn from_request_error(e: RequestError) -> schemas::Error {
         RequestError::InvalidBody { message } => (4005, message),
         RequestError::FormDataFieldRequired { name } => (4006, name),
         RequestError::MultipartError { cause } => (4007, cause),
-        RequestError::ContentDispositionNotFound => {
-            (4008, "content disposition not found".to_string())
-        }
         RequestError::ContentDispositionNameNotFound => {
             (4009, "content disposition name not found".to_string())
         }

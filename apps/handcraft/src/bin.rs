@@ -1,3 +1,4 @@
+use actix_web::web::Data;
 use actix_web::{App, HttpServer};
 use handcraft::multipart::post_multipart_form_data;
 use handcraft::Handlers;
@@ -7,7 +8,7 @@ use handcraft_server::register_services;
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         let app = App::new()
-            .data(Handlers::default())
+            .app_data(Data::new(Handlers::default()))
             .service(post_multipart_form_data);
 
         register_services! { app --generated=handcraft }
