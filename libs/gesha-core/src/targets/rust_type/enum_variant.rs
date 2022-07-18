@@ -22,10 +22,9 @@ impl EnumVariant {
 pub struct EnumVariantName(String);
 
 impl EnumVariantName {
-    pub fn new(original: &str) -> Self {
-        let x = original.to_upper_camel_case();
+    pub fn new(x: &str) -> Self {
         // TODO: replace x with Rust compatible chars if illegal chars are included
-        Self(x)
+        Self(x.to_upper_camel_case())
     }
     pub fn as_str(&self) -> &str {
         &self.0
