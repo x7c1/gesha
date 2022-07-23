@@ -1,5 +1,5 @@
 mod enum1 {
-    use examples_v3_0::components::enums::schemas::StringEnum1;
+    use examples_v3_0::components::schemas::enums::schemas::StringEnum1;
 
     #[test]
     fn to_json_string() {
@@ -11,7 +11,7 @@ mod enum1 {
 }
 
 mod enum2 {
-    use examples_v3_0::components::enums::schemas::StringEnum2;
+    use examples_v3_0::components::schemas::enums::schemas::StringEnum2;
 
     #[test]
     fn from_json_string() {
@@ -22,7 +22,7 @@ mod enum2 {
 }
 
 mod enum4 {
-    use examples_v3_0::components::enums::schemas::StringEnum4;
+    use examples_v3_0::components::schemas::enums::schemas::StringEnum4;
 
     #[test]
     fn to_json_string() {

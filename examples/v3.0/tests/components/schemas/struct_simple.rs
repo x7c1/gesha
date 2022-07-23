@@ -1,4 +1,4 @@
-use examples_v3_0::components::struct_simple::schemas::Pet;
+use examples_v3_0::components::schemas::struct_simple::schemas::Pet;
 
 #[test]
 fn to_json_string() {

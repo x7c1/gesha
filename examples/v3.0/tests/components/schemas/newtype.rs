@@ -1,4 +1,4 @@
-use examples_v3_0::components::newtype::schemas::{BooleanValue, StringValue};
+use examples_v3_0::components::schemas::newtype::schemas::{BooleanValue, StringValue};
 use serde_json::Value;
 
 #[test]

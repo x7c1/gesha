@@ -2,8 +2,12 @@ use crate::gateway::testing::{new_writer, TestCase};
 use crate::renderer::Renderer;
 use crate::{gateway, render};
 use std::io::Write;
+use std::path::PathBuf;
 
-pub fn generate_module_file<A>(path: &str, cases: Vec<TestCase<A>>) -> gateway::Result<()> {
+pub fn generate_module_file<A, P>(path: P, cases: Vec<TestCase<A>>) -> gateway::Result<()>
+where
+    P: Into<PathBuf>,
+{
     let writer = new_writer(path);
     writer.create_file(ModuleFile { cases })
 }

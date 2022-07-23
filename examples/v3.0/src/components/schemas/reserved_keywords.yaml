@@ -4,12 +4,15 @@ schemas:
     required:
       - break
       - continue
+      - move
       - ref
       - type
     properties:
       break:
         type: string
       continue:
+        type: string
+      move:
         type: string
       ref:
         type: string

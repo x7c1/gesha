@@ -26,7 +26,7 @@ fn to_rust_compatible_name(target: &str) -> String {
     let target = target.to_snake_case();
 
     // TODO: include other keywords
-    ["break", "continue", "ref", "type"]
+    ["break", "continue", "move", "ref", "type"]
         .into_iter()
         .find(|x| &target == x)
         .map(|x| x.to_string() + "_")
