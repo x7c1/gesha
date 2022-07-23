@@ -1,14 +1,12 @@
 mod generate_module_file;
 pub use generate_module_file::generate_module_file;
 
+pub mod v3_0;
+
 use crate::conversions::{ToOpenApi, ToRustType};
 use crate::gateway;
-use crate::gateway::Error::UnsupportedExampleLocation;
 use crate::gateway::{detect_diff, Reader, Writer};
 use crate::renderer::Renderer;
-use crate::targets::rust_type::Modules;
-use openapi_types::v3_0;
-use std::borrow::Cow;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::path::PathBuf;
@@ -29,39 +27,6 @@ impl<A> Clone for TestCase<A> {
             schema: self.schema.clone(),
             example: self.example.clone(),
             module_name: self.module_name.clone(),
-            phantom: Default::default(),
-        }
-    }
-}
-
-impl TestCase<(v3_0::ComponentsObject, Modules)> {
-    pub fn from<A>(yaml_names: Vec<A>) -> Vec<Self>
-    where
-        A: Into<Cow<'static, str>>,
-    {
-        yaml_names
-            .into_iter()
-            .map(|x| x.into())
-            .map(Self::create)
-            .collect()
-    }
-
-    pub fn from_path(path: String) -> gateway::Result<Self> {
-        let target = "examples/v3.0/src/components/schemas/";
-        if path.starts_with(target) {
-            Ok(Self::create(path.replace(target, "").into()))
-        } else {
-            Err(UnsupportedExampleLocation(path))
-        }
-    }
-
-    fn create(yaml_name: Cow<str>) -> Self {
-        let rs_name = yaml_name.replace(".yaml", ".rs");
-        TestCase {
-            output: format!("output/v3.0/components/schemas/{rs_name}").into(),
-            schema: format!("examples/v3.0/src/components/schemas/{yaml_name}").into(),
-            example: format!("examples/v3.0/src/components/schemas/{rs_name}").into(),
-            module_name: yaml_name.replace(".yaml", ""),
             phantom: Default::default(),
         }
     }

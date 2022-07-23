@@ -1,6 +1,7 @@
 pub mod overwrite;
 
 use gesha_core::gateway;
+use gesha_core::gateway::testing::v3_0::ComponentsCase;
 use gesha_core::gateway::testing::{test_rust_type, TestCase};
 use gesha_core::targets::rust_type::Modules;
 use openapi_types::v3_0;
@@ -15,7 +16,7 @@ type SupportedTestCase = TestCase<(v3_0::ComponentsObject, Modules)>;
 
 pub fn run(params: Params) -> gateway::Result<()> {
     if let Some(schema) = params.schema {
-        let case = SupportedTestCase::from_path(schema)?;
+        let case = ComponentsCase::path_to_case(schema)?;
         test_rust_type(case)?;
         return Ok(());
     }
@@ -24,7 +25,7 @@ pub fn run(params: Params) -> gateway::Result<()> {
 }
 
 fn new_test_cases() -> Vec<SupportedTestCase> {
-    SupportedTestCase::from(vec![
+    ComponentsCase::Schemas.to_cases(vec![
         "struct_simple.yaml",
         "numeric_fields.yaml",
         "boolean_field.yaml",
