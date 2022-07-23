@@ -50,7 +50,7 @@ impl From<ComponentCase> for TestCase<(v3_0::ComponentsObject, Modules)> {
 }
 
 pub struct ComponentCases {
-    kind: ComponentKind,
+    pub module_path: String,
     cases: Vec<ComponentCase>,
 }
 
@@ -62,14 +62,12 @@ impl ComponentCases {
             .map(|yaml_name| ComponentCase::new(kind, yaml_name))
             .collect();
 
-        Self { kind, cases }
-    }
-
-    pub fn module_path(&self) -> String {
-        format!(
+        let module_path = format!(
             "examples/v3.0/src/components/{module}.rs",
-            module = self.kind.name()
-        )
+            module = kind.name()
+        );
+
+        Self { module_path, cases }
     }
 }
 
