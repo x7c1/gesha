@@ -21,7 +21,7 @@ pub fn run(params: Params) -> gateway::Result<()> {
         test_rust_type(case)?;
         return Ok(());
     }
-    vec![new_schemas_cases(), new_request_bodies_cases()]
+    all_cases()
         .into_iter()
         .try_for_each(test_rust_types)
 }
@@ -52,4 +52,8 @@ fn new_schemas_cases() -> ComponentCases {
 
 fn new_request_bodies_cases() -> ComponentCases {
     ComponentCases::from_vec(RequestBodies, vec!["schema_ref.yaml"])
+}
+
+fn all_cases() -> Vec<ComponentCases> {
+    vec![new_schemas_cases(), new_request_bodies_cases()]
 }
