@@ -47,11 +47,22 @@ where
     writer.create_file(rust_types)
 }
 
-pub fn test_rust_type<A, B>(target: TestCase<(A, B)>) -> gateway::Result<()>
+pub fn test_rust_types<X, A, B>(targets: X) -> gateway::Result<()>
 where
+    X: Into<Vec<TestCase<(A, B)>>>,
     A: Debug + ToOpenApi,
     B: Debug + ToRustType<A> + Renderer,
 {
+    targets.into().into_iter().try_for_each(test_rust_type)
+}
+
+pub fn test_rust_type<X, A, B>(target: X) -> gateway::Result<()>
+where
+    X: Into<TestCase<(A, B)>>,
+    A: Debug + ToOpenApi,
+    B: Debug + ToRustType<A> + Renderer,
+{
+    let target = target.into();
     generate_rust_type(target.clone())?;
     detect_diff(&target.output, &target.example)
 }

@@ -1,7 +1,7 @@
 use crate::test;
 use crate::test::SupportedTestCase;
 use gesha_core::gateway;
-use gesha_core::gateway::testing::v3_0::ComponentsCase;
+use gesha_core::gateway::testing::v3_0::ComponentCase;
 use gesha_core::gateway::testing::{generate_module_file, test_rust_type_to_overwrite};
 use gesha_core::gateway::{Error, ErrorTheme, Writer};
 
@@ -13,10 +13,10 @@ pub struct Params {
 
 pub fn run(params: Params) -> gateway::Result<()> {
     let test_cases = if let Some(schema) = params.schema {
-        let case = ComponentsCase::path_to_case(schema)?;
-        vec![case]
+        let case = ComponentCase::from_path(schema)?;
+        vec![case.into()]
     } else {
-        test::new_test_cases()
+        test::new_schemas_cases().into()
     };
 
     let cases = test_cases
@@ -35,10 +35,9 @@ pub fn run(params: Params) -> gateway::Result<()> {
         };
         writer.copy_file(case.target.output)?;
     }
-    generate_module_file(
-        "examples/v3.0/src/components/schemas.rs",
-        test::new_test_cases(),
-    )
+
+    let schema_cases = test::new_schemas_cases();
+    generate_module_file(schema_cases.module_path(), schema_cases.into())
 }
 
 fn run_and_catch_diff(target: SupportedTestCase) -> gateway::Result<Option<ModifiedCase>> {
