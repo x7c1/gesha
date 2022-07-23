@@ -1,4 +1,4 @@
-use crate::v3_0::SchemaFieldName;
+use crate::v3_0::ComponentName;
 use crate::v3_0::{FormatModifier, OpenApiDataType, ReferenceObject, RequestBodiesObject};
 use indexmap::{IndexMap, IndexSet};
 
@@ -9,7 +9,7 @@ pub struct ComponentsObject {
     pub schemas: Option<SchemasObject>,
 }
 
-pub type SchemasObject = IndexMap<SchemaFieldName, SchemaCase>;
+pub type SchemasObject = IndexMap<ComponentName, SchemaCase>;
 
 /// Schema Object | Reference Object
 #[derive(Clone, Debug)]
@@ -94,7 +94,7 @@ pub struct SchemaObject {
 /// > and not a standard JSON Schema (inline or referenced).
 ///
 /// see also: https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.16
-pub type SchemaProperties = IndexMap<SchemaFieldName, SchemaCase>;
+pub type SchemaProperties = IndexMap<ComponentName, SchemaCase>;
 
 /// https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.15
 /// >The value of this keyword MUST be an array.  This array MUST have at

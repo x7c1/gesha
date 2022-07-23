@@ -12,7 +12,7 @@ use to_shape::to_shape;
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{DataType, DocComments, Modules};
 use openapi_types::v3_0::{
-    ComponentsObject, Document, ReferenceObject, SchemaFieldName, SchemasObject,
+    ComponentName, ComponentsObject, Document, ReferenceObject, SchemasObject,
 };
 
 impl ToRustType<Document> for Modules {
@@ -49,7 +49,7 @@ enum AllOfItemShape {
 
 #[derive(Clone, Debug)]
 pub struct TypeHeaderShape {
-    pub name: SchemaFieldName,
+    pub name: ComponentName,
     pub doc_comments: DocComments,
     pub is_nullable: bool,
 }
@@ -84,7 +84,7 @@ impl TypeShape {
 
 #[derive(Clone, Debug)]
 struct FieldShape {
-    name: SchemaFieldName,
+    name: ComponentName,
     type_shape: TypeShape,
 }
 

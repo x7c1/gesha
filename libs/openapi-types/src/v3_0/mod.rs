@@ -1,5 +1,5 @@
 mod component_name;
-pub use component_name::SchemaFieldName;
+pub use component_name::ComponentName;
 
 mod components_object;
 pub use components_object::{

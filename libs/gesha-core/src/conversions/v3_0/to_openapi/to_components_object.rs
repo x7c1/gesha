@@ -4,9 +4,9 @@ use crate::conversions::{reify_entry, reify_value, Result, ToOpenApi};
 use crate::yaml::{YamlArray, YamlMap};
 use indexmap::{IndexMap, IndexSet};
 use openapi_types::v3_0::{
-    AllOf, ArrayItems, ComponentsObject, EnumValues, FormatModifier, OpenApiDataType,
-    ReferenceObject, RequestBodiesObject, RequestBodyCase, RequiredSchemaFields, SchemaCase,
-    SchemaFieldName, SchemaObject, SchemaProperties, SchemasObject,
+    AllOf, ArrayItems, ComponentName, ComponentsObject, EnumValues, FormatModifier,
+    OpenApiDataType, ReferenceObject, RequestBodiesObject, RequestBodyCase, RequiredSchemaFields,
+    SchemaCase, SchemaObject, SchemaProperties, SchemasObject,
 };
 
 impl ToOpenApi for ComponentsObject {
@@ -36,7 +36,7 @@ impl ToOpenApi for RequestBodiesObject {
             .collect::<Result<Vec<(String, YamlMap)>>>()?
             .into_iter()
             .map(to_request_body_pair)
-            .collect::<Result<IndexMap<SchemaFieldName, RequestBodyCase>>>()?;
+            .collect::<Result<IndexMap<ComponentName, RequestBodyCase>>>()?;
 
         Ok(RequestBodiesObject::new(cases))
     }
@@ -53,9 +53,9 @@ impl ToOpenApi for SchemasObject {
     }
 }
 
-fn to_schema_pair(kv: (String, YamlMap)) -> Result<(SchemaFieldName, SchemaCase)> {
+fn to_schema_pair(kv: (String, YamlMap)) -> Result<(ComponentName, SchemaCase)> {
     let (name, map) = kv;
-    Ok((SchemaFieldName::new(name), to_schema_case(map)?))
+    Ok((ComponentName::new(name), to_schema_case(map)?))
 }
 
 fn to_schema_case(mut map: YamlMap) -> Result<SchemaCase> {

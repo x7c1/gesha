@@ -1,11 +1,11 @@
-use crate::v3_0::{ReferenceObject, SchemaFieldName};
+use crate::v3_0::{ComponentName, ReferenceObject};
 use indexmap::IndexMap;
 
 #[derive(Debug)]
-pub struct RequestBodiesObject(IndexMap<SchemaFieldName, RequestBodyCase>);
+pub struct RequestBodiesObject(IndexMap<ComponentName, RequestBodyCase>);
 
 impl RequestBodiesObject {
-    pub fn new(map: IndexMap<SchemaFieldName, RequestBodyCase>) -> Self {
+    pub fn new(map: IndexMap<ComponentName, RequestBodyCase>) -> Self {
         Self(map)
     }
 }

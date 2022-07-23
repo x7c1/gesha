@@ -1,7 +1,7 @@
 use super::to_type_shape;
 use crate::conversions::v3_0::to_rust_type::FieldShape;
 use crate::conversions::Result;
-use openapi_types::v3_0::{RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaProperties};
+use openapi_types::v3_0::{ComponentName, RequiredSchemaFields, SchemaCase, SchemaProperties};
 
 pub(super) fn to_field_shapes(
     properties: Option<SchemaProperties>,
@@ -24,7 +24,7 @@ impl ToFieldShapes {
             .collect()
     }
 
-    fn to_field(&self, name: SchemaFieldName, case: SchemaCase) -> Result<FieldShape> {
+    fn to_field(&self, name: ComponentName, case: SchemaCase) -> Result<FieldShape> {
         let is_required = self.is_required(&name);
         Ok(FieldShape {
             name,
@@ -32,7 +32,7 @@ impl ToFieldShapes {
         })
     }
 
-    fn is_required(&self, name: &SchemaFieldName) -> bool {
+    fn is_required(&self, name: &ComponentName) -> bool {
         match &self.required {
             Some(required) => required.contains(name.as_ref()),
             None => false,

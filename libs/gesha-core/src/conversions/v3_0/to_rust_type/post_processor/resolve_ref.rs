@@ -9,7 +9,7 @@ use crate::targets::rust_type::{
     DataType, Definition, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName, NewTypeDef,
     StructDef, StructField, StructFieldAttribute, StructFieldName, TypeHeader,
 };
-use openapi_types::v3_0::SchemaFieldName;
+use openapi_types::v3_0::ComponentName;
 
 impl PostProcessor {
     pub(super) fn process_ref(
@@ -118,7 +118,7 @@ impl RefResolver<'_> {
 }
 
 fn to_field_attrs(
-    original: &SchemaFieldName,
+    original: &ComponentName,
     name: &StructFieldName,
     tpe: &DataType,
 ) -> Vec<StructFieldAttribute> {
