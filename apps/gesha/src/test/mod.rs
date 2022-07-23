@@ -21,9 +21,7 @@ pub fn run(params: Params) -> gateway::Result<()> {
         test_rust_type(case)?;
         return Ok(());
     }
-    all_cases()
-        .into_iter()
-        .try_for_each(test_rust_types)
+    all_cases().into_iter().try_for_each(test_rust_types)
 }
 
 fn new_schemas_cases() -> ComponentCases {

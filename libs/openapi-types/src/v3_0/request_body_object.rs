@@ -13,7 +13,7 @@ impl RequestBodiesObject {
 /// Request Body Object | Reference Object
 #[derive(Clone, Debug)]
 pub enum RequestBodyCase {
-    Schema(Box<RequestBodyObject>),
+    RequestBody(Box<RequestBodyObject>),
     Reference(ReferenceObject),
 }
 

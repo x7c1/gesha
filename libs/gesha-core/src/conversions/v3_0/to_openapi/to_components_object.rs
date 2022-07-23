@@ -17,7 +17,7 @@ impl ToOpenApi for ComponentsObject {
             .transpose()?;
 
         let request_bodies = map
-            .remove_if_exists("request_bodies")?
+            .remove_if_exists("requestBodies")?
             .map(ToOpenApi::apply)
             .transpose()?;
 
