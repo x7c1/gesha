@@ -1,0 +1,17 @@
+requestBodies:
+  PetBody:
+    description: A JSON object containing pet information
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '#/components/schemas/Pet'
+
+schemas:
+  Pet:
+    type: object
+    required:
+      - id
+    properties:
+      id:
+        type: integer

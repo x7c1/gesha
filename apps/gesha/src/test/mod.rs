@@ -1,7 +1,7 @@
 pub mod overwrite;
 
 use gesha_core::gateway;
-use gesha_core::gateway::testing::v3_0::ComponentKind::Schemas;
+use gesha_core::gateway::testing::v3_0::ComponentKind::{RequestBodies, Schemas};
 use gesha_core::gateway::testing::v3_0::{ComponentCase, ComponentCases};
 use gesha_core::gateway::testing::{test_rust_type, test_rust_types, TestCase};
 use gesha_core::targets::rust_type::Modules;
@@ -21,7 +21,9 @@ pub fn run(params: Params) -> gateway::Result<()> {
         test_rust_type(case)?;
         return Ok(());
     }
-    test_rust_types(new_schemas_cases())
+    vec![new_schemas_cases(), new_request_bodies_cases()]
+        .into_iter()
+        .try_for_each(test_rust_types)
 }
 
 fn new_schemas_cases() -> ComponentCases {
@@ -46,4 +48,8 @@ fn new_schemas_cases() -> ComponentCases {
             "nullable_field.yaml",
         ],
     )
+}
+
+fn new_request_bodies_cases() -> ComponentCases {
+    ComponentCases::from_vec(RequestBodies, vec!["schema_ref.yaml"])
 }
