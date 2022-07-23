@@ -35,7 +35,7 @@ pub fn run(params: Params) -> gateway::Result<()> {
         writer.copy_file(case.target.output)?;
     }
     generate_module_file(
-        "examples/v3.0/components/schemas.rs",
+        "examples/v3.0/src/components/schemas.rs",
         test::new_test_cases(),
     )
 }
