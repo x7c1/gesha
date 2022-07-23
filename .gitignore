@@ -15,7 +15,7 @@ target
 .idea
 
 # generated files
-output/v3.0/components/*
+output/v3.0/components/schemas/*
 !output/v3.0/components/schemas/.gitkeep
 
 # log files
