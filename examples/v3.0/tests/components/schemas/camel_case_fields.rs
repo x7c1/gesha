@@ -1,5 +1,5 @@
 use crate::components::flatten;
-use examples_v3_0::components::camel_case_fields::schemas::CamelCaseFields;
+use examples_v3_0::components::schemas::camel_case_fields::schemas::CamelCaseFields;
 
 #[test]
 fn to_json_string() {

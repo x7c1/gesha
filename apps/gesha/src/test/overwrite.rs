@@ -34,7 +34,7 @@ pub fn run(params: Params) -> gateway::Result<()> {
         };
         writer.copy_file(case.target.output)?;
     }
-    generate_module_file("examples/v3.0/components.rs", test::new_test_cases())
+    generate_module_file("examples/v3.0/components/schemas.rs", test::new_test_cases())
 }
 
 fn run_and_catch_diff(target: SupportedTestCase) -> gateway::Result<Option<ModifiedCase>> {

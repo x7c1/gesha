@@ -1,6 +1,6 @@
 mod deserialize {
-    use examples_v3_0::components::nullable_field::core::Patch;
-    use examples_v3_0::components::nullable_field::schemas::Sample1;
+    use examples_v3_0::components::schemas::nullable_field::core::Patch;
+    use examples_v3_0::components::schemas::nullable_field::schemas::Sample1;
 
     #[test]
     fn value() {
@@ -38,8 +38,8 @@ mod deserialize {
 
 mod serialize {
     use crate::components::flatten;
-    use examples_v3_0::components::nullable_field::core::Patch;
-    use examples_v3_0::components::nullable_field::schemas::Sample1;
+    use examples_v3_0::components::schemas::nullable_field::core::Patch;
+    use examples_v3_0::components::schemas::nullable_field::schemas::Sample1;
 
     #[test]
     fn value() {

@@ -1,5 +1,5 @@
 use crate::components::flatten;
-use examples_v3_0::components::reserved_keywords::schemas::ReservedKeywords;
+use examples_v3_0::components::schemas::reserved_keywords::schemas::ReservedKeywords;
 
 #[test]
 fn to_json_string() {
