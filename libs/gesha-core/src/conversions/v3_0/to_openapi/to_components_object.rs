@@ -1,11 +1,12 @@
+use crate::conversions::v3_0::to_openapi::to_request_body::to_request_body_pair;
 use crate::conversions::Error::UnknownDataType;
 use crate::conversions::{reify_entry, reify_value, Result, ToOpenApi};
 use crate::yaml::{YamlArray, YamlMap};
-use indexmap::IndexSet;
+use indexmap::{IndexMap, IndexSet};
 use openapi_types::v3_0::{
     AllOf, ArrayItems, ComponentsObject, EnumValues, FormatModifier, OpenApiDataType,
-    ReferenceObject, RequiredSchemaFields, SchemaCase, SchemaFieldName, SchemaObject,
-    SchemaProperties, SchemasObject,
+    ReferenceObject, RequestBodiesObject, RequestBodyCase, RequiredSchemaFields, SchemaCase,
+    SchemaFieldName, SchemaObject, SchemaProperties, SchemasObject,
 };
 
 impl ToOpenApi for ComponentsObject {
@@ -15,7 +16,29 @@ impl ToOpenApi for ComponentsObject {
             .map(ToOpenApi::apply)
             .transpose()?;
 
-        Ok(ComponentsObject { schemas })
+        let request_bodies = map
+            .remove_if_exists("request_bodies")?
+            .map(ToOpenApi::apply)
+            .transpose()?;
+
+        Ok(ComponentsObject {
+            request_bodies,
+            schemas,
+        })
+    }
+}
+
+impl ToOpenApi for RequestBodiesObject {
+    fn apply(map: YamlMap) -> Result<Self> {
+        let cases = map
+            .into_iter()
+            .map(reify_entry)
+            .collect::<Result<Vec<(String, YamlMap)>>>()?
+            .into_iter()
+            .map(to_request_body_pair)
+            .collect::<Result<IndexMap<SchemaFieldName, RequestBodyCase>>>()?;
+
+        Ok(RequestBodiesObject::new(cases))
     }
 }
 
