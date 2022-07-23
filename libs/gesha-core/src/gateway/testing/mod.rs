@@ -47,7 +47,7 @@ impl TestCase<(v3_0::ComponentsObject, Modules)> {
     }
 
     pub fn from_path(path: String) -> gateway::Result<Self> {
-        let target = "examples/v3.0/components/";
+        let target = "examples/v3.0/src/components/schemas/";
         if path.starts_with(target) {
             Ok(Self::create(path.replace(target, "").into()))
         } else {
@@ -58,9 +58,9 @@ impl TestCase<(v3_0::ComponentsObject, Modules)> {
     fn create(yaml_name: Cow<str>) -> Self {
         let rs_name = yaml_name.replace(".yaml", ".rs");
         TestCase {
-            output: format!("output/v3.0/components/{rs_name}").into(),
-            schema: format!("examples/v3.0/components/{yaml_name}").into(),
-            example: format!("examples/v3.0/components/{rs_name}").into(),
+            output: format!("output/v3.0/components/schemas/{rs_name}").into(),
+            schema: format!("examples/v3.0/src/components/schemas/{yaml_name}").into(),
+            example: format!("examples/v3.0/src/components/schemas/{rs_name}").into(),
             module_name: yaml_name.replace(".yaml", ""),
             phantom: Default::default(),
         }
