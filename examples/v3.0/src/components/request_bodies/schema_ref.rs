@@ -6,13 +6,16 @@ pub mod request_bodies {
     use serde::Serialize;
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    #[serde(untagged)]
     pub enum PetBody {
+        ApplicationXml(Pet),
         ApplicationJson(Pet),
     }
 
     impl PetBody {
         pub fn as_media_type(&self) -> &MediaType {
             match self {
+                PetBody::ApplicationXml(_) => &MediaType::ApplicationXml,
                 PetBody::ApplicationJson(_) => &MediaType::ApplicationJson,
             }
         }
@@ -34,12 +37,14 @@ pub mod core {
     #[derive(Debug)]
     pub enum MediaType {
         ApplicationJson,
+        ApplicationXml,
     }
 
     impl AsRef<str> for MediaType {
         fn as_ref(&self) -> &str {
             match self {
                 MediaType::ApplicationJson => "application/json",
+                MediaType::ApplicationXml => "application/xml",
             }
         }
     }

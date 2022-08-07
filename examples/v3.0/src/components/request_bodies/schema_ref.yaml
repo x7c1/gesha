@@ -3,6 +3,9 @@ requestBodies:
     description: A JSON object containing pet information
     required: true
     content:
+      application/xml:
+        schema:
+          $ref: '#/components/schemas/Pet'
       application/json:
         schema:
           $ref: '#/components/schemas/Pet'
