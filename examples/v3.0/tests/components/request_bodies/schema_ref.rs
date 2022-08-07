@@ -18,10 +18,11 @@ fn to_json() {
 
 #[test]
 fn from_json() {
-    let actual = serde_json::from_str::<PetBody>(
+    let actual = PetBody::new(
         r#"{
             "id": 123
         }"#,
+        "application/json",
     )
     .unwrap();
 
