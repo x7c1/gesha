@@ -15,10 +15,10 @@ pub mod request_bodies {
     }
 
     impl PetBody {
-        pub fn as_media_type(&self) -> &MediaType {
+        pub fn media_type(&self) -> MediaType {
             match self {
-                PetBody::ApplicationXml(_) => &MediaType::ApplicationXml,
-                PetBody::ApplicationJson(_) => &MediaType::ApplicationJson,
+                PetBody::ApplicationXml(_) => MediaType::ApplicationXml,
+                PetBody::ApplicationJson(_) => MediaType::ApplicationJson,
             }
         }
 
@@ -29,7 +29,9 @@ pub mod request_bodies {
                     let body = serde_json::from_str(value).map_err(Error::InvalidJson)?;
                     Ok(Self::ApplicationJson(body))
                 }
-                unsupported => Err(Error::UnsupportedMediaType(unsupported.to_string())),
+                unsupported => Err(Error::UnsupportedMediaType {
+                    given: unsupported.to_string(),
+                }),
             }
         }
     }
@@ -51,10 +53,10 @@ pub mod core {
     #[derive(Debug)]
     pub enum Error {
         InvalidJson(serde_json::Error),
-        UnsupportedMediaType(String),
+        UnsupportedMediaType { given: String },
     }
 
-    #[derive(Debug)]
+    #[derive(Clone, Copy, Debug, PartialEq)]
     pub enum MediaType {
         ApplicationJson,
         ApplicationXml,
