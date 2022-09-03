@@ -18,5 +18,5 @@ handcraft-server = { path = "../../libs/handcraft/handcraft-server" }
 handcraft-server-derive = { path = "../../libs/handcraft/handcraft-server-derive" }
 handcraft-models = { path = "../../libs/handcraft/handcraft-models" }
 actix-web = "4.1.0"
-async-trait = "0.1.56"
+async-trait = "0.1.57"
 futures-util = "0.3"
