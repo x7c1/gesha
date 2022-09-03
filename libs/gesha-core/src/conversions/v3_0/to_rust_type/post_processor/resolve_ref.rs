@@ -80,7 +80,7 @@ impl RefResolver<'_> {
         let is_nullable = self.is_nullable(shape)?;
         let mut data_type = match shape {
             TypeShape::Vec { type_shape, .. } => {
-                DataType::Vec(Box::new(self.type_shape_to_data_type(&*type_shape)?))
+                DataType::Vec(Box::new(self.type_shape_to_data_type(type_shape)?))
             }
             TypeShape::Ref { object, .. } => {
                 let type_name = match String::from(object.clone()) {
