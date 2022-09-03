@@ -49,7 +49,7 @@ jobs:
           cargo fmt -- --check
 
       - run: |
-          cargo clippy -- --no-deps -D warnings
+          make cargo-clippy
 
       - run: |
           cargo test

@@ -9,7 +9,10 @@ swagger-ui: ## docs :
 	./scripts/swagger-ui.sh
 
 cargo-clippy: ## lint :
-	cargo clippy -- --no-deps -D warnings
+	cargo clippy -- \
+	    --no-deps \
+	    --allow clippy::derive_partial_eq_without_eq \
+	    --deny warnings
 
 cargo-fmt: ## format :
 	cargo fmt
