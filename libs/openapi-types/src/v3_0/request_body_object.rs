@@ -1,4 +1,4 @@
-use crate::v3_0::{ComponentName, ReferenceObject};
+use crate::v3_0::{ComponentName, ReferenceObject, RequestBodyContent};
 use indexmap::IndexMap;
 
 #[derive(Debug)]
@@ -19,4 +19,8 @@ pub enum RequestBodyCase {
 
 /// rf. https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#requestBodyObject
 #[derive(Clone, Debug)]
-pub struct RequestBodyObject {}
+pub struct RequestBodyObject {
+    pub description: Option<String>,
+    pub content: RequestBodyContent,
+    pub required: bool,
+}

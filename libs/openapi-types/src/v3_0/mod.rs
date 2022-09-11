@@ -10,6 +10,9 @@ pub use components_object::{
 mod format_modifier;
 pub use format_modifier::FormatModifier;
 
+mod media_type;
+pub use media_type::{MediaTypeKey, MediaTypeObject};
+
 mod openapi_data_type;
 pub use openapi_data_type::OpenApiDataType;
 
@@ -23,6 +26,9 @@ pub use paths_object::{PathFieldName, PathItemObject, PathsObject};
 
 mod reference_object;
 pub use reference_object::ReferenceObject;
+
+mod request_body_content;
+pub use request_body_content::RequestBodyContent;
 
 mod request_body_object;
 pub use request_body_object::{RequestBodiesObject, RequestBodyCase, RequestBodyObject};
