@@ -71,3 +71,21 @@ mod from_json {
         }
     }
 }
+
+mod media_type {
+    use examples_v3_0::components::request_bodies::schema_ref::core::MediaType;
+
+    #[test]
+    fn display_json() {
+        let actual = format!("{}", MediaType::ApplicationJson);
+        let expected = "application/json";
+        assert_eq!(actual, expected)
+    }
+
+    #[test]
+    fn display_xml() {
+        let actual = format!("{}", MediaType::ApplicationXml);
+        let expected = "application/xml";
+        assert_eq!(actual, expected)
+    }
+}

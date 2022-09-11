@@ -1,6 +1,6 @@
 requestBodies:
   PetBody:
-    description: A JSON object containing pet information
+    description: Request body containing pet information
     required: true
     content:
       application/xml:

@@ -24,7 +24,7 @@ pub mod request_bodies {
 
         pub fn new(value: &str, media_type: &str) -> Result<Self> {
             match media_type {
-                "application/xml" => todo!(),
+                "application/xml" => unimplemented!(),
                 "application/json" => {
                     let body = serde_json::from_str(value).map_err(Error::InvalidJson)?;
                     Ok(Self::ApplicationJson(body))
@@ -48,6 +48,8 @@ pub mod schemas {
 }
 
 pub mod core {
+    use std::fmt::{Display, Formatter};
+
     pub type Result<A> = std::result::Result<A, Error>;
 
     #[derive(Debug)]
@@ -60,6 +62,12 @@ pub mod core {
     pub enum MediaType {
         ApplicationJson,
         ApplicationXml,
+    }
+
+    impl Display for MediaType {
+        fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+            Display::fmt(self.as_ref(), f)
+        }
     }
 
     impl AsRef<str> for MediaType {
