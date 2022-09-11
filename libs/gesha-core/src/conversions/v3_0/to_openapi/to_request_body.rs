@@ -1,4 +1,5 @@
 use crate::conversions::reify::reify_entry;
+use crate::conversions::v3_0::to_openapi::to_schema_case::to_schema_case;
 use crate::conversions::Result;
 use crate::yaml::YamlMap;
 use indexmap::IndexMap;
@@ -48,7 +49,11 @@ fn to_request_body_content_pair(kv: (String, YamlMap)) -> Result<(MediaTypeKey, 
     Ok((MediaTypeKey::new(name), to_media_type_object(map)?))
 }
 
-fn to_media_type_object(_map: YamlMap) -> Result<MediaTypeObject> {
-    // map.remove_if_exists("schema").ma
-    Ok(MediaTypeObject { schema: None })
+fn to_media_type_object(mut map: YamlMap) -> Result<MediaTypeObject> {
+    let schema = map
+        .remove_if_exists::<YamlMap>("schema")?
+        .map(to_schema_case)
+        .transpose()?;
+
+    Ok(MediaTypeObject { schema })
 }
