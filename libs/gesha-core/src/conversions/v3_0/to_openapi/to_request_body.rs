@@ -48,6 +48,7 @@ fn to_request_body_content_pair(kv: (String, YamlMap)) -> Result<(MediaTypeKey, 
     Ok((MediaTypeKey::new(name), to_media_type_object(map)?))
 }
 
-fn to_media_type_object(mut _map: YamlMap) -> Result<MediaTypeObject> {
-    Ok(MediaTypeObject {})
+fn to_media_type_object(_map: YamlMap) -> Result<MediaTypeObject> {
+    // map.remove_if_exists("schema").ma
+    Ok(MediaTypeObject { schema: None })
 }
