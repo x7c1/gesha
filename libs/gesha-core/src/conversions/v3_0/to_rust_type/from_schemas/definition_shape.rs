@@ -4,7 +4,7 @@ use crate::conversions::v3_0::to_rust_type::{
 use openapi_types::v3_0::EnumValues;
 
 #[derive(Clone, Debug)]
-pub(super) enum DefinitionShape {
+pub(in crate::conversions::v3_0::to_rust_type) enum DefinitionShape {
     AllOf {
         header: TypeHeaderShape,
         shapes: Vec<AllOfItemShape>,

@@ -1,10 +1,14 @@
+mod definition_shape;
+pub(super) use definition_shape::DefinitionShape;
+
 mod to_field_shapes;
 use to_field_shapes::to_field_shapes;
 
 mod to_type_shape;
+
 use to_type_shape::to_type_shape;
 
-use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, DefinitionShape, TypeHeaderShape};
+use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, TypeHeaderShape};
 use crate::conversions::Result;
 use crate::targets::rust_type::DocComments;
 use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject};

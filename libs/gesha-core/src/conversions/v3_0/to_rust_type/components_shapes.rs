@@ -7,6 +7,7 @@ use openapi_types::v3_0::ReferenceObject;
 #[derive(Clone, Debug)]
 pub struct ComponentsShapes {
     pub(super) schemas: Vec<DefinitionShape>,
+    pub(super) request_bodies: Vec<DefinitionShape>,
 }
 
 impl ComponentsShapes {
@@ -18,6 +19,11 @@ impl ComponentsShapes {
             "schemas",
             processor.run(&mut self.schemas, "#/components/schemas/")?,
         )?;
+        // TODO:
+        // let request_bodies = create_module(
+        //     "request_bodies",
+        //     processor.run(&mut self.schemas, "#/components/requestBodies/")?,
+        // )?;
         let modules = create_modules(vec![schemas]);
         Ok(modules)
     }

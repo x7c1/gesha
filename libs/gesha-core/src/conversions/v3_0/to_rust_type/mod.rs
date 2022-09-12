@@ -1,16 +1,17 @@
 mod components_shapes;
 use components_shapes::ComponentsShapes;
 
-mod definition_shape;
-use definition_shape::DefinitionShape;
+mod from_request_bodies;
 
 mod from_schemas;
+use from_schemas::DefinitionShape;
+
 mod post_processor;
 
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{DataType, DocComments, Modules};
 use openapi_types::v3_0::{
-    ComponentName, ComponentsObject, Document, ReferenceObject, SchemasObject,
+    ComponentName, ComponentsObject, Document, ReferenceObject, RequestBodiesObject, SchemasObject,
 };
 
 impl ToRustType<Document> for Modules {
@@ -26,17 +27,33 @@ impl ToRustType<Document> for Modules {
 
 impl ToRustType<ComponentsObject> for Modules {
     fn apply(this: ComponentsObject) -> Result<Self> {
-        let to_shapes = |object: SchemasObject| {
-            object
-                .into_iter()
-                .map(from_schemas::to_shape)
-                .collect::<Result<Vec<DefinitionShape>>>()
-        };
+        let schemas = this
+            .schemas
+            .map(schemas_to_shapes)
+            .unwrap_or_else(|| Ok(vec![]))?;
+
+        let request_bodies = this
+            .request_bodies
+            .map(request_bodies_to_shapes)
+            .unwrap_or_else(|| Ok(vec![]))?;
+
         let shapes = ComponentsShapes {
-            schemas: this.schemas.map(to_shapes).unwrap_or_else(|| Ok(vec![]))?,
+            schemas,
+            request_bodies,
         };
         shapes.into_modules()
     }
+}
+
+fn schemas_to_shapes(object: SchemasObject) -> Result<Vec<DefinitionShape>> {
+    object.into_iter().map(from_schemas::to_shape).collect()
+}
+
+fn request_bodies_to_shapes(object: RequestBodiesObject) -> Result<Vec<DefinitionShape>> {
+    object
+        .into_iter()
+        .map(from_request_bodies::to_shape)
+        .collect()
 }
 
 #[derive(Clone, Debug)]
