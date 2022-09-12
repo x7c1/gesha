@@ -4,10 +4,8 @@ use components_shapes::ComponentsShapes;
 mod definition_shape;
 use definition_shape::DefinitionShape;
 
+mod from_schemas;
 mod post_processor;
-
-mod to_shape;
-use to_shape::to_shape;
 
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{DataType, DocComments, Modules};
@@ -31,7 +29,7 @@ impl ToRustType<ComponentsObject> for Modules {
         let to_shapes = |object: SchemasObject| {
             object
                 .into_iter()
-                .map(to_shape)
+                .map(from_schemas::to_shape)
                 .collect::<Result<Vec<DefinitionShape>>>()
         };
         let shapes = ComponentsShapes {
