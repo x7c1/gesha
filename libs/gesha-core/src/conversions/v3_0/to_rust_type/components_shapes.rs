@@ -1,14 +1,13 @@
-use crate::conversions::v3_0::to_rust_type::contains_patch;
-use crate::conversions::v3_0::to_rust_type::from_schemas::DefinitionShape;
 use crate::conversions::v3_0::to_rust_type::post_processor::PostProcessor;
+use crate::conversions::v3_0::to_rust_type::{contains_patch, from_request_bodies, from_schemas};
 use crate::conversions::Result;
 use crate::targets::rust_type::{Definition, Module, ModuleName, Modules, PresetDef, UseStatement};
 use openapi_types::v3_0::ReferenceObject;
 
 #[derive(Clone, Debug)]
 pub struct ComponentsShapes {
-    pub(super) schemas: Vec<DefinitionShape>,
-    pub(super) request_bodies: Vec<DefinitionShape>,
+    pub(super) schemas: Vec<from_schemas::DefinitionShape>,
+    pub(super) request_bodies: Vec<from_request_bodies::DefinitionShape>,
 }
 
 impl ComponentsShapes {
@@ -29,7 +28,10 @@ impl ComponentsShapes {
         Ok(modules)
     }
 
-    pub(super) fn find_definition(&self, object: &ReferenceObject) -> Result<&DefinitionShape> {
+    pub(super) fn find_definition(
+        &self,
+        object: &ReferenceObject,
+    ) -> Result<&from_schemas::DefinitionShape> {
         // TODO: support other locations like 'components/responses' etc
         find_shape("#/components/schemas/", &self.schemas, object).ok_or_else(|| unimplemented!())
     }
@@ -80,9 +82,9 @@ fn default_imports() -> Vec<UseStatement> {
 
 fn find_shape<'a, 'b>(
     prefix: &str,
-    defs: &'a [DefinitionShape],
+    defs: &'a [from_schemas::DefinitionShape],
     target: &'b ReferenceObject,
-) -> Option<&'a DefinitionShape> {
+) -> Option<&'a from_schemas::DefinitionShape> {
     let type_ref = target.as_ref();
     if type_ref.starts_with(prefix) {
         let name = type_ref.replace(prefix, "");

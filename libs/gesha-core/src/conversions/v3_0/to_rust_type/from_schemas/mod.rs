@@ -2,7 +2,7 @@ mod definition_shape;
 pub(super) use definition_shape::DefinitionShape;
 
 mod to_shape;
-pub(super) use to_shape::to_shape;
+use to_shape::to_shape;
 
 mod to_field_shapes;
 
@@ -13,7 +13,7 @@ use crate::conversions::Result;
 use crate::targets::rust_type::{DataType, DocComments};
 use openapi_types::v3_0::{ComponentName, ReferenceObject, SchemasObject};
 
-pub(super) fn schemas_to_shapes(object: SchemasObject) -> Result<Vec<DefinitionShape>> {
+pub(super) fn to_shapes(object: SchemasObject) -> Result<Vec<DefinitionShape>> {
     object.into_iter().map(to_shape).collect()
 }
 

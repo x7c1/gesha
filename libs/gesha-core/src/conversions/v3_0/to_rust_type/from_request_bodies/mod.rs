@@ -1,8 +1,11 @@
-use crate::conversions::v3_0::to_rust_type::from_schemas::DefinitionShape;
 use crate::conversions::Result;
-use openapi_types::v3_0::{ComponentName, RequestBodyCase, RequestBodyObject};
+use openapi_types::v3_0::{ComponentName, RequestBodiesObject, RequestBodyCase, RequestBodyObject};
 
-pub(super) fn to_shape(kv: (ComponentName, RequestBodyCase)) -> Result<DefinitionShape> {
+pub(super) fn to_shapes(object: RequestBodiesObject) -> Result<Vec<DefinitionShape>> {
+    object.into_iter().map(to_shape).collect()
+}
+
+fn to_shape(kv: (ComponentName, RequestBodyCase)) -> Result<DefinitionShape> {
     let (field_name, request_body_case) = kv;
     match request_body_case {
         RequestBodyCase::RequestBody(obj) => {
@@ -11,6 +14,11 @@ pub(super) fn to_shape(kv: (ComponentName, RequestBodyCase)) -> Result<Definitio
         }
         RequestBodyCase::Reference(_) => todo!(),
     }
+}
+
+#[derive(Clone, Debug)]
+pub(super) enum DefinitionShape {
+    Enum,
 }
 
 struct Shaper {

@@ -4,9 +4,7 @@ use crate::conversions::Result;
 use crate::targets::rust_type::DocComments;
 use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject};
 
-pub(in crate::conversions::v3_0::to_rust_type) fn to_shape(
-    kv: (ComponentName, SchemaCase),
-) -> Result<DefinitionShape> {
+pub(super) fn to_shape(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
     let (field_name, schema_case) = kv;
     match schema_case {
         SchemaCase::Schema(obj) => {
