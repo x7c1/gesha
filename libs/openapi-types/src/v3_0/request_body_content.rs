@@ -2,6 +2,7 @@ use crate::v3_0::{MediaTypeKey, MediaTypeObject};
 use indexmap::IndexMap;
 
 type InnerMap = IndexMap<MediaTypeKey, MediaTypeObject>;
+type InnerEntry = (MediaTypeKey, MediaTypeObject);
 
 #[derive(Clone, Debug)]
 pub struct RequestBodyContent(InnerMap);
@@ -9,6 +10,13 @@ pub struct RequestBodyContent(InnerMap);
 impl RequestBodyContent {
     pub fn new(map: InnerMap) -> Self {
         Self(map)
+    }
+}
+
+impl FromIterator<InnerEntry> for RequestBodyContent {
+    fn from_iter<T: IntoIterator<Item = InnerEntry>>(iter: T) -> Self {
+        let map = iter.into_iter().collect();
+        Self::new(map)
     }
 }
 
