@@ -1,7 +1,7 @@
 use crate::conversions::v3_0::to_openapi::{to_request_body_pair, to_schema_pair};
 use crate::conversions::{reify_entry, Result, ToOpenApi};
 use crate::yaml::YamlMap;
-use openapi_types::v3_0::{ComponentName, ComponentsObject, RequestBodiesObject, SchemasObject};
+use openapi_types::v3_0::ComponentsObject;
 
 impl ToOpenApi for ComponentsObject {
     fn apply(mut map: YamlMap) -> Result<Self> {

@@ -17,8 +17,8 @@ pub mod request_bodies {
     impl PetBody {
         pub fn media_type(&self) -> MediaType {
             match self {
-                PetBody::ApplicationXml(_) => MediaType::ApplicationXml,
-                PetBody::ApplicationJson(_) => MediaType::ApplicationJson,
+                Self::ApplicationXml(_) => MediaType::ApplicationXml,
+                Self::ApplicationJson(_) => MediaType::ApplicationJson,
             }
         }
 

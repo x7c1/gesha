@@ -50,10 +50,6 @@ fn to_request_body_content_pair(kv: (String, YamlMap)) -> Result<(MediaTypeKey, 
 }
 
 fn to_media_type_object(mut map: YamlMap) -> Result<MediaTypeObject> {
-    let schema = map
-        .remove_if_exists::<YamlMap>("schema")?
-        .map(to_schema_case)
-        .transpose()?;
-
+    let schema = map.remove("schema").map(to_schema_case)??;
     Ok(MediaTypeObject { schema })
 }

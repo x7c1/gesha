@@ -13,5 +13,5 @@ impl MediaTypeKey {
 /// rf. https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#media-type-object
 #[derive(Clone, Debug)]
 pub struct MediaTypeObject {
-    pub schema: Option<SchemaCase>,
+    pub schema: SchemaCase,
 }
