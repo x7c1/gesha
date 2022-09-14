@@ -1,4 +1,4 @@
-use crate::conversions::v3_0::to_rust_type::{
+use crate::conversions::v3_0::to_rust_type::from_schemas::{
     AllOfItemShape, FieldShape, TypeHeaderShape, TypeShape,
 };
 use openapi_types::v3_0::EnumValues;

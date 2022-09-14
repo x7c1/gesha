@@ -1,8 +1,9 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
-use crate::conversions::v3_0::to_rust_type::post_processor::PostProcessor;
-use crate::conversions::v3_0::to_rust_type::{
-    is_patch, DefinitionShape, FieldShape, TypeHeaderShape, TypeShape,
+use crate::conversions::v3_0::to_rust_type::from_schemas::{
+    DefinitionShape, FieldShape, TypeHeaderShape, TypeShape,
 };
+use crate::conversions::v3_0::to_rust_type::is_patch;
+use crate::conversions::v3_0::to_rust_type::post_processor::PostProcessor;
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{

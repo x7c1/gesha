@@ -20,14 +20,6 @@ struct Shaper {
 
 impl Shaper {
     fn run(self) -> Result<DefinitionShape> {
-        // DefinitionShape::Enum {
-        //     header: TypeHeaderShape {
-        //         name: self.name,
-        //         doc_comments: (),
-        //         is_nullable: false,
-        //     },
-        //     values: (),
-        // };
         unimplemented!()
     }
 }

@@ -1,5 +1,4 @@
-use super::to_type_shape;
-use crate::conversions::v3_0::to_rust_type::FieldShape;
+use super::{to_type_shape, FieldShape};
 use crate::conversions::Result;
 use openapi_types::v3_0::{ComponentName, RequiredSchemaFields, SchemaCase, SchemaProperties};
 

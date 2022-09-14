@@ -1,5 +1,6 @@
+use crate::conversions::v3_0::to_rust_type::contains_patch;
+use crate::conversions::v3_0::to_rust_type::from_schemas::DefinitionShape;
 use crate::conversions::v3_0::to_rust_type::post_processor::PostProcessor;
-use crate::conversions::v3_0::to_rust_type::{contains_patch, DefinitionShape};
 use crate::conversions::Result;
 use crate::targets::rust_type::{Definition, Module, ModuleName, Modules, PresetDef, UseStatement};
 use openapi_types::v3_0::ReferenceObject;

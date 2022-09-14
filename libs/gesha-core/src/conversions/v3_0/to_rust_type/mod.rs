@@ -2,17 +2,13 @@ mod components_shapes;
 use components_shapes::ComponentsShapes;
 
 mod from_request_bodies;
-
 mod from_schemas;
-use from_schemas::DefinitionShape;
-
 mod post_processor;
 
+use crate::conversions::v3_0::to_rust_type::from_schemas::schemas_to_shapes;
 use crate::conversions::{Result, ToRustType};
-use crate::targets::rust_type::{DataType, DocComments, Modules};
-use openapi_types::v3_0::{
-    ComponentName, ComponentsObject, Document, ReferenceObject, RequestBodiesObject, SchemasObject,
-};
+use crate::targets::rust_type::{DataType, Modules};
+use openapi_types::v3_0::{ComponentsObject, Document, RequestBodiesObject};
 
 impl ToRustType<Document> for Modules {
     fn apply(this: Document) -> Result<Self> {
@@ -45,62 +41,13 @@ impl ToRustType<ComponentsObject> for Modules {
     }
 }
 
-fn schemas_to_shapes(object: SchemasObject) -> Result<Vec<DefinitionShape>> {
-    object.into_iter().map(from_schemas::to_shape).collect()
-}
-
-fn request_bodies_to_shapes(object: RequestBodiesObject) -> Result<Vec<DefinitionShape>> {
+fn request_bodies_to_shapes(
+    object: RequestBodiesObject,
+) -> Result<Vec<from_schemas::DefinitionShape>> {
     object
         .into_iter()
         .map(from_request_bodies::to_shape)
         .collect()
-}
-
-#[derive(Clone, Debug)]
-enum AllOfItemShape {
-    Object(Vec<FieldShape>),
-    Ref(ReferenceObject),
-}
-
-#[derive(Clone, Debug)]
-pub struct TypeHeaderShape {
-    pub name: ComponentName,
-    pub doc_comments: DocComments,
-    pub is_nullable: bool,
-}
-
-#[derive(Clone, Debug)]
-pub enum TypeShape {
-    Fixed {
-        data_type: DataType,
-        is_required: bool,
-        is_nullable: bool,
-    },
-    Vec {
-        type_shape: Box<TypeShape>,
-        is_required: bool,
-        is_nullable: bool,
-    },
-    Ref {
-        object: ReferenceObject,
-        is_required: bool,
-    },
-}
-
-impl TypeShape {
-    pub fn is_required(&self) -> bool {
-        match self {
-            TypeShape::Fixed { is_required, .. } => *is_required,
-            TypeShape::Vec { is_required, .. } => *is_required,
-            TypeShape::Ref { is_required, .. } => *is_required,
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-struct FieldShape {
-    name: ComponentName,
-    type_shape: TypeShape,
 }
 
 pub fn contains_patch(x: &DataType) -> bool {
