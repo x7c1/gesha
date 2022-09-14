@@ -26,7 +26,7 @@ impl IntoIterator for RequestBodiesObject {
 #[derive(Clone, Debug)]
 pub enum RequestBodyCase {
     RequestBody(Box<RequestBodyObject>),
-    Reference(ReferenceObject),
+    Reference(ReferenceObject<RequestBodyObject>),
 }
 
 /// rf. https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#requestBodyObject

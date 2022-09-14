@@ -29,6 +29,8 @@ struct Shaper {
 
 impl Shaper {
     fn run(self) -> Result<DefinitionShape> {
-        unimplemented!()
+        println!("{:#?}", self);
+        panic!();
+        Ok(DefinitionShape::Enum)
     }
 }

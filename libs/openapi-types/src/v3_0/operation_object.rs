@@ -32,7 +32,7 @@ impl ResponsesObject {
 #[derive(Debug)]
 pub enum ResponseCase {
     Response(ResponseObject),
-    Reference(ReferenceObject),
+    Reference(ReferenceObject<ResponseObject>),
 }
 
 #[derive(Debug)]

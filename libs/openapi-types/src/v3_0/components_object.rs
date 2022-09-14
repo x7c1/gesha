@@ -15,7 +15,7 @@ pub type SchemasObject = IndexMap<ComponentName, SchemaCase>;
 #[derive(Clone, Debug)]
 pub enum SchemaCase {
     Schema(Box<SchemaObject>),
-    Reference(ReferenceObject),
+    Reference(ReferenceObject<SchemaObject>),
 }
 
 /// ex.1

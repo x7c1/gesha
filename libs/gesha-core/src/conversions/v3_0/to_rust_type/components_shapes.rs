@@ -2,7 +2,7 @@ use crate::conversions::v3_0::to_rust_type::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::{contains_patch, from_request_bodies, from_schemas};
 use crate::conversions::Result;
 use crate::targets::rust_type::{Definition, Module, ModuleName, Modules, PresetDef, UseStatement};
-use openapi_types::v3_0::ReferenceObject;
+use openapi_types::v3_0::{ReferenceObject, SchemaObject};
 
 #[derive(Clone, Debug)]
 pub struct ComponentsShapes {
@@ -30,7 +30,7 @@ impl ComponentsShapes {
 
     pub(super) fn find_definition(
         &self,
-        object: &ReferenceObject,
+        object: &ReferenceObject<SchemaObject>,
     ) -> Result<&from_schemas::DefinitionShape> {
         // TODO: support other locations like 'components/responses' etc
         find_shape("#/components/schemas/", &self.schemas, object).ok_or_else(|| unimplemented!())
@@ -83,7 +83,7 @@ fn default_imports() -> Vec<UseStatement> {
 fn find_shape<'a, 'b>(
     prefix: &str,
     defs: &'a [from_schemas::DefinitionShape],
-    target: &'b ReferenceObject,
+    target: &'b ReferenceObject<SchemaObject>,
 ) -> Option<&'a from_schemas::DefinitionShape> {
     let type_ref = target.as_ref();
     if type_ref.starts_with(prefix) {

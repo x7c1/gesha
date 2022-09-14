@@ -11,7 +11,7 @@ use to_type_shape::to_type_shape;
 
 use crate::conversions::Result;
 use crate::targets::rust_type::{DataType, DocComments};
-use openapi_types::v3_0::{ComponentName, ReferenceObject, SchemasObject};
+use openapi_types::v3_0::{ComponentName, ReferenceObject, SchemaObject, SchemasObject};
 
 pub(super) fn to_shapes(object: SchemasObject) -> Result<Vec<DefinitionShape>> {
     object.into_iter().map(to_shape).collect()
@@ -20,7 +20,7 @@ pub(super) fn to_shapes(object: SchemasObject) -> Result<Vec<DefinitionShape>> {
 #[derive(Clone, Debug)]
 pub enum AllOfItemShape {
     Object(Vec<FieldShape>),
-    Ref(ReferenceObject),
+    Ref(ReferenceObject<SchemaObject>),
 }
 
 #[derive(Clone, Debug)]
@@ -49,7 +49,7 @@ pub enum TypeShape {
         is_nullable: bool,
     },
     Ref {
-        object: ReferenceObject,
+        object: ReferenceObject<SchemaObject>,
         is_required: bool,
     },
 }
