@@ -21,6 +21,7 @@ pub(super) enum DefinitionShape {
     Enum,
 }
 
+#[derive(Debug)]
 struct Shaper {
     name: ComponentName,
     object: RequestBodyObject,
