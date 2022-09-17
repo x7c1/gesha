@@ -1,12 +1,12 @@
 mod resolve_all_of;
 mod resolve_ref;
 
-use super::ComponentsShapes;
+use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
 use crate::conversions::v3_0::to_rust_type::from_schemas::DefinitionShape;
 use crate::conversions::Result;
 use crate::targets::rust_type::Definition;
 
-pub(super) struct PostProcessor {
+pub struct PostProcessor {
     original: ComponentsShapes,
 }
 

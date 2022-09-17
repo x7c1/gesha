@@ -3,7 +3,6 @@ use components_shapes::ComponentsShapes;
 
 mod from_request_bodies;
 mod from_schemas;
-mod post_processor;
 
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{DataType, Modules};

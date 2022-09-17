@@ -1,9 +1,9 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
+use crate::conversions::v3_0::to_rust_type::from_schemas::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
     DefinitionShape, FieldShape, TypeHeaderShape, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::is_patch;
-use crate::conversions::v3_0::to_rust_type::post_processor::PostProcessor;
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
@@ -13,7 +13,7 @@ use crate::targets::rust_type::{
 use openapi_types::v3_0::ComponentName;
 
 impl PostProcessor {
-    pub(super) fn process_ref(
+    pub fn process_ref(
         &self,
         prefix: &'static str,
         shapes: &mut [DefinitionShape],

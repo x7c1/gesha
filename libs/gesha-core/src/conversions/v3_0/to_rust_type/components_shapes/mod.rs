@@ -1,8 +1,8 @@
-use crate::conversions::v3_0::to_rust_type::post_processor::PostProcessor;
+mod shape_schemas;
+
 use crate::conversions::v3_0::to_rust_type::{contains_patch, from_request_bodies, from_schemas};
 use crate::conversions::Result;
 use crate::targets::rust_type::{Definition, Module, ModuleName, Modules, PresetDef, UseStatement};
-use openapi_types::v3_0::{ReferenceObject, SchemaObject};
 
 #[derive(Clone, Debug)]
 pub struct ComponentsShapes {
@@ -12,28 +12,9 @@ pub struct ComponentsShapes {
 
 impl ComponentsShapes {
     pub fn into_modules(mut self) -> Result<Modules> {
-        let processor = PostProcessor::new(self.clone());
-
-        // TODO: support other locations like "#/components/responses/" etc
-        let schemas = create_module(
-            "schemas",
-            processor.run(&mut self.schemas, "#/components/schemas/")?,
-        )?;
-        // TODO:
-        // let request_bodies = create_module(
-        //     "request_bodies",
-        //     processor.run(&mut self.schemas, "#/components/requestBodies/")?,
-        // )?;
+        let schemas = self.create_schemas_module()?;
         let modules = create_modules(vec![schemas]);
         Ok(modules)
-    }
-
-    pub(super) fn find_definition(
-        &self,
-        object: &ReferenceObject<SchemaObject>,
-    ) -> Result<&from_schemas::DefinitionShape> {
-        // TODO: support other locations like 'components/responses' etc
-        find_shape("#/components/schemas/", &self.schemas, object).ok_or_else(|| unimplemented!())
     }
 }
 
@@ -78,18 +59,4 @@ fn default_imports() -> Vec<UseStatement> {
         UseStatement::new("serde::Deserialize"),
         UseStatement::new("serde::Serialize"),
     ]
-}
-
-fn find_shape<'a, 'b>(
-    prefix: &str,
-    defs: &'a [from_schemas::DefinitionShape],
-    target: &'b ReferenceObject<SchemaObject>,
-) -> Option<&'a from_schemas::DefinitionShape> {
-    let type_ref = target.as_ref();
-    if type_ref.starts_with(prefix) {
-        let name = type_ref.replace(prefix, "");
-        defs.iter().find(|shape| shape.is_type_name(&name))
-    } else {
-        None
-    }
 }

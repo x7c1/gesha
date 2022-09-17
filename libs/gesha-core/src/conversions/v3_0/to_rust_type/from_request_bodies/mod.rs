@@ -1,8 +1,10 @@
+mod media_type_shape;
+use media_type_shape::MediaTypeShape;
+
 use crate::conversions::Result;
 use crate::targets::rust_type::DocComments;
 use openapi_types::v3_0::{
-    ComponentName, MediaTypeKey, RequestBodiesObject, RequestBodyCase, RequestBodyObject,
-    SchemaCase,
+    ComponentName, RequestBodiesObject, RequestBodyCase, RequestBodyObject, SchemaCase,
 };
 
 pub(super) fn to_shapes(object: RequestBodiesObject) -> Result<Vec<DefinitionShape>> {
@@ -29,13 +31,6 @@ pub(super) struct DefinitionShape {
 }
 
 #[derive(Clone, Debug)]
-pub(super) enum MediaTypeShape {
-    ApplicationXml,
-    ApplicationJson,
-    Unsupported(String),
-}
-
-#[derive(Clone, Debug)]
 pub(super) struct ContentShape {
     media_type: MediaTypeShape,
     schema: SchemaCase,
@@ -49,14 +44,12 @@ struct Shaper {
 
 impl Shaper {
     fn run(self) -> Result<DefinitionShape> {
-        println!("{:#?}", self);
-
         let contents = self
             .object
             .content
             .into_iter()
             .map(|(key, value)| ContentShape {
-                media_type: to_media_type(key),
+                media_type: MediaTypeShape::new(key),
                 schema: value.schema,
             })
             .collect();
@@ -68,9 +61,4 @@ impl Shaper {
             contents,
         })
     }
-}
-
-fn to_media_type(key: MediaTypeKey) -> MediaTypeShape {
-    // TODO:
-    MediaTypeShape::ApplicationJson
 }

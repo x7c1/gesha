@@ -1,6 +1,9 @@
 mod definition_shape;
 pub(super) use definition_shape::DefinitionShape;
 
+mod post_processor;
+pub(super) use post_processor::PostProcessor;
+
 mod to_shape;
 use to_shape::to_shape;
 
