@@ -1,4 +1,4 @@
-use crate::conversions::reify::reify_by;
+use crate::conversions::reify::collect;
 use crate::conversions::v3_0::to_openapi::to_schema_case::to_schema_case;
 use crate::conversions::Result;
 use crate::yaml::YamlMap;
@@ -24,7 +24,7 @@ fn to_request_body_case(mut map: YamlMap) -> Result<RequestBodyCase> {
 fn to_request_body_object(mut map: YamlMap) -> Result<RequestBodyObject> {
     let content = map
         .remove("content")
-        .map(reify_by(to_request_body_content_pair))??;
+        .map(collect(to_request_body_content_pair))??;
 
     Ok(RequestBodyObject {
         description: map.remove_if_exists("description")?,

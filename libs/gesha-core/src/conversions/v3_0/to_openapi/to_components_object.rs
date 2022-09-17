@@ -1,4 +1,4 @@
-use crate::conversions::reify::reify_by;
+use crate::conversions::reify::collect;
 use crate::conversions::v3_0::to_openapi::{to_request_body_pair, to_schema_pair};
 use crate::conversions::{Result, ToOpenApi};
 use crate::yaml::YamlMap;
@@ -8,12 +8,12 @@ impl ToOpenApi for ComponentsObject {
     fn apply(mut map: YamlMap) -> Result<Self> {
         let schemas = map
             .remove_if_exists("schemas")?
-            .map(reify_by(to_schema_pair))
+            .map(collect(to_schema_pair))
             .transpose()?;
 
         let request_bodies = map
             .remove_if_exists("requestBodies")?
-            .map(reify_by(to_request_body_pair))
+            .map(collect(to_request_body_pair))
             .transpose()?;
 
         Ok(ComponentsObject {

@@ -21,7 +21,7 @@ where
     }
 }
 
-pub(super) fn reify_by<X, Y, F>(f: F) -> impl FnOnce(YamlMap) -> Result<Y>
+pub(super) fn collect<X, Y, F>(f: F) -> impl FnOnce(YamlMap) -> Result<Y>
 where
     F: Fn((String, YamlMap)) -> Result<X>,
     Y: FromIterator<X>,
