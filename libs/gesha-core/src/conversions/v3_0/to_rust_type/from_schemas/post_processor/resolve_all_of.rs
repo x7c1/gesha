@@ -44,7 +44,7 @@ impl PostProcessor {
         match item_shape {
             AllOfItemShape::Object(shapes) => Ok(shapes.clone()),
             AllOfItemShape::Ref(object) => {
-                let fields = self.original.find_definition(object)?.field_shapes();
+                let fields = self.original.find_schema_definition(object)?.field_shapes();
                 Ok(fields)
             }
         }

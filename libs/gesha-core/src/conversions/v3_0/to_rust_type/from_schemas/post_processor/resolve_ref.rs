@@ -16,13 +16,13 @@ impl PostProcessor {
     pub fn process_ref(
         &self,
         prefix: &'static str,
-        shapes: &mut [DefinitionShape],
+        shapes: &[DefinitionShape],
     ) -> Result<Vec<Definition>> {
         let resolver = RefResolver {
             prefix,
             original: &self.original,
         };
-        shapes.iter_mut().map(|x| resolver.resolve_ref(x)).collect()
+        shapes.iter().map(|x| resolver.resolve_ref(x)).collect()
     }
 }
 
@@ -32,7 +32,7 @@ struct RefResolver<'a> {
 }
 
 impl RefResolver<'_> {
-    fn resolve_ref(&self, shape: &mut DefinitionShape) -> Result<Definition> {
+    fn resolve_ref(&self, shape: &DefinitionShape) -> Result<Definition> {
         match shape {
             DefinitionShape::Struct { header, shapes } => {
                 let def = StructDef::new(
@@ -112,7 +112,7 @@ impl RefResolver<'_> {
             TypeShape::Vec { is_nullable, .. } => Ok(*is_nullable),
             TypeShape::Ref { object, .. } => self
                 .original
-                .find_definition(object)
+                .find_schema_definition(object)
                 .map(|def| def.is_nullable()),
         }
     }

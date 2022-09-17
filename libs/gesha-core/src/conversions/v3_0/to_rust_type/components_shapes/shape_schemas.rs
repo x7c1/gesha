@@ -1,6 +1,7 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::{create_module, ComponentsShapes};
 use crate::conversions::v3_0::to_rust_type::from_schemas;
 use crate::conversions::v3_0::to_rust_type::from_schemas::PostProcessor;
+use crate::conversions::Error::ReferenceObjectNotFound;
 use crate::conversions::Result;
 use crate::targets::rust_type::Module;
 use openapi_types::v3_0::{ReferenceObject, SchemaObject};
@@ -14,25 +15,19 @@ impl ComponentsShapes {
         )
     }
 
-    pub fn find_definition(
+    pub fn find_schema_definition(
         &self,
         object: &ReferenceObject<SchemaObject>,
     ) -> Result<&from_schemas::DefinitionShape> {
-        // TODO: support other locations like 'components/responses' etc
-        find_shape("#/components/schemas/", &self.schemas, object).ok_or_else(|| unimplemented!())
-    }
-}
-
-fn find_shape<'a, 'b>(
-    prefix: &str,
-    defs: &'a [from_schemas::DefinitionShape],
-    target: &'b ReferenceObject<SchemaObject>,
-) -> Option<&'a from_schemas::DefinitionShape> {
-    let type_ref = target.as_ref();
-    if type_ref.starts_with(prefix) {
+        let prefix = "#/components/schemas/";
+        let type_ref = object.as_ref();
+        if !type_ref.starts_with(prefix) {
+            unimplemented!()
+        }
         let name = type_ref.replace(prefix, "");
-        defs.iter().find(|shape| shape.is_type_name(&name))
-    } else {
-        None
+        self.schemas
+            .iter()
+            .find(|shape| shape.is_type_name(&name))
+            .ok_or_else(|| ReferenceObjectNotFound(type_ref.to_string()))
     }
 }
