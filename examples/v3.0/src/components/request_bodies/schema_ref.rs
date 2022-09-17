@@ -1,5 +1,6 @@
 // TODO
 pub mod request_bodies {
+    use super::core::from_json_string;
     use super::core::Error;
     use super::core::MediaType;
     use super::core::Result;
@@ -26,7 +27,7 @@ pub mod request_bodies {
             match media_type {
                 "application/xml" => unimplemented!(),
                 "application/json" => {
-                    let body = serde_json::from_str(value).map_err(Error::InvalidJson)?;
+                    let body = from_json_string(value)?;
                     Ok(Self::ApplicationJson(body))
                 }
                 unsupported => Err(Error::UnsupportedMediaType {
@@ -48,6 +49,7 @@ pub mod schemas {
 }
 
 pub mod core {
+    use serde::Deserialize;
     use std::fmt::{Display, Formatter};
 
     pub type Result<A> = std::result::Result<A, Error>;
@@ -77,5 +79,9 @@ pub mod core {
                 MediaType::ApplicationXml => "application/xml",
             }
         }
+    }
+
+    pub fn from_json_string<'a, A: Deserialize<'a>>(text: &'a str) -> Result<A> {
+        serde_json::from_str(text).map_err(Error::InvalidJson)
     }
 }

@@ -12,7 +12,7 @@ pub struct ComponentsShapes {
 
 impl ComponentsShapes {
     pub fn into_modules(mut self) -> Result<Modules> {
-        let schemas = self.create_schemas_module()?;
+        let schemas = self.shape_schemas_module()?;
         let modules = create_modules(vec![schemas]);
         Ok(modules)
     }
