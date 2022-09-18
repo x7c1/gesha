@@ -108,5 +108,5 @@ fn to_doc_comments(title: Option<&str>, description: Option<&str>) -> DocComment
         (t, d) if t == d => t,
         (Some(t), Some(d)) => Some(format!("{t}\n\n{d}")),
     };
-    DocComments::new(maybe.map(|text| format!("/**\n{text}\n*/\n")))
+    DocComments::wrap(maybe)
 }

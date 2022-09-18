@@ -13,6 +13,9 @@ pub use enum_variant::{EnumVariant, EnumVariantAttribute, EnumVariantName};
 mod modules;
 pub use modules::Modules;
 
+mod request_body_def;
+pub use request_body_def::RequestBodyDef;
+
 mod struct_field;
 pub use struct_field::{StructField, StructFieldAttribute};
 
@@ -80,8 +83,8 @@ impl TypeHeader {
 pub struct DocComments(Option<String>);
 
 impl DocComments {
-    pub fn new(this: Option<String>) -> Self {
-        Self(this)
+    pub fn wrap(this: Option<String>) -> Self {
+        Self(this.map(|text| format!("/**\n{text}\n*/\n")))
     }
 }
 

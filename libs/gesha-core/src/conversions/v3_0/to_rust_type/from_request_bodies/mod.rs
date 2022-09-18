@@ -24,10 +24,10 @@ fn to_shape(kv: (ComponentName, RequestBodyCase)) -> Result<DefinitionShape> {
 
 #[derive(Clone, Debug)]
 pub(super) struct DefinitionShape {
-    name: ComponentName,
-    doc_comments: DocComments,
-    is_required: bool,
-    contents: Vec<ContentShape>,
+    pub name: ComponentName,
+    pub doc_comments: DocComments,
+    pub is_required: bool,
+    pub contents: Vec<ContentShape>,
 }
 
 #[derive(Clone, Debug)]
@@ -56,7 +56,7 @@ impl Shaper {
 
         Ok(DefinitionShape {
             name: self.name,
-            doc_comments: DocComments::new(self.object.description),
+            doc_comments: DocComments::wrap(self.object.description),
             is_required: self.object.required,
             contents,
         })

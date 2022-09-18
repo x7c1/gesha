@@ -1,3 +1,6 @@
+mod render_request_body;
+use render_request_body::render_request_body;
+
 use crate::render;
 use crate::renderer::Renderer;
 use crate::renderer::Result;
@@ -49,6 +52,7 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
         Definition::NewTypeDef(x) => render_newtype(write, x)?,
         Definition::EnumDef(x) => render_enum(write, x)?,
         Definition::PresetDef(x) => render_preset(write, x)?,
+        Definition::RequestBodyDef(x) => render_request_body(write, x)?,
     };
     Ok(())
 }

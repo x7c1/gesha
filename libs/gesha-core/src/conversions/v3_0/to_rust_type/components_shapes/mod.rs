@@ -1,3 +1,4 @@
+mod shape_request_bodies;
 mod shape_schemas;
 
 use crate::conversions::v3_0::to_rust_type::{contains_patch, from_request_bodies, from_schemas};
@@ -12,19 +13,26 @@ pub struct ComponentsShapes {
 
 impl ComponentsShapes {
     pub fn into_modules(mut self) -> Result<Modules> {
-        let schemas = self.shape_schemas_module()?;
-        let modules = create_modules(vec![schemas]);
-        Ok(modules)
+        let modules = vec![self.shape_request_bodies()?, self.shape_schemas_module()?]
+            .into_iter()
+            .flatten()
+            .collect();
+
+        Ok(create_modules(modules))
     }
 }
 
-fn create_module<A: Into<String>>(name: A, definitions: Vec<Definition>) -> Result<Module> {
+fn create_module<A: Into<String>>(name: A, definitions: Vec<Definition>) -> Result<Option<Module>> {
     let mut imports = default_imports();
     if definitions.iter().any(|x| x.any_type(contains_patch)) {
         imports.push(UseStatement::new("super::core::Patch"));
     }
-    let module = Module::new(ModuleName::new(name), definitions, imports);
-    Ok(module)
+    if definitions.is_empty() {
+        Ok(None)
+    } else {
+        let module = Module::new(ModuleName::new(name), definitions, imports);
+        Ok(Some(module))
+    }
 }
 
 fn create_modules(modules: Vec<Module>) -> Modules {

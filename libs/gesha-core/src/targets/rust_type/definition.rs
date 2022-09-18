@@ -1,4 +1,6 @@
-use crate::targets::rust_type::{DataType, DeriveAttribute, EnumVariant, StructField, TypeHeader};
+use crate::targets::rust_type::{
+    DataType, DeriveAttribute, EnumVariant, RequestBodyDef, StructField, TypeHeader,
+};
 use std::fmt::{Debug, Display, Formatter};
 
 #[derive(Clone, Debug)]
@@ -7,6 +9,7 @@ pub enum Definition {
     NewTypeDef(NewTypeDef),
     EnumDef(EnumDef),
     PresetDef(PresetDef),
+    RequestBodyDef(RequestBodyDef),
 }
 
 impl Definition {
@@ -19,6 +22,7 @@ impl Definition {
             Definition::NewTypeDef(x) => f(&x.data_type),
             Definition::EnumDef(_) => false,
             Definition::PresetDef(_) => false,
+            Definition::RequestBodyDef(_) => false,
         }
     }
 }

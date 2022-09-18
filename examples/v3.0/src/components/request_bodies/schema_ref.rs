@@ -8,6 +8,9 @@ pub mod request_bodies {
     use serde::Deserialize;
     use serde::Serialize;
 
+    /**
+    Request body containing pet information
+    */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     #[serde(untagged)]
     pub enum PetBody {
@@ -25,7 +28,9 @@ pub mod request_bodies {
 
         pub fn new(value: &str, media_type: &str) -> Result<Self> {
             match media_type {
-                "application/xml" => unimplemented!(),
+                "application/xml" => {
+                    unimplemented!()
+                }
                 "application/json" => {
                     let body = from_json_string(value)?;
                     Ok(Self::ApplicationJson(body))
