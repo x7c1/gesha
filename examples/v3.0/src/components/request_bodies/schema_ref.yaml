@@ -3,10 +3,10 @@ requestBodies:
     description: Request body containing pet information
     required: true
     content:
-      application/xml:
+      application/json:
         schema:
           $ref: '#/components/schemas/Pet'
-      application/json:
+      application/xml:
         schema:
           $ref: '#/components/schemas/Pet'
 

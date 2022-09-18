@@ -14,23 +14,18 @@ pub mod request_bodies {
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     #[serde(untagged)]
     pub enum PetBody {
-        ApplicationXml(Pet),
         ApplicationJson(Pet),
     }
 
     impl PetBody {
         pub fn media_type(&self) -> MediaType {
             match self {
-                Self::ApplicationXml(_) => MediaType::ApplicationXml,
                 Self::ApplicationJson(_) => MediaType::ApplicationJson,
             }
         }
 
         pub fn new(value: &str, media_type: &str) -> Result<Self> {
             match media_type {
-                "application/xml" => {
-                    unimplemented!()
-                }
                 "application/json" => {
                     let body = from_json_string(value)?;
                     Ok(Self::ApplicationJson(body))

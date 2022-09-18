@@ -1,5 +1,5 @@
 mod media_type_shape;
-use media_type_shape::MediaTypeShape;
+pub use media_type_shape::MediaTypeShape;
 
 use crate::conversions::Result;
 use crate::targets::rust_type::DocComments;
