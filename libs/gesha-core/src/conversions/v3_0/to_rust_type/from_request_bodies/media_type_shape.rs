@@ -1,5 +1,5 @@
 #[derive(Clone, Debug)]
-pub(super) enum MediaTypeShape {
+pub enum MediaTypeShape {
     ApplicationJson,
     Unsupported(String),
 }

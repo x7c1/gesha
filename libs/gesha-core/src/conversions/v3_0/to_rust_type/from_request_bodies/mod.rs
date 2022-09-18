@@ -23,7 +23,7 @@ fn to_shape(kv: (ComponentName, RequestBodyCase)) -> Result<DefinitionShape> {
 }
 
 #[derive(Clone, Debug)]
-pub(super) struct DefinitionShape {
+pub struct DefinitionShape {
     pub name: ComponentName,
     pub doc_comments: DocComments,
     pub is_required: bool,
@@ -31,9 +31,9 @@ pub(super) struct DefinitionShape {
 }
 
 #[derive(Clone, Debug)]
-pub(super) struct ContentShape {
-    media_type: MediaTypeShape,
-    schema: SchemaCase,
+pub struct ContentShape {
+    pub media_type: MediaTypeShape,
+    pub schema: SchemaCase,
 }
 
 #[derive(Debug)]
