@@ -1,21 +1,39 @@
 use heck::ToUpperCamelCase;
 use std::fmt::{Display, Formatter};
 
+/// rf. https://doc.rust-lang.org/reference/items/enumerations.html
 #[derive(Clone, Debug)]
 pub struct EnumVariant {
     pub name: EnumVariantName,
     pub attributes: Vec<EnumVariantAttribute>,
+    pub case: EnumCase,
     _hide_default_constructor: bool,
 }
 
 impl EnumVariant {
-    pub fn new(name: EnumVariantName, attributes: Vec<EnumVariantAttribute>) -> Self {
+    pub fn unit(name: EnumVariantName, attributes: Vec<EnumVariantAttribute>) -> Self {
         EnumVariant {
             name,
             attributes,
+            case: EnumCase::Unit,
             _hide_default_constructor: true,
         }
     }
+    pub fn tuple(name: EnumVariantName, attributes: Vec<EnumVariantAttribute>) -> Self {
+        EnumVariant {
+            name,
+            attributes,
+            // TODO: add type to this tuple
+            case: EnumCase::Tuple(),
+            _hide_default_constructor: true,
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum EnumCase {
+    Unit,
+    Tuple(),
 }
 
 #[derive(Clone, Debug)]

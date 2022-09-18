@@ -31,7 +31,7 @@ fn to_definition(shape: DefinitionShape) -> Definition {
         .filter_map(|s| match s.media_type {
             MediaTypeShape::Unsupported(_) => None,
             // TODO
-            x => Some(EnumVariant::new(EnumVariantName::new(x), vec![])),
+            x => Some(EnumVariant::tuple(EnumVariantName::new(x), vec![])),
         })
         .collect();
 

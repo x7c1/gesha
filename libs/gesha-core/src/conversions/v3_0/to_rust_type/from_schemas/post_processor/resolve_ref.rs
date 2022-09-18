@@ -149,5 +149,5 @@ fn to_enum_variant(original: String) -> EnumVariant {
             r#"serde(rename="{original}")"#
         )))
     }
-    EnumVariant::new(name, attrs)
+    EnumVariant::unit(name, attrs)
 }
