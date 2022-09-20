@@ -1,3 +1,6 @@
+mod render_enum;
+use render_enum::{render_enum, render_enum_variants};
+
 mod render_request_body;
 use render_request_body::render_request_body;
 
@@ -5,8 +8,8 @@ use crate::render;
 use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, DeriveAttribute, EnumDef, EnumVariant, EnumVariantAttribute, Module,
-    Modules, NewTypeDef, PresetDef, StructDef, StructField, StructFieldAttribute, UseStatement,
+    DataType, Definition, DeriveAttribute, Module, Modules, NewTypeDef, PresetDef, StructDef,
+    StructField, StructFieldAttribute, UseStatement,
 };
 use std::io::Write;
 
@@ -102,6 +105,17 @@ fn render_field_attrs<W: Write>(mut write: W, attrs: Vec<StructFieldAttribute>) 
     Ok(())
 }
 
+fn render_data_types<W: Write>(mut write: W, types: &[DataType]) -> Result<()> {
+    let items = types
+        .iter()
+        .map(|x| x.to_string())
+        .collect::<Vec<String>>()
+        .join(",");
+
+    render! { write => echo > "{items}"; }
+    Ok(())
+}
+
 fn render_data_type<W: Write>(mut write: W, data_type: &DataType) -> Result<()> {
     render! { write =>
         echo > "{type_name}", type_name = data_type;
@@ -132,34 +146,6 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
             name = x.header.name;
 
         echo > "\n\n";
-    }
-    Ok(())
-}
-
-fn render_enum<W: Write>(mut write: W, x: EnumDef) -> Result<()> {
-    render! { write =>
-        echo > "{comments}", comments = x.header.doc_comments;
-        call > render_derive_attrs => &x.derive_attrs;
-        echo > "pub enum {name}", name = x.header.name;
-        "{}" > render_enum_variants => x.variants;
-        echo > "\n\n";
-    }
-    Ok(())
-}
-
-fn render_enum_variants<W: Write>(mut write: W, variants: Vec<EnumVariant>) -> Result<()> {
-    for variant in variants {
-        render! { write =>
-            call > render_variant_attrs => variant.attributes;
-            echo > "{name},\n", name = variant.name;
-        }
-    }
-    Ok(())
-}
-
-fn render_variant_attrs<W: Write>(mut write: W, attrs: Vec<EnumVariantAttribute>) -> Result<()> {
-    for attr in attrs.into_iter() {
-        render! { write => echo > "#[{attr}]"; }
     }
     Ok(())
 }

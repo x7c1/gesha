@@ -1,3 +1,4 @@
+use crate::targets::rust_type::DataType;
 use heck::ToUpperCamelCase;
 use std::fmt::{Display, Formatter};
 
@@ -19,12 +20,15 @@ impl EnumVariant {
             _hide_default_constructor: true,
         }
     }
-    pub fn tuple(name: EnumVariantName, attributes: Vec<EnumVariantAttribute>) -> Self {
+    pub fn tuple(
+        name: EnumVariantName,
+        types: Vec<DataType>,
+        attributes: Vec<EnumVariantAttribute>,
+    ) -> Self {
         EnumVariant {
             name,
             attributes,
-            // TODO: add type to this tuple
-            case: EnumCase::Tuple(),
+            case: EnumCase::Tuple(types),
             _hide_default_constructor: true,
         }
     }
@@ -33,7 +37,7 @@ impl EnumVariant {
 #[derive(Clone, Debug)]
 pub enum EnumCase {
     Unit,
-    Tuple(),
+    Tuple(Vec<DataType>),
 }
 
 #[derive(Clone, Debug)]

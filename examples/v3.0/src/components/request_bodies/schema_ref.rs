@@ -4,7 +4,6 @@ pub mod request_bodies {
     use super::core::Error;
     use super::core::MediaType;
     use super::core::Result;
-    use super::schemas::Pet;
     use serde::Deserialize;
     use serde::Serialize;
 
@@ -14,7 +13,7 @@ pub mod request_bodies {
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     #[serde(untagged)]
     pub enum PetBody {
-        ApplicationJson(Pet),
+        ApplicationJson(super::schemas::Pet),
     }
 
     impl PetBody {
