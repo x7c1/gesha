@@ -27,15 +27,15 @@ impl ComponentsShapes {
         let variants = shape
             .contents
             .into_iter()
-            .filter_map(|x| self.content_shape_to_variant(x).transpose())
+            .filter_map(|x| self.content_shape_to_variant(&x).transpose())
             .collect::<Result<Vec<EnumVariant>>>()?;
 
         let def = RequestBodyDef::new(header, variants);
         Ok(def.into())
     }
 
-    fn content_shape_to_variant(&self, shape: ContentShape) -> Result<Option<EnumVariant>> {
-        match shape.media_type {
+    fn content_shape_to_variant(&self, shape: &ContentShape) -> Result<Option<EnumVariant>> {
+        match &shape.media_type {
             MediaTypeShape::Unsupported(_) => {
                 // ignore unsupported media type
                 Ok(None)
