@@ -1,9 +1,5 @@
 // TODO
 pub mod request_bodies {
-    use super::core::from_json_string;
-    use super::core::Error;
-    use super::core::MediaType;
-    use super::core::Result;
     use serde::Deserialize;
     use serde::Serialize;
 
@@ -17,19 +13,19 @@ pub mod request_bodies {
     }
 
     impl PetBody {
-        pub fn media_type(&self) -> MediaType {
+        pub fn media_type(&self) -> super::core::MediaType {
             match self {
-                Self::ApplicationJson(_) => MediaType::ApplicationJson,
+                Self::ApplicationJson(_) => super::core::MediaType::ApplicationJson,
             }
         }
 
-        pub fn new(value: &str, media_type: &str) -> Result<Self> {
+        pub fn new(value: &str, media_type: &str) -> super::core::Result<Self> {
             match media_type {
                 "application/json" => {
-                    let body = from_json_string(value)?;
+                    let body = super::core::from_json_string(value)?;
                     Ok(Self::ApplicationJson(body))
                 }
-                unsupported => Err(Error::UnsupportedMediaType {
+                unsupported => Err(super::core::Error::UnsupportedMediaType {
                     given: unsupported.to_string(),
                 }),
             }

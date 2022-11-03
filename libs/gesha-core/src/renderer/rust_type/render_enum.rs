@@ -15,8 +15,12 @@ pub fn render_enum<W: Write>(mut write: W, x: EnumDef) -> Result<()> {
     Ok(())
 }
 
-pub fn render_enum_variants<W: Write>(mut write: W, variants: Vec<EnumVariant>) -> Result<()> {
-    for variant in variants {
+pub fn render_enum_variants<W, A>(mut write: W, variants: A) -> Result<()>
+where
+    W: Write,
+    A: Into<Vec<EnumVariant>>,
+{
+    for variant in variants.into() {
         render! { write =>
             call > render_variant_attrs => variant.attributes;
             echo > "{name}", name = variant.name;

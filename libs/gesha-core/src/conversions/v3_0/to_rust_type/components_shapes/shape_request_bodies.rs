@@ -4,7 +4,8 @@ use crate::conversions::v3_0::to_rust_type::from_request_bodies::{
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, EnumVariant, EnumVariantName, Module, RequestBodyDef, TypeHeader,
+    DataType, Definition, EnumVariant, EnumVariantName, MediaTypeVariant, Module, RequestBodyDef,
+    TypeHeader,
 };
 use openapi_types::v3_0::SchemaCase;
 
@@ -28,13 +29,13 @@ impl ComponentsShapes {
             .contents
             .into_iter()
             .filter_map(|x| self.content_shape_to_variant(&x).transpose())
-            .collect::<Result<Vec<EnumVariant>>>()?;
+            .collect::<Result<Vec<MediaTypeVariant>>>()?;
 
         let def = RequestBodyDef::new(header, variants);
         Ok(def.into())
     }
 
-    fn content_shape_to_variant(&self, shape: &ContentShape) -> Result<Option<EnumVariant>> {
+    fn content_shape_to_variant(&self, shape: &ContentShape) -> Result<Option<MediaTypeVariant>> {
         match &shape.media_type {
             MediaTypeShape::Unsupported(_) => {
                 // ignore unsupported media type
@@ -47,7 +48,10 @@ impl ComponentsShapes {
                     vec![DataType::Custom(format!("super::schemas::{}", type_name))],
                     vec![],
                 );
-                Ok(Some(variant))
+                Ok(Some(MediaTypeVariant {
+                    header_value: media_type_shape.as_ref().to_string(),
+                    variant,
+                }))
             }
         }
     }
