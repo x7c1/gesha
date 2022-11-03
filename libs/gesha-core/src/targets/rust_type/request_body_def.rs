@@ -40,3 +40,12 @@ impl From<MediaTypeVariants> for Vec<EnumVariant> {
         this.0.into_iter().map(|x| x.variant).collect()
     }
 }
+
+impl IntoIterator for MediaTypeVariants {
+    type Item = <Vec<MediaTypeVariant> as IntoIterator>::Item;
+    type IntoIter = <Vec<MediaTypeVariant> as IntoIterator>::IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}

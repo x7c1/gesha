@@ -18,7 +18,6 @@ pub mod request_bodies {
                 Self::ApplicationJson(_) => super::core::MediaType::ApplicationJson,
             }
         }
-
         pub fn new(value: &str, media_type: &str) -> super::core::Result<Self> {
             match media_type {
                 "application/json" => {

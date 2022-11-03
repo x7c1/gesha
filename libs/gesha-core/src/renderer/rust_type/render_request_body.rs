@@ -1,7 +1,7 @@
 use crate::render;
 use crate::renderer::rust_type::{render_derive_attrs, render_enum_variants};
 use crate::renderer::Result;
-use crate::targets::rust_type::{MediaTypeVariants, RequestBodyDef};
+use crate::targets::rust_type::{MediaTypeVariant, MediaTypeVariants, RequestBodyDef};
 use std::io::Write;
 
 pub fn render_request_body<W: Write>(mut write: W, x: RequestBodyDef) -> Result<()> {
@@ -18,15 +18,6 @@ pub fn render_request_body<W: Write>(mut write: W, x: RequestBodyDef) -> Result<
     Ok(())
 }
 
-// fn render_impl<W: Write>(mut write: W, x: RequestBodyDef) -> Result<()> {
-//     println!(".......{:#?}", x.variants);
-//     render! { write =>
-//         echo > "impl {name}", name = x.header.name;
-//         "{}" > render_impl_body => x.variants;
-//     }
-//     Ok(())
-// }
-
 fn render_impl_body<W: Write>(mut write: W, x: MediaTypeVariants) -> Result<()> {
     render! { write =>
         echo >
@@ -35,14 +26,62 @@ fn render_impl_body<W: Write>(mut write: W, x: MediaTypeVariants) -> Result<()> 
                     {arms}
                 }}
             }}",
-            arms = to_arms(x);
+            arms = to_arms_media_type(x.clone());
+        echo >
+            "pub fn new(value: &str, media_type: &str) -> super::core::Result<Self> {{
+                match media_type {{
+                    {arms}
+                }}
+            }}",
+            arms = to_arms_new(x);
     }
     Ok(())
 }
 
-fn to_arms(x: MediaTypeVariants) -> String {
-    // TODO:
-    // generate string like below
-    // "Self::ApplicationJson(_) => super::core::MediaType::ApplicationJson",
-    "sample".to_string()
+fn to_arms_media_type(xs: MediaTypeVariants) -> String {
+    xs.into_iter()
+        .map(|x| {
+            format!(
+                "Self::{name}(_) => super::core::MediaType::{name}",
+                name = x.variant.name
+            )
+        })
+        .collect::<Vec<String>>()
+        .join(",")
+}
+
+fn to_arms_new(xs: MediaTypeVariants) -> String {
+    let mut arms = xs
+        .into_iter()
+        .map(create_new_arm)
+        .flatten()
+        .collect::<Vec<String>>();
+
+    arms.push(
+        r#"
+            unsupported => Err(super::core::Error::UnsupportedMediaType {
+                given: unsupported.to_string(),
+            }),
+        "#
+        .to_string(),
+    );
+    arms.join(",")
+}
+
+fn create_new_arm(x: MediaTypeVariant) -> Option<String> {
+    match x.header_value.as_str() {
+        "application/json" => Some(
+            r#"
+                "application/json" => {
+                    let body = super::core::from_json_string(value)?;
+                    Ok(Self::ApplicationJson(body))
+                }
+            "#
+            .to_string(),
+        ),
+        _ => {
+            // ignore unsupported media type
+            None
+        }
+    }
 }

@@ -59,6 +59,12 @@ impl Display for EnumVariantName {
     }
 }
 
+impl From<EnumVariantName> for String {
+    fn from(this: EnumVariantName) -> Self {
+        this.0
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct EnumVariantAttribute(String);
 
