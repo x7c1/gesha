@@ -10,6 +10,9 @@ pub use derive_attribute::DeriveAttribute;
 mod enum_variant;
 pub use enum_variant::{EnumCase, EnumVariant, EnumVariantAttribute, EnumVariantName};
 
+mod media_type_def;
+pub use media_type_def::MediaTypeDef;
+
 mod modules;
 pub use modules::Modules;
 

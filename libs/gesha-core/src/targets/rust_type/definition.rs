@@ -1,7 +1,6 @@
 use crate::targets::rust_type::{
-    DataType, DeriveAttribute, EnumVariant, RequestBodyDef, StructField, TypeHeader,
+    DataType, DeriveAttribute, EnumVariant, MediaTypeDef, RequestBodyDef, StructField, TypeHeader,
 };
-use std::fmt::{Debug, Display, Formatter};
 
 #[derive(Clone, Debug)]
 pub enum Definition {
@@ -30,6 +29,7 @@ impl Definition {
 #[derive(Clone, Debug)]
 pub enum PresetDef {
     Patch(String),
+    MediaType(MediaTypeDef),
 }
 
 impl PresetDef {
@@ -37,14 +37,6 @@ impl PresetDef {
         // rf. https://stackoverflow.com/q/44331037
         let code = include_str!("patch.rs.tpl");
         Self::Patch(code.to_string())
-    }
-}
-
-impl Display for PresetDef {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            PresetDef::Patch(x) => Display::fmt(x, f),
-        }
     }
 }
 

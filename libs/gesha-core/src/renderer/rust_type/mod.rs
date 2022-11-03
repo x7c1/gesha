@@ -1,6 +1,9 @@
 mod render_enum;
 use render_enum::{render_enum, render_enum_variants};
 
+mod render_media_type;
+use render_media_type::render_media_type;
+
 mod render_request_body;
 use render_request_body::render_request_body;
 
@@ -151,8 +154,13 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
 }
 
 fn render_preset<W: Write>(mut write: W, x: PresetDef) -> Result<()> {
-    render! { write =>
-        echo > "{x}";
+    match x {
+        PresetDef::Patch(source) => {
+            render! { write => echo > "{source}"; }
+        }
+        PresetDef::MediaType(media_type) => {
+            render_media_type(write, media_type)?;
+        }
     }
     Ok(())
 }
