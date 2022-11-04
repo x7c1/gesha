@@ -5,8 +5,16 @@ use std::io::Write;
 
 pub fn render_media_type<W: Write>(mut write: W, x: MediaTypeDef) -> Result<()> {
     println!("media_type: {:#?}", x);
+    let variants = x
+        .translator
+        .iter()
+        .map(|(&k, _)| k)
+        .collect::<Vec<&str>>()
+        .join(",");
+
     render! { write =>
-        echo > "/* TODO */"
+        echo > "#[derive(Clone, Copy, Debug, PartialEq)]";
+        echo > "pub enum MediaType {{ {variants} }}";
     }
     Ok(())
 }

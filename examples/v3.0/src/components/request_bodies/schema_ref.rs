@@ -57,7 +57,6 @@ pub mod core {
     #[derive(Clone, Copy, Debug, PartialEq)]
     pub enum MediaType {
         ApplicationJson,
-        ApplicationXml,
     }
 
     impl Display for MediaType {
@@ -70,7 +69,6 @@ pub mod core {
         fn as_ref(&self) -> &str {
             match self {
                 MediaType::ApplicationJson => "application/json",
-                MediaType::ApplicationXml => "application/xml",
             }
         }
     }

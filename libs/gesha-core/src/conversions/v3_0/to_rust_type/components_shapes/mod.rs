@@ -1,12 +1,12 @@
 mod shape_request_bodies;
 mod shape_schemas;
 
-use crate::conversions::v3_0::to_rust_type::from_request_bodies::MediaTypeShape;
 use crate::conversions::v3_0::to_rust_type::{contains_patch, from_request_bodies, from_schemas};
 use crate::conversions::Result;
 use crate::targets::rust_type::{
     Definition, MediaTypeDef, Module, ModuleName, Modules, PresetDef, UseStatement,
 };
+use indexmap::IndexMap;
 
 #[derive(Clone, Debug)]
 pub struct ComponentsShapes {
@@ -56,19 +56,18 @@ impl ComponentsShapes {
     }
 
     fn create_media_type_def(&self) -> Option<MediaTypeDef> {
-        println!("request : {:#?}", self.request_bodies);
+        let translator = self
+            .request_bodies
+            .iter()
+            .map(|def| def.translate_media_types())
+            .flatten()
+            .collect::<IndexMap<&str, &str>>();
 
-        // TODO:
-        self.request_bodies.iter().for_each(|def| {
-            def.contents
-                .iter()
-                .for_each(|content| match content.media_type {
-                    MediaTypeShape::ApplicationJson => {}
-                    MediaTypeShape::Unsupported(_) => {}
-                })
-        });
-
-        Some(MediaTypeDef)
+        if translator.is_empty() {
+            None
+        } else {
+            Some(MediaTypeDef { translator })
+        }
     }
 }
 

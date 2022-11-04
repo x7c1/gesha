@@ -30,6 +30,18 @@ pub struct DefinitionShape {
     pub contents: Vec<ContentShape>,
 }
 
+impl DefinitionShape {
+    pub fn translate_media_types(&self) -> impl Iterator<Item = (&'static str, &'static str)> + '_ {
+        self.contents
+            .iter()
+            .map(|content| match content.media_type {
+                MediaTypeShape::ApplicationJson => Some(("ApplicationJson", "application/json")),
+                MediaTypeShape::Unsupported(_) => None,
+            })
+            .flatten()
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct ContentShape {
     pub media_type: MediaTypeShape,

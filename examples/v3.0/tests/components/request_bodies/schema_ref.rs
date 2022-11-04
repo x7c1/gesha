@@ -81,11 +81,4 @@ mod media_type {
         let expected = "application/json";
         assert_eq!(actual, expected)
     }
-
-    #[test]
-    fn display_xml() {
-        let actual = format!("{}", MediaType::ApplicationXml);
-        let expected = "application/xml";
-        assert_eq!(actual, expected)
-    }
 }
