@@ -46,7 +46,8 @@ pub mod schemas {
 
 pub mod core {
     use serde::Deserialize;
-    use std::fmt::{Display, Formatter};
+    use std::fmt::Display;
+    use std::fmt::Formatter;
 
     #[derive(Clone, Copy, Debug, PartialEq)]
     pub enum MediaType {
