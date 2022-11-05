@@ -13,8 +13,8 @@ impl Definitions {
         self.0.is_empty()
     }
 
-    pub fn set(&mut self, x: Definition) {
-        let _ = self.0.insert(x);
+    pub fn set<A: Into<Definition>>(&mut self, def: A) {
+        let _ = self.0.insert(def.into());
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &Definition> {

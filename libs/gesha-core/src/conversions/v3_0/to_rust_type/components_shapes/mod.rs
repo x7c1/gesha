@@ -39,7 +39,7 @@ impl ComponentsShapes {
         let mut error_def = ErrorDef::new();
 
         if modules.any_type(contains_patch) {
-            core_defs.set(PresetDef::Patch.into());
+            core_defs.set(PresetDef::Patch);
             imports.set(UseStatement::new("serde::Deserialize"));
             imports.set(UseStatement::new("serde::Deserializer"));
             imports.set(UseStatement::new("serde::Serialize"));
@@ -49,14 +49,14 @@ impl ComponentsShapes {
         if let Some(media_type) = self.create_media_type_def() {
             imports.set(UseStatement::new("serde::Deserialize"));
             imports.set(UseStatement::new("std::fmt::{Display, Formatter}"));
-            core_defs.set(PresetDef::MediaType(media_type).into());
-            core_defs.set(PresetDef::FromJson.into());
+            core_defs.set(PresetDef::MediaType(media_type));
+            core_defs.set(PresetDef::FromJson);
             error_def.set(ErrorVariant::InvalidJson);
             error_def.set(ErrorVariant::UnsupportedMediaType);
         }
 
         if !error_def.is_empty() {
-            core_defs.set(PresetDef::Error(error_def).into());
+            core_defs.set(PresetDef::Error(error_def));
         }
 
         if core_defs.is_empty() {
