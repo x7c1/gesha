@@ -1,7 +1,7 @@
 use crate::targets::rust_type::{DataType, StructFieldName};
 use std::fmt::{Display, Formatter};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct StructField {
     pub name: StructFieldName,
     pub data_type: DataType,
@@ -24,7 +24,7 @@ impl StructField {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct StructFieldAttribute(String);
 
 impl StructFieldAttribute {

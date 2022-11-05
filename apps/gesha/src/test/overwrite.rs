@@ -36,12 +36,10 @@ pub fn run(params: Params) -> gateway::Result<()> {
         writer.copy_file(case.target.output)?;
     }
 
-    vec![test::new_schemas_cases()]
-        .into_iter()
-        .try_for_each(|cases| {
-            let module_path = cases.module_path.clone();
-            generate_module_file(module_path, cases.into())
-        })
+    test::all_cases().into_iter().try_for_each(|cases| {
+        let module_path = cases.module_path.clone();
+        generate_module_file(module_path, cases.into())
+    })
 }
 
 fn run_and_catch_diff(target: SupportedTestCase) -> gateway::Result<Option<ModifiedCase>> {

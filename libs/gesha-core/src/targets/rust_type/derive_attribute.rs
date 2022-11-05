@@ -1,7 +1,7 @@
 use std::borrow::Borrow;
 use std::fmt::{Display, Formatter};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub enum DeriveAttribute {
     Clone,
     Debug,

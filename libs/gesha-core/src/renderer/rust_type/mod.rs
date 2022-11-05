@@ -1,9 +1,21 @@
+mod render_enum;
+use render_enum::{render_enum, render_enum_variants};
+
+mod render_error;
+use render_error::render_error;
+
+mod render_media_type;
+use render_media_type::render_media_type;
+
+mod render_request_body;
+use render_request_body::render_request_body;
+
 use crate::render;
 use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, DeriveAttribute, EnumDef, EnumVariant, EnumVariantAttribute, Module,
-    Modules, NewTypeDef, PresetDef, StructDef, StructField, StructFieldAttribute, UseStatement,
+    DataType, Definition, DeriveAttribute, Imports, Module, Modules, NewTypeDef, PresetDef,
+    StructDef, StructField, StructFieldAttribute,
 };
 use std::io::Write;
 
@@ -25,7 +37,7 @@ fn render_module<W: Write>(mut write: W, module: Module) -> Result<()> {
 
 fn render_mod_body<W: Write>(mut write: W, module: Module) -> Result<()> {
     render! { write =>
-        call > render_use_statements => module.use_statements;
+        call > render_use_statements => module.imports;
         echo > "\n";
     }
     module
@@ -34,10 +46,10 @@ fn render_mod_body<W: Write>(mut write: W, module: Module) -> Result<()> {
         .try_for_each(|def| render_definition(&mut write, def))
 }
 
-fn render_use_statements<W: Write>(mut write: W, xs: Vec<UseStatement>) -> Result<()> {
+fn render_use_statements<W: Write>(mut write: W, xs: Imports) -> Result<()> {
     for x in xs {
         render! { write =>
-            echo > "use {target};\n", target = String::from(x);
+            echo > "use {x};\n";
         }
     }
     Ok(())
@@ -49,6 +61,7 @@ fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
         Definition::NewTypeDef(x) => render_newtype(write, x)?,
         Definition::EnumDef(x) => render_enum(write, x)?,
         Definition::PresetDef(x) => render_preset(write, x)?,
+        Definition::RequestBodyDef(x) => render_request_body(write, x)?,
     };
     Ok(())
 }
@@ -98,6 +111,17 @@ fn render_field_attrs<W: Write>(mut write: W, attrs: Vec<StructFieldAttribute>) 
     Ok(())
 }
 
+fn render_data_types<W: Write>(mut write: W, types: &[DataType]) -> Result<()> {
+    let items = types
+        .iter()
+        .map(|x| x.to_string())
+        .collect::<Vec<String>>()
+        .join(",");
+
+    render! { write => echo > "{items}"; }
+    Ok(())
+}
+
 fn render_data_type<W: Write>(mut write: W, data_type: &DataType) -> Result<()> {
     render! { write =>
         echo > "{type_name}", type_name = data_type;
@@ -132,37 +156,25 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
     Ok(())
 }
 
-fn render_enum<W: Write>(mut write: W, x: EnumDef) -> Result<()> {
-    render! { write =>
-        echo > "{comments}", comments = x.header.doc_comments;
-        call > render_derive_attrs => &x.derive_attrs;
-        echo > "pub enum {name}", name = x.header.name;
-        "{}" > render_enum_variants => x.variants;
-        echo > "\n\n";
-    }
-    Ok(())
-}
-
-fn render_enum_variants<W: Write>(mut write: W, variants: Vec<EnumVariant>) -> Result<()> {
-    for variant in variants {
-        render! { write =>
-            call > render_variant_attrs => variant.attributes;
-            echo > "{name},\n", name = variant.name;
-        }
-    }
-    Ok(())
-}
-
-fn render_variant_attrs<W: Write>(mut write: W, attrs: Vec<EnumVariantAttribute>) -> Result<()> {
-    for attr in attrs.into_iter() {
-        render! { write => echo > "#[{attr}]"; }
-    }
-    Ok(())
-}
-
 fn render_preset<W: Write>(mut write: W, x: PresetDef) -> Result<()> {
-    render! { write =>
-        echo > "{x}";
+    match x {
+        PresetDef::Patch => {
+            let source = include_str!("patch.rs.tpl");
+            render! { write => echo > "{source}"; }
+        }
+        PresetDef::MediaType(media_type) => {
+            render_media_type(write, media_type)?;
+        }
+        PresetDef::FromJson => {
+            render! { write => echo > "
+                pub fn from_json<'a, A: Deserialize<'a>>(text: &'a str) -> Result<A> {{
+                    serde_json::from_str(text).map_err(Error::InvalidJson)
+                }}
+            ";}
+        }
+        PresetDef::Error(e) => {
+            render_error(write, e)?;
+        }
     }
     Ok(())
 }

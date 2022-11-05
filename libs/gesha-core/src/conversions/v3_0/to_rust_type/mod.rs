@@ -1,19 +1,12 @@
 mod components_shapes;
 use components_shapes::ComponentsShapes;
 
-mod definition_shape;
-use definition_shape::DefinitionShape;
-
-mod post_processor;
-
-mod to_shape;
-use to_shape::to_shape;
+mod from_request_bodies;
+mod from_schemas;
 
 use crate::conversions::{Result, ToRustType};
-use crate::targets::rust_type::{DataType, DocComments, Modules};
-use openapi_types::v3_0::{
-    ComponentsObject, Document, ReferenceObject, SchemaFieldName, SchemasObject,
-};
+use crate::targets::rust_type::{DataType, Modules};
+use openapi_types::v3_0::{ComponentsObject, Document};
 
 impl ToRustType<Document> for Modules {
     fn apply(this: Document) -> Result<Self> {
@@ -28,64 +21,22 @@ impl ToRustType<Document> for Modules {
 
 impl ToRustType<ComponentsObject> for Modules {
     fn apply(this: ComponentsObject) -> Result<Self> {
-        let to_shapes = |object: SchemasObject| {
-            object
-                .into_iter()
-                .map(to_shape)
-                .collect::<Result<Vec<DefinitionShape>>>()
-        };
+        let schemas = this
+            .schemas
+            .map(from_schemas::to_shapes)
+            .unwrap_or_else(|| Ok(vec![]))?;
+
+        let request_bodies = this
+            .request_bodies
+            .map(from_request_bodies::to_shapes)
+            .unwrap_or_else(|| Ok(vec![]))?;
+
         let shapes = ComponentsShapes {
-            schemas: this.schemas.map(to_shapes).unwrap_or_else(|| Ok(vec![]))?,
+            schemas,
+            request_bodies,
         };
         shapes.into_modules()
     }
-}
-
-#[derive(Clone, Debug)]
-enum AllOfItemShape {
-    Object(Vec<FieldShape>),
-    Ref(ReferenceObject),
-}
-
-#[derive(Clone, Debug)]
-pub struct TypeHeaderShape {
-    pub name: SchemaFieldName,
-    pub doc_comments: DocComments,
-    pub is_nullable: bool,
-}
-
-#[derive(Clone, Debug)]
-pub enum TypeShape {
-    Fixed {
-        data_type: DataType,
-        is_required: bool,
-        is_nullable: bool,
-    },
-    Vec {
-        type_shape: Box<TypeShape>,
-        is_required: bool,
-        is_nullable: bool,
-    },
-    Ref {
-        object: ReferenceObject,
-        is_required: bool,
-    },
-}
-
-impl TypeShape {
-    pub fn is_required(&self) -> bool {
-        match self {
-            TypeShape::Fixed { is_required, .. } => *is_required,
-            TypeShape::Vec { is_required, .. } => *is_required,
-            TypeShape::Ref { is_required, .. } => *is_required,
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-struct FieldShape {
-    name: SchemaFieldName,
-    type_shape: TypeShape,
 }
 
 pub fn contains_patch(x: &DataType) -> bool {

@@ -1,27 +1,28 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
-use crate::conversions::v3_0::to_rust_type::post_processor::PostProcessor;
-use crate::conversions::v3_0::to_rust_type::{
-    is_patch, DefinitionShape, FieldShape, TypeHeaderShape, TypeShape,
+use crate::conversions::v3_0::to_rust_type::from_schemas::post_processor::PostProcessor;
+use crate::conversions::v3_0::to_rust_type::from_schemas::{
+    DefinitionShape, FieldShape, TypeHeaderShape, TypeShape,
 };
+use crate::conversions::v3_0::to_rust_type::is_patch;
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName, NewTypeDef,
-    StructDef, StructField, StructFieldAttribute, StructFieldName, TypeHeader,
+    DataType, Definition, Definitions, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName,
+    NewTypeDef, StructDef, StructField, StructFieldAttribute, StructFieldName, TypeHeader,
 };
-use openapi_types::v3_0::SchemaFieldName;
+use openapi_types::v3_0::ComponentName;
 
 impl PostProcessor {
-    pub(super) fn process_ref(
+    pub fn process_ref(
         &self,
         prefix: &'static str,
-        shapes: &mut [DefinitionShape],
-    ) -> Result<Vec<Definition>> {
+        shapes: &[DefinitionShape],
+    ) -> Result<Definitions> {
         let resolver = RefResolver {
             prefix,
             original: &self.original,
         };
-        shapes.iter_mut().map(|x| resolver.resolve_ref(x)).collect()
+        shapes.iter().map(|x| resolver.resolve_ref(x)).collect()
     }
 }
 
@@ -31,7 +32,7 @@ struct RefResolver<'a> {
 }
 
 impl RefResolver<'_> {
-    fn resolve_ref(&self, shape: &mut DefinitionShape) -> Result<Definition> {
+    fn resolve_ref(&self, shape: &DefinitionShape) -> Result<Definition> {
         match shape {
             DefinitionShape::Struct { header, shapes } => {
                 let def = StructDef::new(
@@ -111,14 +112,14 @@ impl RefResolver<'_> {
             TypeShape::Vec { is_nullable, .. } => Ok(*is_nullable),
             TypeShape::Ref { object, .. } => self
                 .original
-                .find_definition(object)
+                .find_schema_definition(object)
                 .map(|def| def.is_nullable()),
         }
     }
 }
 
 fn to_field_attrs(
-    original: &SchemaFieldName,
+    original: &ComponentName,
     name: &StructFieldName,
     tpe: &DataType,
 ) -> Vec<StructFieldAttribute> {
@@ -148,5 +149,5 @@ fn to_enum_variant(original: String) -> EnumVariant {
             r#"serde(rename="{original}")"#
         )))
     }
-    EnumVariant::new(name, attrs)
+    EnumVariant::unit(name, attrs)
 }

@@ -4,14 +4,32 @@ pub use data_type::DataType;
 mod definition;
 pub use definition::{Definition, EnumDef, NewTypeDef, PresetDef, StructDef};
 
+mod definitions;
+pub use definitions::Definitions;
+
 mod derive_attribute;
 pub use derive_attribute::DeriveAttribute;
 
 mod enum_variant;
-pub use enum_variant::{EnumVariant, EnumVariantAttribute, EnumVariantName};
+pub use enum_variant::{EnumCase, EnumVariant, EnumVariantAttribute};
+
+mod enum_variant_name;
+pub use enum_variant_name::EnumVariantName;
+
+mod error_def;
+pub use error_def::{ErrorDef, ErrorVariant};
+
+mod imports;
+pub use imports::{Imports, Package};
+
+mod media_type_def;
+pub use media_type_def::MediaTypeDef;
 
 mod modules;
 pub use modules::Modules;
+
+mod request_body_def;
+pub use request_body_def::{MediaTypeVariant, MediaTypeVariants, RequestBodyDef};
 
 mod struct_field;
 pub use struct_field::{StructField, StructFieldAttribute};
@@ -20,25 +38,22 @@ mod struct_field_name;
 pub use struct_field_name::StructFieldName;
 
 use std::fmt::{Debug, Display, Formatter};
+use std::hash::{Hash, Hasher};
 
 #[derive(Clone, Debug)]
 pub struct Module {
     pub name: ModuleName,
-    pub definitions: Vec<Definition>,
-    pub use_statements: Vec<UseStatement>,
+    pub definitions: Definitions,
+    pub imports: Imports,
     _hide_default_constructor: bool,
 }
 
 impl Module {
-    pub fn new(
-        name: ModuleName,
-        definitions: Vec<Definition>,
-        use_statements: Vec<UseStatement>,
-    ) -> Self {
+    pub fn new(name: ModuleName, definitions: Definitions, imports: Imports) -> Self {
         Self {
             name,
             definitions,
-            use_statements,
+            imports,
             _hide_default_constructor: true,
         }
     }
@@ -59,7 +74,7 @@ impl Display for ModuleName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct TypeHeader {
     pub name: String,
     pub doc_comments: DocComments,
@@ -76,12 +91,12 @@ impl TypeHeader {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct DocComments(Option<String>);
 
 impl DocComments {
-    pub fn new(this: Option<String>) -> Self {
-        Self(this)
+    pub fn wrap(this: Option<String>) -> Self {
+        Self(this.map(|text| format!("/**\n{text}\n*/\n")))
     }
 }
 
@@ -94,17 +109,10 @@ impl Display for DocComments {
     }
 }
 
-#[derive(Clone, Debug)]
-pub struct UseStatement(String);
-
-impl UseStatement {
-    pub fn new<A: Into<String>>(a: A) -> Self {
-        Self(a.into())
-    }
-}
-
-impl From<UseStatement> for String {
-    fn from(x: UseStatement) -> Self {
-        x.0
-    }
+fn hash_items<A, H>(xs: impl Iterator<Item = A>, state: &mut H)
+where
+    A: Hash,
+    H: Hasher,
+{
+    xs.for_each(|x| x.hash(state))
 }

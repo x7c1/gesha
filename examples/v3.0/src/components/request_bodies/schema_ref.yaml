@@ -1,0 +1,20 @@
+requestBodies:
+  PetBody:
+    description: Request body containing pet information
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '#/components/schemas/Pet'
+      application/xml:
+        schema:
+          $ref: '#/components/schemas/Pet'
+
+schemas:
+  Pet:
+    type: object
+    required:
+      - id
+    properties:
+      id:
+        type: integer

@@ -1,43 +1,45 @@
-use heck::ToUpperCamelCase;
+use crate::targets::rust_type::{DataType, EnumVariantName};
 use std::fmt::{Display, Formatter};
 
-#[derive(Clone, Debug)]
+/// rf. https://doc.rust-lang.org/reference/items/enumerations.html
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct EnumVariant {
     pub name: EnumVariantName,
     pub attributes: Vec<EnumVariantAttribute>,
+    pub case: EnumCase,
     _hide_default_constructor: bool,
 }
 
 impl EnumVariant {
-    pub fn new(name: EnumVariantName, attributes: Vec<EnumVariantAttribute>) -> Self {
+    pub fn unit(name: EnumVariantName, attributes: Vec<EnumVariantAttribute>) -> Self {
         EnumVariant {
             name,
             attributes,
+            case: EnumCase::Unit,
+            _hide_default_constructor: true,
+        }
+    }
+    pub fn tuple(
+        name: EnumVariantName,
+        types: Vec<DataType>,
+        attributes: Vec<EnumVariantAttribute>,
+    ) -> Self {
+        EnumVariant {
+            name,
+            attributes,
+            case: EnumCase::Tuple(types),
             _hide_default_constructor: true,
         }
     }
 }
 
-#[derive(Clone, Debug)]
-pub struct EnumVariantName(String);
-
-impl EnumVariantName {
-    pub fn new(x: &str) -> Self {
-        // TODO: replace x with Rust compatible chars if illegal chars are included
-        Self(x.to_upper_camel_case())
-    }
-    pub fn as_str(&self) -> &str {
-        &self.0
-    }
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+pub enum EnumCase {
+    Unit,
+    Tuple(Vec<DataType>),
 }
 
-impl Display for EnumVariantName {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        Display::fmt(&self.0, f)
-    }
-}
-
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct EnumVariantAttribute(String);
 
 impl EnumVariantAttribute {

@@ -1,15 +1,10 @@
-mod to_field_shapes;
-use to_field_shapes::to_field_shapes;
-
-mod to_type_shape;
-use to_type_shape::to_type_shape;
-
-use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, DefinitionShape, TypeHeaderShape};
+use super::{to_type_shape, AllOfItemShape, DefinitionShape, TypeHeaderShape};
+use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_field_shapes;
 use crate::conversions::Result;
 use crate::targets::rust_type::DocComments;
-use openapi_types::v3_0::{SchemaCase, SchemaFieldName, SchemaObject};
+use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject};
 
-pub(super) fn to_shape(kv: (SchemaFieldName, SchemaCase)) -> Result<DefinitionShape> {
+pub(super) fn to_shape(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
     let (field_name, schema_case) = kv;
     match schema_case {
         SchemaCase::Schema(obj) => {
@@ -21,7 +16,7 @@ pub(super) fn to_shape(kv: (SchemaFieldName, SchemaCase)) -> Result<DefinitionSh
 }
 
 struct Shaper {
-    name: SchemaFieldName,
+    name: ComponentName,
     object: SchemaObject,
 }
 
@@ -113,5 +108,5 @@ fn to_doc_comments(title: Option<&str>, description: Option<&str>) -> DocComment
         (t, d) if t == d => t,
         (Some(t), Some(d)) => Some(format!("{t}\n\n{d}")),
     };
-    DocComments::new(maybe.map(|text| format!("/**\n{text}\n*/\n")))
+    DocComments::wrap(maybe)
 }

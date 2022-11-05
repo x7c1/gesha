@@ -1,10 +1,10 @@
-use crate::conversions::v3_0::to_rust_type::{
+use crate::conversions::v3_0::to_rust_type::from_schemas::{
     AllOfItemShape, FieldShape, TypeHeaderShape, TypeShape,
 };
-use openapi_types::v3_0::EnumValues;
+use openapi_types::v3_0::{ComponentName, EnumValues};
 
 #[derive(Clone, Debug)]
-pub(super) enum DefinitionShape {
+pub enum DefinitionShape {
     AllOf {
         header: TypeHeaderShape,
         shapes: Vec<AllOfItemShape>,
@@ -24,8 +24,12 @@ pub(super) enum DefinitionShape {
 }
 
 impl DefinitionShape {
+    pub fn type_name(&self) -> &ComponentName {
+        &self.type_header().name
+    }
+
     pub fn is_type_name(&self, name: &str) -> bool {
-        self.type_header().name.as_ref() == name
+        self.type_name().as_ref() == name
     }
 
     pub fn is_nullable(&self) -> bool {

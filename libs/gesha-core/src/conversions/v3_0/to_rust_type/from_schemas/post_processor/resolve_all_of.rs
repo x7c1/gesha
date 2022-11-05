@@ -1,9 +1,11 @@
-use crate::conversions::v3_0::to_rust_type::post_processor::PostProcessor;
-use crate::conversions::v3_0::to_rust_type::{AllOfItemShape, DefinitionShape, FieldShape};
+use crate::conversions::v3_0::to_rust_type::from_schemas::post_processor::PostProcessor;
+use crate::conversions::v3_0::to_rust_type::from_schemas::{
+    AllOfItemShape, DefinitionShape, FieldShape,
+};
 use crate::conversions::Result;
 
 impl PostProcessor {
-    pub(super) fn process_all_of(&self, shapes: &mut [DefinitionShape]) -> Result<()> {
+    pub fn process_all_of(&self, shapes: &mut [DefinitionShape]) -> Result<()> {
         shapes.iter_mut().try_for_each(|x| self.resolve_all_of(x))
     }
 
@@ -42,7 +44,7 @@ impl PostProcessor {
         match item_shape {
             AllOfItemShape::Object(shapes) => Ok(shapes.clone()),
             AllOfItemShape::Ref(object) => {
-                let fields = self.original.find_definition(object)?.field_shapes();
+                let fields = self.original.find_schema_definition(object)?.field_shapes();
                 Ok(fields)
             }
         }

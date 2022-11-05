@@ -9,6 +9,8 @@ pub enum Error {
     // inherited errors
     Yaml(yaml::Error),
 
+    ReferenceObjectNotFound(String),
+
     // module errors
     IncompatibleVersion,
     PostProcessBroken {

@@ -1,12 +1,15 @@
-use crate::targets::rust_type::{DataType, DeriveAttribute, EnumVariant, StructField, TypeHeader};
-use std::fmt::{Debug, Display, Formatter};
+use crate::targets::rust_type::{
+    DataType, DeriveAttribute, EnumVariant, ErrorDef, MediaTypeDef, RequestBodyDef, StructField,
+    TypeHeader,
+};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub enum Definition {
     StructDef(StructDef),
     NewTypeDef(NewTypeDef),
     EnumDef(EnumDef),
     PresetDef(PresetDef),
+    RequestBodyDef(RequestBodyDef),
 }
 
 impl Definition {
@@ -19,29 +22,18 @@ impl Definition {
             Definition::NewTypeDef(x) => f(&x.data_type),
             Definition::EnumDef(_) => false,
             Definition::PresetDef(_) => false,
+            Definition::RequestBodyDef(_) => false,
         }
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub enum PresetDef {
-    Patch(String),
-}
-
-impl PresetDef {
-    pub fn patch() -> Self {
-        // rf. https://stackoverflow.com/q/44331037
-        let code = include_str!("patch.rs.tpl");
-        Self::Patch(code.to_string())
-    }
-}
-
-impl Display for PresetDef {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            PresetDef::Patch(x) => Display::fmt(x, f),
-        }
-    }
+    Error(ErrorDef),
+    /// rf. https://stackoverflow.com/q/44331037
+    Patch,
+    MediaType(MediaTypeDef),
+    FromJson,
 }
 
 impl From<PresetDef> for Definition {
@@ -50,7 +42,7 @@ impl From<PresetDef> for Definition {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct StructDef {
     pub header: TypeHeader,
     pub fields: Vec<StructField>,
@@ -75,7 +67,7 @@ impl From<StructDef> for Definition {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct NewTypeDef {
     pub header: TypeHeader,
     pub data_type: DataType,
@@ -100,7 +92,7 @@ impl From<NewTypeDef> for Definition {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct EnumDef {
     pub header: TypeHeader,
     pub variants: Vec<EnumVariant>,
