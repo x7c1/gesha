@@ -2,7 +2,7 @@ mod media_type_shape;
 pub use media_type_shape::MediaTypeShape;
 
 use crate::conversions::Result;
-use crate::targets::rust_type::DocComments;
+use crate::targets::rust_type::{DocComments, EnumVariantName};
 use openapi_types::v3_0::{
     ComponentName, RequestBodiesObject, RequestBodyCase, RequestBodyObject, SchemaCase,
 };
@@ -31,11 +31,15 @@ pub struct DefinitionShape {
 }
 
 impl DefinitionShape {
-    pub fn translate_media_types(&self) -> impl Iterator<Item = (&'static str, &'static str)> + '_ {
+    pub fn translate_media_types(
+        &self,
+    ) -> impl Iterator<Item = (EnumVariantName, &'static str)> + '_ {
         self.contents
             .iter()
             .map(|content| match content.media_type {
-                MediaTypeShape::ApplicationJson => Some(("ApplicationJson", "application/json")),
+                MediaTypeShape::ApplicationJson => {
+                    Some((EnumVariantName::new("ApplicationJson"), "application/json"))
+                }
                 MediaTypeShape::Unsupported(_) => None,
             })
             .flatten()

@@ -3,9 +3,7 @@ mod shape_schemas;
 
 use crate::conversions::v3_0::to_rust_type::{contains_patch, from_request_bodies, from_schemas};
 use crate::conversions::Result;
-use crate::targets::rust_type::{
-    Definition, MediaTypeDef, Module, ModuleName, Modules, PresetDef, UseStatement,
-};
+use crate::targets::rust_type::{Definition, EnumVariantName, MediaTypeDef, Module, ModuleName, Modules, PresetDef, UseStatement};
 use indexmap::IndexMap;
 
 #[derive(Clone, Debug)]
@@ -61,7 +59,7 @@ impl ComponentsShapes {
             .iter()
             .map(|def| def.translate_media_types())
             .flatten()
-            .collect::<IndexMap<&str, &str>>();
+            .collect::<IndexMap<EnumVariantName, &str>>();
 
         if translator.is_empty() {
             None

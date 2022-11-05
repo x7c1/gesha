@@ -1,9 +1,10 @@
 use indexmap::IndexMap;
+use crate::targets::rust_type::EnumVariantName;
 
 #[derive(Clone, Debug)]
 pub struct MediaTypeDef {
     /// e.g. "ApplicationJson" -> "application/json"
-    pub translator: IndexMap<&'static str, &'static str>,
+    pub translator: IndexMap<EnumVariantName, &'static str>,
 }
 
 // TODO: use EnumVariantName instead of &str
