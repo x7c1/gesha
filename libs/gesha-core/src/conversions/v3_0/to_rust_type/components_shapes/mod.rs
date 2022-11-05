@@ -40,15 +40,15 @@ impl ComponentsShapes {
 
         if modules.any_type(contains_patch) {
             core_defs.push(PresetDef::Patch.into());
-            imports.insert(UseStatement::new("serde::Deserialize"));
-            imports.insert(UseStatement::new("serde::Deserializer"));
-            imports.insert(UseStatement::new("serde::Serialize"));
-            imports.insert(UseStatement::new("serde::Serializer"));
+            imports.set(UseStatement::new("serde::Deserialize"));
+            imports.set(UseStatement::new("serde::Deserializer"));
+            imports.set(UseStatement::new("serde::Serialize"));
+            imports.set(UseStatement::new("serde::Serializer"));
         }
 
         if let Some(media_type) = self.create_media_type_def() {
-            imports.insert(UseStatement::new("serde::Deserialize"));
-            imports.insert(UseStatement::new("std::fmt::{Display, Formatter}"));
+            imports.set(UseStatement::new("serde::Deserialize"));
+            imports.set(UseStatement::new("std::fmt::{Display, Formatter}"));
             core_defs.push(PresetDef::MediaType(media_type).into());
             core_defs.push(PresetDef::FromJson.into());
             error_def.set(ErrorVariant::InvalidJson);
@@ -84,11 +84,11 @@ impl ComponentsShapes {
 
 fn create_module<A: Into<String>>(name: A, definitions: Vec<Definition>) -> Result<Option<Module>> {
     let mut imports = Imports::new();
-    imports.insert(UseStatement::new("serde::Deserialize"));
-    imports.insert(UseStatement::new("serde::Serialize"));
+    imports.set(UseStatement::new("serde::Deserialize"));
+    imports.set(UseStatement::new("serde::Serialize"));
 
     if definitions.iter().any(|x| x.any_type(contains_patch)) {
-        imports.insert(UseStatement::new("super::core::Patch"));
+        imports.set(UseStatement::new("super::core::Patch"));
     }
     if definitions.is_empty() {
         Ok(None)

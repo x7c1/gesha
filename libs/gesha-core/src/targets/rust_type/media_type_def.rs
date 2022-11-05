@@ -6,6 +6,3 @@ pub struct MediaTypeDef {
     /// e.g. "ApplicationJson" -> "application/json"
     pub translator: IndexMap<EnumVariantName, &'static str>,
 }
-
-// TODO: use EnumVariantName instead of &str
-// TODO: define MediaTypeValue

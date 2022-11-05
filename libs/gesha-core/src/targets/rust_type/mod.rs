@@ -16,6 +16,9 @@ pub use enum_variant_name::EnumVariantName;
 mod error_def;
 pub use error_def::{ErrorDef, ErrorVariant};
 
+mod imports;
+pub use imports::{Imports, UseStatement};
+
 mod media_type_def;
 pub use media_type_def::MediaTypeDef;
 
@@ -31,7 +34,6 @@ pub use struct_field::{StructField, StructFieldAttribute};
 mod struct_field_name;
 pub use struct_field_name::StructFieldName;
 
-use indexmap::IndexSet;
 use std::fmt::{Debug, Display, Formatter};
 
 #[derive(Clone, Debug)]
@@ -52,8 +54,6 @@ impl Module {
         }
     }
 }
-
-pub type Imports = IndexSet<UseStatement>;
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct ModuleName(String);
@@ -102,20 +102,5 @@ impl Display for DocComments {
             Some(text) => Display::fmt(text, f),
             None => Ok(()),
         }
-    }
-}
-
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
-pub struct UseStatement(String);
-
-impl UseStatement {
-    pub fn new<A: Into<String>>(a: A) -> Self {
-        Self(a.into())
-    }
-}
-
-impl From<UseStatement> for String {
-    fn from(x: UseStatement) -> Self {
-        x.0
     }
 }
