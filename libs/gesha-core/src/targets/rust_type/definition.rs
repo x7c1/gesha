@@ -1,5 +1,6 @@
 use crate::targets::rust_type::{
-    DataType, DeriveAttribute, EnumVariant, MediaTypeDef, RequestBodyDef, StructField, TypeHeader,
+    DataType, DeriveAttribute, EnumVariant, ErrorDef, MediaTypeDef, RequestBodyDef, StructField,
+    TypeHeader,
 };
 
 #[derive(Clone, Debug)]
@@ -28,6 +29,7 @@ impl Definition {
 
 #[derive(Clone, Debug)]
 pub enum PresetDef {
+    Error(ErrorDef),
     Patch(String),
     MediaType(MediaTypeDef),
     FromJson,

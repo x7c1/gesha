@@ -13,6 +13,9 @@ pub use enum_variant::{EnumCase, EnumVariant, EnumVariantAttribute};
 mod enum_variant_name;
 pub use enum_variant_name::EnumVariantName;
 
+mod error_def;
+pub use error_def::{ErrorDef, ErrorVariant};
+
 mod media_type_def;
 pub use media_type_def::MediaTypeDef;
 

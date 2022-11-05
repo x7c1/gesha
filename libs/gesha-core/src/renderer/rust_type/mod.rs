@@ -1,6 +1,9 @@
 mod render_enum;
 use render_enum::{render_enum, render_enum_variants};
 
+mod render_error;
+use render_error::render_error;
+
 mod render_media_type;
 use render_media_type::render_media_type;
 
@@ -167,6 +170,9 @@ fn render_preset<W: Write>(mut write: W, x: PresetDef) -> Result<()> {
                     serde_json::from_str(text).map_err(Error::InvalidJson)
                 }}
             ";}
+        }
+        PresetDef::Error(e) => {
+            render_error(write, e)?;
         }
     }
     Ok(())

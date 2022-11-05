@@ -4,8 +4,8 @@ mod shape_schemas;
 use crate::conversions::v3_0::to_rust_type::{contains_patch, from_request_bodies, from_schemas};
 use crate::conversions::Result;
 use crate::targets::rust_type::{
-    Definition, EnumVariantName, Imports, MediaTypeDef, Module, ModuleName, Modules, PresetDef,
-    UseStatement,
+    Definition, EnumVariantName, ErrorDef, ErrorVariant, Imports, MediaTypeDef, Module, ModuleName,
+    Modules, PresetDef, UseStatement,
 };
 use indexmap::IndexMap;
 
@@ -36,6 +36,7 @@ impl ComponentsShapes {
     fn create_core_module(&self, modules: &Modules) -> Option<Module> {
         let mut core_defs = vec![];
         let mut imports = Imports::new();
+        let mut error_def = ErrorDef::new();
 
         if modules.any_type(contains_patch) {
             core_defs.push(PresetDef::patch().into());
@@ -50,6 +51,12 @@ impl ComponentsShapes {
             imports.insert(UseStatement::new("std::fmt::{Display, Formatter}"));
             core_defs.push(PresetDef::MediaType(media_type).into());
             core_defs.push(PresetDef::FromJson.into());
+            error_def.set(ErrorVariant::InvalidJson);
+            error_def.set(ErrorVariant::UnsupportedMediaType);
+        }
+
+        if !error_def.is_empty() {
+            core_defs.push(PresetDef::Error(error_def).into());
         }
 
         if core_defs.is_empty() {
