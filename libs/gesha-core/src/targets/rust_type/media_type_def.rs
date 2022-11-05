@@ -1,5 +1,5 @@
-use indexmap::IndexMap;
 use crate::targets::rust_type::EnumVariantName;
+use indexmap::IndexMap;
 
 #[derive(Clone, Debug)]
 pub struct MediaTypeDef {

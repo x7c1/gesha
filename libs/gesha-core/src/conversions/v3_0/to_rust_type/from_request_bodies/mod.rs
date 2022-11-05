@@ -36,13 +36,12 @@ impl DefinitionShape {
     ) -> impl Iterator<Item = (EnumVariantName, &'static str)> + '_ {
         self.contents
             .iter()
-            .map(|content| match content.media_type {
+            .flat_map(|content| match content.media_type {
                 MediaTypeShape::ApplicationJson => {
                     Some((EnumVariantName::new("ApplicationJson"), "application/json"))
                 }
                 MediaTypeShape::Unsupported(_) => None,
             })
-            .flatten()
     }
 }
 

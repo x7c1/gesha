@@ -14,7 +14,7 @@ pub fn render_media_type<W: Write>(mut write: W, x: MediaTypeDef) -> Result<()> 
     let arms = x
         .translator
         .iter()
-        .map(|(k, &v)| format!(r#"MediaType::{k} => "{v}" "#))
+        .map(|(k, v)| format!(r#"MediaType::{k} => "{v}" "#))
         .collect::<Vec<String>>()
         .join(",");
 

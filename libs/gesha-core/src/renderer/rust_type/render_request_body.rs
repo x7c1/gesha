@@ -53,8 +53,7 @@ fn to_arms_media_type(xs: MediaTypeVariants) -> String {
 fn to_arms_new(xs: MediaTypeVariants) -> String {
     let mut arms = xs
         .into_iter()
-        .map(create_new_arm)
-        .flatten()
+        .flat_map(create_new_arm)
         .collect::<Vec<String>>();
 
     arms.push(
