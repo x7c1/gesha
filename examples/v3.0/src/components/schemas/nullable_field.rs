@@ -47,7 +47,6 @@ pub mod schemas {
 }
 
 pub mod core {
-    use serde::ser::Error;
     use serde::Deserialize;
     use serde::Deserializer;
     use serde::Serialize;
@@ -101,7 +100,7 @@ pub mod core {
             match self {
                 Patch::Null => serializer.serialize_none(),
                 Patch::Value(v) => v.serialize(serializer),
-                Patch::Absent => Err(Error::custom(format!(
+                Patch::Absent => Err(serde::ser::Error::custom(format!(
                     "Maybe fields need to be annotated with: {}",
                     r#"#[serde(default, skip_serializing_if = "Patch::is_absent")]"#
                 ))),

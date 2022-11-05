@@ -43,7 +43,6 @@ impl ComponentsShapes {
             imports.insert(UseStatement::new("serde::Deserializer"));
             imports.insert(UseStatement::new("serde::Serialize"));
             imports.insert(UseStatement::new("serde::Serializer"));
-            imports.insert(UseStatement::new("serde::ser::Error"));
         }
 
         if let Some(media_type) = self.create_media_type_def() {
