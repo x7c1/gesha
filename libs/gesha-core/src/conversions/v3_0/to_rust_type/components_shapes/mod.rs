@@ -40,8 +40,8 @@ impl ComponentsShapes {
         if modules.any_type(contains_patch) {
             core_defs.push(PresetDef::patch().into());
             imports.insert(UseStatement::new("serde::Deserialize"));
-            imports.insert(UseStatement::new("serde::Serialize"));
             imports.insert(UseStatement::new("serde::Deserializer"));
+            imports.insert(UseStatement::new("serde::Serialize"));
             imports.insert(UseStatement::new("serde::Serializer"));
             imports.insert(UseStatement::new("serde::ser::Error"));
         }
@@ -49,7 +49,8 @@ impl ComponentsShapes {
         if let Some(media_type) = self.create_media_type_def() {
             imports.insert(UseStatement::new("serde::Deserialize"));
             imports.insert(UseStatement::new("std::fmt::{Display, Formatter}"));
-            core_defs.push(PresetDef::MediaType(media_type).into())
+            core_defs.push(PresetDef::MediaType(media_type).into());
+            core_defs.push(PresetDef::FromJson.into());
         }
 
         if core_defs.is_empty() {

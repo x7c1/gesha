@@ -30,6 +30,7 @@ impl Definition {
 pub enum PresetDef {
     Patch(String),
     MediaType(MediaTypeDef),
+    FromJson,
 }
 
 impl PresetDef {

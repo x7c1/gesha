@@ -161,6 +161,13 @@ fn render_preset<W: Write>(mut write: W, x: PresetDef) -> Result<()> {
         PresetDef::MediaType(media_type) => {
             render_media_type(write, media_type)?;
         }
+        PresetDef::FromJson => {
+            render! { write => echo > "
+                pub fn from_json<'a, A: Deserialize<'a>>(text: &'a str) -> Result<A> {{
+                    serde_json::from_str(text).map_err(Error::InvalidJson)
+                }}
+            ";}
+        }
     }
     Ok(())
 }
