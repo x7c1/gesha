@@ -1,5 +1,4 @@
 use heck::ToUpperCamelCase;
-use std::borrow::Borrow;
 use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
@@ -24,11 +23,5 @@ impl Display for EnumVariantName {
 impl From<EnumVariantName> for String {
     fn from(this: EnumVariantName) -> Self {
         this.0
-    }
-}
-
-impl Borrow<str> for EnumVariantName {
-    fn borrow(&self) -> &str {
-        &self.0
     }
 }
