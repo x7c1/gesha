@@ -1,6 +1,8 @@
+use crate::targets::rust_type::hash_items;
 use indexmap::IndexSet;
+use std::hash::{Hash, Hasher};
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Eq, PartialEq, Default)]
 pub struct ErrorDef(IndexSet<ErrorVariant>);
 
 impl ErrorDef {
@@ -21,6 +23,13 @@ impl IntoIterator for ErrorDef {
 
     fn into_iter(self) -> Self::IntoIter {
         IntoIterator::into_iter(self.0)
+    }
+}
+
+#[allow(clippy::derive_hash_xor_eq)]
+impl Hash for ErrorDef {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        hash_items(self.0.iter(), state)
     }
 }
 

@@ -1,7 +1,7 @@
 use heck::ToUpperCamelCase;
 use std::fmt::{Display, Formatter};
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct EnumVariantName(String);
 
 impl EnumVariantName {

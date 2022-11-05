@@ -7,8 +7,8 @@ use crate::conversions::v3_0::to_rust_type::is_patch;
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName, NewTypeDef,
-    StructDef, StructField, StructFieldAttribute, StructFieldName, TypeHeader,
+    DataType, Definition, Definitions, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName,
+    NewTypeDef, StructDef, StructField, StructFieldAttribute, StructFieldName, TypeHeader,
 };
 use openapi_types::v3_0::ComponentName;
 
@@ -17,7 +17,7 @@ impl PostProcessor {
         &self,
         prefix: &'static str,
         shapes: &[DefinitionShape],
-    ) -> Result<Vec<Definition>> {
+    ) -> Result<Definitions> {
         let resolver = RefResolver {
             prefix,
             original: &self.original,

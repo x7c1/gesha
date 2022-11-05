@@ -2,7 +2,7 @@ use crate::targets::rust_type::{DataType, EnumVariantName};
 use std::fmt::{Display, Formatter};
 
 /// rf. https://doc.rust-lang.org/reference/items/enumerations.html
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct EnumVariant {
     pub name: EnumVariantName,
     pub attributes: Vec<EnumVariantAttribute>,
@@ -33,13 +33,13 @@ impl EnumVariant {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub enum EnumCase {
     Unit,
     Tuple(Vec<DataType>),
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct EnumVariantAttribute(String);
 
 impl EnumVariantAttribute {

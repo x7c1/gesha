@@ -3,7 +3,7 @@ use crate::targets::rust_type::{
     TypeHeader,
 };
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub enum Definition {
     StructDef(StructDef),
     NewTypeDef(NewTypeDef),
@@ -27,7 +27,7 @@ impl Definition {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub enum PresetDef {
     Error(ErrorDef),
     /// rf. https://stackoverflow.com/q/44331037
@@ -42,7 +42,7 @@ impl From<PresetDef> for Definition {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct StructDef {
     pub header: TypeHeader,
     pub fields: Vec<StructField>,
@@ -67,7 +67,7 @@ impl From<StructDef> for Definition {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct NewTypeDef {
     pub header: TypeHeader,
     pub data_type: DataType,
@@ -92,7 +92,7 @@ impl From<NewTypeDef> for Definition {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct EnumDef {
     pub header: TypeHeader,
     pub variants: Vec<EnumVariant>,

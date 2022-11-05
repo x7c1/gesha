@@ -4,7 +4,7 @@ mod resolve_ref;
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
 use crate::conversions::v3_0::to_rust_type::from_schemas::DefinitionShape;
 use crate::conversions::Result;
-use crate::targets::rust_type::Definition;
+use crate::targets::rust_type::Definitions;
 
 pub struct PostProcessor {
     original: ComponentsShapes,
@@ -15,11 +15,7 @@ impl PostProcessor {
         Self { original }
     }
 
-    pub fn run(
-        &self,
-        shapes: &mut [DefinitionShape],
-        prefix: &'static str,
-    ) -> Result<Vec<Definition>> {
+    pub fn run(&self, shapes: &mut [DefinitionShape], prefix: &'static str) -> Result<Definitions> {
         // 1st process : resolve allOf
         self.process_all_of(shapes)?;
 

@@ -4,6 +4,9 @@ pub use data_type::DataType;
 mod definition;
 pub use definition::{Definition, EnumDef, NewTypeDef, PresetDef, StructDef};
 
+mod definitions;
+pub use definitions::Definitions;
+
 mod derive_attribute;
 pub use derive_attribute::DeriveAttribute;
 
@@ -35,17 +38,18 @@ mod struct_field_name;
 pub use struct_field_name::StructFieldName;
 
 use std::fmt::{Debug, Display, Formatter};
+use std::hash::{Hash, Hasher};
 
 #[derive(Clone, Debug)]
 pub struct Module {
     pub name: ModuleName,
-    pub definitions: Vec<Definition>,
+    pub definitions: Definitions,
     pub use_statements: Imports,
     _hide_default_constructor: bool,
 }
 
 impl Module {
-    pub fn new(name: ModuleName, definitions: Vec<Definition>, use_statements: Imports) -> Self {
+    pub fn new(name: ModuleName, definitions: Definitions, use_statements: Imports) -> Self {
         Self {
             name,
             definitions,
@@ -70,7 +74,7 @@ impl Display for ModuleName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct TypeHeader {
     pub name: String,
     pub doc_comments: DocComments,
@@ -87,7 +91,7 @@ impl TypeHeader {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct DocComments(Option<String>);
 
 impl DocComments {
@@ -103,4 +107,12 @@ impl Display for DocComments {
             None => Ok(()),
         }
     }
+}
+
+fn hash_items<A, H>(xs: impl Iterator<Item = A>, state: &mut H)
+where
+    A: Hash,
+    H: Hasher,
+{
+    xs.for_each(|x| x.hash(state))
 }

@@ -1,7 +1,7 @@
 use heck::ToSnakeCase;
 use std::fmt::{Display, Formatter};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct StructFieldName(String);
 
 impl StructFieldName {

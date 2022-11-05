@@ -1,6 +1,6 @@
 use crate::targets::rust_type::{Definition, DeriveAttribute, EnumVariant, TypeHeader};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct RequestBodyDef {
     pub header: TypeHeader,
     pub derive_attrs: Vec<DeriveAttribute>,
@@ -25,14 +25,14 @@ impl From<RequestBodyDef> for Definition {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct MediaTypeVariant {
     /// e.g. "application/json"
     pub header_value: String,
     pub variant: EnumVariant,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct MediaTypeVariants(Vec<MediaTypeVariant>);
 
 impl From<MediaTypeVariants> for Vec<EnumVariant> {

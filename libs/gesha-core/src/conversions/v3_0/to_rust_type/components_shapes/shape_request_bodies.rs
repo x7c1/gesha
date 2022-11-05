@@ -4,8 +4,8 @@ use crate::conversions::v3_0::to_rust_type::from_request_bodies::{
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, EnumVariant, EnumVariantName, MediaTypeVariant, Module, RequestBodyDef,
-    TypeHeader,
+    DataType, Definition, Definitions, EnumVariant, EnumVariantName, MediaTypeVariant, Module,
+    RequestBodyDef, TypeHeader,
 };
 use openapi_types::v3_0::SchemaCase;
 
@@ -18,7 +18,7 @@ impl ComponentsShapes {
             .clone()
             .into_iter()
             .map(|shape| self.define_request_body(shape))
-            .collect::<Result<Vec<Definition>>>()?;
+            .collect::<Result<Definitions>>()?;
 
         create_module("request_bodies", definitions)
     }
