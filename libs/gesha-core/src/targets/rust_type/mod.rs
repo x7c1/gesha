@@ -28,22 +28,19 @@ pub use struct_field::{StructField, StructFieldAttribute};
 mod struct_field_name;
 pub use struct_field_name::StructFieldName;
 
+use indexmap::IndexSet;
 use std::fmt::{Debug, Display, Formatter};
 
 #[derive(Clone, Debug)]
 pub struct Module {
     pub name: ModuleName,
     pub definitions: Vec<Definition>,
-    pub use_statements: Vec<UseStatement>,
+    pub use_statements: Imports,
     _hide_default_constructor: bool,
 }
 
 impl Module {
-    pub fn new(
-        name: ModuleName,
-        definitions: Vec<Definition>,
-        use_statements: Vec<UseStatement>,
-    ) -> Self {
+    pub fn new(name: ModuleName, definitions: Vec<Definition>, use_statements: Imports) -> Self {
         Self {
             name,
             definitions,
@@ -52,6 +49,8 @@ impl Module {
         }
     }
 }
+
+pub type Imports = IndexSet<UseStatement>;
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct ModuleName(String);
@@ -103,7 +102,7 @@ impl Display for DocComments {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct UseStatement(String);
 
 impl UseStatement {

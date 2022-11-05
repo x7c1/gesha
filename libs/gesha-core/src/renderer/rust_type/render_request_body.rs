@@ -72,7 +72,7 @@ fn create_new_arm(x: MediaTypeVariant) -> Option<String> {
         "application/json" => Some(
             r#"
                 "application/json" => {
-                    let body = super::core::from_json_string(value)?;
+                    let body = super::core::from_json(value)?;
                     Ok(Self::ApplicationJson(body))
                 }
             "#

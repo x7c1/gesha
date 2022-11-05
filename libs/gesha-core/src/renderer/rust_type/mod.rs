@@ -11,8 +11,8 @@ use crate::render;
 use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, DeriveAttribute, Module, Modules, NewTypeDef, PresetDef, StructDef,
-    StructField, StructFieldAttribute, UseStatement,
+    DataType, Definition, DeriveAttribute, Imports, Module, Modules, NewTypeDef, PresetDef,
+    StructDef, StructField, StructFieldAttribute,
 };
 use std::io::Write;
 
@@ -43,7 +43,7 @@ fn render_mod_body<W: Write>(mut write: W, module: Module) -> Result<()> {
         .try_for_each(|def| render_definition(&mut write, def))
 }
 
-fn render_use_statements<W: Write>(mut write: W, xs: Vec<UseStatement>) -> Result<()> {
+fn render_use_statements<W: Write>(mut write: W, xs: Imports) -> Result<()> {
     for x in xs {
         render! { write =>
             echo > "use {target};\n", target = String::from(x);

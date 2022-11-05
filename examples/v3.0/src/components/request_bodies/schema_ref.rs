@@ -21,7 +21,7 @@ pub mod request_bodies {
         pub fn new(value: &str, media_type: &str) -> super::core::Result<Self> {
             match media_type {
                 "application/json" => {
-                    let body = super::core::from_json_string(value)?;
+                    let body = super::core::from_json(value)?;
                     Ok(Self::ApplicationJson(body))
                 }
                 unsupported => Err(super::core::Error::UnsupportedMediaType {
@@ -73,7 +73,7 @@ pub mod core {
         }
     }
 
-    pub fn from_json_string<'a, A: Deserialize<'a>>(text: &'a str) -> Result<A> {
+    pub fn from_json<'a, A: Deserialize<'a>>(text: &'a str) -> Result<A> {
         serde_json::from_str(text).map_err(Error::InvalidJson)
     }
 }

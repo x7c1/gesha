@@ -4,7 +4,8 @@ mod shape_schemas;
 use crate::conversions::v3_0::to_rust_type::{contains_patch, from_request_bodies, from_schemas};
 use crate::conversions::Result;
 use crate::targets::rust_type::{
-    Definition, EnumVariantName, MediaTypeDef, Module, ModuleName, Modules, PresetDef, UseStatement,
+    Definition, EnumVariantName, Imports, MediaTypeDef, Module, ModuleName, Modules, PresetDef,
+    UseStatement,
 };
 use indexmap::IndexMap;
 
@@ -34,16 +35,20 @@ impl ComponentsShapes {
 
     fn create_core_module(&self, modules: &Modules) -> Option<Module> {
         let mut core_defs = vec![];
-        let mut imports = default_imports();
+        let mut imports = Imports::new();
 
         if modules.any_type(contains_patch) {
             core_defs.push(PresetDef::patch().into());
-            imports.push(UseStatement::new("serde::Deserializer"));
-            imports.push(UseStatement::new("serde::Serializer"));
-            imports.push(UseStatement::new("serde::ser::Error"));
+            imports.insert(UseStatement::new("serde::Deserialize"));
+            imports.insert(UseStatement::new("serde::Serialize"));
+            imports.insert(UseStatement::new("serde::Deserializer"));
+            imports.insert(UseStatement::new("serde::Serializer"));
+            imports.insert(UseStatement::new("serde::ser::Error"));
         }
 
         if let Some(media_type) = self.create_media_type_def() {
+            imports.insert(UseStatement::new("serde::Deserialize"));
+            imports.insert(UseStatement::new("std::fmt::{Display, Formatter}"));
             core_defs.push(PresetDef::MediaType(media_type).into())
         }
 
@@ -71,9 +76,12 @@ impl ComponentsShapes {
 }
 
 fn create_module<A: Into<String>>(name: A, definitions: Vec<Definition>) -> Result<Option<Module>> {
-    let mut imports = default_imports();
+    let mut imports = Imports::new();
+    imports.insert(UseStatement::new("serde::Deserialize"));
+    imports.insert(UseStatement::new("serde::Serialize"));
+
     if definitions.iter().any(|x| x.any_type(contains_patch)) {
-        imports.push(UseStatement::new("super::core::Patch"));
+        imports.insert(UseStatement::new("super::core::Patch"));
     }
     if definitions.is_empty() {
         Ok(None)
@@ -81,11 +89,4 @@ fn create_module<A: Into<String>>(name: A, definitions: Vec<Definition>) -> Resu
         let module = Module::new(ModuleName::new(name), definitions, imports);
         Ok(Some(module))
     }
-}
-
-fn default_imports() -> Vec<UseStatement> {
-    vec![
-        UseStatement::new("serde::Deserialize"),
-        UseStatement::new("serde::Serialize"),
-    ]
 }
