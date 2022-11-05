@@ -30,17 +30,10 @@ impl Definition {
 #[derive(Clone, Debug)]
 pub enum PresetDef {
     Error(ErrorDef),
-    Patch(String),
+    /// rf. https://stackoverflow.com/q/44331037
+    Patch,
     MediaType(MediaTypeDef),
     FromJson,
-}
-
-impl PresetDef {
-    pub fn patch() -> Self {
-        // rf. https://stackoverflow.com/q/44331037
-        let code = include_str!("patch.rs.tpl");
-        Self::Patch(code.to_string())
-    }
 }
 
 impl From<PresetDef> for Definition {

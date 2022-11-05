@@ -158,7 +158,8 @@ fn render_newtype<W: Write>(mut write: W, x: NewTypeDef) -> Result<()> {
 
 fn render_preset<W: Write>(mut write: W, x: PresetDef) -> Result<()> {
     match x {
-        PresetDef::Patch(source) => {
+        PresetDef::Patch => {
+            let source = include_str!("patch.rs.tpl");
             render! { write => echo > "{source}"; }
         }
         PresetDef::MediaType(media_type) => {

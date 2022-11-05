@@ -39,7 +39,7 @@ impl ComponentsShapes {
         let mut error_def = ErrorDef::new();
 
         if modules.any_type(contains_patch) {
-            core_defs.push(PresetDef::patch().into());
+            core_defs.push(PresetDef::Patch.into());
             imports.insert(UseStatement::new("serde::Deserialize"));
             imports.insert(UseStatement::new("serde::Deserializer"));
             imports.insert(UseStatement::new("serde::Serialize"));
