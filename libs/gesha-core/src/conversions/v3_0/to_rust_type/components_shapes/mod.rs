@@ -5,7 +5,7 @@ use crate::conversions::v3_0::to_rust_type::{contains_patch, from_request_bodies
 use crate::conversions::Result;
 use crate::targets::rust_type::{
     Definitions, EnumVariantName, ErrorDef, ErrorVariant, Imports, MediaTypeDef, Module,
-    ModuleName, Modules, PresetDef, UseStatement,
+    ModuleName, Modules, Package, PresetDef,
 };
 use indexmap::IndexMap;
 
@@ -40,16 +40,20 @@ impl ComponentsShapes {
 
         if modules.any_type(contains_patch) {
             core_defs.set(PresetDef::Patch);
-            imports.set(UseStatement::new("serde::Deserialize"));
-            imports.set(UseStatement::new("serde::Deserializer"));
-            imports.set(UseStatement::new("serde::Serialize"));
-            imports.set(UseStatement::new("serde::Serializer"));
+            imports.set(vec![
+                Package::Deserialize,
+                Package::Deserializer,
+                Package::Serialize,
+                Package::Serializer,
+            ]);
         }
 
         if let Some(media_type) = self.create_media_type_def() {
-            imports.set(UseStatement::new("serde::Deserialize"));
-            imports.set(UseStatement::new("std::fmt::Display"));
-            imports.set(UseStatement::new("std::fmt::Formatter"));
+            imports.set(vec![
+                Package::Deserialize,
+                Package::Display,
+                Package::Formatter,
+            ]);
             core_defs.set(PresetDef::MediaType(media_type));
             core_defs.set(PresetDef::FromJson);
             error_def.set(ErrorVariant::InvalidJson);
@@ -85,11 +89,10 @@ impl ComponentsShapes {
 
 fn create_module<A: Into<String>>(name: A, definitions: Definitions) -> Result<Option<Module>> {
     let mut imports = Imports::new();
-    imports.set(UseStatement::new("serde::Deserialize"));
-    imports.set(UseStatement::new("serde::Serialize"));
+    imports.set(vec![Package::Deserialize, Package::Serialize]);
 
     if definitions.iter().any(|x| x.any_type(contains_patch)) {
-        imports.set(UseStatement::new("super::core::Patch"));
+        imports.set(Package::Patch);
     }
     if definitions.is_empty() {
         Ok(None)

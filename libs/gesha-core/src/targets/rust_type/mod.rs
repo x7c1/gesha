@@ -20,7 +20,7 @@ mod error_def;
 pub use error_def::{ErrorDef, ErrorVariant};
 
 mod imports;
-pub use imports::{Imports, UseStatement};
+pub use imports::{Imports, Package};
 
 mod media_type_def;
 pub use media_type_def::MediaTypeDef;
@@ -44,16 +44,16 @@ use std::hash::{Hash, Hasher};
 pub struct Module {
     pub name: ModuleName,
     pub definitions: Definitions,
-    pub use_statements: Imports,
+    pub imports: Imports,
     _hide_default_constructor: bool,
 }
 
 impl Module {
-    pub fn new(name: ModuleName, definitions: Definitions, use_statements: Imports) -> Self {
+    pub fn new(name: ModuleName, definitions: Definitions, imports: Imports) -> Self {
         Self {
             name,
             definitions,
-            use_statements,
+            imports,
             _hide_default_constructor: true,
         }
     }

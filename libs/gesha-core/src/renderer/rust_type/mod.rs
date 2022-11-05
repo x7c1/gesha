@@ -37,7 +37,7 @@ fn render_module<W: Write>(mut write: W, module: Module) -> Result<()> {
 
 fn render_mod_body<W: Write>(mut write: W, module: Module) -> Result<()> {
     render! { write =>
-        call > render_use_statements => module.use_statements;
+        call > render_use_statements => module.imports;
         echo > "\n";
     }
     module
@@ -49,7 +49,7 @@ fn render_mod_body<W: Write>(mut write: W, module: Module) -> Result<()> {
 fn render_use_statements<W: Write>(mut write: W, xs: Imports) -> Result<()> {
     for x in xs {
         render! { write =>
-            echo > "use {target};\n", target = String::from(x);
+            echo > "use {x};\n";
         }
     }
     Ok(())

@@ -1,20 +1,23 @@
 use indexmap::IndexSet;
+use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, Default)]
-pub struct Imports(IndexSet<UseStatement>);
+pub struct Imports(IndexSet<Package>);
 
 impl Imports {
     pub fn new() -> Self {
         Self(IndexSet::new())
     }
-    pub fn set(&mut self, x: UseStatement) {
-        let _ = self.0.insert(x);
+    pub fn set<A: Into<Vec<Package>>>(&mut self, xs: A) {
+        xs.into().into_iter().for_each(|x| {
+            let _ = self.0.insert(x);
+        })
     }
 }
 
 impl IntoIterator for Imports {
-    type Item = <IndexSet<UseStatement> as IntoIterator>::Item;
-    type IntoIter = <IndexSet<UseStatement> as IntoIterator>::IntoIter;
+    type Item = <IndexSet<Package> as IntoIterator>::Item;
+    type IntoIter = <IndexSet<Package> as IntoIterator>::IntoIter;
 
     fn into_iter(self) -> Self::IntoIter {
         IntoIterator::into_iter(self.0)
@@ -22,16 +25,38 @@ impl IntoIterator for Imports {
 }
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
-pub struct UseStatement(String);
+pub enum Package {
+    Deserialize,
+    Deserializer,
+    Serialize,
+    Serializer,
+    Display,
+    Formatter,
+    Patch,
+}
 
-impl UseStatement {
-    pub fn new<A: Into<String>>(a: A) -> Self {
-        Self(a.into())
+impl AsRef<str> for Package {
+    fn as_ref(&self) -> &str {
+        match self {
+            Self::Deserialize => "serde::Deserialize",
+            Self::Deserializer => "serde::Deserializer",
+            Self::Serialize => "serde::Serialize",
+            Self::Serializer => "serde::Serializer",
+            Self::Display => "std::fmt::Display",
+            Self::Formatter => "std::fmt::Formatter",
+            Self::Patch => "super::core::Patch",
+        }
     }
 }
 
-impl From<UseStatement> for String {
-    fn from(x: UseStatement) -> Self {
-        x.0
+impl Display for Package {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        Display::fmt(self.as_ref(), f)
+    }
+}
+
+impl From<Package> for Vec<Package> {
+    fn from(x: Package) -> Self {
+        vec![x]
     }
 }
