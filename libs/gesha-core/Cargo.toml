@@ -9,6 +9,6 @@ edition = "2021"
 openapi-types = { path = "../../libs/openapi-types" }
 yaml-rust = "0.4.5"
 indexmap = "1.8.1"
-similar = "2.1.0"
+similar = "2.2.0"
 console = "0.15.0"
 heck = "0.4.0"
