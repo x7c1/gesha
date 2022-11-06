@@ -28,7 +28,7 @@ jobs:
           toolchain: stable
 
       - name: Cache cargo dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/registry
@@ -59,7 +59,7 @@ jobs:
           make gesha-sample
 
       - name: Cache deno.land dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-deno-${{ hashFiles('e2e-tests/**/*') }}-${{ env.BRANCH_NAME }}
           restore-keys: |
