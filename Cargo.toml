@@ -2,12 +2,5 @@
 members = [
     "apps/handcraft",
     "apps/gesha",
-    "libs/gesha-core",
-    "libs/openapi-types",
-    "libs/handcraft/handcraft-models",
-    "libs/handcraft/handcraft-server",
-    "libs/handcraft/handcraft-server-derive",
-]
-exclude = [
     "examples/v3.0",
 ]
