@@ -504,6 +504,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "examples_v3_0"
+version = "0.0.1"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "firestorm"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
