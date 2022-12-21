@@ -44,6 +44,7 @@ fn new_schemas_cases() -> ComponentCases {
             "camel_case_fields.yaml",
             "title_description.yaml",
             "nullable_field.yaml",
+            "object_inline.yaml",
         ],
     )
 }
