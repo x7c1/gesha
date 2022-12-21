@@ -2,5 +2,5 @@
 members = [
     "apps/handcraft",
     "apps/gesha",
-    "examples/v3.0",
+    "examples/v3_0",
 ]

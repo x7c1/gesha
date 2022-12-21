@@ -3,7 +3,7 @@
 set -xue
 
 main () {
-  cd ./examples/v3.0
+  cd ./examples/v3_0
 
   cargo fmt -- --check
 

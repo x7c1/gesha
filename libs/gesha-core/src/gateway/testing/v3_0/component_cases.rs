@@ -6,7 +6,7 @@ use crate::targets::rust_type::Modules;
 use openapi_types::v3_0;
 use std::borrow::Cow;
 
-const COMPONENTS_PATH: &str = "examples/v3.0/src/components";
+const COMPONENTS_PATH: &str = "examples/v3_0/src/components";
 
 pub struct ComponentCase {
     inner: TestCase<(v3_0::ComponentsObject, Modules)>,
@@ -65,7 +65,7 @@ impl ComponentCases {
             .collect();
 
         let module_path = format!(
-            "examples/v3.0/src/components/{module}.rs",
+            "examples/v3_0/src/components/{module}.rs",
             module = kind.name()
         );
 

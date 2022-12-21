@@ -28,7 +28,7 @@ fn new_schemas_cases() -> ComponentCases {
     ComponentCases::from_vec(
         Schemas,
         vec![
-            "struct_simple.yaml",
+            "object_simple.yaml",
             "numeric_fields.yaml",
             "boolean_field.yaml",
             "array.yaml",
