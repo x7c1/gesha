@@ -91,6 +91,12 @@ impl RefResolver<'_> {
                 DataType::Custom(type_name)
             }
             TypeShape::Fixed { data_type, .. } => data_type.clone(),
+            TypeShape::InlineObject { .. } => Err(PostProcessBroken {
+                detail: format!(
+                    "InlineObject must be processed before '$ref'.\n{:#?}",
+                    shape
+                ),
+            })?,
         };
         match (is_required, is_nullable) {
             (true, true) | (false, false) => {
@@ -114,6 +120,7 @@ impl RefResolver<'_> {
                 .original
                 .find_schema_definition(object)
                 .map(|def| def.is_nullable()),
+            TypeShape::InlineObject { is_nullable, .. } => Ok(*is_nullable),
         }
     }
 }

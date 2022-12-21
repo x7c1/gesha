@@ -45,6 +45,17 @@ impl DefinitionShape {
         }
     }
 
+    pub fn has_inline_schemas(&self) -> bool {
+        match self {
+            DefinitionShape::Struct { shapes, .. } => shapes
+                .iter()
+                .any(|x| matches!(x.type_shape, TypeShape::InlineObject { .. })),
+            DefinitionShape::AllOf { .. } => false,
+            DefinitionShape::NewType { .. } => false,
+            DefinitionShape::Enum { .. } => false,
+        }
+    }
+
     fn type_header(&self) -> &TypeHeaderShape {
         match self {
             DefinitionShape::AllOf { header, .. } => header,

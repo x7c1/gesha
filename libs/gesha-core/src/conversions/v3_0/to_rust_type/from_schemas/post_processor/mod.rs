@@ -1,3 +1,4 @@
+mod expand_inline_schemas;
 mod resolve_all_of;
 mod resolve_ref;
 
@@ -15,11 +16,18 @@ impl PostProcessor {
         Self { original }
     }
 
-    pub fn run(&self, shapes: &mut [DefinitionShape], prefix: &'static str) -> Result<Definitions> {
-        // 1st process : resolve allOf
+    pub fn run(
+        &self,
+        shapes: &mut Vec<DefinitionShape>,
+        prefix: &'static str,
+    ) -> Result<Definitions> {
+        // 1st process : expand inline schemas
+        self.expand_inline_schemas(shapes)?;
+
+        // 2nd process : resolve allOf
         self.process_all_of(shapes)?;
 
-        // 2nd process : resolve $ref
+        // 3rd process : resolve $ref
         self.process_ref(prefix, shapes)
     }
 }

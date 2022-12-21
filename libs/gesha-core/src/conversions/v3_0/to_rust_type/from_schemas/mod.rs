@@ -55,6 +55,11 @@ pub enum TypeShape {
         object: ReferenceObject<SchemaObject>,
         is_required: bool,
     },
+    InlineObject {
+        object: SchemaObject,
+        is_required: bool,
+        is_nullable: bool,
+    },
 }
 
 impl TypeShape {
@@ -63,6 +68,7 @@ impl TypeShape {
             TypeShape::Fixed { is_required, .. } => *is_required,
             TypeShape::Vec { is_required, .. } => *is_required,
             TypeShape::Ref { is_required, .. } => *is_required,
+            TypeShape::InlineObject { is_required, .. } => *is_required,
         }
     }
 }

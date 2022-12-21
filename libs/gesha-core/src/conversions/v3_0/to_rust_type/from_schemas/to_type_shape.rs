@@ -1,10 +1,11 @@
 use super::TypeShape;
+use crate::conversions::v3_0::to_rust_type::from_schemas::TypeShape::InlineObject;
 use crate::conversions::Error::UnknownFormat;
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
 use openapi_types::v3_0::SchemaCase;
 use openapi_types::v3_0::SchemaCase::{Reference, Schema};
-use openapi_types::v3_0::{ArrayItems, FormatModifier, OpenApiDataType, SchemaObject};
+use openapi_types::v3_0::{FormatModifier, OpenApiDataType, SchemaObject};
 use TypeShape::Fixed;
 
 pub(super) fn to_type_shape(schema_case: SchemaCase, is_required: bool) -> Result<TypeShape> {
@@ -19,12 +20,10 @@ pub(super) fn to_type_shape(schema_case: SchemaCase, is_required: bool) -> Resul
 }
 
 pub(super) fn from_object(object: SchemaObject, is_required: bool) -> Result<TypeShape> {
-    match object.data_type {
+    match object.data_type.clone() {
         Some(data_type) => {
             let to_type = TypeFactory {
-                format: object.format,
-                items: object.items,
-                nullable: object.nullable,
+                object,
                 is_required,
             };
             to_type.apply(data_type)
@@ -35,9 +34,7 @@ pub(super) fn from_object(object: SchemaObject, is_required: bool) -> Result<Typ
 
 /// OpenApiDataType -> TypeShape
 struct TypeFactory {
-    format: Option<FormatModifier>,
-    items: Option<ArrayItems>,
-    nullable: Option<bool>,
+    object: SchemaObject,
     is_required: bool,
 }
 
@@ -48,8 +45,8 @@ impl TypeFactory {
         use OpenApiDataType as ot;
 
         let is_required = self.is_required;
-        let is_nullable = self.nullable.unwrap_or(false);
-        match (&data_type, &self.format) {
+        let is_nullable = self.object.nullable.unwrap_or(false);
+        match (&data_type, &self.object.format) {
             (ot::Array, _) => self.items_to_shape(),
             (ot::Boolean, _) => Ok(Fixed {
                 data_type: tp::Bool,
@@ -81,10 +78,11 @@ impl TypeFactory {
                 is_required,
                 is_nullable,
             }),
-            (ot::Object, _) => unimplemented! {
-                "inline object definition not implemented: {:?}",
-                data_type
-            },
+            (ot::Object, _) => Ok(InlineObject {
+                object: self.object,
+                is_required,
+                is_nullable,
+            }),
             (_, Some(x)) => Err(UnknownFormat {
                 data_type,
                 format: x.to_string(),
@@ -94,6 +92,7 @@ impl TypeFactory {
 
     fn items_to_shape(self) -> Result<TypeShape> {
         let items = self
+            .object
             .items
             .unwrap_or_else(|| unimplemented!("array must have items"));
 
@@ -101,7 +100,7 @@ impl TypeFactory {
         let type_shape = TypeShape::Vec {
             type_shape: Box::new(items_shape),
             is_required: self.is_required,
-            is_nullable: self.nullable.unwrap_or(false),
+            is_nullable: self.object.nullable.unwrap_or(false),
         };
         Ok(type_shape)
     }
