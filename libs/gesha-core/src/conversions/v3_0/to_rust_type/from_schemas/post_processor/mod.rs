@@ -22,7 +22,7 @@ impl PostProcessor {
         prefix: &'static str,
     ) -> Result<Definitions> {
         // 1st process : expand inline schemas
-        self.expand_inline_schemas(shapes)?;
+        self.process_inline_schemas(shapes)?;
 
         // 2nd process : resolve allOf
         self.process_all_of(shapes)?;

@@ -6,7 +6,7 @@ use crate::targets::rust_type::DataType;
 use TypeShape::{Array, Fixed, InlineObject, Ref};
 
 impl PostProcessor {
-    pub fn expand_inline_schemas(&self, shapes: &mut Vec<DefinitionShape>) -> Result<()> {
+    pub fn process_inline_schemas(&self, shapes: &mut Vec<DefinitionShape>) -> Result<()> {
         let mut inline_shapes = shapes
             .iter_mut()
             .filter_map(|x| x.as_struct_shape())
@@ -25,10 +25,10 @@ fn modify_struct_shape(
     shape
         .fields
         .iter_mut()
-        .map(|x| to_mod_defs(&shape.header, x))
+        .map(|field| expand(&shape.header, field))
 }
 
-fn to_mod_defs(header: &TypeHeaderShape, field: &mut FieldShape) -> Result<Vec<DefinitionShape>> {
+fn expand(header: &TypeHeaderShape, field: &mut FieldShape) -> Result<Vec<DefinitionShape>> {
     match &field.type_shape {
         Ref { .. } | Fixed { .. } | Array { .. } => Ok(vec![]),
         InlineObject {
