@@ -1,5 +1,6 @@
 use super::{to_type_shape, AllOfItemShape, DefinitionShape, TypeHeaderShape};
 use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_field_shapes;
+use crate::conversions::v3_0::to_rust_type::from_schemas::StructShape;
 use crate::conversions::Result;
 use crate::targets::rust_type::DocComments;
 use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject};
@@ -41,10 +42,10 @@ impl Shaper {
     }
 
     fn for_struct(self) -> Result<DefinitionShape> {
-        let shape = DefinitionShape::Struct {
+        let shape = DefinitionShape::Struct(StructShape {
             header: self.create_type_header(),
             shapes: to_field_shapes(self.object.properties, self.object.required)?,
-        };
+        });
         Ok(shape)
     }
 

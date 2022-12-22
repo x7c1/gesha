@@ -1,7 +1,7 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
 use crate::conversions::v3_0::to_rust_type::from_schemas::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    DefinitionShape, FieldShape, TypeHeaderShape, TypeShape,
+    DefinitionShape, FieldShape, StructShape, TypeHeaderShape, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::is_patch;
 use crate::conversions::Error::PostProcessBroken;
@@ -34,7 +34,7 @@ struct RefResolver<'a> {
 impl RefResolver<'_> {
     fn resolve_ref(&self, shape: &DefinitionShape) -> Result<Definition> {
         match shape {
-            DefinitionShape::Struct { header, shapes } => {
+            DefinitionShape::Struct(StructShape { header, shapes }) => {
                 let def = StructDef::new(
                     to_type_header(header.clone()),
                     self.shapes_to_fields(shapes)?,
