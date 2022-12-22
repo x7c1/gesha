@@ -6,8 +6,8 @@ pub mod schemas {
     use serde::Serialize;
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Pet {
+    pub struct SamplePet {
         pub id: i64,
-        pub registered_profile: Option<pet::RegisteredProfile>,
+        pub registered_profile: Option<sample_pet::RegisteredProfile>,
     }
 }

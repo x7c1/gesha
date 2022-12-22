@@ -97,7 +97,7 @@ impl TypeFactory {
             .unwrap_or_else(|| unimplemented!("array must have items"));
 
         let items_shape = to_type_shape(items.into(), /* is_required */ true)?;
-        let type_shape = TypeShape::Vec {
+        let type_shape = TypeShape::Array {
             type_shape: Box::new(items_shape),
             is_required: self.is_required,
             is_nullable: self.object.nullable.unwrap_or(false),

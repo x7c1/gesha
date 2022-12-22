@@ -1,5 +1,5 @@
 schemas:
-  Pet:
+  SamplePet:
     type: object
     required:
       - id

@@ -49,7 +49,7 @@ pub enum TypeShape {
         is_required: bool,
         is_nullable: bool,
     },
-    Vec {
+    Array {
         type_shape: Box<TypeShape>,
         is_required: bool,
         is_nullable: bool,
@@ -69,7 +69,7 @@ impl TypeShape {
     pub fn is_required(&self) -> bool {
         match self {
             TypeShape::Fixed { is_required, .. } => *is_required,
-            TypeShape::Vec { is_required, .. } => *is_required,
+            TypeShape::Array { is_required, .. } => *is_required,
             TypeShape::Ref { is_required, .. } => *is_required,
             TypeShape::InlineObject { is_required, .. } => *is_required,
         }

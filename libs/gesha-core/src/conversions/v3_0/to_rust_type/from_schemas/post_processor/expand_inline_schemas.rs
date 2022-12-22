@@ -1,8 +1,9 @@
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    DefinitionShape, PostProcessor, StructShape, TypeShape,
+    DefinitionShape, FieldShape, PostProcessor, StructShape, TypeHeaderShape, TypeShape,
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
+use TypeShape::{Array, Fixed, InlineObject, Ref};
 
 impl PostProcessor {
     pub fn expand_inline_schemas(&self, shapes: &mut Vec<DefinitionShape>) -> Result<()> {
@@ -21,26 +22,36 @@ impl PostProcessor {
 }
 
 fn modify_struct_shape(shape: &mut StructShape) -> Result<Vec<DefinitionShape>> {
-    shape.shapes.iter_mut().for_each(|x| {
-        match &x.type_shape {
-            TypeShape::Ref { .. } | TypeShape::Fixed { .. } | TypeShape::Vec { .. } => {}
-            TypeShape::InlineObject {
-                object,
-                is_required,
-                is_nullable,
-            } => {
-                // TODO: generate DefinitionShape from object and push it to original Vec<DefinitionShape>
-                println!("target inline object: {:#?}", object);
-                x.type_shape = TypeShape::Fixed {
-                    // TODO: generate type name like pet::RegisteredProfile
-                    data_type: DataType::Custom("TODO".to_string()),
-                    is_required: *is_required,
-                    is_nullable: *is_nullable,
-                }
-            }
-        }
-    });
+    Ok(shape
+        .shapes
+        .iter_mut()
+        .map(|x| to_mod_definition(&shape.header, x))
+        .collect::<Result<Vec<Vec<DefinitionShape>>>>()?
+        .into_iter()
+        .flatten()
+        .collect())
+}
 
-    // TODO:
-    Ok(vec![])
+fn to_mod_definition(shape: &TypeHeaderShape, x: &mut FieldShape) -> Result<Vec<DefinitionShape>> {
+    match &x.type_shape {
+        Ref { .. } | Fixed { .. } | Array { .. } => Ok(vec![]),
+        InlineObject {
+            object,
+            is_required,
+            is_nullable,
+        } => {
+            println!("target inline object: {:#?}", object);
+            let parent = &shape.name;
+            println!("parent: {:#?}", parent);
+
+            x.type_shape = Fixed {
+                // TODO: generate type name like pet::RegisteredProfile
+                data_type: DataType::Custom("TODO".to_string()),
+                is_required: *is_required,
+                is_nullable: *is_nullable,
+            };
+            // TODO: generate DefinitionShape::Mod from object and return it
+            Ok(vec![])
+        }
+    }
 }

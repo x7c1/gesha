@@ -80,7 +80,7 @@ impl RefResolver<'_> {
         let is_required = shape.is_required();
         let is_nullable = self.is_nullable(shape)?;
         let mut data_type = match shape {
-            TypeShape::Vec { type_shape, .. } => {
+            TypeShape::Array { type_shape, .. } => {
                 DataType::Vec(Box::new(self.type_shape_to_data_type(type_shape)?))
             }
             TypeShape::Ref { object, .. } => {
@@ -115,7 +115,7 @@ impl RefResolver<'_> {
     fn is_nullable(&self, shape: &TypeShape) -> Result<bool> {
         match shape {
             TypeShape::Fixed { is_nullable, .. } => Ok(*is_nullable),
-            TypeShape::Vec { is_nullable, .. } => Ok(*is_nullable),
+            TypeShape::Array { is_nullable, .. } => Ok(*is_nullable),
             TypeShape::Ref { object, .. } => self
                 .original
                 .find_schema_definition(object)
