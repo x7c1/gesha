@@ -1,5 +1,5 @@
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    DefinitionShape, PostProcessor, StructShape, TypeHeaderShape, TypeShape,
+    DefinitionShape, FieldShape, PostProcessor, StructShape, TypeHeaderShape, TypeShape,
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
@@ -25,16 +25,8 @@ fn expand_struct_fields(shape: &mut StructShape) -> Result<Option<DefinitionShap
     let expanded_shapes = shape
         .fields
         .iter_mut()
-        .map(|field| -> Result<Option<DefinitionShape>> {
-            if let Some(type_shape) = expand(&shape.header, &field.type_shape)? {
-                field.type_shape = type_shape;
-                // TODO: generate DefinitionShape::Struct
-                Ok(None)
-            } else {
-                Ok(None)
-            }
-        })
-        .collect::<Result<Vec<Option<_>>>>()?
+        .map(|field| expand(&shape.header, field))
+        .collect::<Result<Vec<_>>>()?
         .into_iter()
         .flatten()
         .collect::<Vec<_>>();
@@ -48,9 +40,9 @@ fn expand_struct_fields(shape: &mut StructShape) -> Result<Option<DefinitionShap
     }
 }
 
-fn expand(parent_header: &TypeHeaderShape, type_shape: &TypeShape) -> Result<Option<TypeShape>> {
-    match type_shape {
-        Ref { .. } | Fixed { .. } | Array { .. } => Ok(None),
+fn expand(parent_header: &TypeHeaderShape, field: &mut FieldShape) -> Result<Vec<DefinitionShape>> {
+    match &field.type_shape {
+        Ref { .. } | Fixed { .. } | Array { .. } => Ok(vec![]),
         InlineObject {
             object,
             is_required,
@@ -61,12 +53,16 @@ fn expand(parent_header: &TypeHeaderShape, type_shape: &TypeShape) -> Result<Opt
             let parent = &parent_header.name;
             println!("parent: {:#?}", parent);
 
-            Ok(Some(Fixed {
+            field.type_shape = Fixed {
                 // TODO: generate type name like pet::RegisteredProfile
                 data_type: DataType::Custom("TODO".to_string()),
                 is_required: *is_required,
                 is_nullable: *is_nullable,
-            }))
+            };
+            // TODO: generate DefinitionShape::Struct from object
+            // TODO: generate Vec<DefinitionShape> from object.properties
+
+            Ok(vec![])
         }
     }
 }
