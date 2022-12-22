@@ -44,7 +44,7 @@ impl Shaper {
     fn for_struct(self) -> Result<DefinitionShape> {
         let shape = DefinitionShape::Struct(StructShape {
             header: self.create_type_header(),
-            shapes: to_field_shapes(self.object.properties, self.object.required)?,
+            fields: to_field_shapes(self.object.properties, self.object.required)?,
         });
         Ok(shape)
     }

@@ -10,30 +10,26 @@ impl PostProcessor {
         let mut inline_shapes = shapes
             .iter_mut()
             .filter_map(|x| x.as_struct_shape())
-            .map(modify_struct_shape)
-            .collect::<Result<Vec<Vec<DefinitionShape>>>>()?
-            .into_iter()
-            .flatten()
-            .collect();
+            .flat_map(modify_struct_shape)
+            .collect::<Result<Vec<_>>>()?
+            .concat();
 
         shapes.append(&mut inline_shapes);
         Ok(())
     }
 }
 
-fn modify_struct_shape(shape: &mut StructShape) -> Result<Vec<DefinitionShape>> {
-    Ok(shape
-        .shapes
+fn modify_struct_shape(
+    shape: &mut StructShape,
+) -> impl Iterator<Item = Result<Vec<DefinitionShape>>> + '_ {
+    shape
+        .fields
         .iter_mut()
-        .map(|x| to_mod_definition(&shape.header, x))
-        .collect::<Result<Vec<Vec<DefinitionShape>>>>()?
-        .into_iter()
-        .flatten()
-        .collect())
+        .map(|x| to_mod_defs(&shape.header, x))
 }
 
-fn to_mod_definition(shape: &TypeHeaderShape, x: &mut FieldShape) -> Result<Vec<DefinitionShape>> {
-    match &x.type_shape {
+fn to_mod_defs(header: &TypeHeaderShape, field: &mut FieldShape) -> Result<Vec<DefinitionShape>> {
+    match &field.type_shape {
         Ref { .. } | Fixed { .. } | Array { .. } => Ok(vec![]),
         InlineObject {
             object,
@@ -41,10 +37,10 @@ fn to_mod_definition(shape: &TypeHeaderShape, x: &mut FieldShape) -> Result<Vec<
             is_nullable,
         } => {
             println!("target inline object: {:#?}", object);
-            let parent = &shape.name;
+            let parent = &header.name;
             println!("parent: {:#?}", parent);
 
-            x.type_shape = Fixed {
+            field.type_shape = Fixed {
                 // TODO: generate type name like pet::RegisteredProfile
                 data_type: DataType::Custom("TODO".to_string()),
                 is_required: *is_required,

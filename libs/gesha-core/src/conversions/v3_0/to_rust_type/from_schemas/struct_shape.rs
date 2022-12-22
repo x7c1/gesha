@@ -3,5 +3,5 @@ use crate::conversions::v3_0::to_rust_type::from_schemas::{FieldShape, TypeHeade
 #[derive(Clone, Debug)]
 pub struct StructShape {
     pub header: TypeHeaderShape,
-    pub shapes: Vec<FieldShape>,
+    pub fields: Vec<FieldShape>,
 }

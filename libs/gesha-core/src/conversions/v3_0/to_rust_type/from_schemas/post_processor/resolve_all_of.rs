@@ -21,7 +21,7 @@ impl PostProcessor {
             DefinitionShape::AllOf { header, shapes } => {
                 let shape = DefinitionShape::Struct(StructShape {
                     header: header.clone(),
-                    shapes: self.merge_fields_all_of(shapes)?,
+                    fields: self.merge_fields_all_of(shapes)?,
                 });
                 Ok(Some(shape))
             }

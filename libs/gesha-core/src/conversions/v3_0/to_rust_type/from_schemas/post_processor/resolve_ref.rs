@@ -34,10 +34,10 @@ struct RefResolver<'a> {
 impl RefResolver<'_> {
     fn resolve_ref(&self, shape: &DefinitionShape) -> Result<Definition> {
         match shape {
-            DefinitionShape::Struct(StructShape { header, shapes }) => {
+            DefinitionShape::Struct(StructShape { header, fields }) => {
                 let def = StructDef::new(
                     to_type_header(header.clone()),
-                    self.shapes_to_fields(shapes)?,
+                    self.shapes_to_fields(fields)?,
                 );
                 Ok(def.into())
             }

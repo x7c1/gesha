@@ -35,7 +35,7 @@ impl DefinitionShape {
 
     pub fn field_shapes(&self) -> Vec<FieldShape> {
         match self {
-            DefinitionShape::Struct(StructShape { shapes, .. }) => shapes.clone(),
+            DefinitionShape::Struct(StructShape { fields, .. }) => fields.clone(),
             DefinitionShape::AllOf { .. } => unimplemented!(),
             DefinitionShape::NewType { .. } => unimplemented!(),
             DefinitionShape::Enum { .. } => unimplemented!(),
