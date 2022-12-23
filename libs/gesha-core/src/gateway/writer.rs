@@ -31,7 +31,7 @@ impl Writer {
             })?;
         }
 
-        a.render(&file).map_err(|cause| CannotRender {
+        a.render(file).map_err(|cause| CannotRender {
             path: self.path.clone(),
             detail: format!("{:?}", cause),
         })?;

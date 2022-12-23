@@ -1,5 +1,5 @@
 mod definition_shape;
-pub(super) use definition_shape::DefinitionShape;
+pub(super) use definition_shape::{DefinitionShape, TypeDefinitionShape};
 
 mod struct_shape;
 pub(super) use struct_shape::StructShape;

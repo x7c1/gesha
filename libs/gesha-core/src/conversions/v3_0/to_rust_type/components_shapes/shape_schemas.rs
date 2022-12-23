@@ -15,10 +15,10 @@ impl ComponentsShapes {
         )
     }
 
-    pub fn find_schema_definition(
+    pub fn find_type_definition(
         &self,
         object: &ReferenceObject<SchemaObject>,
-    ) -> Result<&from_schemas::DefinitionShape> {
+    ) -> Result<from_schemas::TypeDefinitionShape> {
         let prefix = "#/components/schemas/";
         let type_ref = object.as_ref();
         if !type_ref.starts_with(prefix) {
@@ -27,6 +27,7 @@ impl ComponentsShapes {
         let name = type_ref.replace(prefix, "");
         self.schemas
             .iter()
+            .filter_map(|shape| shape.as_type_definition())
             .find(|shape| shape.is_type_name(&name))
             .ok_or_else(|| ReferenceObjectNotFound(type_ref.to_string()))
     }

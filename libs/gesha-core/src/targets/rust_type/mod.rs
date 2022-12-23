@@ -2,7 +2,7 @@ mod data_type;
 pub use data_type::DataType;
 
 mod definition;
-pub use definition::{Definition, EnumDef, NewTypeDef, PresetDef, StructDef};
+pub use definition::{Definition, EnumDef, ModDef, NewTypeDef, PresetDef, StructDef};
 
 mod definitions;
 pub use definitions::Definitions;

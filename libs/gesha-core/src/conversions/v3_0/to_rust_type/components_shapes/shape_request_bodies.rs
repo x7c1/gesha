@@ -62,7 +62,7 @@ impl ComponentsShapes {
                 unimplemented!("inline object not supported yet")
             }
             SchemaCase::Reference(x) => self
-                .find_schema_definition(x)
+                .find_type_definition(x)
                 .map(|x| x.type_name().to_string()),
         }
     }

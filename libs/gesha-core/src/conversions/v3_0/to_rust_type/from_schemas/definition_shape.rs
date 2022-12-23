@@ -18,11 +18,44 @@ pub enum DefinitionShape {
         header: TypeHeaderShape,
         values: EnumValues,
     },
+    Mod {
+        defs: Vec<DefinitionShape>,
+    },
 }
 
 impl DefinitionShape {
+    pub fn as_type_definition(&self) -> Option<TypeDefinitionShape> {
+        match self {
+            DefinitionShape::Struct(shape) => Some(TypeDefinitionShape {
+                type_header: &shape.header,
+                fields: &shape.fields,
+            }),
+            DefinitionShape::AllOf { .. }
+            | DefinitionShape::NewType { .. }
+            | DefinitionShape::Enum { .. }
+            | DefinitionShape::Mod { .. } => None,
+        }
+    }
+
+    pub fn as_mut_struct(&mut self) -> Option<&mut StructShape> {
+        match self {
+            DefinitionShape::Struct(shape) => Some(shape),
+            DefinitionShape::AllOf { .. }
+            | DefinitionShape::NewType { .. }
+            | DefinitionShape::Enum { .. }
+            | DefinitionShape::Mod { .. } => None,
+        }
+    }
+}
+
+pub struct TypeDefinitionShape<'a> {
+    type_header: &'a TypeHeaderShape,
+    fields: &'a Vec<FieldShape>,
+}
+
+impl TypeDefinitionShape<'_> {
     pub fn type_name(&self) -> &ComponentName {
-        &self.type_header().name
+        &self.type_header.name
     }
 
     pub fn is_type_name(&self, name: &str) -> bool {
@@ -30,33 +63,10 @@ impl DefinitionShape {
     }
 
     pub fn is_nullable(&self) -> bool {
-        self.type_header().is_nullable
+        self.type_header.is_nullable
     }
 
-    pub fn field_shapes(&self) -> Vec<FieldShape> {
-        match self {
-            DefinitionShape::Struct(StructShape { fields, .. }) => fields.clone(),
-            DefinitionShape::AllOf { .. } => unimplemented!(),
-            DefinitionShape::NewType { .. } => unimplemented!(),
-            DefinitionShape::Enum { .. } => unimplemented!(),
-        }
-    }
-
-    pub fn as_struct_shape(&mut self) -> Option<&mut StructShape> {
-        match self {
-            DefinitionShape::Struct(shape) => Some(shape),
-            DefinitionShape::AllOf { .. }
-            | DefinitionShape::NewType { .. }
-            | DefinitionShape::Enum { .. } => None,
-        }
-    }
-
-    fn type_header(&self) -> &TypeHeaderShape {
-        match self {
-            DefinitionShape::AllOf { header, .. } => header,
-            DefinitionShape::Struct(StructShape { header, .. }) => header,
-            DefinitionShape::NewType { header, .. } => header,
-            DefinitionShape::Enum { header, .. } => header,
-        }
+    pub fn field_shapes(&self) -> &[FieldShape] {
+        self.fields
     }
 }

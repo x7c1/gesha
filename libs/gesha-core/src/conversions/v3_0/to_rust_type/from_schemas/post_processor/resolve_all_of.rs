@@ -25,10 +25,11 @@ impl PostProcessor {
                 });
                 Ok(Some(shape))
             }
-            // shaped in next processes.
+            // shaped in other processes.
             DefinitionShape::Struct { .. }
             | DefinitionShape::NewType { .. }
-            | DefinitionShape::Enum { .. } => Ok(None),
+            | DefinitionShape::Enum { .. }
+            | DefinitionShape::Mod { .. } => Ok(None),
         }
     }
 
@@ -44,8 +45,8 @@ impl PostProcessor {
         match item_shape {
             AllOfItemShape::Object(shapes) => Ok(shapes.clone()),
             AllOfItemShape::Ref(object) => {
-                let fields = self.original.find_schema_definition(object)?.field_shapes();
-                Ok(fields)
+                let shape = self.original.find_type_definition(object)?;
+                Ok(shape.field_shapes().to_vec())
             }
         }
     }
