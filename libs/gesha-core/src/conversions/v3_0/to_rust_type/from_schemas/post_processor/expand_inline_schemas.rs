@@ -1,10 +1,10 @@
+use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_field_shapes;
 use crate::conversions::v3_0::to_rust_type::from_schemas::DefinitionShape::Mod;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
     DefinitionShape, FieldShape, PostProcessor, StructShape, TypeHeaderShape, TypeShape,
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::{DataType, DocComments};
-use openapi_types::v3_0::ComponentName;
 use TypeShape::{Array, Fixed, InlineObject, Ref};
 
 impl PostProcessor {
@@ -60,12 +60,12 @@ fn expand(parent_header: &TypeHeaderShape, field: &mut FieldShape) -> Result<Vec
             // TODO: generate DefinitionShape::Struct from object
             let generated = DefinitionShape::Struct(StructShape {
                 header: TypeHeaderShape {
-                    name: ComponentName::new("TODO"),
+                    name: field.name.to_upper_camel_case(),
                     // TODO:
                     doc_comments: DocComments::wrap(None),
                     is_nullable: object.nullable.unwrap_or(false),
                 },
-                fields: vec![],
+                fields: to_field_shapes(object.properties.clone(), object.required.clone())?,
             });
             // TODO: generate Vec<DefinitionShape> from object.properties
 

@@ -1,4 +1,5 @@
 use std::fmt::{Display, Formatter};
+use heck::ToUpperCamelCase;
 
 /// > All the fixed fields declared above are objects
 /// > that MUST use keys that match the regular expression: ^[a-zA-Z0-9\.\-_]+$.
@@ -8,6 +9,9 @@ pub struct ComponentName(String);
 impl ComponentName {
     pub fn new<A: Into<String>>(a: A) -> Self {
         ComponentName(a.into())
+    }
+    pub fn to_upper_camel_case(&self) -> Self {
+        Self(self.0.to_upper_camel_case())
     }
 }
 

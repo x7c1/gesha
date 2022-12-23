@@ -10,4 +10,15 @@ pub mod schemas {
         pub id: i64,
         pub registered_profile: Option<sample_pet::RegisteredProfile>,
     }
+
+    pub mod sample_pet {
+        use serde::Deserialize;
+        use serde::Serialize;
+
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+        pub struct RegisteredProfile {
+            pub name: String,
+            pub int1: Option<i64>,
+        }
+    }
 }

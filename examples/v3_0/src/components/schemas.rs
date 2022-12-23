@@ -11,6 +11,7 @@ pub mod newtype;
 pub mod newtype_numeric;
 pub mod nullable_field;
 pub mod numeric_fields;
+pub mod object_inline;
 pub mod object_simple;
 pub mod optional_field;
 pub mod ref_items;
