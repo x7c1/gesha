@@ -1,10 +1,11 @@
-use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_field_shapes;
+use crate::conversions::v3_0::to_rust_type::from_schemas::to_shape::to_shape;
 use crate::conversions::v3_0::to_rust_type::from_schemas::DefinitionShape::Mod;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    DefinitionShape, FieldShape, PostProcessor, StructShape, TypeHeaderShape, TypeShape,
+    DefinitionShape, FieldShape, PostProcessor, StructShape, TypeShape,
 };
 use crate::conversions::Result;
-use crate::targets::rust_type::{DataType, DocComments};
+use crate::targets::rust_type::DataType;
+use openapi_types::v3_0::ComponentName;
 use TypeShape::{Array, Fixed, InlineObject, Ref};
 
 impl PostProcessor {
@@ -24,10 +25,11 @@ impl PostProcessor {
 }
 
 fn expand_struct_fields(shape: &mut StructShape) -> Result<Option<DefinitionShape>> {
+    let mod_name = shape.header.name.to_snake_case();
     let expanded_shapes = shape
         .fields
         .iter_mut()
-        .map(|field| expand(&shape.header, field))
+        .map(|field| expand(&mod_name, field))
         .collect::<Result<Vec<_>>>()?
         .into_iter()
         .flatten()
@@ -36,15 +38,14 @@ fn expand_struct_fields(shape: &mut StructShape) -> Result<Option<DefinitionShap
     if expanded_shapes.is_empty() {
         Ok(None)
     } else {
-        println!("expanded: {:#?}", expanded_shapes);
-        // TODO: add mod name
         Ok(Some(Mod {
+            name: mod_name,
             defs: expanded_shapes,
         }))
     }
 }
 
-fn expand(parent_header: &TypeHeaderShape, field: &mut FieldShape) -> Result<Vec<DefinitionShape>> {
+fn expand(mod_name: &ComponentName, field: &mut FieldShape) -> Result<Vec<DefinitionShape>> {
     match &field.type_shape {
         Ref { .. } | Fixed { .. } | Array { .. } => Ok(vec![]),
         InlineObject {
@@ -52,31 +53,20 @@ fn expand(parent_header: &TypeHeaderShape, field: &mut FieldShape) -> Result<Vec
             is_required,
             is_nullable,
         } => {
-            println!("target inline object: {:#?}", object);
+            let struct_name = field.name.to_upper_camel_case();
 
-            let parent = &parent_header.name;
-            println!("parent: {:#?}", parent);
-
-            // TODO: generate DefinitionShape::Struct from object
-            let generated = DefinitionShape::Struct(StructShape {
-                header: TypeHeaderShape {
-                    name: field.name.to_upper_camel_case(),
-                    // TODO:
-                    doc_comments: DocComments::wrap(None),
-                    is_nullable: object.nullable.unwrap_or(false),
-                },
-                fields: to_field_shapes(object.properties.clone(), object.required.clone())?,
-            });
-            // TODO: generate Vec<DefinitionShape> from object.properties
+            // TODO: support nested modules like foo::bar::Baz
+            let data_type = DataType::Custom(format!("{}::{}", mod_name, struct_name));
+            let generated_struct = to_shape((struct_name, object.clone().into()))?;
 
             field.type_shape = Fixed {
-                // TODO: generate type name like pet::RegisteredProfile
-                data_type: DataType::Custom("TODO".to_string()),
+                data_type,
                 is_required: *is_required,
                 is_nullable: *is_nullable,
             };
 
-            Ok(vec![generated])
+            // TODO: generate DefinitionShape from generated_struct
+            Ok(vec![generated_struct])
         }
     }
 }

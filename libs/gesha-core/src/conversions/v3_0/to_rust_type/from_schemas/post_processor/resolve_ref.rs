@@ -8,7 +8,8 @@ use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
     DataType, Definition, Definitions, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName,
-    ModDef, NewTypeDef, StructDef, StructField, StructFieldAttribute, StructFieldName, TypeHeader,
+    ModDef, ModuleName, NewTypeDef, StructDef, StructField, StructFieldAttribute, StructFieldName,
+    TypeHeader,
 };
 use openapi_types::v3_0::ComponentName;
 
@@ -58,13 +59,16 @@ impl RefResolver<'_> {
             DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
                 detail: format!("'allOf' must be processed before '$ref'.\n{:#?}", shape),
             }),
-            DefinitionShape::Mod { defs } => {
+            DefinitionShape::Mod { name, defs } => {
                 let inline_defs = defs
                     .iter()
                     .map(|x| self.resolve_ref(x))
                     .collect::<Result<Vec<Definition>>>()?;
 
-                let def = ModDef { defs: inline_defs };
+                let def = ModDef {
+                    name: ModuleName::new(name.clone()),
+                    defs: inline_defs,
+                };
                 Ok(def.into())
             }
         }

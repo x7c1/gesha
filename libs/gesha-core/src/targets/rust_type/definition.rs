@@ -121,17 +121,13 @@ impl From<EnumDef> for Definition {
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct ModDef {
-    // TODO:
+    pub name: ModuleName,
     pub defs: Vec<Definition>,
 }
 
 impl From<ModDef> for Module {
     fn from(this: ModDef) -> Self {
-        Module::new(
-            ModuleName::new("todo"),
-            Definitions::from_iter(this.defs),
-            Imports::new(),
-        )
+        Module::new(this.name, Definitions::from_iter(this.defs), Imports::new())
     }
 }
 

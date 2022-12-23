@@ -19,6 +19,7 @@ pub enum DefinitionShape {
         values: EnumValues,
     },
     Mod {
+        name: ComponentName,
         defs: Vec<DefinitionShape>,
     },
 }
