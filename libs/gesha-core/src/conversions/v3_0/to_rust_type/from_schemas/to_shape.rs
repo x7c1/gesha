@@ -2,7 +2,6 @@ use super::{to_type_shape, AllOfItemShape, DefinitionShape, TypeHeaderShape};
 use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_field_shapes;
 use crate::conversions::v3_0::to_rust_type::from_schemas::StructShape;
 use crate::conversions::Result;
-use crate::targets::rust_type::DocComments;
 use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject};
 
 pub(super) fn to_shape(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
@@ -78,14 +77,7 @@ impl Shaper {
     }
 
     fn create_type_header(&self) -> TypeHeaderShape {
-        TypeHeaderShape {
-            name: self.name.clone(),
-            doc_comments: to_doc_comments(
-                self.object.title.as_deref(),
-                self.object.description.as_deref(),
-            ),
-            is_nullable: self.object.nullable.unwrap_or(false),
-        }
+        TypeHeaderShape::new(self.name.clone(), &self.object)
     }
 }
 
@@ -99,15 +91,4 @@ fn to_all_of_item_shape(case: SchemaCase) -> Result<AllOfItemShape> {
         SchemaCase::Reference(x) => AllOfItemShape::Ref(x),
     };
     Ok(shape)
-}
-
-fn to_doc_comments(title: Option<&str>, description: Option<&str>) -> DocComments {
-    let trim = |x: &str| x.trim().to_string();
-    let maybe = match (title.map(trim), description.map(trim)) {
-        (t, None) => t,
-        (None, d) => d,
-        (t, d) if t == d => t,
-        (Some(t), Some(d)) => Some(format!("{t}\n\n{d}")),
-    };
-    DocComments::wrap(maybe)
 }

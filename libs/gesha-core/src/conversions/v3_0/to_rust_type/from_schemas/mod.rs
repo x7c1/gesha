@@ -4,6 +4,9 @@ pub(super) use definition_shape::{DefinitionShape, TypeDefinitionShape};
 mod struct_shape;
 pub(super) use struct_shape::StructShape;
 
+mod type_header_shape;
+pub(super) use type_header_shape::TypeHeaderShape;
+
 mod post_processor;
 pub(super) use post_processor::PostProcessor;
 
@@ -16,7 +19,7 @@ mod to_type_shape;
 use to_type_shape::to_type_shape;
 
 use crate::conversions::Result;
-use crate::targets::rust_type::{DataType, DocComments};
+use crate::targets::rust_type::DataType;
 use openapi_types::v3_0::{ComponentName, ReferenceObject, SchemaObject, SchemasObject};
 
 pub(super) fn to_shapes(object: SchemasObject) -> Result<Vec<DefinitionShape>> {
@@ -33,13 +36,6 @@ pub enum AllOfItemShape {
 pub struct FieldShape {
     pub name: ComponentName,
     pub type_shape: TypeShape,
-}
-
-#[derive(Clone, Debug)]
-pub struct TypeHeaderShape {
-    pub name: ComponentName,
-    pub doc_comments: DocComments,
-    pub is_nullable: bool,
 }
 
 #[derive(Clone, Debug)]

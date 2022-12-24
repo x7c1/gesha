@@ -1,7 +1,7 @@
-use crate::conversions::v3_0::to_rust_type::from_schemas::to_shape::to_shape;
+use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_field_shapes;
 use crate::conversions::v3_0::to_rust_type::from_schemas::DefinitionShape::Mod;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    DefinitionShape, FieldShape, PostProcessor, StructShape, TypeShape,
+    DefinitionShape, FieldShape, PostProcessor, StructShape, TypeHeaderShape, TypeShape,
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
