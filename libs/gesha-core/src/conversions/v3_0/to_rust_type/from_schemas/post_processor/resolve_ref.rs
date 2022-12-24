@@ -22,6 +22,7 @@ impl PostProcessor {
         let resolver = RefResolver {
             prefix,
             original: &self.original,
+            mod_depth: 0,
         };
         shapes.iter().map(|x| resolver.resolve_ref(x)).collect()
     }
@@ -30,6 +31,7 @@ impl PostProcessor {
 struct RefResolver<'a> {
     prefix: &'static str,
     original: &'a ComponentsShapes,
+    mod_depth: usize,
 }
 
 impl RefResolver<'_> {
@@ -62,7 +64,7 @@ impl RefResolver<'_> {
             DefinitionShape::Mod { name, defs } => {
                 let inline_defs = defs
                     .iter()
-                    .map(|x| self.resolve_ref(x))
+                    .map(|x| self.resolve_ref_in_mod(x))
                     .collect::<Result<Vec<Definition>>>()?;
 
                 let def = ModDef {
@@ -73,6 +75,15 @@ impl RefResolver<'_> {
                 Ok(def.into())
             }
         }
+    }
+
+    fn resolve_ref_in_mod(&self, shape: &DefinitionShape) -> Result<Definition> {
+        let resolver = Self {
+            prefix: self.prefix,
+            original: self.original,
+            mod_depth: self.mod_depth + 1,
+        };
+        resolver.resolve_ref(shape)
     }
 
     fn shapes_to_fields(&self, shapes: &[FieldShape]) -> Result<Vec<StructField>> {
@@ -102,7 +113,8 @@ impl RefResolver<'_> {
                     x if x.starts_with(self.prefix) => x.replace(self.prefix, ""),
                     x => unimplemented!("not implemented: {x}"),
                 };
-                DataType::Custom(type_name)
+                let prefix = "super::".repeat(self.mod_depth);
+                DataType::Custom(prefix + &type_name)
             }
             TypeShape::Fixed { data_type, .. } => data_type.clone(),
             TypeShape::InlineObject { .. } => Err(PostProcessBroken {
