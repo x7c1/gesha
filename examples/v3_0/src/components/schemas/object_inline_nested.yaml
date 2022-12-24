@@ -6,22 +6,27 @@ schemas:
     properties:
       id:
         type: integer
-      registered_profile:
+      foo:
         type: object
         required:
-          - name
+          - registered_profile
         properties:
-          name:
-            type: string
-          current_location:
+          registered_profile:
             type: object
             required:
-              - latitude
-              - longitude
+              - name
             properties:
-              latitude:
-                type: number
-                format: double
-              longitude:
-                type: number
-                format: double
+              name:
+                type: string
+              current_location:
+                type: object
+                required:
+                  - latitude
+                  - longitude
+                properties:
+                  latitude:
+                    type: number
+                    format: double
+                  longitude:
+                    type: number
+                    format: double
