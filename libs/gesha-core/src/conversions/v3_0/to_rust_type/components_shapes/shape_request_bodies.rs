@@ -11,8 +11,6 @@ use openapi_types::v3_0::SchemaCase;
 
 impl ComponentsShapes {
     pub fn shape_request_bodies(&mut self) -> Result<Option<Module>> {
-        println!("{:#?}", self.request_bodies);
-
         let definitions = self
             .request_bodies
             .clone()
