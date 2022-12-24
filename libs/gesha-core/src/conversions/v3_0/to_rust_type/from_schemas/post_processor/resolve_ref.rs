@@ -8,8 +8,8 @@ use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
     DataType, Definition, Definitions, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName,
-    ModDef, ModuleName, NewTypeDef, StructDef, StructField, StructFieldAttribute, StructFieldName,
-    TypeHeader,
+    ModDef, ModuleName, NewTypeDef, Package, StructDef, StructField, StructFieldAttribute,
+    StructFieldName, TypeHeader,
 };
 use openapi_types::v3_0::ComponentName;
 
@@ -67,6 +67,7 @@ impl RefResolver<'_> {
 
                 let def = ModDef {
                     name: ModuleName::new(name.clone()),
+                    imports: vec![Package::Deserialize, Package::Serialize],
                     defs: inline_defs,
                 };
                 Ok(def.into())
