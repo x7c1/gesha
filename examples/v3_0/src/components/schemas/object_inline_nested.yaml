@@ -1,0 +1,27 @@
+schemas:
+  SamplePet:
+    type: object
+    required:
+      - id
+    properties:
+      id:
+        type: integer
+      registered_profile:
+        type: object
+        required:
+          - name
+        properties:
+          name:
+            type: string
+          current_location:
+            type: object
+            required:
+              - latitude
+              - longitude
+            properties:
+              latitude:
+                type: number
+                format: double
+              longitude:
+                type: number
+                format: double
