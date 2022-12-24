@@ -23,6 +23,7 @@ pub mod schemas {
 
         #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct Nested1 {
+            pub location: super::Coordinate,
             pub nested2: nested1::Nested2,
         }
 

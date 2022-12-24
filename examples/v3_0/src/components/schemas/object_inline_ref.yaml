@@ -10,8 +10,11 @@ schemas:
       nested1:
         type: object
         required:
+          - location
           - nested2
         properties:
+          location:
+            $ref: '#/components/schemas/Coordinate'
           nested2:
             type: object
             required:
