@@ -54,21 +54,20 @@ fn expand(mod_name: &ComponentName, field: &mut FieldShape) -> Result<Vec<Defini
             is_nullable,
         } => {
             let struct_name = field.name.to_upper_camel_case();
-
             let data_type = DataType::Custom(format!("{}::{}", mod_name, struct_name));
             let mut generated_struct = StructShape {
                 header: TypeHeaderShape::new(struct_name, object),
                 fields: to_field_shapes(object.properties.clone(), object.required.clone())?,
             };
-            field.type_shape = Fixed {
-                data_type,
-                is_required: *is_required,
-                is_nullable: *is_nullable,
-            };
             let generated_mod = expand_struct_fields(&mut generated_struct)?;
             let mut defs = vec![generated_struct.into()];
             if let Some(def) = generated_mod {
                 defs.push(def);
+            };
+            field.type_shape = Fixed {
+                data_type,
+                is_required: *is_required,
+                is_nullable: *is_nullable,
             };
             Ok(defs)
         }

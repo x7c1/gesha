@@ -1,0 +1,33 @@
+schemas:
+  SamplePet:
+    type: object
+    required:
+      - id
+      - nested1
+    properties:
+      id:
+        type: integer
+      nested1:
+        type: object
+        required:
+          - nested2
+        properties:
+          nested2:
+            type: object
+            required:
+              - location
+            properties:
+              location:
+                $ref: '#/components/schemas/Coordinate'
+  Coordinate:
+    type: object
+    required:
+      - latitude
+      - longitude
+    properties:
+      latitude:
+        type: number
+        format: double
+      longitude:
+        type: number
+        format: double
