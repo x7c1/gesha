@@ -505,6 +505,7 @@ dependencies = [
 name = "examples_v3_0"
 version = "0.0.1"
 dependencies = [
+ "pretty_assertions",
  "serde",
  "serde_json",
 ]
