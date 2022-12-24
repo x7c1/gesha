@@ -1,6 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::from_schemas::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    AllOfItemShape, DefinitionShape, FieldShape,
+    AllOfItemShape, DefinitionShape, FieldShape, StructShape,
 };
 use crate::conversions::Result;
 
@@ -19,16 +19,17 @@ impl PostProcessor {
     fn shape_all_of(&self, def_shape: &mut DefinitionShape) -> Result<Option<DefinitionShape>> {
         match def_shape {
             DefinitionShape::AllOf { header, shapes } => {
-                let shape = DefinitionShape::Struct {
+                let shape = DefinitionShape::Struct(StructShape {
                     header: header.clone(),
-                    shapes: self.merge_fields_all_of(shapes)?,
-                };
+                    fields: self.merge_fields_all_of(shapes)?,
+                });
                 Ok(Some(shape))
             }
-            // shaped in next processes.
+            // shaped in other processes.
             DefinitionShape::Struct { .. }
             | DefinitionShape::NewType { .. }
-            | DefinitionShape::Enum { .. } => Ok(None),
+            | DefinitionShape::Enum { .. }
+            | DefinitionShape::Mod { .. } => Ok(None),
         }
     }
 
@@ -44,8 +45,8 @@ impl PostProcessor {
         match item_shape {
             AllOfItemShape::Object(shapes) => Ok(shapes.clone()),
             AllOfItemShape::Ref(object) => {
-                let fields = self.original.find_schema_definition(object)?.field_shapes();
-                Ok(fields)
+                let shape = self.original.find_type_definition(object)?;
+                Ok(shape.field_shapes().to_vec())
             }
         }
     }

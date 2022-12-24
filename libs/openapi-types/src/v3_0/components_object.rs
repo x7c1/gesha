@@ -90,6 +90,12 @@ pub struct SchemaObject {
     pub all_of: Option<AllOf>,
 }
 
+impl From<SchemaObject> for SchemaCase {
+    fn from(this: SchemaObject) -> Self {
+        Self::Schema(Box::new(this))
+    }
+}
+
 /// > properties - Property definitions MUST be a Schema Object
 /// > and not a standard JSON Schema (inline or referenced).
 ///

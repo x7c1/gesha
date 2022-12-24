@@ -1,5 +1,7 @@
 mod render_enum;
+
 use render_enum::{render_enum, render_enum_variants};
+use std::fs::File;
 
 mod render_error;
 use render_error::render_error;
@@ -20,13 +22,13 @@ use crate::targets::rust_type::{
 use std::io::Write;
 
 impl Renderer for Modules {
-    fn render<W: Write>(self, mut write: W) -> Result<()> {
+    fn render(self, mut write: File) -> Result<()> {
         self.into_iter()
             .try_for_each(|module| render_module(&mut write, module))
     }
 }
 
-fn render_module<W: Write>(mut write: W, module: Module) -> Result<()> {
+fn render_module(mut write: &mut File, module: Module) -> Result<()> {
     render! { write =>
         echo > "pub mod {name}", name = module.name;
         "{}" > render_mod_body => module;
@@ -35,7 +37,7 @@ fn render_module<W: Write>(mut write: W, module: Module) -> Result<()> {
     Ok(())
 }
 
-fn render_mod_body<W: Write>(mut write: W, module: Module) -> Result<()> {
+fn render_mod_body(mut write: &mut File, module: Module) -> Result<()> {
     render! { write =>
         call > render_use_statements => module.imports;
         echo > "\n";
@@ -43,7 +45,7 @@ fn render_mod_body<W: Write>(mut write: W, module: Module) -> Result<()> {
     module
         .definitions
         .into_iter()
-        .try_for_each(|def| render_definition(&mut write, def))
+        .try_for_each(|def| render_definition(write, def))
 }
 
 fn render_use_statements<W: Write>(mut write: W, xs: Imports) -> Result<()> {
@@ -55,13 +57,14 @@ fn render_use_statements<W: Write>(mut write: W, xs: Imports) -> Result<()> {
     Ok(())
 }
 
-fn render_definition<W: Write>(write: W, x: Definition) -> Result<()> {
+fn render_definition(write: &mut File, x: Definition) -> Result<()> {
     match x {
         Definition::StructDef(x) => render_struct(write, x)?,
         Definition::NewTypeDef(x) => render_newtype(write, x)?,
         Definition::EnumDef(x) => render_enum(write, x)?,
         Definition::PresetDef(x) => render_preset(write, x)?,
         Definition::RequestBodyDef(x) => render_request_body(write, x)?,
+        Definition::ModDef(x) => render_module(write, x.into())?,
     };
     Ok(())
 }

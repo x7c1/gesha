@@ -1,0 +1,17 @@
+schemas:
+  SamplePet:
+    type: object
+    required:
+      - id
+    properties:
+      id:
+        type: integer
+      registered_profile:
+        type: object
+        required:
+          - name
+        properties:
+          name:
+            type: string
+          int1:
+            type: integer

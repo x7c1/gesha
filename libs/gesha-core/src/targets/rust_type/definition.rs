@@ -1,6 +1,6 @@
 use crate::targets::rust_type::{
-    DataType, DeriveAttribute, EnumVariant, ErrorDef, MediaTypeDef, RequestBodyDef, StructField,
-    TypeHeader,
+    DataType, Definitions, DeriveAttribute, EnumVariant, ErrorDef, Imports, MediaTypeDef, Module,
+    ModuleName, Package, RequestBodyDef, StructField, TypeHeader,
 };
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
@@ -10,6 +10,7 @@ pub enum Definition {
     EnumDef(EnumDef),
     PresetDef(PresetDef),
     RequestBodyDef(RequestBodyDef),
+    ModDef(ModDef),
 }
 
 impl Definition {
@@ -23,6 +24,7 @@ impl Definition {
             Definition::EnumDef(_) => false,
             Definition::PresetDef(_) => false,
             Definition::RequestBodyDef(_) => false,
+            Definition::ModDef(_) => false,
         }
     }
 }
@@ -114,5 +116,28 @@ impl EnumDef {
 impl From<EnumDef> for Definition {
     fn from(this: EnumDef) -> Self {
         Self::EnumDef(this)
+    }
+}
+
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+pub struct ModDef {
+    pub name: ModuleName,
+    pub imports: Vec<Package>,
+    pub defs: Vec<Definition>,
+}
+
+impl From<ModDef> for Module {
+    fn from(this: ModDef) -> Self {
+        Module::new(
+            this.name,
+            Definitions::from_iter(this.defs),
+            Imports::from(this.imports),
+        )
+    }
+}
+
+impl From<ModDef> for Definition {
+    fn from(this: ModDef) -> Self {
+        Self::ModDef(this)
     }
 }

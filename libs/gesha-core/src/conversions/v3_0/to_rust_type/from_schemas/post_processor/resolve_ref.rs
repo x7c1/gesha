@@ -1,14 +1,15 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
 use crate::conversions::v3_0::to_rust_type::from_schemas::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    DefinitionShape, FieldShape, TypeHeaderShape, TypeShape,
+    DefinitionShape, FieldShape, StructShape, TypeHeaderShape, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::is_patch;
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
     DataType, Definition, Definitions, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName,
-    NewTypeDef, StructDef, StructField, StructFieldAttribute, StructFieldName, TypeHeader,
+    ModDef, ModuleName, NewTypeDef, Package, StructDef, StructField, StructFieldAttribute,
+    StructFieldName, TypeHeader,
 };
 use openapi_types::v3_0::ComponentName;
 
@@ -34,10 +35,10 @@ struct RefResolver<'a> {
 impl RefResolver<'_> {
     fn resolve_ref(&self, shape: &DefinitionShape) -> Result<Definition> {
         match shape {
-            DefinitionShape::Struct { header, shapes } => {
+            DefinitionShape::Struct(StructShape { header, fields }) => {
                 let def = StructDef::new(
                     to_type_header(header.clone()),
-                    self.shapes_to_fields(shapes)?,
+                    self.shapes_to_fields(fields)?,
                 );
                 Ok(def.into())
             }
@@ -58,6 +59,19 @@ impl RefResolver<'_> {
             DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
                 detail: format!("'allOf' must be processed before '$ref'.\n{:#?}", shape),
             }),
+            DefinitionShape::Mod { name, defs } => {
+                let inline_defs = defs
+                    .iter()
+                    .map(|x| self.resolve_ref(x))
+                    .collect::<Result<Vec<Definition>>>()?;
+
+                let def = ModDef {
+                    name: ModuleName::new(name.clone()),
+                    imports: vec![Package::Deserialize, Package::Serialize],
+                    defs: inline_defs,
+                };
+                Ok(def.into())
+            }
         }
     }
 
@@ -80,7 +94,7 @@ impl RefResolver<'_> {
         let is_required = shape.is_required();
         let is_nullable = self.is_nullable(shape)?;
         let mut data_type = match shape {
-            TypeShape::Vec { type_shape, .. } => {
+            TypeShape::Array { type_shape, .. } => {
                 DataType::Vec(Box::new(self.type_shape_to_data_type(type_shape)?))
             }
             TypeShape::Ref { object, .. } => {
@@ -91,6 +105,12 @@ impl RefResolver<'_> {
                 DataType::Custom(type_name)
             }
             TypeShape::Fixed { data_type, .. } => data_type.clone(),
+            TypeShape::InlineObject { .. } => Err(PostProcessBroken {
+                detail: format!(
+                    "InlineObject must be processed before '$ref'.\n{:#?}",
+                    shape
+                ),
+            })?,
         };
         match (is_required, is_nullable) {
             (true, true) | (false, false) => {
@@ -109,11 +129,12 @@ impl RefResolver<'_> {
     fn is_nullable(&self, shape: &TypeShape) -> Result<bool> {
         match shape {
             TypeShape::Fixed { is_nullable, .. } => Ok(*is_nullable),
-            TypeShape::Vec { is_nullable, .. } => Ok(*is_nullable),
+            TypeShape::Array { is_nullable, .. } => Ok(*is_nullable),
             TypeShape::Ref { object, .. } => self
                 .original
-                .find_schema_definition(object)
+                .find_type_definition(object)
                 .map(|def| def.is_nullable()),
+            TypeShape::InlineObject { is_nullable, .. } => Ok(*is_nullable),
         }
     }
 }

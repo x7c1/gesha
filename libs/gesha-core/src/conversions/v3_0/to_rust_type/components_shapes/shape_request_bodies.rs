@@ -11,8 +11,6 @@ use openapi_types::v3_0::SchemaCase;
 
 impl ComponentsShapes {
     pub fn shape_request_bodies(&mut self) -> Result<Option<Module>> {
-        println!("{:#?}", self.request_bodies);
-
         let definitions = self
             .request_bodies
             .clone()
@@ -62,7 +60,7 @@ impl ComponentsShapes {
                 unimplemented!("inline object not supported yet")
             }
             SchemaCase::Reference(x) => self
-                .find_schema_definition(x)
+                .find_type_definition(x)
                 .map(|x| x.type_name().to_string()),
         }
     }

@@ -24,6 +24,14 @@ impl IntoIterator for Imports {
     }
 }
 
+impl From<Vec<Package>> for Imports {
+    fn from(this: Vec<Package>) -> Self {
+        let mut xs = Self::new();
+        xs.set(this);
+        xs
+    }
+}
+
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub enum Package {
     Deserialize,

@@ -1,3 +1,4 @@
+use heck::{ToSnakeCase, ToUpperCamelCase};
 use std::fmt::{Display, Formatter};
 
 /// > All the fixed fields declared above are objects
@@ -8,6 +9,12 @@ pub struct ComponentName(String);
 impl ComponentName {
     pub fn new<A: Into<String>>(a: A) -> Self {
         ComponentName(a.into())
+    }
+    pub fn to_upper_camel_case(&self) -> Self {
+        Self(self.0.to_upper_camel_case())
+    }
+    pub fn to_snake_case(&self) -> Self {
+        Self(self.0.to_snake_case())
     }
 }
 

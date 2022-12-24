@@ -1,5 +1,8 @@
 mod definition_shape;
-pub(super) use definition_shape::DefinitionShape;
+pub(super) use definition_shape::{DefinitionShape, TypeDefinitionShape};
+
+mod struct_shape;
+pub(super) use struct_shape::StructShape;
 
 mod post_processor;
 pub(super) use post_processor::PostProcessor;
@@ -46,7 +49,7 @@ pub enum TypeShape {
         is_required: bool,
         is_nullable: bool,
     },
-    Vec {
+    Array {
         type_shape: Box<TypeShape>,
         is_required: bool,
         is_nullable: bool,
@@ -55,14 +58,20 @@ pub enum TypeShape {
         object: ReferenceObject<SchemaObject>,
         is_required: bool,
     },
+    InlineObject {
+        object: SchemaObject,
+        is_required: bool,
+        is_nullable: bool,
+    },
 }
 
 impl TypeShape {
     pub fn is_required(&self) -> bool {
         match self {
             TypeShape::Fixed { is_required, .. } => *is_required,
-            TypeShape::Vec { is_required, .. } => *is_required,
+            TypeShape::Array { is_required, .. } => *is_required,
             TypeShape::Ref { is_required, .. } => *is_required,
+            TypeShape::InlineObject { is_required, .. } => *is_required,
         }
     }
 }
