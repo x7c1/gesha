@@ -55,18 +55,22 @@ fn expand(mod_name: &ComponentName, field: &mut FieldShape) -> Result<Vec<Defini
         } => {
             let struct_name = field.name.to_upper_camel_case();
 
-            // TODO: support nested modules like foo::bar::Baz
             let data_type = DataType::Custom(format!("{}::{}", mod_name, struct_name));
-            let generated_struct = to_shape((struct_name, object.clone().into()))?;
-
+            let mut generated_struct = StructShape {
+                header: TypeHeaderShape::new(struct_name, object),
+                fields: to_field_shapes(object.properties.clone(), object.required.clone())?,
+            };
             field.type_shape = Fixed {
                 data_type,
                 is_required: *is_required,
                 is_nullable: *is_nullable,
             };
-
-            // TODO: generate DefinitionShape from generated_struct
-            Ok(vec![generated_struct])
+            let generated_mod = expand_struct_fields(&mut generated_struct)?;
+            let mut defs = vec![generated_struct.into()];
+            if let Some(def) = generated_mod {
+                defs.push(def);
+            };
+            Ok(defs)
         }
     }
 }
