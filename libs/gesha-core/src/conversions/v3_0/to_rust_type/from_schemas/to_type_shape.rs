@@ -20,16 +20,17 @@ pub(super) fn to_type_shape(schema_case: SchemaCase, is_required: bool) -> Resul
 }
 
 pub(super) fn from_object(object: SchemaObject, is_required: bool) -> Result<TypeShape> {
-    match object.data_type.clone() {
-        Some(data_type) => {
-            let to_type = TypeFactory {
-                object,
-                is_required,
-            };
-            to_type.apply(data_type)
-        }
-        None => unimplemented!(),
-    }
+    let data_type = object
+        .data_type
+        .clone()
+        .or_else(|| object.all_of.is_some().then_some(OpenApiDataType::Object))
+        .unwrap_or_else(|| unimplemented!());
+
+    let to_type = TypeFactory {
+        object,
+        is_required,
+    };
+    to_type.apply(data_type)
 }
 
 /// OpenApiDataType -> TypeShape
