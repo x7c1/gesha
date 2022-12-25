@@ -25,11 +25,15 @@ impl PostProcessor {
                 });
                 Ok(Some(shape))
             }
+            DefinitionShape::Mod { defs, .. } => {
+                // TODO: call process_all_of to defs
+                println!("shape_all_of: Mod: {:#?}", defs);
+                Ok(None)
+            }
             // shaped in other processes.
             DefinitionShape::Struct { .. }
             | DefinitionShape::NewType { .. }
-            | DefinitionShape::Enum { .. }
-            | DefinitionShape::Mod { .. } => Ok(None),
+            | DefinitionShape::Enum { .. } => Ok(None),
         }
     }
 

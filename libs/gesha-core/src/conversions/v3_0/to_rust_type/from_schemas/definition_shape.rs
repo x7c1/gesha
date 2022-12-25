@@ -31,7 +31,7 @@ impl DefinitionShape {
                 type_header: &shape.header,
                 fields: &shape.fields,
             }),
-            DefinitionShape::AllOf { .. }
+            DefinitionShape::AllOf { .. } // TODO: return here to merge multiple allOf
             | DefinitionShape::NewType { .. }
             | DefinitionShape::Enum { .. }
             | DefinitionShape::Mod { .. } => None,
