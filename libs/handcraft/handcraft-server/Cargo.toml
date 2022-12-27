@@ -9,4 +9,4 @@ edition = "2018"
 handcraft-models = { path = "../handcraft-models" }
 actix-web = "4.2.1"
 async-trait = "0.1.60"
-serde = { version = "1.0.151", features = ["derive"] }
+serde = { version = "1.0.152", features = ["derive"] }
