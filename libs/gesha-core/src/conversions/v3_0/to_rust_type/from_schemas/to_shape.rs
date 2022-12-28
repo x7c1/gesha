@@ -49,14 +49,13 @@ impl Shaper {
     }
 
     fn for_all_of(self) -> Result<DefinitionShape> {
-        let header = self.create_type_header();
-        let cases = self.object.all_of.expect("all_of must be Some.");
-        let shapes = cases
-            .into_iter()
-            .map(AllOfItemShape::from_schema_case)
-            .collect::<Result<Vec<AllOfItemShape>>>()?;
-
-        let shape = AllOfShape { header, shapes };
+        let shape = AllOfShape {
+            header: self.create_type_header(),
+            items: {
+                let cases = self.object.all_of.expect("all_of must be Some.");
+                AllOfItemShape::from_schema_cases(cases)?
+            },
+        };
         Ok(shape.into())
     }
 

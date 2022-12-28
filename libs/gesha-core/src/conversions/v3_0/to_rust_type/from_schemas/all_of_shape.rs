@@ -5,7 +5,7 @@ use crate::conversions::v3_0::to_rust_type::from_schemas::{
 #[derive(Clone, Debug)]
 pub struct AllOfShape {
     pub header: TypeHeaderShape,
-    pub shapes: Vec<AllOfItemShape>,
+    pub items: Vec<AllOfItemShape>,
 }
 
 impl From<AllOfShape> for DefinitionShape {

@@ -10,15 +10,20 @@ pub enum AllOfItemShape {
 }
 
 impl AllOfItemShape {
-    pub fn from_schema_case(case: SchemaCase) -> Result<Self> {
+    pub fn from_schema_cases(cases: Vec<SchemaCase>) -> Result<Vec<Self>> {
+        cases.into_iter().map(Self::from_schema_case).collect()
+    }
+
+    pub fn from_schema_object(object: SchemaObject) -> Result<Self> {
+        let shapes = to_field_shapes(object.properties, object.required)?;
+        Ok(Self::Object(shapes))
+    }
+
+    fn from_schema_case(case: SchemaCase) -> Result<Self> {
         let shape = match case {
             SchemaCase::Schema(object) => Self::from_schema_object(*object)?,
             SchemaCase::Reference(x) => Self::Ref(x),
         };
         Ok(shape)
-    }
-    pub fn from_schema_object(object: SchemaObject) -> Result<Self> {
-        let shapes = to_field_shapes(object.properties, object.required)?;
-        Ok(Self::Object(shapes))
     }
 }

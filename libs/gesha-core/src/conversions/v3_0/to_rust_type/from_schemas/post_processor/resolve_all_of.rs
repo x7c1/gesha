@@ -18,10 +18,10 @@ impl PostProcessor {
 
     fn shape_all_of(&self, def_shape: &mut DefinitionShape) -> Result<Option<DefinitionShape>> {
         match def_shape {
-            DefinitionShape::AllOf(AllOfShape { header, shapes }) => {
+            DefinitionShape::AllOf(AllOfShape { header, items }) => {
                 let shape = DefinitionShape::Struct(StructShape {
                     header: header.clone(),
-                    fields: self.merge_fields_all_of(shapes)?,
+                    fields: self.merge_fields_all_of(items)?,
                 });
                 Ok(Some(shape))
             }
