@@ -46,6 +46,26 @@ fn expand_struct_fields(shape: &mut StructShape) -> Result<Option<DefinitionShap
     }
 }
 
+fn expand_all_of_fields(shape: &mut AllOfShape) -> Result<Option<DefinitionShape>> {
+    let mod_name = shape.header.name.to_snake_case();
+    let expanded_shapes = shape
+        .fields()
+        .map(|field| expand(&mod_name, field))
+        .collect::<Result<Vec<_>>>()?
+        .into_iter()
+        .flatten()
+        .collect::<Vec<_>>();
+
+    if expanded_shapes.is_empty() {
+        Ok(None)
+    } else {
+        Ok(Some(Mod {
+            name: mod_name,
+            defs: expanded_shapes,
+        }))
+    }
+}
+
 fn expand(mod_name: &ComponentName, field: &mut FieldShape) -> Result<Vec<DefinitionShape>> {
     match &field.type_shape {
         Ref { .. } | Fixed { .. } | Array { .. } => Ok(vec![]),
@@ -59,14 +79,16 @@ fn expand(mod_name: &ComponentName, field: &mut FieldShape) -> Result<Vec<Defini
             let mut defs = vec![];
 
             if let Some(cases) = object.all_of.as_ref() {
-                let generated_all_of = AllOfShape {
+                let mut generated_all_of = AllOfShape {
                     header: TypeHeaderShape::new(type_name, object),
                     items: AllOfItemShape::from_schema_cases(cases.clone())?,
                 };
-                // TODO: modify expand_struct_fields to expand_type_fields
-                //       in order to accept allOf objects.
+                let generated_mod = expand_all_of_fields(&mut generated_all_of)?;
                 defs.push(generated_all_of.into());
-                // TODO: defs.push(generated_mod)
+
+                if let Some(def) = generated_mod {
+                    defs.push(def);
+                };
             } else {
                 let mut generated_struct = StructShape {
                     header: TypeHeaderShape::new(type_name, object),

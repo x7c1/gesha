@@ -29,6 +29,34 @@ schemas:
             allOf:
               - $ref: '#/components/schemas/Foo'
               - $ref: '#/components/schemas/Bar'
+
+  Sample2:
+    type: object
+    required:
+      - id
+      - nested1
+    properties:
+      id:
+        type: integer
+      nested1:
+        type: object
+        required:
+          - nested2
+        properties:
+          nested2:
+            allOf:
+              - $ref: '#/components/schemas/Foo'
+              - type: object
+                required:
+                  - nested3
+                properties:
+                  nested3:
+                    type: object
+                    required:
+                      - bar
+                    properties:
+                      bar:
+                        $ref: '#/components/schemas/Bar'
   Foo:
     type: object
     required:
