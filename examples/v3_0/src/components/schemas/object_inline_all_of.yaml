@@ -1,5 +1,18 @@
 schemas:
-  Sample:
+  Sample0:
+    type: object
+    required:
+      - id
+      - nested1
+    properties:
+      id:
+        type: integer
+      nested1:
+        allOf:
+          - $ref: '#/components/schemas/Foo'
+          - $ref: '#/components/schemas/Bar'
+
+  Sample1:
     type: object
     required:
       - id

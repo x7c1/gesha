@@ -3,9 +3,15 @@ pub mod schemas {
     use serde::Serialize;
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Sample {
+    pub struct Sample0 {
         pub id: i64,
-        pub nested1: sample::Nested1,
+        pub nested1: sample0::Nested1,
+    }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct Sample1 {
+        pub id: i64,
+        pub nested1: sample1::Nested1,
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -20,7 +26,20 @@ pub mod schemas {
         pub bar2: f64,
     }
 
-    pub mod sample {
+    pub mod sample0 {
+        use serde::Deserialize;
+        use serde::Serialize;
+
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+        pub struct Nested1 {
+            pub foo1: String,
+            pub foo2: f64,
+            pub bar1: String,
+            pub bar2: f64,
+        }
+    }
+
+    pub mod sample1 {
         use serde::Deserialize;
         use serde::Serialize;
 
