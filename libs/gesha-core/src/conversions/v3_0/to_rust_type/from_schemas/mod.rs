@@ -4,6 +4,12 @@ pub(super) use definition_shape::{DefinitionShape, TypeDefinitionShape};
 mod struct_shape;
 pub(super) use struct_shape::StructShape;
 
+mod all_of_shape;
+pub(super) use all_of_shape::AllOfShape;
+
+mod all_of_item_shape;
+pub(super) use all_of_item_shape::AllOfItemShape;
+
 mod type_header_shape;
 pub(super) use type_header_shape::TypeHeaderShape;
 
@@ -24,12 +30,6 @@ use openapi_types::v3_0::{ComponentName, ReferenceObject, SchemaObject, SchemasO
 
 pub(super) fn to_shapes(object: SchemasObject) -> Result<Vec<DefinitionShape>> {
     object.into_iter().map(to_shape).collect()
-}
-
-#[derive(Clone, Debug)]
-pub enum AllOfItemShape {
-    Object(Vec<FieldShape>),
-    Ref(ReferenceObject<SchemaObject>),
 }
 
 #[derive(Clone, Debug)]

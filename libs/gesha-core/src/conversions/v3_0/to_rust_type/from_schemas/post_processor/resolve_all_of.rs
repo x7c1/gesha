@@ -1,6 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::from_schemas::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    AllOfItemShape, DefinitionShape, FieldShape, StructShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, StructShape,
 };
 use crate::conversions::Result;
 
@@ -18,7 +18,7 @@ impl PostProcessor {
 
     fn shape_all_of(&self, def_shape: &mut DefinitionShape) -> Result<Option<DefinitionShape>> {
         match def_shape {
-            DefinitionShape::AllOf { header, shapes } => {
+            DefinitionShape::AllOf(AllOfShape { header, shapes }) => {
                 let shape = DefinitionShape::Struct(StructShape {
                     header: header.clone(),
                     fields: self.merge_fields_all_of(shapes)?,

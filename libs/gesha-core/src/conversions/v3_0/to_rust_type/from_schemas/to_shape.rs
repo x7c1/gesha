@@ -1,6 +1,6 @@
 use super::{to_type_shape, AllOfItemShape, DefinitionShape, TypeHeaderShape};
 use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_field_shapes;
-use crate::conversions::v3_0::to_rust_type::from_schemas::StructShape;
+use crate::conversions::v3_0::to_rust_type::from_schemas::{AllOfShape, StructShape};
 use crate::conversions::Result;
 use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject};
 
@@ -41,11 +41,11 @@ impl Shaper {
     }
 
     fn for_struct(self) -> Result<DefinitionShape> {
-        let shape = DefinitionShape::Struct(StructShape {
+        let shape = StructShape {
             header: self.create_type_header(),
             fields: to_field_shapes(self.object.properties, self.object.required)?,
-        });
-        Ok(shape)
+        };
+        Ok(shape.into())
     }
 
     fn for_all_of(self) -> Result<DefinitionShape> {
@@ -53,11 +53,11 @@ impl Shaper {
         let cases = self.object.all_of.expect("all_of must be Some.");
         let shapes = cases
             .into_iter()
-            .map(to_all_of_item_shape)
+            .map(AllOfItemShape::from_schema_case)
             .collect::<Result<Vec<AllOfItemShape>>>()?;
 
-        let shape = DefinitionShape::AllOf { header, shapes };
-        Ok(shape)
+        let shape = AllOfShape { header, shapes };
+        Ok(shape.into())
     }
 
     fn for_newtype(self) -> Result<DefinitionShape> {
@@ -79,16 +79,4 @@ impl Shaper {
     fn create_type_header(&self) -> TypeHeaderShape {
         TypeHeaderShape::new(self.name.clone(), &self.object)
     }
-}
-
-fn to_all_of_item_shape(case: SchemaCase) -> Result<AllOfItemShape> {
-    let shape = match case {
-        SchemaCase::Schema(object) => {
-            let object = *object;
-            let shapes = to_field_shapes(object.properties, object.required)?;
-            AllOfItemShape::Object(shapes)
-        }
-        SchemaCase::Reference(x) => AllOfItemShape::Ref(x),
-    };
-    Ok(shape)
 }
