@@ -26,8 +26,7 @@ impl PostProcessor {
                 Ok(Some(shape))
             }
             DefinitionShape::Mod { defs, .. } => {
-                // TODO: call process_all_of to defs
-                println!("shape_all_of: Mod: {:#?}", defs);
+                self.process_all_of(defs)?;
                 Ok(None)
             }
             // shaped in other processes.

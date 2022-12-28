@@ -1,7 +1,8 @@
 use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_field_shapes;
 use crate::conversions::v3_0::to_rust_type::from_schemas::DefinitionShape::Mod;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    AllOfShape, DefinitionShape, FieldShape, PostProcessor, StructShape, TypeHeaderShape, TypeShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, PostProcessor, StructShape,
+    TypeHeaderShape, TypeShape,
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
@@ -57,11 +58,15 @@ fn expand(mod_name: &ComponentName, field: &mut FieldShape) -> Result<Vec<Defini
             let data_type = DataType::Custom(format!("{}::{}", mod_name, type_name));
             let mut defs = vec![];
 
-            if object.all_of.is_some() {
-                // TODO: create AllOfShape
+            if let Some(cases) = object.all_of.as_ref() {
+                let generated_all_of = AllOfShape {
+                    header: TypeHeaderShape::new(type_name, object),
+                    items: AllOfItemShape::from_schema_cases(cases.clone())?,
+                };
                 // TODO: modify expand_struct_fields to expand_type_fields
                 //       in order to accept allOf objects.
-                unimplemented!()
+                defs.push(generated_all_of.into());
+                // TODO: defs.push(generated_mod)
             } else {
                 let mut generated_struct = StructShape {
                     header: TypeHeaderShape::new(type_name, object),
