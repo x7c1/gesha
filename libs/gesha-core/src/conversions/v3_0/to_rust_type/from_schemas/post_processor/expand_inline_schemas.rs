@@ -76,36 +76,27 @@ fn expand(mod_name: &ComponentName, field: &mut FieldShape) -> Result<Vec<Defini
         } => {
             let type_name = field.name.to_upper_camel_case();
             let data_type = DataType::Custom(format!("{}::{}", mod_name, type_name));
-            let mut defs = vec![];
-
-            if let Some(cases) = object.all_of.as_ref() {
-                let mut generated_all_of = AllOfShape {
+            let (type_def, mod_def) = if let Some(cases) = object.all_of.as_ref() {
+                let mut all_of_def = AllOfShape {
                     header: TypeHeaderShape::new(type_name, object),
                     items: AllOfItemShape::from_schema_cases(cases.clone())?,
                 };
-                let generated_mod = expand_all_of_fields(&mut generated_all_of)?;
-                defs.push(generated_all_of.into());
-
-                if let Some(def) = generated_mod {
-                    defs.push(def);
-                };
+                let mod_def = expand_all_of_fields(&mut all_of_def)?;
+                (all_of_def.into(), mod_def)
             } else {
-                let mut generated_struct = StructShape {
+                let mut struct_def = StructShape {
                     header: TypeHeaderShape::new(type_name, object),
                     fields: to_field_shapes(object.properties.clone(), object.required.clone())?,
                 };
-                let generated_mod = expand_struct_fields(&mut generated_struct)?;
-                defs.push(generated_struct.into());
-
-                if let Some(def) = generated_mod {
-                    defs.push(def);
-                };
-            }
+                let mod_def = expand_struct_fields(&mut struct_def)?;
+                (struct_def.into(), mod_def)
+            };
             field.type_shape = Fixed {
                 data_type,
                 is_required: *is_required,
                 is_nullable: *is_nullable,
             };
+            let defs = vec![type_def].into_iter().chain(mod_def).collect();
             Ok(defs)
         }
     }
