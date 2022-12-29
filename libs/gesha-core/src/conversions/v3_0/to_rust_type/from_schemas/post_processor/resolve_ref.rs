@@ -123,6 +123,18 @@ impl RefResolver<'_> {
                     shape
                 ),
             })?,
+            TypeShape::Expanded {
+                type_name, mods, ..
+            } => {
+                let mod_name = mods
+                    .iter()
+                    .map(|x| x.as_ref())
+                    .collect::<Vec<&str>>()
+                    .join("::");
+
+                // TODO: compare mods with current path
+                DataType::Custom(format!("{}::{}", mod_name, type_name))
+            }
         };
         match (is_required, is_nullable) {
             (true, true) | (false, false) => {
@@ -140,13 +152,14 @@ impl RefResolver<'_> {
 
     fn is_nullable(&self, shape: &TypeShape) -> Result<bool> {
         match shape {
-            TypeShape::Fixed { is_nullable, .. } => Ok(*is_nullable),
-            TypeShape::Array { is_nullable, .. } => Ok(*is_nullable),
+            TypeShape::Fixed { is_nullable, .. }
+            | TypeShape::Array { is_nullable, .. }
+            | TypeShape::InlineObject { is_nullable, .. }
+            | TypeShape::Expanded { is_nullable, .. } => Ok(*is_nullable),
             TypeShape::Ref { object, .. } => self
                 .snapshot
                 .find_type_definition(object)
                 .map(|def| def.is_nullable()),
-            TypeShape::InlineObject { is_nullable, .. } => Ok(*is_nullable),
         }
     }
 }

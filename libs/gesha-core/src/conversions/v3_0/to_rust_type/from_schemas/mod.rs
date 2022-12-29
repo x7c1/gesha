@@ -54,6 +54,12 @@ pub enum TypeShape {
         object: ReferenceObject<SchemaObject>,
         is_required: bool,
     },
+    Expanded {
+        mods: Vec<ComponentName>,
+        type_name: ComponentName,
+        is_required: bool,
+        is_nullable: bool,
+    },
     InlineObject {
         object: SchemaObject,
         is_required: bool,
@@ -68,6 +74,7 @@ impl TypeShape {
             TypeShape::Array { is_required, .. } => *is_required,
             TypeShape::Ref { is_required, .. } => *is_required,
             TypeShape::InlineObject { is_required, .. } => *is_required,
+            TypeShape::Expanded { is_required, .. } => *is_required,
         }
     }
 }
