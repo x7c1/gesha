@@ -55,6 +55,18 @@ schemas:
                     properties:
                       bar:
                         $ref: '#/components/schemas/Bar'
+  Sample3:
+    type: object
+    required:
+      - id
+      - sample3_nested1
+    properties:
+      id:
+        type: integer
+      sample3_nested1:
+        allOf:
+          - $ref: '#/components/schemas/Sample0'
+          - $ref: '#/components/schemas/Bar'
   Foo:
     type: object
     required:

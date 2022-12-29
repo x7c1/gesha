@@ -21,6 +21,12 @@ pub mod schemas {
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct Sample3 {
+        pub id: i64,
+        pub sample3_nested1: sample3::Sample3Nested1,
+    }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Foo {
         pub foo1: String,
         pub foo2: f64,
@@ -97,6 +103,19 @@ pub mod schemas {
                     pub bar: super::super::super::Bar,
                 }
             }
+        }
+    }
+
+    pub mod sample3 {
+        use serde::Deserialize;
+        use serde::Serialize;
+
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+        pub struct Sample3Nested1 {
+            pub id: i64,
+            pub sample0_nested1: super::sample0::Sample0Nested1,
+            pub bar1: String,
+            pub bar2: f64,
         }
     }
 }
