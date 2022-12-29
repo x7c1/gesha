@@ -3,54 +3,52 @@ schemas:
     type: object
     required:
       - id
-      - nested1
+      - sample0_nested1
     properties:
       id:
         type: integer
-      nested1:
+      sample0_nested1:
         allOf:
           - $ref: '#/components/schemas/Foo'
           - $ref: '#/components/schemas/Bar'
-
   Sample1:
     type: object
     required:
       - id
-      - nested1
+      - sample1_nested1
     properties:
       id:
         type: integer
-      nested1:
+      sample1_nested1:
         type: object
         required:
-          - nested2
+          - sample1_nested2
         properties:
-          nested2:
+          sample1_nested2:
             allOf:
               - $ref: '#/components/schemas/Foo'
               - $ref: '#/components/schemas/Bar'
-
   Sample2:
     type: object
     required:
       - id
-      - nested1
+      - sample2_nested1
     properties:
       id:
         type: integer
-      nested1:
+      sample2_nested1:
         type: object
         required:
-          - nested2
+          - sample2_nested2
         properties:
-          nested2:
+          sample2_nested2:
             allOf:
               - $ref: '#/components/schemas/Foo'
               - type: object
                 required:
-                  - nested3
+                  - sample2_nested3
                 properties:
-                  nested3:
+                  sample2_nested3:
                     type: object
                     required:
                       - bar
