@@ -14,7 +14,7 @@ impl AllOfItemShape {
         cases.into_iter().map(Self::from_schema_case).collect()
     }
 
-    pub fn from_schema_object(object: SchemaObject) -> Result<Self> {
+    fn from_schema_object(object: SchemaObject) -> Result<Self> {
         let shapes = to_field_shapes(object.properties, object.required)?;
         Ok(Self::Object(shapes))
     }
