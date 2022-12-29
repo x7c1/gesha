@@ -8,7 +8,7 @@ use openapi_types::v3_0::{ReferenceObject, SchemaObject};
 
 impl ComponentsShapes {
     pub fn shape_schemas_module(&mut self) -> Result<Option<Module>> {
-        let processor = PostProcessor::new(self.clone());
+        let mut processor = PostProcessor::new(self.clone());
         create_module(
             "schemas",
             processor.run(&mut self.schemas, "#/components/schemas/")?,
