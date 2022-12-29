@@ -48,7 +48,7 @@ impl PostProcessor {
         match item_shape {
             AllOfItemShape::Object(shapes) => Ok(shapes.clone()),
             AllOfItemShape::Ref(object) => {
-                let shape = self.original.find_type_definition(object)?;
+                let shape = self.snapshot.find_type_definition(object)?;
                 Ok(shape.field_shapes().to_vec())
             }
         }

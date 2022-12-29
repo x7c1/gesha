@@ -8,12 +8,12 @@ use crate::conversions::Result;
 use crate::targets::rust_type::Definitions;
 
 pub struct PostProcessor {
-    original: ComponentsShapes,
+    snapshot: ComponentsShapes,
 }
 
 impl PostProcessor {
-    pub fn new(original: ComponentsShapes) -> Self {
-        Self { original }
+    pub fn new(snapshot: ComponentsShapes) -> Self {
+        Self { snapshot }
     }
 
     pub fn run(

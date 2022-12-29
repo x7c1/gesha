@@ -21,7 +21,7 @@ impl PostProcessor {
     ) -> Result<Definitions> {
         let resolver = RefResolver {
             prefix,
-            original: &self.original,
+            snapshot: &self.snapshot,
             mod_depth: 0,
         };
         shapes.iter().map(|x| resolver.resolve_ref(x)).collect()
@@ -30,7 +30,7 @@ impl PostProcessor {
 
 struct RefResolver<'a> {
     prefix: &'static str,
-    original: &'a ComponentsShapes,
+    snapshot: &'a ComponentsShapes,
     mod_depth: usize,
 }
 
@@ -80,7 +80,7 @@ impl RefResolver<'_> {
     fn resolve_ref_in_mod(&self, shape: &DefinitionShape) -> Result<Definition> {
         let resolver = Self {
             prefix: self.prefix,
-            original: self.original,
+            snapshot: self.snapshot,
             mod_depth: self.mod_depth + 1,
         };
         resolver.resolve_ref(shape)
@@ -143,7 +143,7 @@ impl RefResolver<'_> {
             TypeShape::Fixed { is_nullable, .. } => Ok(*is_nullable),
             TypeShape::Array { is_nullable, .. } => Ok(*is_nullable),
             TypeShape::Ref { object, .. } => self
-                .original
+                .snapshot
                 .find_type_definition(object)
                 .map(|def| def.is_nullable()),
             TypeShape::InlineObject { is_nullable, .. } => Ok(*is_nullable),
