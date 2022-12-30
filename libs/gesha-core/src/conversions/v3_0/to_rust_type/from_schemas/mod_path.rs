@@ -15,6 +15,30 @@ impl ModPath {
         self.names.push(name);
         self
     }
+
+    pub fn depth(&self) -> usize {
+        self.names.len()
+    }
+
+    pub fn relative_from(&self, target: Self) -> Self {
+        if self.names.starts_with(&target.names) {
+            let (_, tail) = self.names.split_at(target.names.len());
+            return tail.to_vec().into();
+        }
+        vec!["super"]
+            .repeat(target.depth())
+            .into_iter()
+            .map(ComponentName::new)
+            .chain(self.names.clone())
+            .collect::<Vec<_>>()
+            .into()
+    }
+}
+
+impl From<Vec<ComponentName>> for ModPath {
+    fn from(names: Vec<ComponentName>) -> Self {
+        ModPath { names }
+    }
 }
 
 impl Display for ModPath {

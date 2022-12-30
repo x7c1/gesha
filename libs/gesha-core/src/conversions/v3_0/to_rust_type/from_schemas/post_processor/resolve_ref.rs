@@ -1,7 +1,7 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
 use crate::conversions::v3_0::to_rust_type::from_schemas::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    DefinitionShape, FieldShape, StructShape, TypeHeaderShape, TypeShape,
+    DefinitionShape, FieldShape, ModPath, StructShape, TypeHeaderShape, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::is_patch;
 use crate::conversions::Error::PostProcessBroken;
@@ -22,7 +22,7 @@ impl PostProcessor {
         let resolver = RefResolver {
             prefix,
             snapshot: &self.snapshot,
-            mod_depth: 0,
+            mod_path: ModPath::new(),
         };
         shapes.iter().map(|x| resolver.resolve_ref(x)).collect()
     }
@@ -31,7 +31,7 @@ impl PostProcessor {
 struct RefResolver<'a> {
     prefix: &'static str,
     snapshot: &'a ComponentsShapes,
-    mod_depth: usize,
+    mod_path: ModPath,
 }
 
 impl RefResolver<'_> {
@@ -62,9 +62,10 @@ impl RefResolver<'_> {
                 detail: format!("'allOf' must be processed before '$ref'.\n{:#?}", shape),
             }),
             DefinitionShape::Mod { name, defs } => {
+                let mod_path = self.mod_path.clone().add(name.clone());
                 let inline_defs = defs
                     .iter()
-                    .map(|x| self.resolve_ref_in_mod(x))
+                    .map(|x| self.resolve_ref_in_mod(mod_path.clone(), x))
                     .collect::<Result<Vec<Definition>>>()?;
 
                 let def = ModDef {
@@ -77,11 +78,11 @@ impl RefResolver<'_> {
         }
     }
 
-    fn resolve_ref_in_mod(&self, shape: &DefinitionShape) -> Result<Definition> {
+    fn resolve_ref_in_mod(&self, mod_path: ModPath, shape: &DefinitionShape) -> Result<Definition> {
         let resolver = Self {
             prefix: self.prefix,
             snapshot: self.snapshot,
-            mod_depth: self.mod_depth + 1,
+            mod_path,
         };
         resolver.resolve_ref(shape)
     }
@@ -113,7 +114,7 @@ impl RefResolver<'_> {
                     x if x.starts_with(self.prefix) => x.replace(self.prefix, ""),
                     x => unimplemented!("not implemented: {x}"),
                 };
-                let prefix = "super::".repeat(self.mod_depth);
+                let prefix = "super::".repeat(self.mod_path.depth());
                 DataType::Custom(prefix + &type_name)
             }
             TypeShape::Fixed { data_type, .. } => data_type.clone(),
@@ -128,10 +129,13 @@ impl RefResolver<'_> {
                 mod_path,
                 ..
             } => {
-                let mod_name = mod_path.to_string();
-
+                let resolved = mod_path.relative_from(self.mod_path.clone());
+                // let resolved = self.mod_path.to_relative(mod_path.clone());
+                DataType::Custom(format!("{}::{}", resolved, type_name))
+                // let mod_name = mod_path.to_string();
+                // println!("current={}, target={}", self.mod_path, mod_path);
                 // TODO: compare mods with current path
-                DataType::Custom(format!("{}::{}", mod_name, type_name))
+                // DataType::Custom(format!("{}::{}", mod_name, type_name))
             }
         };
         match (is_required, is_nullable) {
