@@ -1,7 +1,7 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
 use crate::conversions::v3_0::to_rust_type::from_schemas::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    DefinitionShape, FieldShape, ModPath, StructShape, TypeHeaderShape, TypeShape,
+    DefinitionShape, FieldShape, StructShape, TypeHeaderShape, TypePath, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::is_patch;
 use crate::conversions::Error::PostProcessBroken;
@@ -22,7 +22,7 @@ impl PostProcessor {
         let resolver = RefResolver {
             prefix,
             snapshot: &self.snapshot,
-            mod_path: ModPath::new(),
+            mod_path: TypePath::new(),
         };
         shapes.iter().map(|x| resolver.resolve_ref(x)).collect()
     }
@@ -31,7 +31,7 @@ impl PostProcessor {
 struct RefResolver<'a> {
     prefix: &'static str,
     snapshot: &'a ComponentsShapes,
-    mod_path: ModPath,
+    mod_path: TypePath,
 }
 
 impl RefResolver<'_> {
@@ -78,7 +78,11 @@ impl RefResolver<'_> {
         }
     }
 
-    fn resolve_ref_in_mod(&self, mod_path: ModPath, shape: &DefinitionShape) -> Result<Definition> {
+    fn resolve_ref_in_mod(
+        &self,
+        mod_path: TypePath,
+        shape: &DefinitionShape,
+    ) -> Result<Definition> {
         let resolver = Self {
             prefix: self.prefix,
             snapshot: self.snapshot,
@@ -114,6 +118,7 @@ impl RefResolver<'_> {
                     x if x.starts_with(self.prefix) => x.replace(self.prefix, ""),
                     x => unimplemented!("not implemented: {x}"),
                 };
+                // TODO:
                 let prefix = "super::".repeat(self.mod_path.depth());
                 DataType::Custom(prefix + &type_name)
             }
@@ -124,18 +129,8 @@ impl RefResolver<'_> {
                     shape
                 ),
             })?,
-            TypeShape::Expanded {
-                type_name,
-                mod_path,
-                ..
-            } => {
-                let resolved = mod_path.relative_from(self.mod_path.clone());
-                // let resolved = self.mod_path.to_relative(mod_path.clone());
-                DataType::Custom(format!("{}::{}", resolved, type_name))
-                // let mod_name = mod_path.to_string();
-                // println!("current={}, target={}", self.mod_path, mod_path);
-                // TODO: compare mods with current path
-                // DataType::Custom(format!("{}::{}", mod_name, type_name))
+            TypeShape::Expanded { type_path, .. } => {
+                type_path.relative_from(self.mod_path.clone()).into()
             }
         };
         match (is_required, is_nullable) {

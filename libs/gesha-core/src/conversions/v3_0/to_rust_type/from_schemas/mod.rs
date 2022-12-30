@@ -4,8 +4,8 @@ pub(super) use definition_shape::{DefinitionShape, TypeDefinitionShape};
 mod struct_shape;
 pub(super) use struct_shape::StructShape;
 
-mod mod_path;
-pub(super) use mod_path::ModPath;
+mod type_path;
+pub(super) use type_path::TypePath;
 
 mod all_of_shape;
 pub(super) use all_of_shape::AllOfShape;
@@ -58,8 +58,7 @@ pub enum TypeShape {
         is_required: bool,
     },
     Expanded {
-        mod_path: ModPath,
-        type_name: ComponentName,
+        type_path: TypePath,
         is_required: bool,
         is_nullable: bool,
     },

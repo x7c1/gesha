@@ -1,14 +1,15 @@
+use crate::targets::rust_type::DataType;
 use openapi_types::v3_0::ComponentName;
 use std::fmt::{Display, Formatter};
 
 #[derive(Debug, Clone)]
-pub struct ModPath {
+pub struct TypePath {
     names: Vec<ComponentName>,
 }
 
-impl ModPath {
+impl TypePath {
     pub fn new() -> Self {
-        ModPath { names: vec![] }
+        TypePath { names: vec![] }
     }
 
     pub fn add(mut self, name: ComponentName) -> Self {
@@ -35,13 +36,25 @@ impl ModPath {
     }
 }
 
-impl From<Vec<ComponentName>> for ModPath {
-    fn from(names: Vec<ComponentName>) -> Self {
-        ModPath { names }
+impl Default for TypePath {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
-impl Display for ModPath {
+impl From<Vec<ComponentName>> for TypePath {
+    fn from(names: Vec<ComponentName>) -> Self {
+        TypePath { names }
+    }
+}
+
+impl From<TypePath> for DataType {
+    fn from(this: TypePath) -> Self {
+        DataType::Custom(this.to_string())
+    }
+}
+
+impl Display for TypePath {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let path = self
             .names

@@ -2,8 +2,8 @@ use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_fi
 use crate::conversions::v3_0::to_rust_type::from_schemas::DefinitionShape::Mod;
 use crate::conversions::v3_0::to_rust_type::from_schemas::TypeShape::Expanded;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModPath, PostProcessor, StructShape,
-    TypeHeaderShape, TypeShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, PostProcessor, StructShape,
+    TypeHeaderShape, TypePath, TypeShape,
 };
 use crate::conversions::Result;
 use TypeShape::{Array, Fixed, InlineObject, Ref};
@@ -13,7 +13,7 @@ impl PostProcessor {
         let mut expanded_mod_shapes = shapes
             .iter_mut()
             .filter_map(|x| x.as_mut_struct())
-            .map(|x| expand_struct_fields(ModPath::new(), x))
+            .map(|x| expand_struct_fields(TypePath::new(), x))
             .collect::<Result<Vec<Option<_>>>>()?
             .into_iter()
             .flatten()
@@ -24,7 +24,10 @@ impl PostProcessor {
     }
 }
 
-fn expand_struct_fields(path: ModPath, shape: &mut StructShape) -> Result<Option<DefinitionShape>> {
+fn expand_struct_fields(
+    path: TypePath,
+    shape: &mut StructShape,
+) -> Result<Option<DefinitionShape>> {
     let mod_name = shape.header.name.to_snake_case();
     let path = path.add(mod_name.clone());
     let expanded_shapes = shape
@@ -46,7 +49,7 @@ fn expand_struct_fields(path: ModPath, shape: &mut StructShape) -> Result<Option
     }
 }
 
-fn expand_all_of_fields(path: ModPath, shape: &mut AllOfShape) -> Result<Option<DefinitionShape>> {
+fn expand_all_of_fields(path: TypePath, shape: &mut AllOfShape) -> Result<Option<DefinitionShape>> {
     let mod_name = shape.header.name.to_snake_case();
     let path = path.add(mod_name.clone());
     let expanded_shapes = shape
@@ -67,7 +70,7 @@ fn expand_all_of_fields(path: ModPath, shape: &mut AllOfShape) -> Result<Option<
     }
 }
 
-fn expand(mod_path: ModPath, field: &mut FieldShape) -> Result<Vec<DefinitionShape>> {
+fn expand(mod_path: TypePath, field: &mut FieldShape) -> Result<Vec<DefinitionShape>> {
     match &field.type_shape {
         Ref { .. } | Fixed { .. } | Array { .. } | Expanded { .. } => Ok(vec![]),
         InlineObject {
@@ -92,8 +95,7 @@ fn expand(mod_path: ModPath, field: &mut FieldShape) -> Result<Vec<DefinitionSha
                 (struct_def.into(), mod_def)
             };
             field.type_shape = Expanded {
-                mod_path,
-                type_name,
+                type_path: mod_path.add(type_name),
                 is_required: *is_required,
                 is_nullable: *is_nullable,
             };
