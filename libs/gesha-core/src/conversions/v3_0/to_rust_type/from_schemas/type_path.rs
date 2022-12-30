@@ -12,7 +12,8 @@ impl TypePath {
         TypePath { names: vec![] }
     }
 
-    pub fn add(mut self, name: ComponentName) -> Self {
+    pub fn add<A: Into<String>>(mut self, name: A) -> Self {
+        let name = ComponentName::new(name);
         self.names.push(name);
         self
     }
@@ -31,6 +32,15 @@ impl TypePath {
             .into_iter()
             .map(ComponentName::new)
             .chain(self.names.clone())
+            .collect::<Vec<_>>()
+            .into()
+    }
+
+    pub fn ancestors(&self) -> Self {
+        vec!["super"]
+            .repeat(self.depth())
+            .into_iter()
+            .map(ComponentName::new)
             .collect::<Vec<_>>()
             .into()
     }

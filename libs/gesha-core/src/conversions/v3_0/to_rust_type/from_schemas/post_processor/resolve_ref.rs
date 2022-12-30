@@ -118,9 +118,7 @@ impl RefResolver<'_> {
                     x if x.starts_with(self.prefix) => x.replace(self.prefix, ""),
                     x => unimplemented!("not implemented: {x}"),
                 };
-                // TODO:
-                let prefix = "super::".repeat(self.mod_path.depth());
-                DataType::Custom(prefix + &type_name)
+                self.mod_path.ancestors().add(type_name).into()
             }
             TypeShape::Fixed { data_type, .. } => data_type.clone(),
             TypeShape::InlineObject { .. } => Err(PostProcessBroken {
