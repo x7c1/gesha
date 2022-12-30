@@ -8,24 +8,26 @@ use crate::conversions::Result;
 use crate::targets::rust_type::Definitions;
 
 pub struct PostProcessor {
-    original: ComponentsShapes,
+    snapshot: ComponentsShapes,
 }
 
 impl PostProcessor {
-    pub fn new(original: ComponentsShapes) -> Self {
-        Self { original }
+    pub fn new(snapshot: ComponentsShapes) -> Self {
+        Self { snapshot }
     }
 
     pub fn run(
-        &self,
+        &mut self,
         shapes: &mut Vec<DefinitionShape>,
         prefix: &'static str,
     ) -> Result<Definitions> {
         // 1st process : expand inline schemas
         self.process_inline_schemas(shapes)?;
+        self.snapshot.schemas = shapes.clone();
 
         // 2nd process : resolve allOf
         self.process_all_of(shapes)?;
+        self.snapshot.schemas = shapes.clone();
 
         // 3rd process : resolve $ref
         self.process_ref(prefix, shapes)

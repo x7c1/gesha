@@ -1,8 +1,7 @@
 use super::{to_type_shape, AllOfItemShape, DefinitionShape, TypeHeaderShape};
 use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_field_shapes;
-use crate::conversions::v3_0::to_rust_type::from_schemas::StructShape;
+use crate::conversions::v3_0::to_rust_type::from_schemas::{AllOfShape, StructShape};
 use crate::conversions::Result;
-use crate::targets::rust_type::DocComments;
 use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject};
 
 pub(super) fn to_shape(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
@@ -42,23 +41,22 @@ impl Shaper {
     }
 
     fn for_struct(self) -> Result<DefinitionShape> {
-        let shape = DefinitionShape::Struct(StructShape {
+        let shape = StructShape {
             header: self.create_type_header(),
             fields: to_field_shapes(self.object.properties, self.object.required)?,
-        });
-        Ok(shape)
+        };
+        Ok(shape.into())
     }
 
     fn for_all_of(self) -> Result<DefinitionShape> {
-        let header = self.create_type_header();
-        let cases = self.object.all_of.expect("all_of must be Some.");
-        let shapes = cases
-            .into_iter()
-            .map(to_all_of_item_shape)
-            .collect::<Result<Vec<AllOfItemShape>>>()?;
-
-        let shape = DefinitionShape::AllOf { header, shapes };
-        Ok(shape)
+        let shape = AllOfShape {
+            header: self.create_type_header(),
+            items: {
+                let cases = self.object.all_of.expect("all_of must be Some.");
+                AllOfItemShape::from_schema_cases(cases)?
+            },
+        };
+        Ok(shape.into())
     }
 
     fn for_newtype(self) -> Result<DefinitionShape> {
@@ -78,36 +76,6 @@ impl Shaper {
     }
 
     fn create_type_header(&self) -> TypeHeaderShape {
-        TypeHeaderShape {
-            name: self.name.clone(),
-            doc_comments: to_doc_comments(
-                self.object.title.as_deref(),
-                self.object.description.as_deref(),
-            ),
-            is_nullable: self.object.nullable.unwrap_or(false),
-        }
+        TypeHeaderShape::new(self.name.clone(), &self.object)
     }
-}
-
-fn to_all_of_item_shape(case: SchemaCase) -> Result<AllOfItemShape> {
-    let shape = match case {
-        SchemaCase::Schema(object) => {
-            let object = *object;
-            let shapes = to_field_shapes(object.properties, object.required)?;
-            AllOfItemShape::Object(shapes)
-        }
-        SchemaCase::Reference(x) => AllOfItemShape::Ref(x),
-    };
-    Ok(shape)
-}
-
-fn to_doc_comments(title: Option<&str>, description: Option<&str>) -> DocComments {
-    let trim = |x: &str| x.trim().to_string();
-    let maybe = match (title.map(trim), description.map(trim)) {
-        (t, None) => t,
-        (None, d) => d,
-        (t, d) if t == d => t,
-        (Some(t), Some(d)) => Some(format!("{t}\n\n{d}")),
-    };
-    DocComments::wrap(maybe)
 }

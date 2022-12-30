@@ -1,14 +1,11 @@
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    AllOfItemShape, FieldShape, StructShape, TypeHeaderShape, TypeShape,
+    AllOfShape, FieldShape, StructShape, TypeHeaderShape, TypeShape,
 };
 use openapi_types::v3_0::{ComponentName, EnumValues};
 
 #[derive(Clone, Debug)]
 pub enum DefinitionShape {
-    AllOf {
-        header: TypeHeaderShape,
-        shapes: Vec<AllOfItemShape>,
-    },
+    AllOf(AllOfShape),
     Struct(StructShape),
     NewType {
         header: TypeHeaderShape,
@@ -31,7 +28,7 @@ impl DefinitionShape {
                 type_header: &shape.header,
                 fields: &shape.fields,
             }),
-            DefinitionShape::AllOf { .. }
+            DefinitionShape::AllOf { .. } // TODO: return here to merge multiple allOf
             | DefinitionShape::NewType { .. }
             | DefinitionShape::Enum { .. }
             | DefinitionShape::Mod { .. } => None,

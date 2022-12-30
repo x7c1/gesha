@@ -1,7 +1,7 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
 use crate::conversions::v3_0::to_rust_type::from_schemas::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    DefinitionShape, FieldShape, StructShape, TypeHeaderShape, TypeShape,
+    DefinitionShape, FieldShape, StructShape, TypeHeaderShape, TypePath, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::is_patch;
 use crate::conversions::Error::PostProcessBroken;
@@ -21,7 +21,8 @@ impl PostProcessor {
     ) -> Result<Definitions> {
         let resolver = RefResolver {
             prefix,
-            original: &self.original,
+            snapshot: &self.snapshot,
+            mod_path: TypePath::new(),
         };
         shapes.iter().map(|x| resolver.resolve_ref(x)).collect()
     }
@@ -29,7 +30,8 @@ impl PostProcessor {
 
 struct RefResolver<'a> {
     prefix: &'static str,
-    original: &'a ComponentsShapes,
+    snapshot: &'a ComponentsShapes,
+    mod_path: TypePath,
 }
 
 impl RefResolver<'_> {
@@ -60,9 +62,10 @@ impl RefResolver<'_> {
                 detail: format!("'allOf' must be processed before '$ref'.\n{:#?}", shape),
             }),
             DefinitionShape::Mod { name, defs } => {
+                let mod_path = self.mod_path.clone().add(name.clone());
                 let inline_defs = defs
                     .iter()
-                    .map(|x| self.resolve_ref(x))
+                    .map(|x| self.resolve_ref_in_mod(mod_path.clone(), x))
                     .collect::<Result<Vec<Definition>>>()?;
 
                 let def = ModDef {
@@ -73,6 +76,19 @@ impl RefResolver<'_> {
                 Ok(def.into())
             }
         }
+    }
+
+    fn resolve_ref_in_mod(
+        &self,
+        mod_path: TypePath,
+        shape: &DefinitionShape,
+    ) -> Result<Definition> {
+        let resolver = Self {
+            prefix: self.prefix,
+            snapshot: self.snapshot,
+            mod_path,
+        };
+        resolver.resolve_ref(shape)
     }
 
     fn shapes_to_fields(&self, shapes: &[FieldShape]) -> Result<Vec<StructField>> {
@@ -102,7 +118,7 @@ impl RefResolver<'_> {
                     x if x.starts_with(self.prefix) => x.replace(self.prefix, ""),
                     x => unimplemented!("not implemented: {x}"),
                 };
-                DataType::Custom(type_name)
+                self.mod_path.ancestors().add(type_name).into()
             }
             TypeShape::Fixed { data_type, .. } => data_type.clone(),
             TypeShape::InlineObject { .. } => Err(PostProcessBroken {
@@ -111,6 +127,9 @@ impl RefResolver<'_> {
                     shape
                 ),
             })?,
+            TypeShape::Expanded { type_path, .. } => {
+                type_path.relative_from(self.mod_path.clone()).into()
+            }
         };
         match (is_required, is_nullable) {
             (true, true) | (false, false) => {
@@ -128,13 +147,14 @@ impl RefResolver<'_> {
 
     fn is_nullable(&self, shape: &TypeShape) -> Result<bool> {
         match shape {
-            TypeShape::Fixed { is_nullable, .. } => Ok(*is_nullable),
-            TypeShape::Array { is_nullable, .. } => Ok(*is_nullable),
+            TypeShape::Fixed { is_nullable, .. }
+            | TypeShape::Array { is_nullable, .. }
+            | TypeShape::InlineObject { is_nullable, .. }
+            | TypeShape::Expanded { is_nullable, .. } => Ok(*is_nullable),
             TypeShape::Ref { object, .. } => self
-                .original
+                .snapshot
                 .find_type_definition(object)
                 .map(|def| def.is_nullable()),
-            TypeShape::InlineObject { is_nullable, .. } => Ok(*is_nullable),
         }
     }
 }

@@ -45,6 +45,9 @@ fn new_schemas_cases() -> ComponentCases {
             "title_description.yaml",
             "nullable_field.yaml",
             "object_inline.yaml",
+            "object_inline_nested.yaml",
+            "object_inline_ref.yaml",
+            "object_inline_all_of.yaml",
         ],
     )
 }
