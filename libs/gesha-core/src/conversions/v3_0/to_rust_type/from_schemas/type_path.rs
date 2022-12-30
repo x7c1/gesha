@@ -1,10 +1,9 @@
 use crate::targets::rust_type::DataType;
-use openapi_types::v3_0::ComponentName;
 use std::fmt::{Display, Formatter};
 
 #[derive(Debug, Clone)]
 pub struct TypePath {
-    names: Vec<ComponentName>,
+    names: Vec<String>,
 }
 
 impl TypePath {
@@ -13,8 +12,7 @@ impl TypePath {
     }
 
     pub fn add<A: Into<String>>(mut self, name: A) -> Self {
-        let name = ComponentName::new(name);
-        self.names.push(name);
+        self.names.push(name.into());
         self
     }
 
@@ -27,22 +25,22 @@ impl TypePath {
             let (_, tail) = self.names.split_at(target.names.len());
             return tail.to_vec().into();
         }
-        vec!["super"]
-            .repeat(target.depth())
-            .into_iter()
-            .map(ComponentName::new)
+        target
+            .to_supers()
             .chain(self.names.clone())
             .collect::<Vec<_>>()
             .into()
     }
 
     pub fn ancestors(&self) -> Self {
+        self.to_supers().collect::<Vec<_>>().into()
+    }
+
+    fn to_supers(&self) -> impl Iterator<Item = String> {
         vec!["super"]
             .repeat(self.depth())
             .into_iter()
-            .map(ComponentName::new)
-            .collect::<Vec<_>>()
-            .into()
+            .map(String::from)
     }
 }
 
@@ -52,8 +50,8 @@ impl Default for TypePath {
     }
 }
 
-impl From<Vec<ComponentName>> for TypePath {
-    fn from(names: Vec<ComponentName>) -> Self {
+impl From<Vec<String>> for TypePath {
+    fn from(names: Vec<String>) -> Self {
         TypePath { names }
     }
 }
