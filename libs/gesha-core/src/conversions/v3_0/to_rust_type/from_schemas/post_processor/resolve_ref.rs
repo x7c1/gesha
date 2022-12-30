@@ -124,13 +124,11 @@ impl RefResolver<'_> {
                 ),
             })?,
             TypeShape::Expanded {
-                type_name, mods, ..
+                type_name,
+                mod_path,
+                ..
             } => {
-                let mod_name = mods
-                    .iter()
-                    .map(|x| x.as_ref())
-                    .collect::<Vec<&str>>()
-                    .join("::");
+                let mod_name = mod_path.to_string();
 
                 // TODO: compare mods with current path
                 DataType::Custom(format!("{}::{}", mod_name, type_name))

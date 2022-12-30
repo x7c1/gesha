@@ -2,11 +2,10 @@ use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_fi
 use crate::conversions::v3_0::to_rust_type::from_schemas::DefinitionShape::Mod;
 use crate::conversions::v3_0::to_rust_type::from_schemas::TypeShape::Expanded;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, PostProcessor, StructShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModPath, PostProcessor, StructShape,
     TypeHeaderShape, TypeShape,
 };
 use crate::conversions::Result;
-use openapi_types::v3_0::ComponentName;
 use TypeShape::{Array, Fixed, InlineObject, Ref};
 
 impl PostProcessor {
@@ -14,7 +13,7 @@ impl PostProcessor {
         let mut expanded_mod_shapes = shapes
             .iter_mut()
             .filter_map(|x| x.as_mut_struct())
-            .map(|x| expand_struct_fields(vec![], x))
+            .map(|x| expand_struct_fields(ModPath::new(), x))
             .collect::<Result<Vec<Option<_>>>>()?
             .into_iter()
             .flatten()
@@ -25,20 +24,13 @@ impl PostProcessor {
     }
 }
 
-fn expand_struct_fields(
-    mods: Vec<ComponentName>,
-    shape: &mut StructShape,
-) -> Result<Option<DefinitionShape>> {
+fn expand_struct_fields(path: ModPath, shape: &mut StructShape) -> Result<Option<DefinitionShape>> {
     let mod_name = shape.header.name.to_snake_case();
-    let mods = mods
-        .into_iter()
-        .chain(vec![mod_name.clone()])
-        .collect::<Vec<_>>();
-
+    let path = path.add(mod_name.clone());
     let expanded_shapes = shape
         .fields
         .iter_mut()
-        .map(|field| expand(mods.clone(), field))
+        .map(|field| expand(path.clone(), field))
         .collect::<Result<Vec<_>>>()?
         .into_iter()
         .flatten()
@@ -54,19 +46,12 @@ fn expand_struct_fields(
     }
 }
 
-fn expand_all_of_fields(
-    mods: Vec<ComponentName>,
-    shape: &mut AllOfShape,
-) -> Result<Option<DefinitionShape>> {
+fn expand_all_of_fields(path: ModPath, shape: &mut AllOfShape) -> Result<Option<DefinitionShape>> {
     let mod_name = shape.header.name.to_snake_case();
-    let mods = mods
-        .into_iter()
-        .chain(Some(mod_name.clone()))
-        .collect::<Vec<_>>();
-
+    let path = path.add(mod_name.clone());
     let expanded_shapes = shape
         .fields()
-        .map(|field| expand(mods.clone(), field))
+        .map(|field| expand(path.clone(), field))
         .collect::<Result<Vec<_>>>()?
         .into_iter()
         .flatten()
@@ -82,7 +67,7 @@ fn expand_all_of_fields(
     }
 }
 
-fn expand(mod_names: Vec<ComponentName>, field: &mut FieldShape) -> Result<Vec<DefinitionShape>> {
+fn expand(mod_path: ModPath, field: &mut FieldShape) -> Result<Vec<DefinitionShape>> {
     match &field.type_shape {
         Ref { .. } | Fixed { .. } | Array { .. } | Expanded { .. } => Ok(vec![]),
         InlineObject {
@@ -96,18 +81,18 @@ fn expand(mod_names: Vec<ComponentName>, field: &mut FieldShape) -> Result<Vec<D
                     header: TypeHeaderShape::new(type_name.clone(), object),
                     items: AllOfItemShape::from_schema_cases(cases.clone())?,
                 };
-                let mod_def = expand_all_of_fields(mod_names.clone(), &mut all_of_def)?;
+                let mod_def = expand_all_of_fields(mod_path.clone(), &mut all_of_def)?;
                 (all_of_def.into(), mod_def)
             } else {
                 let mut struct_def = StructShape {
                     header: TypeHeaderShape::new(type_name.clone(), object),
                     fields: to_field_shapes(object.properties.clone(), object.required.clone())?,
                 };
-                let mod_def = expand_struct_fields(mod_names.clone(), &mut struct_def)?;
+                let mod_def = expand_struct_fields(mod_path.clone(), &mut struct_def)?;
                 (struct_def.into(), mod_def)
             };
             field.type_shape = Expanded {
-                mods: mod_names,
+                mod_path,
                 type_name,
                 is_required: *is_required,
                 is_nullable: *is_nullable,
