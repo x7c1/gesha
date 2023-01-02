@@ -1,6 +1,7 @@
 mod expand_inline_schemas;
 mod resolve_all_of;
 mod resolve_ref;
+mod to_definitions;
 
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
 use crate::conversions::v3_0::to_rust_type::from_schemas::DefinitionShape;
@@ -30,6 +31,8 @@ impl PostProcessor {
         self.snapshot.schemas = shapes.clone();
 
         // 3rd process : resolve $ref
-        self.process_ref(prefix, shapes)
+        *shapes = self.process_ref(prefix, shapes)?;
+
+        self.to_definitions(shapes)
     }
 }

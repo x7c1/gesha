@@ -1,24 +1,17 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
 use crate::conversions::v3_0::to_rust_type::from_schemas::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    DefinitionShape, FieldShape, StructShape, TypeHeaderShape, TypePath, TypeShape,
+    DefinitionShape, FieldShape, StructShape, TypePath, TypeShape,
 };
-use crate::conversions::v3_0::to_rust_type::is_patch;
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
-use crate::targets::rust_type::{
-    DataType, Definition, Definitions, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName,
-    ModDef, ModuleName, NewTypeDef, Package, StructDef, StructField, StructFieldAttribute,
-    StructFieldName, TypeHeader,
-};
-use openapi_types::v3_0::ComponentName;
 
 impl PostProcessor {
     pub fn process_ref(
         &self,
         prefix: &'static str,
         shapes: &[DefinitionShape],
-    ) -> Result<Definitions> {
+    ) -> Result<Vec<DefinitionShape>> {
         let resolver = RefResolver {
             prefix,
             snapshot: &self.snapshot,
@@ -35,45 +28,37 @@ struct RefResolver<'a> {
 }
 
 impl RefResolver<'_> {
-    fn resolve_ref(&self, shape: &DefinitionShape) -> Result<Definition> {
+    fn resolve_ref(&self, shape: &DefinitionShape) -> Result<DefinitionShape> {
         match shape {
             DefinitionShape::Struct(StructShape { header, fields }) => {
-                let def = StructDef::new(
-                    to_type_header(header.clone()),
-                    self.shapes_to_fields(fields)?,
-                );
-                Ok(def.into())
+                let next = StructShape {
+                    header: header.clone(),
+                    fields: self.shape_fields(fields)?,
+                };
+                Ok(next.into())
             }
             DefinitionShape::NewType { header, type_shape } => {
-                let def_type = self.type_shape_to_data_type(type_shape)?;
-                let def = NewTypeDef::new(to_type_header(header.clone()), def_type);
-                Ok(def.into())
+                let next = DefinitionShape::NewType {
+                    header: header.clone(),
+                    type_shape: self.shape_field_type(type_shape)?,
+                };
+                Ok(next)
             }
-            DefinitionShape::Enum { header, values } => {
-                let variants = Clone::clone(values)
-                    .into_iter()
-                    .map(to_enum_variant)
-                    .collect();
-
-                let def = EnumDef::new(to_type_header(header.clone()), variants);
-                Ok(def.into())
-            }
+            DefinitionShape::Enum { .. } => Ok(shape.clone()),
             DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
                 detail: format!("'allOf' must be processed before '$ref'.\n{:#?}", shape),
             }),
             DefinitionShape::Mod { name, defs } => {
                 let mod_path = self.mod_path.clone().add(name.clone());
-                let inline_defs = defs
+                let next_defs = defs
                     .iter()
                     .map(|x| self.resolve_ref_in_mod(mod_path.clone(), x))
-                    .collect::<Result<Vec<Definition>>>()?;
+                    .collect::<Result<Vec<_>>>()?;
 
-                let def = ModDef {
-                    name: ModuleName::new(name.clone()),
-                    imports: vec![Package::Deserialize, Package::Serialize],
-                    defs: inline_defs,
-                };
-                Ok(def.into())
+                Ok(DefinitionShape::Mod {
+                    name: name.clone(),
+                    defs: next_defs,
+                })
             }
         }
     }
@@ -82,7 +67,7 @@ impl RefResolver<'_> {
         &self,
         mod_path: TypePath,
         shape: &DefinitionShape,
-    ) -> Result<Definition> {
+    ) -> Result<DefinitionShape> {
         let resolver = Self {
             prefix: self.prefix,
             snapshot: self.snapshot,
@@ -91,58 +76,51 @@ impl RefResolver<'_> {
         resolver.resolve_ref(shape)
     }
 
-    fn shapes_to_fields(&self, shapes: &[FieldShape]) -> Result<Vec<StructField>> {
-        shapes
-            .iter()
-            .map(|shape| self.field_shape_to_struct_field(shape))
-            .collect()
+    fn shape_fields(&self, shapes: &[FieldShape]) -> Result<Vec<FieldShape>> {
+        shapes.iter().map(|shape| self.shape_field(shape)).collect()
     }
 
-    fn field_shape_to_struct_field(&self, shape: &FieldShape) -> Result<StructField> {
-        let data_type = self.type_shape_to_data_type(&shape.type_shape)?;
-        let name = StructFieldName::new(shape.name.as_ref());
-        let attrs = to_field_attrs(&shape.name, &name, &data_type);
-        let field = StructField::new(name, data_type, attrs);
-        Ok(field)
+    fn shape_field(&self, shape: &FieldShape) -> Result<FieldShape> {
+        Ok(FieldShape {
+            name: shape.name.clone(),
+            type_shape: self.shape_field_type(&shape.type_shape)?,
+        })
     }
 
-    fn type_shape_to_data_type(&self, shape: &TypeShape) -> Result<DataType> {
+    fn shape_field_type(&self, shape: &TypeShape) -> Result<TypeShape> {
         let is_required = shape.is_required();
         let is_nullable = self.is_nullable(shape)?;
-        let mut data_type = match shape {
-            TypeShape::Array { type_shape, .. } => {
-                DataType::Vec(Box::new(self.type_shape_to_data_type(type_shape)?))
-            }
+        let expanded_type = match shape {
+            TypeShape::Array { type_shape, .. } => TypeShape::Array {
+                type_shape: Box::new(self.shape_field_type(type_shape)?),
+                is_required,
+                is_nullable,
+            },
             TypeShape::Ref { object, .. } => {
                 let type_name = match String::from(object.clone()) {
                     x if x.starts_with(self.prefix) => x.replace(self.prefix, ""),
                     x => unimplemented!("not implemented: {x}"),
                 };
-                self.mod_path.ancestors().add(type_name).into()
+                TypeShape::Fixed {
+                    data_type: self.mod_path.ancestors().add(type_name).into(),
+                    is_required,
+                    is_nullable,
+                }
             }
-            TypeShape::Fixed { data_type, .. } => data_type.clone(),
+            TypeShape::Fixed { .. } => shape.clone(),
             TypeShape::InlineObject { .. } => Err(PostProcessBroken {
                 detail: format!(
                     "InlineObject must be processed before '$ref'.\n{:#?}",
                     shape
                 ),
             })?,
-            TypeShape::Expanded { type_path, .. } => {
-                type_path.relative_from(self.mod_path.clone()).into()
-            }
+            TypeShape::Expanded { type_path, .. } => TypeShape::Expanded {
+                type_path: type_path.relative_from(self.mod_path.clone()),
+                is_required,
+                is_nullable,
+            },
         };
-        match (is_required, is_nullable) {
-            (true, true) | (false, false) => {
-                data_type = DataType::Option(Box::new(data_type));
-            }
-            (false, true) => {
-                data_type = DataType::Patch(Box::new(data_type));
-            }
-            (true, false) => {
-                // nop
-            }
-        }
-        Ok(data_type)
+        Ok(expanded_type)
     }
 
     fn is_nullable(&self, shape: &TypeShape) -> Result<bool> {
@@ -157,38 +135,4 @@ impl RefResolver<'_> {
                 .map(|def| def.is_nullable()),
         }
     }
-}
-
-fn to_field_attrs(
-    original: &ComponentName,
-    name: &StructFieldName,
-    tpe: &DataType,
-) -> Vec<StructFieldAttribute> {
-    let mut attrs = vec![];
-    if original.as_ref() != name.as_str() {
-        attrs.push(StructFieldAttribute::new(format!(
-            r#"serde(rename="{original}")"#
-        )));
-    }
-    if is_patch(tpe) {
-        attrs.push(StructFieldAttribute::new(
-            r#"serde(default, skip_serializing_if = "Patch::is_absent")"#,
-        ));
-    }
-    attrs
-}
-
-fn to_type_header(shape: TypeHeaderShape) -> TypeHeader {
-    TypeHeader::new(shape.name, shape.doc_comments)
-}
-
-fn to_enum_variant(original: String) -> EnumVariant {
-    let name = EnumVariantName::new(original.as_str());
-    let mut attrs = vec![];
-    if name.as_str() != original {
-        attrs.push(EnumVariantAttribute::new(format!(
-            r#"serde(rename="{original}")"#
-        )))
-    }
-    EnumVariant::unit(name, attrs)
 }
