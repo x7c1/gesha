@@ -1,6 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_field_shapes;
 use crate::conversions::v3_0::to_rust_type::from_schemas::DefinitionShape::Mod;
-use crate::conversions::v3_0::to_rust_type::from_schemas::TypeShape::Expanded;
+use crate::conversions::v3_0::to_rust_type::from_schemas::TypeShape::{Expanded, Higher};
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, PostProcessor, StructShape,
     TypeHeaderShape, TypePath, TypeShape,
@@ -72,7 +72,7 @@ fn expand_all_of_fields(path: TypePath, shape: &mut AllOfShape) -> Result<Option
 
 fn expand(mod_path: TypePath, field: &mut FieldShape) -> Result<Vec<DefinitionShape>> {
     match &field.type_shape {
-        Ref { .. } | Fixed { .. } | Array { .. } | Expanded { .. } => Ok(vec![]),
+        Ref { .. } | Fixed { .. } | Array { .. } | Expanded { .. } | Higher { .. } => Ok(vec![]),
         InlineObject {
             object,
             is_required,

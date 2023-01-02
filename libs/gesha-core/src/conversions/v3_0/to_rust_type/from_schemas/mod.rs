@@ -67,6 +67,10 @@ pub enum TypeShape {
         is_required: bool,
         is_nullable: bool,
     },
+    Higher {
+        type_shape: Box<TypeShape>,
+        type_name: String,
+    },
 }
 
 impl TypeShape {
@@ -77,6 +81,7 @@ impl TypeShape {
             TypeShape::Ref { is_required, .. } => *is_required,
             TypeShape::InlineObject { is_required, .. } => *is_required,
             TypeShape::Expanded { is_required, .. } => *is_required,
+            TypeShape::Higher { .. } => false,
         }
     }
 }

@@ -36,7 +36,7 @@ impl Traverser {
                 Ok(def.into())
             }
             DefinitionShape::NewType { header, type_shape } => {
-                let def_type = self.type_shape_to_data_type(type_shape)?;
+                let def_type = type_shape_to_data_type(type_shape)?;
                 let def = NewTypeDef::new(to_type_header(header.clone()), def_type);
                 Ok(def.into())
             }
@@ -50,7 +50,10 @@ impl Traverser {
                 Ok(def.into())
             }
             DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
-                detail: format!("'allOf' must be processed before '$ref'.\n{:#?}", shape),
+                detail: format!(
+                    "'allOf' must be processed before 'to_definitions'.\n{:#?}",
+                    shape
+                ),
             }),
             DefinitionShape::Mod { name, defs } => {
                 let mod_path = self.mod_path.clone().add(name.clone());
@@ -82,55 +85,45 @@ impl Traverser {
     }
 
     fn field_shape_to_struct_field(&self, shape: &FieldShape) -> Result<StructField> {
-        let data_type = self.type_shape_to_data_type(&shape.type_shape)?;
+        let data_type = type_shape_to_data_type(&shape.type_shape)?;
         let name = StructFieldName::new(shape.name.as_ref());
         let attrs = to_field_attrs(&shape.name, &name, &data_type);
         let field = StructField::new(name, data_type, attrs);
         Ok(field)
     }
-
-    fn type_shape_to_data_type(&self, shape: &TypeShape) -> Result<DataType> {
-        let is_required = shape.is_required();
-        let is_nullable = self.is_nullable(shape)?;
-        let mut data_type = match shape {
-            TypeShape::Array { type_shape, .. } => {
-                DataType::Vec(Box::new(self.type_shape_to_data_type(type_shape)?))
-            }
-            TypeShape::Ref { .. } => {
-                todo!()
-            }
-            TypeShape::Fixed { data_type, .. } => data_type.clone(),
-            TypeShape::InlineObject { .. } => Err(PostProcessBroken {
-                detail: format!(
-                    "InlineObject must be processed before '$ref'.\n{:#?}",
-                    shape
-                ),
-            })?,
-            TypeShape::Expanded { type_path, .. } => type_path.clone().into(),
-        };
-        match (is_required, is_nullable) {
-            (true, true) | (false, false) => {
-                data_type = DataType::Option(Box::new(data_type));
-            }
-            (false, true) => {
-                data_type = DataType::Patch(Box::new(data_type));
-            }
-            (true, false) => {
-                // nop
+}
+fn type_shape_to_data_type(shape: &TypeShape) -> Result<DataType> {
+    let data_type = match shape {
+        TypeShape::Array { type_shape, .. } => {
+            DataType::Vec(Box::new(type_shape_to_data_type(type_shape)?))
+        }
+        TypeShape::Ref { .. } => {
+            todo!()
+        }
+        TypeShape::Fixed { data_type, .. } => data_type.clone(),
+        TypeShape::InlineObject { .. } => Err(PostProcessBroken {
+            detail: format!(
+                "InlineObject must be processed before '$ref'.\n{:#?}",
+                shape
+            ),
+        })?,
+        TypeShape::Expanded { type_path, .. } => type_path.clone().into(),
+        TypeShape::Higher {
+            type_shape,
+            type_name,
+        } => {
+            if type_name == "Patch" {
+                DataType::Patch(Box::new(type_shape_to_data_type(type_shape)?))
+            } else {
+                DataType::Custom(format!(
+                    "{}<{}>",
+                    type_name,
+                    type_shape_to_data_type(type_shape)?
+                ))
             }
         }
-        Ok(data_type)
-    }
-
-    fn is_nullable(&self, shape: &TypeShape) -> Result<bool> {
-        match shape {
-            TypeShape::Fixed { is_nullable, .. }
-            | TypeShape::Array { is_nullable, .. }
-            | TypeShape::InlineObject { is_nullable, .. }
-            | TypeShape::Expanded { is_nullable, .. } => Ok(*is_nullable),
-            TypeShape::Ref { .. } => todo!(),
-        }
-    }
+    };
+    Ok(data_type)
 }
 
 fn to_field_attrs(

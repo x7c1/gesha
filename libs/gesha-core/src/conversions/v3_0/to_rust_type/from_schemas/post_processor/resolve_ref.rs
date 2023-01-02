@@ -90,7 +90,7 @@ impl RefResolver<'_> {
     fn shape_field_type(&self, shape: &TypeShape) -> Result<TypeShape> {
         let is_required = shape.is_required();
         let is_nullable = self.is_nullable(shape)?;
-        let expanded_type = match shape {
+        let mut expanded_type = match shape {
             TypeShape::Array { type_shape, .. } => TypeShape::Array {
                 type_shape: Box::new(self.shape_field_type(type_shape)?),
                 is_required,
@@ -107,7 +107,7 @@ impl RefResolver<'_> {
                     is_nullable,
                 }
             }
-            TypeShape::Fixed { .. } => shape.clone(),
+            TypeShape::Fixed { .. } | TypeShape::Higher { .. } => shape.clone(),
             TypeShape::InlineObject { .. } => Err(PostProcessBroken {
                 detail: format!(
                     "InlineObject must be processed before '$ref'.\n{:#?}",
@@ -120,6 +120,24 @@ impl RefResolver<'_> {
                 is_nullable,
             },
         };
+        match (is_required, is_nullable) {
+            (true, true) | (false, false) => {
+                expanded_type = TypeShape::Higher {
+                    type_shape: Box::new(expanded_type),
+                    type_name: "Option".to_string(),
+                };
+            }
+            (false, true) => {
+                expanded_type = TypeShape::Higher {
+                    type_shape: Box::new(expanded_type),
+                    type_name: "Patch".to_string(),
+                };
+            }
+            (true, false) => {
+                // nop
+            }
+        }
+
         Ok(expanded_type)
     }
 
@@ -133,6 +151,7 @@ impl RefResolver<'_> {
                 .snapshot
                 .find_type_definition(object)
                 .map(|def| def.is_nullable()),
+            TypeShape::Higher { .. } => todo!(),
         }
     }
 }
