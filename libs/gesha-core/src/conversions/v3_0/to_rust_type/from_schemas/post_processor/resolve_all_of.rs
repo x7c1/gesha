@@ -28,11 +28,15 @@ impl PostProcessor {
     }
 
     fn merge_fields_all_of(&self, shapes: Vec<AllOfItemShape>) -> Result<Vec<FieldShape>> {
-        let mut field_shapes = vec![];
-        for shape in shapes {
-            field_shapes.append(&mut self.shape_item_to_fields(shape)?)
-        }
-        Ok(field_shapes)
+        let fields = shapes
+            .into_iter()
+            .map(|x| self.shape_item_to_fields(x))
+            .collect::<Result<Vec<_>>>()?
+            .into_iter()
+            .flatten()
+            .collect();
+
+        Ok(fields)
     }
 
     fn shape_item_to_fields(&self, item_shape: AllOfItemShape) -> Result<Vec<FieldShape>> {

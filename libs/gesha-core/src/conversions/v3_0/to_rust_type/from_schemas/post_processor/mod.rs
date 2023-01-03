@@ -19,19 +19,20 @@ impl PostProcessor {
 
     pub fn run(
         &mut self,
-        mut shapes: Vec<DefinitionShape>,
+        shapes: Vec<DefinitionShape>,
         prefix: &'static str,
     ) -> Result<Definitions> {
         // 1st process : expand inline schemas
-        shapes = self.process_inline_schemas(shapes)?;
+        let shapes = self.process_inline_schemas(shapes)?;
         self.snapshot.schemas = shapes.clone();
 
         // 2nd process : resolve allOf
-        shapes = self.process_all_of(shapes)?;
+        let shapes = self.process_all_of(shapes)?;
         self.snapshot.schemas = shapes.clone();
 
         // 3rd process : resolve $ref
-        shapes = self.process_ref(prefix, shapes)?;
+        let shapes = self.process_ref(prefix, shapes)?;
+        self.snapshot.schemas = shapes.clone();
 
         self.to_definitions(&shapes)
     }
