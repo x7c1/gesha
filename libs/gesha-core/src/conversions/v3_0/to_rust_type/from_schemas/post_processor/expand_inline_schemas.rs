@@ -9,70 +9,118 @@ use crate::conversions::Result;
 use TypeShape::{Array, Fixed, InlineObject, Ref};
 
 impl PostProcessor {
-    pub fn process_inline_schemas(&self, shapes: &mut Vec<DefinitionShape>) -> Result<()> {
-        let mut expanded_mod_shapes = shapes
-            .iter_mut()
-            .filter_map(|x| x.as_mut_struct())
-            .map(|x| expand_struct_fields(TypePath::new(), x))
-            .collect::<Result<Vec<Option<_>>>>()?
+    pub fn process_inline_schemas(
+        &self,
+        shapes: Vec<DefinitionShape>,
+    ) -> Result<Vec<DefinitionShape>> {
+        let expanded_mod_shapes = shapes
+            .into_iter()
+            .map(|x| match x {
+                DefinitionShape::Struct(x) => {
+                    let (x1, x2) = expand_struct_fields(TypePath::new(), x)?;
+                    Ok(vec![x1.into()].into_iter().chain(x2).collect())
+                }
+                DefinitionShape::AllOf(_)
+                | DefinitionShape::NewType { .. }
+                | DefinitionShape::Enum { .. }
+                | Mod { .. } => Ok(vec![x]),
+            })
+            .collect::<Result<Vec<Vec<_>>>>()?
             .into_iter()
             .flatten()
             .collect();
 
-        shapes.append(&mut expanded_mod_shapes);
-        Ok(())
+        Ok(expanded_mod_shapes)
     }
 }
 
+// return (struct-shape, mod-shape)
 fn expand_struct_fields(
     path: TypePath,
-    shape: &mut StructShape,
-) -> Result<Option<DefinitionShape>> {
+    shape: StructShape,
+) -> Result<(StructShape, Option<DefinitionShape>)> {
     let mod_name = shape.header.name.to_snake_case();
     let path = path.add(mod_name.clone());
-    let expanded_shapes = shape
+    let expanded = shape
         .fields
-        .iter_mut()
-        .map(|field| expand(path.clone(), field))
-        .collect::<Result<Vec<_>>>()?
         .into_iter()
-        .flatten()
-        .collect::<Vec<_>>();
+        .map(|field| expand(path.clone(), field))
+        .collect::<Result<Vec<_>>>()?;
 
-    if expanded_shapes.is_empty() {
-        Ok(None)
+    let (fields, defs) = collect(expanded);
+    let shape = StructShape {
+        header: shape.header,
+        fields,
+    };
+    if defs.is_empty() {
+        Ok((shape, None))
     } else {
-        Ok(Some(Mod {
-            name: mod_name,
-            defs: expanded_shapes,
-        }))
+        Ok((
+            shape,
+            Some(Mod {
+                name: mod_name,
+                defs,
+            }),
+        ))
     }
 }
 
-fn expand_all_of_fields(path: TypePath, shape: &mut AllOfShape) -> Result<Option<DefinitionShape>> {
+fn collect<A, B>(pairs: Vec<(A, Vec<B>)>) -> (Vec<A>, Vec<B>) {
+    let (mut ys1, mut ys2) = (vec![], vec![]);
+    for (x, mut xs) in pairs {
+        ys1.push(x);
+        ys2.append(&mut xs);
+    }
+    (ys1, ys2)
+}
+
+fn expand_all_of_fields(
+    path: TypePath,
+    shape: AllOfShape,
+) -> Result<(AllOfShape, Option<DefinitionShape>)> {
     let mod_name = shape.header.name.to_snake_case();
     let path = path.add(mod_name.clone());
-    let expanded_shapes = shape
-        .fields()
-        .map(|field| expand(path.clone(), field))
-        .collect::<Result<Vec<_>>>()?
-        .into_iter()
-        .flatten()
-        .collect::<Vec<_>>();
 
-    if expanded_shapes.is_empty() {
-        Ok(None)
+    let expanded = shape
+        .items
+        .into_iter()
+        .map(|x| match x {
+            AllOfItemShape::Object(fields) => {
+                let expanded_shapes = fields
+                    .into_iter()
+                    .map(|field| expand(path.clone(), field))
+                    .collect::<Result<Vec<_>>>()?;
+
+                let (fields, defs) = collect(expanded_shapes);
+                Ok((AllOfItemShape::Object(fields), defs))
+            }
+            AllOfItemShape::Ref(_) => Ok((x, vec![])),
+        })
+        .collect::<Result<Vec<_>>>()?;
+
+    let (items, defs) = collect(expanded);
+    let shape = AllOfShape {
+        header: shape.header,
+        items,
+    };
+    if defs.is_empty() {
+        Ok((shape, None))
     } else {
-        Ok(Some(Mod {
-            name: mod_name,
-            defs: expanded_shapes,
-        }))
+        Ok((
+            shape,
+            Some(Mod {
+                name: mod_name,
+                defs,
+            }),
+        ))
     }
 }
 
-fn expand(mod_path: TypePath, field: &mut FieldShape) -> Result<Vec<DefinitionShape>> {
+fn expand(mod_path: TypePath, field: FieldShape) -> Result<(FieldShape, Vec<DefinitionShape>)> {
     match &field.type_shape {
-        Ref { .. } | Fixed { .. } | Array { .. } | Expanded { .. } | Higher { .. } => Ok(vec![]),
+        Ref { .. } | Fixed { .. } | Array { .. } | Expanded { .. } | Higher { .. } => {
+            Ok((field, vec![]))
+        }
         InlineObject {
             object,
             is_required,
@@ -80,27 +128,30 @@ fn expand(mod_path: TypePath, field: &mut FieldShape) -> Result<Vec<DefinitionSh
         } => {
             let type_name = field.name.to_upper_camel_case();
             let (type_def, mod_def) = if let Some(cases) = object.all_of.as_ref() {
-                let mut all_of_def = AllOfShape {
+                let all_of_def = AllOfShape {
                     header: TypeHeaderShape::new(type_name.clone(), object),
                     items: AllOfItemShape::from_schema_cases(cases.clone())?,
                 };
-                let mod_def = expand_all_of_fields(mod_path.clone(), &mut all_of_def)?;
-                (all_of_def.into(), mod_def)
+                let (shape, mod_def) = expand_all_of_fields(mod_path.clone(), all_of_def)?;
+                (shape.into(), mod_def)
             } else {
-                let mut struct_def = StructShape {
+                let struct_def = StructShape {
                     header: TypeHeaderShape::new(type_name.clone(), object),
                     fields: to_field_shapes(object.properties.clone(), object.required.clone())?,
                 };
-                let mod_def = expand_struct_fields(mod_path.clone(), &mut struct_def)?;
-                (struct_def.into(), mod_def)
+                let (shape, mod_def) = expand_struct_fields(mod_path.clone(), struct_def)?;
+                (shape.into(), mod_def)
             };
-            field.type_shape = Expanded {
-                type_path: mod_path.add(type_name),
-                is_required: *is_required,
-                is_nullable: *is_nullable,
+            let field_shape = FieldShape {
+                name: field.name,
+                type_shape: Expanded {
+                    type_path: mod_path.add(type_name),
+                    is_required: *is_required,
+                    is_nullable: *is_nullable,
+                },
             };
             let defs = vec![type_def].into_iter().chain(mod_def).collect();
-            Ok(defs)
+            Ok((field_shape, defs))
         }
     }
 }

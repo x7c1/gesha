@@ -34,16 +34,6 @@ impl DefinitionShape {
             | DefinitionShape::Mod { .. } => None,
         }
     }
-
-    pub fn as_mut_struct(&mut self) -> Option<&mut StructShape> {
-        match self {
-            DefinitionShape::Struct(shape) => Some(shape),
-            DefinitionShape::AllOf { .. }
-            | DefinitionShape::NewType { .. }
-            | DefinitionShape::Enum { .. }
-            | DefinitionShape::Mod { .. } => None,
-        }
-    }
 }
 
 pub struct TypeDefinitionShape<'a> {

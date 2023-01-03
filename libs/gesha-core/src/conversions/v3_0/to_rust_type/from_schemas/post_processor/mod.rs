@@ -23,11 +23,11 @@ impl PostProcessor {
         prefix: &'static str,
     ) -> Result<Definitions> {
         // 1st process : expand inline schemas
-        self.process_inline_schemas(shapes)?;
+        *shapes = self.process_inline_schemas(shapes.clone())?;
         self.snapshot.schemas = shapes.clone();
 
         // 2nd process : resolve allOf
-        self.process_all_of(shapes)?;
+        *shapes = self.process_all_of(shapes.clone())?;
         self.snapshot.schemas = shapes.clone();
 
         // 3rd process : resolve $ref
