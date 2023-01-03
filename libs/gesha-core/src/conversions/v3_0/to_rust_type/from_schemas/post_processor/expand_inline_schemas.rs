@@ -29,8 +29,7 @@ impl PostProcessor {
 fn expand(shape: DefinitionShape) -> Result<Vec<DefinitionShape>> {
     match shape {
         DefinitionShape::Struct(x) => {
-            let (struct_shape, mod_shape) = expand_struct_fields(TypePath::new(), x)?;
-            Ok(vec![struct_shape.into()].into_iter().chain(mod_shape).collect())
+            expand_struct_fields(TypePath::new(), x)
         }
         DefinitionShape::AllOf(_)// TODO: add test
         | DefinitionShape::NewType { .. }
@@ -40,10 +39,7 @@ fn expand(shape: DefinitionShape) -> Result<Vec<DefinitionShape>> {
 }
 
 // return (struct-shape, mod-shape)
-fn expand_struct_fields(
-    path: TypePath,
-    shape: StructShape,
-) -> Result<(StructShape, Option<DefinitionShape>)> {
+fn expand_struct_fields(path: TypePath, shape: StructShape) -> Result<Vec<DefinitionShape>> {
     let mod_name = shape.header.name.to_snake_case();
     let path = path.add(mod_name.clone());
     let expanded = shape
@@ -61,14 +57,11 @@ fn expand_struct_fields(
         name: mod_name,
         defs,
     });
-    Ok((next, mod_def))
+    Ok(vec![next.into()].into_iter().chain(mod_def).collect())
 }
 
 // return (all-of-shape, mod-shape)
-fn expand_all_of_fields(
-    path: TypePath,
-    shape: AllOfShape,
-) -> Result<(AllOfShape, Option<DefinitionShape>)> {
+fn expand_all_of_fields(path: TypePath, shape: AllOfShape) -> Result<Vec<DefinitionShape>> {
     let mod_name = shape.header.name.to_snake_case();
     let path = path.add(mod_name.clone());
     let expanded = shape
@@ -86,7 +79,7 @@ fn expand_all_of_fields(
         name: mod_name,
         defs,
     });
-    Ok((next, mod_def))
+    Ok(vec![next.into()].into_iter().chain(mod_def).collect())
 }
 
 fn expand_fields_from(
@@ -116,20 +109,18 @@ fn expand_field(
             is_nullable,
         } => {
             let type_name = field.name.to_upper_camel_case();
-            let (type_def, mod_def) = if let Some(cases) = object.all_of.as_ref() {
+            let defs = if let Some(cases) = object.all_of.as_ref() {
                 let all_of_def = AllOfShape {
                     header: TypeHeaderShape::new(type_name.clone(), &object),
                     items: AllOfItemShape::from_schema_cases(cases.clone())?,
                 };
-                let (shape, mod_def) = expand_all_of_fields(mod_path.clone(), all_of_def)?;
-                (shape.into(), mod_def)
+                expand_all_of_fields(mod_path.clone(), all_of_def)?
             } else {
                 let struct_def = StructShape {
                     header: TypeHeaderShape::new(type_name.clone(), &object),
                     fields: to_field_shapes(object.properties.clone(), object.required.clone())?,
                 };
-                let (shape, mod_def) = expand_struct_fields(mod_path.clone(), struct_def)?;
-                (shape.into(), mod_def)
+                expand_struct_fields(mod_path.clone(), struct_def)?
             };
             let field_shape = FieldShape {
                 name: field.name,
@@ -139,7 +130,6 @@ fn expand_field(
                     is_nullable,
                 },
             };
-            let defs = vec![type_def].into_iter().chain(mod_def).collect();
             Ok((field_shape, defs))
         }
     }
