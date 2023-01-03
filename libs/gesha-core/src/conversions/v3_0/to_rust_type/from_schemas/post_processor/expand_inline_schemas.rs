@@ -74,18 +74,7 @@ fn expand_all_of_fields(
     let expanded = shape
         .items
         .into_iter()
-        .map(|x| match x {
-            AllOfItemShape::Object(fields) => {
-                let expanded_shapes = fields
-                    .into_iter()
-                    .map(|field| expand_field(path.clone(), field))
-                    .collect::<Result<Vec<_>>>()?;
-
-                let (fields, defs) = collect(expanded_shapes);
-                Ok((AllOfItemShape::Object(fields), defs))
-            }
-            AllOfItemShape::Ref(_) => Ok((x, vec![])),
-        })
+        .map(|x| x.expand_fields(expand_fields_from(&path)))
         .collect::<Result<Vec<_>>>()?;
 
     let (items, defs) = collect(expanded);
@@ -98,6 +87,19 @@ fn expand_all_of_fields(
         defs,
     });
     Ok((next, mod_def))
+}
+
+fn expand_fields_from(
+    path: &TypePath,
+) -> impl Fn(Vec<FieldShape>) -> Result<(Vec<FieldShape>, Vec<DefinitionShape>)> + '_ {
+    move |fields| {
+        let expanded = fields
+            .into_iter()
+            .map(|field| expand_field(path.clone(), field))
+            .collect::<Result<Vec<_>>>()?;
+
+        Ok(collect(expanded))
+    }
 }
 
 fn expand_field(
