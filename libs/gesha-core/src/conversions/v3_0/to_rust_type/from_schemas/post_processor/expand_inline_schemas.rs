@@ -104,7 +104,7 @@ fn expand_field(
     mod_path: TypePath,
     field: FieldShape,
 ) -> Result<(FieldShape, Vec<DefinitionShape>)> {
-    match &field.type_shape {
+    match field.type_shape {
         Ref { .. } | Fixed { .. } | Array { .. } | Expanded { .. } | Higher { .. } => {
             Ok((field, vec![]))
         }
@@ -116,14 +116,14 @@ fn expand_field(
             let type_name = field.name.to_upper_camel_case();
             let (type_def, mod_def) = if let Some(cases) = object.all_of.as_ref() {
                 let all_of_def = AllOfShape {
-                    header: TypeHeaderShape::new(type_name.clone(), object),
+                    header: TypeHeaderShape::new(type_name.clone(), &object),
                     items: AllOfItemShape::from_schema_cases(cases.clone())?,
                 };
                 let (shape, mod_def) = expand_all_of_fields(mod_path.clone(), all_of_def)?;
                 (shape.into(), mod_def)
             } else {
                 let struct_def = StructShape {
-                    header: TypeHeaderShape::new(type_name.clone(), object),
+                    header: TypeHeaderShape::new(type_name.clone(), &object),
                     fields: to_field_shapes(object.properties.clone(), object.required.clone())?,
                 };
                 let (shape, mod_def) = expand_struct_fields(mod_path.clone(), struct_def)?;
@@ -133,8 +133,8 @@ fn expand_field(
                 name: field.name,
                 type_shape: Expanded {
                     type_path: mod_path.add(type_name),
-                    is_required: *is_required,
-                    is_nullable: *is_nullable,
+                    is_required,
+                    is_nullable,
                 },
             };
             let defs = vec![type_def].into_iter().chain(mod_def).collect();
