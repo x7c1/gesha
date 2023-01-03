@@ -6,6 +6,7 @@ use crate::conversions::v3_0::to_rust_type::from_schemas::{
     TypeHeaderShape, TypePath, TypeShape,
 };
 use crate::conversions::Result;
+use std::ops::Not;
 use TypeShape::{Array, Fixed, InlineObject, Ref};
 
 impl PostProcessor {
@@ -48,39 +49,24 @@ fn expand_struct_fields(
         .collect::<Result<Vec<_>>>()?;
 
     let (fields, defs) = collect(expanded);
-    let shape = StructShape {
+    let next = StructShape {
         header: shape.header,
         fields,
     };
-    if defs.is_empty() {
-        Ok((shape, None))
-    } else {
-        Ok((
-            shape,
-            Some(Mod {
-                name: mod_name,
-                defs,
-            }),
-        ))
-    }
+    let mod_def = defs.is_empty().not().then_some(Mod {
+        name: mod_name,
+        defs,
+    });
+    Ok((next, mod_def))
 }
 
-fn collect<A, B>(pairs: Vec<(A, Vec<B>)>) -> (Vec<A>, Vec<B>) {
-    let (mut ys1, mut ys2) = (vec![], vec![]);
-    for (x, mut xs) in pairs {
-        ys1.push(x);
-        ys2.append(&mut xs);
-    }
-    (ys1, ys2)
-}
-
+// return (all-of-shape, mod-shape)
 fn expand_all_of_fields(
     path: TypePath,
     shape: AllOfShape,
 ) -> Result<(AllOfShape, Option<DefinitionShape>)> {
     let mod_name = shape.header.name.to_snake_case();
     let path = path.add(mod_name.clone());
-
     let expanded = shape
         .items
         .into_iter()
@@ -99,21 +85,15 @@ fn expand_all_of_fields(
         .collect::<Result<Vec<_>>>()?;
 
     let (items, defs) = collect(expanded);
-    let shape = AllOfShape {
+    let next = AllOfShape {
         header: shape.header,
         items,
     };
-    if defs.is_empty() {
-        Ok((shape, None))
-    } else {
-        Ok((
-            shape,
-            Some(Mod {
-                name: mod_name,
-                defs,
-            }),
-        ))
-    }
+    let mod_def = defs.is_empty().not().then_some(Mod {
+        name: mod_name,
+        defs,
+    });
+    Ok((next, mod_def))
 }
 
 fn expand(mod_path: TypePath, field: FieldShape) -> Result<(FieldShape, Vec<DefinitionShape>)> {
@@ -154,4 +134,13 @@ fn expand(mod_path: TypePath, field: FieldShape) -> Result<(FieldShape, Vec<Defi
             Ok((field_shape, defs))
         }
     }
+}
+
+fn collect<A, B>(pairs: Vec<(A, Vec<B>)>) -> (Vec<A>, Vec<B>) {
+    let (mut ys1, mut ys2) = (vec![], vec![]);
+    for (x, mut xs) in pairs {
+        ys1.push(x);
+        ys2.append(&mut xs);
+    }
+    (ys1, ys2)
 }

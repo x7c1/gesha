@@ -11,7 +11,7 @@ impl ComponentsShapes {
         let mut processor = PostProcessor::new(self.clone());
         create_module(
             "schemas",
-            processor.run(&mut self.schemas, "#/components/schemas/")?,
+            processor.run(self.schemas.clone(), "#/components/schemas/")?,
         )
     }
 
