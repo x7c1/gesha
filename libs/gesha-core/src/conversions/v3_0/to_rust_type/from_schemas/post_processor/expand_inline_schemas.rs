@@ -14,24 +14,28 @@ impl PostProcessor {
         &self,
         shapes: Vec<DefinitionShape>,
     ) -> Result<Vec<DefinitionShape>> {
-        let expanded_mod_shapes = shapes
+        let defs = shapes
             .into_iter()
-            .map(|x| match x {
-                DefinitionShape::Struct(x) => {
-                    let (x1, x2) = expand_struct_fields(TypePath::new(), x)?;
-                    Ok(vec![x1.into()].into_iter().chain(x2).collect())
-                }
-                DefinitionShape::AllOf(_)
-                | DefinitionShape::NewType { .. }
-                | DefinitionShape::Enum { .. }
-                | Mod { .. } => Ok(vec![x]),
-            })
+            .map(expand)
             .collect::<Result<Vec<Vec<_>>>>()?
             .into_iter()
             .flatten()
             .collect();
 
-        Ok(expanded_mod_shapes)
+        Ok(defs)
+    }
+}
+
+fn expand(shape: DefinitionShape) -> Result<Vec<DefinitionShape>> {
+    match shape {
+        DefinitionShape::Struct(x) => {
+            let (struct_shape, mod_shape) = expand_struct_fields(TypePath::new(), x)?;
+            Ok(vec![struct_shape.into()].into_iter().chain(mod_shape).collect())
+        }
+        DefinitionShape::AllOf(_)// TODO: add test
+        | DefinitionShape::NewType { .. }
+        | DefinitionShape::Enum { .. }
+        | Mod { .. } => Ok(vec![shape]),
     }
 }
 
@@ -45,7 +49,7 @@ fn expand_struct_fields(
     let expanded = shape
         .fields
         .into_iter()
-        .map(|field| expand(path.clone(), field))
+        .map(|field| expand_field(path.clone(), field))
         .collect::<Result<Vec<_>>>()?;
 
     let (fields, defs) = collect(expanded);
@@ -74,7 +78,7 @@ fn expand_all_of_fields(
             AllOfItemShape::Object(fields) => {
                 let expanded_shapes = fields
                     .into_iter()
-                    .map(|field| expand(path.clone(), field))
+                    .map(|field| expand_field(path.clone(), field))
                     .collect::<Result<Vec<_>>>()?;
 
                 let (fields, defs) = collect(expanded_shapes);
@@ -96,7 +100,10 @@ fn expand_all_of_fields(
     Ok((next, mod_def))
 }
 
-fn expand(mod_path: TypePath, field: FieldShape) -> Result<(FieldShape, Vec<DefinitionShape>)> {
+fn expand_field(
+    mod_path: TypePath,
+    field: FieldShape,
+) -> Result<(FieldShape, Vec<DefinitionShape>)> {
     match &field.type_shape {
         Ref { .. } | Fixed { .. } | Array { .. } | Expanded { .. } | Higher { .. } => {
             Ok((field, vec![]))
