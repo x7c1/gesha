@@ -11,36 +11,6 @@ pub mod schemas {
         pub sample0_nested1: sample0::Sample0Nested1,
     }
 
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Sample1 {
-        pub id: i64,
-        pub sample1_nested1: sample1::Sample1Nested1,
-    }
-
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Sample2 {
-        pub id: i64,
-        pub sample2_nested1: sample2::Sample2Nested1,
-    }
-
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Sample3 {
-        pub id: i64,
-        pub sample0: sample3::Sample0,
-    }
-
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Foo {
-        pub foo1: String,
-        pub foo2: f64,
-    }
-
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Bar {
-        pub bar1: String,
-        pub bar2: f64,
-    }
-
     pub mod sample0 {
         use serde::Deserialize;
         use serde::Serialize;
@@ -52,6 +22,12 @@ pub mod schemas {
             pub bar1: String,
             pub bar2: f64,
         }
+    }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct Sample1 {
+        pub id: i64,
+        pub sample1_nested1: sample1::Sample1Nested1,
     }
 
     pub mod sample1 {
@@ -75,6 +51,12 @@ pub mod schemas {
                 pub bar2: f64,
             }
         }
+    }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct Sample2 {
+        pub id: i64,
+        pub sample2_nested1: sample2::Sample2Nested1,
     }
 
     pub mod sample2 {
@@ -109,6 +91,12 @@ pub mod schemas {
         }
     }
 
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct Sample3 {
+        pub id: i64,
+        pub sample0: sample3::Sample0,
+    }
+
     pub mod sample3 {
         use serde::Deserialize;
         use serde::Serialize;
@@ -135,5 +123,17 @@ pub mod schemas {
                 pub value1: Option<i64>,
             }
         }
+    }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct Foo {
+        pub foo1: String,
+        pub foo2: f64,
+    }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct Bar {
+        pub bar1: String,
+        pub bar2: f64,
     }
 }
