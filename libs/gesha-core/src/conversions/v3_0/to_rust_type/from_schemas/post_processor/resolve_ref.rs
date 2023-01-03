@@ -10,14 +10,17 @@ impl PostProcessor {
     pub fn process_ref(
         &self,
         prefix: &'static str,
-        shapes: &[DefinitionShape],
+        shapes: Vec<DefinitionShape>,
     ) -> Result<Vec<DefinitionShape>> {
         let resolver = RefResolver {
             prefix,
             snapshot: &self.snapshot,
             mod_path: TypePath::new(),
         };
-        shapes.iter().map(|x| resolver.resolve_ref(x)).collect()
+        shapes
+            .into_iter()
+            .map(|x| resolver.resolve_ref(x))
+            .collect()
     }
 }
 
@@ -28,18 +31,18 @@ struct RefResolver<'a> {
 }
 
 impl RefResolver<'_> {
-    fn resolve_ref(&self, shape: &DefinitionShape) -> Result<DefinitionShape> {
+    fn resolve_ref(&self, shape: DefinitionShape) -> Result<DefinitionShape> {
         match shape {
             DefinitionShape::Struct(StructShape { header, fields }) => {
                 let next = StructShape {
-                    header: header.clone(),
+                    header,
                     fields: self.shape_fields(fields)?,
                 };
                 Ok(next.into())
             }
             DefinitionShape::NewType { header, type_shape } => {
                 let next = DefinitionShape::NewType {
-                    header: header.clone(),
+                    header,
                     type_shape: self.shape_field_type(type_shape)?,
                 };
                 Ok(next)
@@ -51,12 +54,12 @@ impl RefResolver<'_> {
             DefinitionShape::Mod { name, defs } => {
                 let mod_path = self.mod_path.clone().add(name.clone());
                 let next_defs = defs
-                    .iter()
+                    .into_iter()
                     .map(|x| self.resolve_ref_in_mod(mod_path.clone(), x))
                     .collect::<Result<Vec<_>>>()?;
 
                 Ok(DefinitionShape::Mod {
-                    name: name.clone(),
+                    name,
                     defs: next_defs,
                 })
             }
@@ -66,7 +69,7 @@ impl RefResolver<'_> {
     fn resolve_ref_in_mod(
         &self,
         mod_path: TypePath,
-        shape: &DefinitionShape,
+        shape: DefinitionShape,
     ) -> Result<DefinitionShape> {
         let resolver = Self {
             prefix: self.prefix,
@@ -76,28 +79,31 @@ impl RefResolver<'_> {
         resolver.resolve_ref(shape)
     }
 
-    fn shape_fields(&self, shapes: &[FieldShape]) -> Result<Vec<FieldShape>> {
-        shapes.iter().map(|shape| self.shape_field(shape)).collect()
+    fn shape_fields(&self, shapes: Vec<FieldShape>) -> Result<Vec<FieldShape>> {
+        shapes
+            .into_iter()
+            .map(|shape| self.shape_field(shape))
+            .collect()
     }
 
-    fn shape_field(&self, shape: &FieldShape) -> Result<FieldShape> {
+    fn shape_field(&self, shape: FieldShape) -> Result<FieldShape> {
         Ok(FieldShape {
-            name: shape.name.clone(),
-            type_shape: self.shape_field_type(&shape.type_shape)?,
+            name: shape.name,
+            type_shape: self.shape_field_type(shape.type_shape)?,
         })
     }
 
-    fn shape_field_type(&self, shape: &TypeShape) -> Result<TypeShape> {
+    fn shape_field_type(&self, shape: TypeShape) -> Result<TypeShape> {
         let is_required = shape.is_required();
-        let is_nullable = self.is_nullable(shape)?;
+        let is_nullable = self.is_nullable(&shape)?;
         let mut expanded_type = match shape {
             TypeShape::Array { type_shape, .. } => TypeShape::Array {
-                type_shape: Box::new(self.shape_field_type(type_shape)?),
+                type_shape: Box::new(self.shape_field_type(*type_shape)?),
                 is_required,
                 is_nullable,
             },
             TypeShape::Ref { object, .. } => {
-                let type_name = match String::from(object.clone()) {
+                let type_name = match String::from(object) {
                     x if x.starts_with(self.prefix) => x.replace(self.prefix, ""),
                     x => unimplemented!("not implemented: {x}"),
                 };

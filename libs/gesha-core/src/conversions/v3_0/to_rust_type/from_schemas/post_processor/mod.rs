@@ -31,7 +31,7 @@ impl PostProcessor {
         self.snapshot.schemas = shapes.clone();
 
         // 3rd process : resolve $ref
-        *shapes = self.process_ref(prefix, shapes)?;
+        *shapes = self.process_ref(prefix, shapes.clone())?;
 
         self.to_definitions(shapes)
     }
