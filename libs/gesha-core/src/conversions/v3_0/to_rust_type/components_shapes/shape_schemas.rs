@@ -7,7 +7,7 @@ use crate::targets::rust_type::Module;
 use openapi_types::v3_0::{ReferenceObject, SchemaObject};
 
 impl ComponentsShapes {
-    pub fn shape_schemas_module(&mut self) -> Result<Option<Module>> {
+    pub fn shape_schemas_module(&self) -> Result<Option<Module>> {
         let mut processor = PostProcessor::new(self.clone());
         create_module(
             "schemas",

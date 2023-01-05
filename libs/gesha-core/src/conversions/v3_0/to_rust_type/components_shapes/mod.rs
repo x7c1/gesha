@@ -16,7 +16,7 @@ pub struct ComponentsShapes {
 }
 
 impl ComponentsShapes {
-    pub fn into_modules(mut self) -> Result<Modules> {
+    pub fn into_modules(self) -> Result<Modules> {
         let modules = vec![self.shape_request_bodies()?, self.shape_schemas_module()?]
             .into_iter()
             .flatten()

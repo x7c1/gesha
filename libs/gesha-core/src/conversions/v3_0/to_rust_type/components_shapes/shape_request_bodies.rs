@@ -10,7 +10,7 @@ use crate::targets::rust_type::{
 use openapi_types::v3_0::SchemaCase;
 
 impl ComponentsShapes {
-    pub fn shape_request_bodies(&mut self) -> Result<Option<Module>> {
+    pub fn shape_request_bodies(&self) -> Result<Option<Module>> {
         let definitions = self
             .request_bodies
             .clone()
