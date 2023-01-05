@@ -35,7 +35,7 @@ use crate::targets::rust_type::DataType;
 use openapi_types::v3_0::{ComponentName, ReferenceObject, SchemaObject, SchemasObject};
 
 // TODO: rename
-pub fn from_schemas(object: SchemasObject) -> Result<Vec<DefinitionShape>> {
+pub fn to_schemas_shape(object: SchemasObject) -> Result<Vec<DefinitionShape>> {
     object.into_iter().map(to_shape).collect()
 }
 
