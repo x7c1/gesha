@@ -14,7 +14,7 @@ impl Definitions {
 
     pub fn set<A: Into<Definition>>(&mut self, def: A) {
         // TODO: return error if definition already pushed
-        let _ = self.0.push(def.into());
+        self.0.push(def.into());
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &Definition> {

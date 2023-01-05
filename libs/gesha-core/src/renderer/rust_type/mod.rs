@@ -64,7 +64,7 @@ fn render_definition(write: &mut File, x: Definition) -> Result<()> {
         Definition::EnumDef(x) => render_enum(write, x)?,
         Definition::PresetDef(x) => render_preset(write, x)?,
         Definition::RequestBodyDef(x) => render_request_body(write, x)?,
-        Definition::ModDef(x) => render_module(write, x.into())?,
+        Definition::ModDef(x) => render_module(write, x)?,
     };
     Ok(())
 }
