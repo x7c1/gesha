@@ -7,7 +7,7 @@ use openapi_types::v3_0::{
     ComponentName, RequestBodiesObject, RequestBodyCase, RequestBodyObject, SchemaCase,
 };
 
-pub(super) fn to_shapes(object: RequestBodiesObject) -> Result<Vec<DefinitionShape>> {
+pub fn from_request_bodies(object: RequestBodiesObject) -> Result<Vec<DefinitionShape>> {
     object.into_iter().map(to_shape).collect()
 }
 

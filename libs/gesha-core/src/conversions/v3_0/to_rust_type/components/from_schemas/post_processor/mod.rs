@@ -3,8 +3,8 @@ mod resolve_all_of;
 mod resolve_ref;
 mod to_definitions;
 
-use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
-use crate::conversions::v3_0::to_rust_type::from_schemas::DefinitionShape;
+use super::DefinitionShape;
+use crate::conversions::v3_0::to_rust_type::components::ComponentsShapes;
 use crate::conversions::Result;
 use crate::targets::rust_type::Definitions;
 

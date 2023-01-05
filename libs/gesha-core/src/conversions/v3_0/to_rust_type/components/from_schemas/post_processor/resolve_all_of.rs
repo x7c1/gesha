@@ -1,6 +1,5 @@
-use crate::conversions::v3_0::to_rust_type::from_schemas::post_processor::PostProcessor;
-use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, StructShape,
+use crate::conversions::v3_0::to_rust_type::components::from_schemas::{
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, PostProcessor, StructShape,
 };
 use crate::conversions::Result;
 

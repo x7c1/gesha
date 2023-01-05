@@ -1,7 +1,13 @@
+mod from_schemas;
+pub use from_schemas::from_schemas;
+
+mod from_request_bodies;
+pub use from_request_bodies::from_request_bodies;
+
 mod shape_request_bodies;
 mod shape_schemas;
 
-use crate::conversions::v3_0::to_rust_type::{contains_patch, from_request_bodies, from_schemas};
+use crate::conversions::v3_0::to_rust_type::contains_patch;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
     Definitions, EnumVariantName, ErrorDef, ErrorVariant, Imports, MediaTypeDef, ModDef,

@@ -1,6 +1,6 @@
-use crate::conversions::v3_0::to_rust_type::components_shapes::{create_module, ComponentsShapes};
-use crate::conversions::v3_0::to_rust_type::from_schemas;
-use crate::conversions::v3_0::to_rust_type::from_schemas::PostProcessor;
+use super::from_schemas;
+use super::from_schemas::PostProcessor;
+use crate::conversions::v3_0::to_rust_type::components::{create_module, ComponentsShapes};
 use crate::conversions::Error::ReferenceObjectNotFound;
 use crate::conversions::Result;
 use crate::targets::rust_type::ModDef;

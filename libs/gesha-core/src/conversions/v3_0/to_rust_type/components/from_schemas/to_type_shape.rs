@@ -1,5 +1,5 @@
 use super::TypeShape;
-use crate::conversions::v3_0::to_rust_type::from_schemas::TypeShape::InlineObject;
+use crate::conversions::v3_0::to_rust_type::components::from_schemas::TypeShape::InlineObject;
 use crate::conversions::Error::UnknownFormat;
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
@@ -8,7 +8,7 @@ use openapi_types::v3_0::SchemaCase::{Reference, Schema};
 use openapi_types::v3_0::{FormatModifier, OpenApiDataType, SchemaObject};
 use TypeShape::Fixed;
 
-pub(super) fn to_type_shape(schema_case: SchemaCase, is_required: bool) -> Result<TypeShape> {
+pub fn to_type_shape(schema_case: SchemaCase, is_required: bool) -> Result<TypeShape> {
     let shape = match schema_case {
         Schema(object) => from_object(*object, is_required)?,
         Reference(object) => TypeShape::Ref {
@@ -19,7 +19,7 @@ pub(super) fn to_type_shape(schema_case: SchemaCase, is_required: bool) -> Resul
     Ok(shape)
 }
 
-pub(super) fn from_object(object: SchemaObject, is_required: bool) -> Result<TypeShape> {
+pub fn from_object(object: SchemaObject, is_required: bool) -> Result<TypeShape> {
     let data_type = object
         .data_type
         .clone()

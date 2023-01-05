@@ -2,7 +2,7 @@ use super::{to_type_shape, FieldShape};
 use crate::conversions::Result;
 use openapi_types::v3_0::{ComponentName, RequiredSchemaFields, SchemaCase, SchemaProperties};
 
-pub(super) fn to_field_shapes(
+pub fn to_field_shapes(
     properties: Option<SchemaProperties>,
     required: Option<RequiredSchemaFields>,
 ) -> Result<Vec<FieldShape>> {

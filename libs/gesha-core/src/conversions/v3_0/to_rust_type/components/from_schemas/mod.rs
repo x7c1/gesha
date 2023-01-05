@@ -1,26 +1,26 @@
 mod definition_shape;
-pub(super) use definition_shape::{DefinitionShape, TypeDefinitionShape};
+pub use definition_shape::{DefinitionShape, TypeDefinitionShape};
 
 mod struct_shape;
-pub(super) use struct_shape::StructShape;
+pub use struct_shape::StructShape;
 
 mod mod_shape;
-pub(super) use mod_shape::ModShape;
+pub use mod_shape::ModShape;
 
 mod type_path;
-pub(super) use type_path::TypePath;
+pub use type_path::TypePath;
 
 mod all_of_shape;
-pub(super) use all_of_shape::AllOfShape;
+pub use all_of_shape::AllOfShape;
 
 mod all_of_item_shape;
-pub(super) use all_of_item_shape::AllOfItemShape;
+pub use all_of_item_shape::AllOfItemShape;
 
 mod type_header_shape;
-pub(super) use type_header_shape::TypeHeaderShape;
+pub use type_header_shape::TypeHeaderShape;
 
 mod post_processor;
-pub(super) use post_processor::PostProcessor;
+pub use post_processor::PostProcessor;
 
 mod to_shape;
 use to_shape::to_shape;
@@ -34,7 +34,8 @@ use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
 use openapi_types::v3_0::{ComponentName, ReferenceObject, SchemaObject, SchemasObject};
 
-pub(super) fn to_shapes(object: SchemasObject) -> Result<Vec<DefinitionShape>> {
+// TODO: rename
+pub fn from_schemas(object: SchemasObject) -> Result<Vec<DefinitionShape>> {
     object.into_iter().map(to_shape).collect()
 }
 

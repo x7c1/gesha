@@ -1,5 +1,7 @@
-use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_field_shapes;
-use crate::conversions::v3_0::to_rust_type::from_schemas::{DefinitionShape, FieldShape};
+use crate::conversions::v3_0::to_rust_type::components::from_schemas::to_field_shapes::to_field_shapes;
+use crate::conversions::v3_0::to_rust_type::components::from_schemas::{
+    DefinitionShape, FieldShape,
+};
 use crate::conversions::Result;
 use openapi_types::v3_0::{ReferenceObject, SchemaCase, SchemaObject};
 

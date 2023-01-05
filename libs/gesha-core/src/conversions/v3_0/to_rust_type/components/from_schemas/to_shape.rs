@@ -1,10 +1,10 @@
 use super::{to_type_shape, AllOfItemShape, DefinitionShape, TypeHeaderShape};
-use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_field_shapes;
-use crate::conversions::v3_0::to_rust_type::from_schemas::{AllOfShape, StructShape};
+use crate::conversions::v3_0::to_rust_type::components::from_schemas::to_field_shapes::to_field_shapes;
+use crate::conversions::v3_0::to_rust_type::components::from_schemas::{AllOfShape, StructShape};
 use crate::conversions::Result;
 use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject};
 
-pub(super) fn to_shape(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
+pub fn to_shape(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
     let (field_name, schema_case) = kv;
     match schema_case {
         SchemaCase::Schema(obj) => {

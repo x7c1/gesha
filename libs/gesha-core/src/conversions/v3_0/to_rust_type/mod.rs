@@ -1,8 +1,5 @@
-mod components_shapes;
-use components_shapes::ComponentsShapes;
-
-mod from_request_bodies;
-mod from_schemas;
+mod components;
+use components::{from_request_bodies, from_schemas, ComponentsShapes};
 
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{DataType, Modules};
@@ -12,12 +9,12 @@ impl ToRustType<ComponentsObject> for Modules {
     fn apply(this: ComponentsObject) -> Result<Self> {
         let schemas = this
             .schemas
-            .map(from_schemas::to_shapes)
+            .map(from_schemas)
             .unwrap_or_else(|| Ok(vec![]))?;
 
         let request_bodies = this
             .request_bodies
-            .map(from_request_bodies::to_shapes)
+            .map(from_request_bodies)
             .unwrap_or_else(|| Ok(vec![]))?;
 
         let shapes = ComponentsShapes {
