@@ -1,7 +1,7 @@
 use crate::conversions::v3_0::to_rust_type::components_shapes::ComponentsShapes;
 use crate::conversions::v3_0::to_rust_type::from_schemas::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    DefinitionShape, FieldShape, StructShape, TypePath, TypeShape,
+    DefinitionShape, FieldShape, ModShape, StructShape, TypePath, TypeShape,
 };
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
@@ -51,17 +51,17 @@ impl RefResolver<'_> {
             DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
                 detail: format!("'allOf' must be processed before '$ref'.\n{:#?}", shape),
             }),
-            DefinitionShape::Mod { name, defs } => {
+            DefinitionShape::Mod(ModShape { name, defs }) => {
                 let mod_path = self.mod_path.clone().add(name.clone());
                 let next_defs = defs
                     .into_iter()
                     .map(|x| self.resolve_ref_in_mod(mod_path.clone(), x))
                     .collect::<Result<Vec<_>>>()?;
 
-                Ok(DefinitionShape::Mod {
+                Ok(DefinitionShape::Mod(ModShape {
                     name,
                     defs: next_defs,
-                })
+                }))
             }
         }
     }

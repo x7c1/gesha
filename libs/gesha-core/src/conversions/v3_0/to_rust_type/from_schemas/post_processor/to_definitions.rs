@@ -1,6 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::from_schemas::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    DefinitionShape, FieldShape, StructShape, TypeHeaderShape, TypePath, TypeShape,
+    DefinitionShape, FieldShape, ModShape, StructShape, TypeHeaderShape, TypePath, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::is_patch;
 use crate::conversions::Error::PostProcessBroken;
@@ -55,7 +55,7 @@ impl Traverser {
                     shape
                 ),
             }),
-            DefinitionShape::Mod { name, defs } => {
+            DefinitionShape::Mod(ModShape { name, defs }) => {
                 let mod_path = self.mod_path.clone().add(name.clone());
                 let inline_defs = defs
                     .iter()

@@ -4,6 +4,9 @@ pub(super) use definition_shape::{DefinitionShape, TypeDefinitionShape};
 mod struct_shape;
 pub(super) use struct_shape::StructShape;
 
+mod mod_shape;
+pub(super) use mod_shape::ModShape;
+
 mod type_path;
 pub(super) use type_path::TypePath;
 

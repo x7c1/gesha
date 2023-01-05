@@ -1,6 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::from_schemas::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, StructShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, StructShape,
 };
 use crate::conversions::Result;
 
@@ -17,10 +17,10 @@ impl PostProcessor {
                     fields: self.merge_fields_all_of(items)?,
                 }))
             }
-            DefinitionShape::Mod { name, defs, .. } => Ok(DefinitionShape::Mod {
+            DefinitionShape::Mod(ModShape { name, defs }) => Ok(DefinitionShape::Mod(ModShape {
                 name,
                 defs: self.process_all_of(defs)?,
-            }),
+            })),
             DefinitionShape::Struct { .. }
             | DefinitionShape::NewType { .. }
             | DefinitionShape::Enum { .. } => Ok(def_shape),

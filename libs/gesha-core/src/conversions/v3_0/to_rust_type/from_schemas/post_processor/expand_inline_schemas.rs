@@ -2,7 +2,7 @@ use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_fi
 use crate::conversions::v3_0::to_rust_type::from_schemas::DefinitionShape::Mod;
 use crate::conversions::v3_0::to_rust_type::from_schemas::TypeShape::{Expanded, Higher};
 use crate::conversions::v3_0::to_rust_type::from_schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, PostProcessor, StructShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, PostProcessor, StructShape,
     TypeHeaderShape, TypePath, TypeShape,
 };
 use crate::conversions::Result;
@@ -53,10 +53,10 @@ fn expand_struct_fields(path: TypePath, shape: StructShape) -> Result<Vec<Defini
         header: shape.header,
         fields,
     };
-    let mod_def = defs.is_empty().not().then_some(Mod {
+    let mod_def = defs.is_empty().not().then_some(Mod(ModShape {
         name: mod_name,
         defs,
-    });
+    }));
     Ok(vec![next.into()].into_iter().chain(mod_def).collect())
 }
 
@@ -75,10 +75,10 @@ fn expand_all_of_fields(path: TypePath, shape: AllOfShape) -> Result<Vec<Definit
         header: shape.header,
         items,
     };
-    let mod_def = defs.is_empty().not().then_some(Mod {
+    let mod_def = defs.is_empty().not().then_some(Mod(ModShape {
         name: mod_name,
         defs,
-    });
+    }));
     Ok(vec![next.into()].into_iter().chain(mod_def).collect())
 }
 
