@@ -1,6 +1,6 @@
 use super::{to_type_shape, AllOfItemShape, DefinitionShape, TypeHeaderShape};
-use crate::conversions::v3_0::to_rust_type::components::from_schemas::to_field_shapes::to_field_shapes;
-use crate::conversions::v3_0::to_rust_type::components::from_schemas::{AllOfShape, StructShape};
+use crate::conversions::v3_0::to_rust_type::components::schemas::to_field_shapes::to_field_shapes;
+use crate::conversions::v3_0::to_rust_type::components::schemas::{AllOfShape, StructShape};
 use crate::conversions::Result;
 use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject};
 

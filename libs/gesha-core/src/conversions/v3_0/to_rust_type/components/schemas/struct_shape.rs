@@ -1,4 +1,4 @@
-use crate::conversions::v3_0::to_rust_type::components::from_schemas::{
+use crate::conversions::v3_0::to_rust_type::components::schemas::{
     DefinitionShape, FieldShape, TypeHeaderShape,
 };
 

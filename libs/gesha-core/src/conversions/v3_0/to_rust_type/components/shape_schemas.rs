@@ -1,6 +1,7 @@
-use super::from_schemas;
-use super::from_schemas::PostProcessor;
-use crate::conversions::v3_0::to_rust_type::components::{create_module, ComponentsShapes};
+use super::schemas::PostProcessor;
+use crate::conversions::v3_0::to_rust_type::components::{
+    create_module, schemas, ComponentsShapes,
+};
 use crate::conversions::Error::ReferenceObjectNotFound;
 use crate::conversions::Result;
 use crate::targets::rust_type::ModDef;
@@ -18,7 +19,7 @@ impl ComponentsShapes {
     pub fn find_type_definition(
         &self,
         object: &ReferenceObject<SchemaObject>,
-    ) -> Result<from_schemas::TypeDefinitionShape> {
+    ) -> Result<schemas::TypeDefinitionShape> {
         let prefix = "#/components/schemas/";
         let type_ref = object.as_ref();
         if !type_ref.starts_with(prefix) {

@@ -1,4 +1,4 @@
-use crate::conversions::v3_0::to_rust_type::components::from_schemas::DefinitionShape;
+use crate::conversions::v3_0::to_rust_type::components::schemas::DefinitionShape;
 use openapi_types::v3_0::ComponentName;
 
 #[derive(Clone, Debug)]

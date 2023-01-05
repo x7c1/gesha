@@ -1,5 +1,5 @@
-use crate::conversions::v3_0::to_rust_type::components::from_schemas::post_processor::PostProcessor;
-use crate::conversions::v3_0::to_rust_type::components::from_schemas::{
+use crate::conversions::v3_0::to_rust_type::components::schemas::post_processor::PostProcessor;
+use crate::conversions::v3_0::to_rust_type::components::schemas::{
     DefinitionShape, FieldShape, ModShape, StructShape, TypeHeaderShape, TypePath, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::is_patch;

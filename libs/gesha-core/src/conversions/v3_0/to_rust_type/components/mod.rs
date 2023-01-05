@@ -1,8 +1,8 @@
-mod from_schemas;
-pub use from_schemas::from_schemas;
+mod schemas;
+pub use schemas::from_schemas;
 
-mod from_request_bodies;
-pub use from_request_bodies::from_request_bodies;
+mod request_bodies;
+pub use request_bodies::from_request_bodies;
 
 mod shape_request_bodies;
 mod shape_schemas;
@@ -17,8 +17,8 @@ use indexmap::IndexMap;
 
 #[derive(Clone, Debug)]
 pub struct ComponentsShapes {
-    pub(super) schemas: Vec<from_schemas::DefinitionShape>,
-    pub(super) request_bodies: Vec<from_request_bodies::DefinitionShape>,
+    pub(super) schemas: Vec<schemas::DefinitionShape>,
+    pub(super) request_bodies: Vec<request_bodies::DefinitionShape>,
 }
 
 impl ComponentsShapes {

@@ -1,9 +1,9 @@
-use crate::conversions::v3_0::to_rust_type::components::from_schemas::to_field_shapes::to_field_shapes;
-use crate::conversions::v3_0::to_rust_type::components::from_schemas::DefinitionShape::Mod;
-use crate::conversions::v3_0::to_rust_type::components::from_schemas::TypeShape::{
+use crate::conversions::v3_0::to_rust_type::components::schemas::to_field_shapes::to_field_shapes;
+use crate::conversions::v3_0::to_rust_type::components::schemas::DefinitionShape::Mod;
+use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{
     Array, Expanded, Fixed, Higher, InlineObject, Ref,
 };
-use crate::conversions::v3_0::to_rust_type::components::from_schemas::{
+use crate::conversions::v3_0::to_rust_type::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, PostProcessor, StructShape,
     TypeHeaderShape, TypePath,
 };

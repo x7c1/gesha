@@ -1,5 +1,5 @@
 use super::TypeShape;
-use crate::conversions::v3_0::to_rust_type::components::from_schemas::TypeShape::InlineObject;
+use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::InlineObject;
 use crate::conversions::Error::UnknownFormat;
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
