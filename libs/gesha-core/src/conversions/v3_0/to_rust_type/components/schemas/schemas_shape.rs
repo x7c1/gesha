@@ -1,11 +1,43 @@
-use super::{to_type_shape, AllOfItemShape, DefinitionShape, TypeHeaderShape};
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfShape, FieldShape, StructShape,
+    to_type_shape, AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, StructShape,
+    TypeHeaderShape,
 };
 use crate::conversions::Result;
-use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject};
+use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject, SchemasObject};
 
-pub fn to_shape(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
+#[derive(Debug, Clone)]
+pub struct SchemasShape(Vec<DefinitionShape>);
+
+impl SchemasShape {
+    pub fn from(object: SchemasObject) -> Result<Self> {
+        let xs = object.into_iter().map(new).collect::<Result<Vec<_>>>()?;
+        Ok(SchemasShape(xs))
+    }
+    pub fn empty() -> Self {
+        Self(vec![])
+    }
+    pub fn iter(&self) -> impl Iterator<Item = &DefinitionShape> {
+        self.0.iter()
+    }
+}
+
+impl FromIterator<DefinitionShape> for SchemasShape {
+    fn from_iter<T: IntoIterator<Item = DefinitionShape>>(iter: T) -> Self {
+        let xs = iter.into_iter().collect();
+        Self(xs)
+    }
+}
+
+impl IntoIterator for SchemasShape {
+    type Item = <Vec<DefinitionShape> as IntoIterator>::Item;
+    type IntoIter = <Vec<DefinitionShape> as IntoIterator>::IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        IntoIterator::into_iter(self.0)
+    }
+}
+
+fn new(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
     let (field_name, schema_case) = kv;
     match schema_case {
         SchemaCase::Schema(obj) => {

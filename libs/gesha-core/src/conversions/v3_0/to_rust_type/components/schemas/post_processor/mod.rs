@@ -3,7 +3,7 @@ mod resolve_all_of;
 mod resolve_ref;
 mod to_definitions;
 
-use super::DefinitionShape;
+use crate::conversions::v3_0::to_rust_type::components::schemas::SchemasShape;
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShapes;
 use crate::conversions::Result;
 use crate::targets::rust_type::Definitions;
@@ -17,11 +17,7 @@ impl PostProcessor {
         Self { snapshot }
     }
 
-    pub fn run(
-        &mut self,
-        shapes: Vec<DefinitionShape>,
-        prefix: &'static str,
-    ) -> Result<Definitions> {
+    pub fn run(&mut self, shapes: SchemasShape, prefix: &'static str) -> Result<Definitions> {
         // 1st process : expand inline schemas
         let shapes = self.process_inline_schemas(shapes)?;
         self.snapshot.schemas = shapes.clone();

@@ -16,11 +16,11 @@ pub use mod_shape::ModShape;
 mod post_processor;
 pub use post_processor::PostProcessor;
 
+mod schemas_shape;
+pub use schemas_shape::SchemasShape;
+
 mod struct_shape;
 pub use struct_shape::StructShape;
-
-mod to_shape;
-use to_shape::to_shape;
 
 mod to_type_shape;
 use to_type_shape::to_type_shape;
@@ -31,13 +31,8 @@ pub use type_header_shape::TypeHeaderShape;
 mod type_path;
 pub use type_path::TypePath;
 
-use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
-use openapi_types::v3_0::{ReferenceObject, SchemaObject, SchemasObject};
-
-pub fn to_schemas_shape(object: SchemasObject) -> Result<Vec<DefinitionShape>> {
-    object.into_iter().map(to_shape).collect()
-}
+use openapi_types::v3_0::{ReferenceObject, SchemaObject};
 
 #[derive(Clone, Debug)]
 pub enum TypeShape {

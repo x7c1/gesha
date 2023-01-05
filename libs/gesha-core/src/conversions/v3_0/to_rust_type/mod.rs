@@ -1,8 +1,7 @@
 mod components;
-use components::ComponentsShapes;
+use components::{schemas::SchemasShape, ComponentsShapes};
 
 use crate::conversions::v3_0::to_rust_type::components::request_bodies::to_request_bodies_shape;
-use crate::conversions::v3_0::to_rust_type::components::schemas::to_schemas_shape;
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{DataType, Modules};
 use openapi_types::v3_0::ComponentsObject;
@@ -11,8 +10,8 @@ impl ToRustType<ComponentsObject> for Modules {
     fn apply(this: ComponentsObject) -> Result<Self> {
         let schemas = this
             .schemas
-            .map(to_schemas_shape)
-            .unwrap_or_else(|| Ok(vec![]))?;
+            .map(SchemasShape::from)
+            .unwrap_or_else(|| Ok(SchemasShape::empty()))?;
 
         let request_bodies = this
             .request_bodies

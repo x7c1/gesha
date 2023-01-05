@@ -1,16 +1,13 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    DefinitionShape, FieldShape, ModShape, PostProcessor, StructShape, TypePath, TypeShape,
+    DefinitionShape, FieldShape, ModShape, PostProcessor, SchemasShape, StructShape, TypePath,
+    TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShapes;
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 
 impl PostProcessor {
-    pub fn process_ref(
-        &self,
-        prefix: &'static str,
-        shapes: Vec<DefinitionShape>,
-    ) -> Result<Vec<DefinitionShape>> {
+    pub fn process_ref(&self, prefix: &'static str, shapes: SchemasShape) -> Result<SchemasShape> {
         let resolver = RefResolver {
             prefix,
             snapshot: &self.snapshot,

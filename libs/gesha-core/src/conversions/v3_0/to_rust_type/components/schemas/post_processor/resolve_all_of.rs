@@ -1,10 +1,11 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, PostProcessor, StructShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, PostProcessor, SchemasShape,
+    StructShape,
 };
 use crate::conversions::Result;
 
 impl PostProcessor {
-    pub fn process_all_of(&self, shapes: Vec<DefinitionShape>) -> Result<Vec<DefinitionShape>> {
+    pub fn process_all_of(&self, shapes: SchemasShape) -> Result<SchemasShape> {
         shapes.into_iter().map(|x| self.shape_all_of(x)).collect()
     }
 
@@ -18,7 +19,10 @@ impl PostProcessor {
             }
             DefinitionShape::Mod(ModShape { name, defs }) => Ok(DefinitionShape::Mod(ModShape {
                 name,
-                defs: self.process_all_of(defs)?,
+                defs: defs
+                    .into_iter()
+                    .map(|x| self.shape_all_of(x))
+                    .collect::<Result<_>>()?,
             })),
             DefinitionShape::Struct { .. }
             | DefinitionShape::NewType { .. }

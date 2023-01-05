@@ -1,6 +1,7 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::post_processor::PostProcessor;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    DefinitionShape, FieldShape, ModShape, StructShape, TypeHeaderShape, TypePath, TypeShape,
+    DefinitionShape, FieldShape, ModShape, SchemasShape, StructShape, TypeHeaderShape, TypePath,
+    TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::is_patch;
 use crate::conversions::Error::PostProcessBroken;
@@ -13,7 +14,7 @@ use crate::targets::rust_type::{
 use openapi_types::v3_0::ComponentName;
 
 impl PostProcessor {
-    pub fn to_definitions(&self, shapes: &[DefinitionShape]) -> Result<Definitions> {
+    pub fn to_definitions(&self, shapes: &SchemasShape) -> Result<Definitions> {
         let traverser = Traverser {
             mod_path: TypePath::new(),
         };

@@ -4,6 +4,7 @@ pub mod schemas;
 mod shape_request_bodies;
 mod shape_schemas;
 
+use crate::conversions::v3_0::to_rust_type::components::schemas::SchemasShape;
 use crate::conversions::v3_0::to_rust_type::contains_patch;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
@@ -14,7 +15,7 @@ use indexmap::IndexMap;
 
 #[derive(Clone, Debug)]
 pub struct ComponentsShapes {
-    pub(super) schemas: Vec<schemas::DefinitionShape>,
+    pub(super) schemas: SchemasShape,
     pub(super) request_bodies: Vec<request_bodies::DefinitionShape>,
 }
 
