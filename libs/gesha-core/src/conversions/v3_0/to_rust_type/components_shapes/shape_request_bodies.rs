@@ -4,13 +4,13 @@ use crate::conversions::v3_0::to_rust_type::from_request_bodies::{
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, Definitions, EnumVariant, EnumVariantName, MediaTypeVariant, Module,
+    DataType, Definition, Definitions, EnumVariant, EnumVariantName, MediaTypeVariant, ModDef,
     RequestBodyDef, TypeHeader,
 };
 use openapi_types::v3_0::SchemaCase;
 
 impl ComponentsShapes {
-    pub fn shape_request_bodies(&self) -> Result<Option<Module>> {
+    pub fn shape_request_bodies(&self) -> Result<Option<ModDef>> {
         let definitions = self
             .request_bodies
             .clone()

@@ -6,18 +6,7 @@ mod from_schemas;
 
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{DataType, Modules};
-use openapi_types::v3_0::{ComponentsObject, Document};
-
-impl ToRustType<Document> for Modules {
-    fn apply(this: Document) -> Result<Self> {
-        let module = this
-            .components
-            .map(ToRustType::apply)
-            .unwrap_or_else(|| Ok(Modules::empty()))?;
-
-        Ok(module)
-    }
-}
+use openapi_types::v3_0::ComponentsObject;
 
 impl ToRustType<ComponentsObject> for Modules {
     fn apply(this: ComponentsObject) -> Result<Self> {

@@ -1,7 +1,7 @@
 use indexmap::IndexSet;
 use std::fmt::{Display, Formatter};
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, PartialEq, Default)]
 pub struct Imports(IndexSet<Package>);
 
 impl Imports {

@@ -25,13 +25,6 @@ impl IntoIterator for ErrorDef {
     }
 }
 
-#[allow(clippy::derive_hash_xor_eq)]
-impl Hash for ErrorDef {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        hash_items(self.0.iter(), state)
-    }
-}
-
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub enum ErrorVariant {
     InvalidJson,

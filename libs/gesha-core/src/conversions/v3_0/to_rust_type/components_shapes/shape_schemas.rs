@@ -3,11 +3,11 @@ use crate::conversions::v3_0::to_rust_type::from_schemas;
 use crate::conversions::v3_0::to_rust_type::from_schemas::PostProcessor;
 use crate::conversions::Error::ReferenceObjectNotFound;
 use crate::conversions::Result;
-use crate::targets::rust_type::Module;
+use crate::targets::rust_type::ModDef;
 use openapi_types::v3_0::{ReferenceObject, SchemaObject};
 
 impl ComponentsShapes {
-    pub fn shape_schemas_module(&self) -> Result<Option<Module>> {
+    pub fn shape_schemas_module(&self) -> Result<Option<ModDef>> {
         let mut processor = PostProcessor::new(self.clone());
         create_module(
             "schemas",

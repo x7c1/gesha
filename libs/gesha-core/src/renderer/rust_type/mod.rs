@@ -16,7 +16,7 @@ use crate::render;
 use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, DeriveAttribute, Imports, Module, Modules, NewTypeDef, PresetDef,
+    DataType, Definition, DeriveAttribute, Imports, ModDef, Modules, NewTypeDef, PresetDef,
     StructDef, StructField, StructFieldAttribute,
 };
 use std::io::Write;
@@ -28,7 +28,7 @@ impl Renderer for Modules {
     }
 }
 
-fn render_module(mut write: &mut File, module: Module) -> Result<()> {
+fn render_module(mut write: &mut File, module: ModDef) -> Result<()> {
     render! { write =>
         echo > "pub mod {name}", name = module.name;
         "{}" > render_mod_body => module;
@@ -37,13 +37,13 @@ fn render_module(mut write: &mut File, module: Module) -> Result<()> {
     Ok(())
 }
 
-fn render_mod_body(mut write: &mut File, module: Module) -> Result<()> {
+fn render_mod_body(mut write: &mut File, module: ModDef) -> Result<()> {
     render! { write =>
         call > render_use_statements => module.imports;
         echo > "\n";
     }
     module
-        .definitions
+        .defs
         .into_iter()
         .try_for_each(|def| render_definition(write, def))
 }

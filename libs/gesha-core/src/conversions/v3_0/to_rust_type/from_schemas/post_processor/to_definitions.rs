@@ -64,8 +64,8 @@ impl Traverser {
 
                 let def = ModDef {
                     name: ModuleName::new(name.clone()),
-                    imports: vec![Package::Deserialize, Package::Serialize],
-                    defs: inline_defs,
+                    imports: vec![Package::Deserialize, Package::Serialize].into(),
+                    defs: inline_defs.into_iter().collect(),
                 };
                 Ok(def.into())
             }

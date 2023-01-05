@@ -1,8 +1,8 @@
-use crate::targets::rust_type::{DataType, Definition, Module};
+use crate::targets::rust_type::{DataType, Definition, ModDef};
 use std::vec::IntoIter;
 
 #[derive(Clone, Debug)]
-pub struct Modules(Vec<Module>);
+pub struct Modules(Vec<ModDef>);
 
 impl Modules {
     pub fn any_type<F>(&self, f: F) -> bool
@@ -17,14 +17,14 @@ impl Modules {
         F: Fn(&Definition) -> bool,
     {
         self.0.iter().any(|module| {
-            module.definitions.iter().any(|def| {
+            module.defs.iter().any(|def| {
                 // dummy comment to mute cargo-clippy
                 f(def)
             })
         })
     }
 
-    pub fn push(&mut self, module: Module) {
+    pub fn push(&mut self, module: ModDef) {
         self.0.push(module)
     }
 }
@@ -34,14 +34,14 @@ impl Modules {
         Self(vec![])
     }
 
-    pub fn new(module: Vec<Module>) -> Self {
+    pub fn new(module: Vec<ModDef>) -> Self {
         Self(module)
     }
 }
 
 impl IntoIterator for Modules {
-    type Item = Module;
-    type IntoIter = IntoIter<Module>;
+    type Item = ModDef;
+    type IntoIter = IntoIter<ModDef>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
