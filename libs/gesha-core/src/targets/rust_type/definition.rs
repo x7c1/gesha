@@ -1,9 +1,9 @@
 use crate::targets::rust_type::{
-    DataType, Definitions, DeriveAttribute, EnumVariant, ErrorDef, Imports, MediaTypeDef, Module,
-    ModuleName, Package, RequestBodyDef, StructField, TypeHeader,
+    DataType, Definitions, DeriveAttribute, EnumVariant, ErrorDef, Imports, MediaTypeDef,
+    ModuleName, RequestBodyDef, StructField, TypeHeader,
 };
 
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Definition {
     StructDef(StructDef),
     NewTypeDef(NewTypeDef),
@@ -29,7 +29,7 @@ impl Definition {
     }
 }
 
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum PresetDef {
     Error(ErrorDef),
     /// rf. https://stackoverflow.com/q/44331037
@@ -44,7 +44,7 @@ impl From<PresetDef> for Definition {
     }
 }
 
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct StructDef {
     pub header: TypeHeader,
     pub fields: Vec<StructField>,
@@ -69,7 +69,7 @@ impl From<StructDef> for Definition {
     }
 }
 
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct NewTypeDef {
     pub header: TypeHeader,
     pub data_type: DataType,
@@ -94,7 +94,7 @@ impl From<NewTypeDef> for Definition {
     }
 }
 
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct EnumDef {
     pub header: TypeHeader,
     pub variants: Vec<EnumVariant>,
@@ -119,7 +119,7 @@ impl From<EnumDef> for Definition {
     }
 }
 
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct ModDef {
     pub name: ModuleName,
     pub imports: Vec<Package>,

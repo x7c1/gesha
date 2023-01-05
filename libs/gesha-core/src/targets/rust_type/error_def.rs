@@ -1,8 +1,7 @@
-use crate::targets::rust_type::hash_items;
 use indexmap::IndexSet;
-use std::hash::{Hash, Hasher};
+use std::hash::Hash;
 
-#[derive(Debug, Clone, Eq, PartialEq, Default)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct ErrorDef(IndexSet<ErrorVariant>);
 
 impl ErrorDef {
