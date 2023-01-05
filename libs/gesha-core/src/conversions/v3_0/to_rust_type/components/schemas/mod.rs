@@ -31,8 +31,6 @@ pub use type_header_shape::TypeHeaderShape;
 mod type_path;
 pub use type_path::TypePath;
 
-mod to_field_shapes;
-
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
 use openapi_types::v3_0::{ReferenceObject, SchemaObject, SchemasObject};

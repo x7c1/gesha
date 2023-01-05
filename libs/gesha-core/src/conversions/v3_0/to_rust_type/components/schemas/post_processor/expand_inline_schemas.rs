@@ -1,4 +1,3 @@
-use crate::conversions::v3_0::to_rust_type::components::schemas::to_field_shapes::to_field_shapes;
 use crate::conversions::v3_0::to_rust_type::components::schemas::DefinitionShape::Mod;
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{
     Array, Expanded, Fixed, Higher, InlineObject, Ref,
@@ -119,7 +118,7 @@ fn expand_field(
             } else {
                 let struct_def = StructShape {
                     header: TypeHeaderShape::new(type_name.clone(), &object),
-                    fields: to_field_shapes(object.properties.clone(), object.required.clone())?,
+                    fields: FieldShape::from_object_ref(&object)?,
                 };
                 expand_struct_fields(mod_path.clone(), struct_def)?
             };

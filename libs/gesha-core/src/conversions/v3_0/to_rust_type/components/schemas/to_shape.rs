@@ -1,6 +1,7 @@
 use super::{to_type_shape, AllOfItemShape, DefinitionShape, TypeHeaderShape};
-use crate::conversions::v3_0::to_rust_type::components::schemas::to_field_shapes::to_field_shapes;
-use crate::conversions::v3_0::to_rust_type::components::schemas::{AllOfShape, StructShape};
+use crate::conversions::v3_0::to_rust_type::components::schemas::{
+    AllOfShape, FieldShape, StructShape,
+};
 use crate::conversions::Result;
 use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject};
 
@@ -43,7 +44,7 @@ impl Shaper {
     fn for_struct(self) -> Result<DefinitionShape> {
         let shape = StructShape {
             header: self.create_type_header(),
-            fields: to_field_shapes(self.object.properties, self.object.required)?,
+            fields: FieldShape::from_object(self.object)?,
         };
         Ok(shape.into())
     }
