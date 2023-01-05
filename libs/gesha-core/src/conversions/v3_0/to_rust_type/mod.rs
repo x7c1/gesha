@@ -1,6 +1,8 @@
 mod components;
-use components::{to_request_bodies_shape, to_schemas_shape, ComponentsShapes};
+use components::ComponentsShapes;
 
+use crate::conversions::v3_0::to_rust_type::components::request_bodies::to_request_bodies_shape;
+use crate::conversions::v3_0::to_rust_type::components::schemas::to_schemas_shape;
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{DataType, Modules};
 use openapi_types::v3_0::ComponentsObject;

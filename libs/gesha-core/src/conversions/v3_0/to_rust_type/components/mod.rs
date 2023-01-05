@@ -1,8 +1,5 @@
-mod schemas;
-pub use schemas::to_schemas_shape;
-
-mod request_bodies;
-pub use request_bodies::to_request_bodies_shape;
+pub mod request_bodies;
+pub mod schemas;
 
 mod shape_request_bodies;
 mod shape_schemas;
