@@ -1,7 +1,8 @@
+use crate::conversions::v3_0::to_rust_type::components::components_shape::create_module;
 use crate::conversions::v3_0::to_rust_type::components::request_bodies::{
     ContentShape, DefinitionShape, MediaTypeShape,
 };
-use crate::conversions::v3_0::to_rust_type::components::{create_module, ComponentsShapes};
+use crate::conversions::v3_0::to_rust_type::components::ComponentsShapes;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
     DataType, Definition, Definitions, EnumVariant, EnumVariantName, MediaTypeVariant, ModDef,
