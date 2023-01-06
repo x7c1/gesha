@@ -1,14 +1,28 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, PostProcessor, SchemasShape,
-    StructShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, SchemasShape, StructShape,
 };
+use crate::conversions::v3_0::to_rust_type::components::ComponentsShapes;
 use crate::conversions::Result;
 
-impl PostProcessor {
-    pub fn process_all_of(&self, shapes: SchemasShape) -> Result<SchemasShape> {
-        shapes.into_iter().map(|x| self.shape_all_of(x)).collect()
-    }
+pub fn resolve_all_of(mut shapes: ComponentsShapes) -> Result<ComponentsShapes> {
+    let shaper = Shaper {
+        snapshot: shapes.clone(),
+    };
+    let schemas = shapes
+        .schemas
+        .into_iter()
+        .map(|x| shaper.shape_all_of(x))
+        .collect::<Result<SchemasShape>>()?;
 
+    shapes.schemas = schemas;
+    Ok(shapes)
+}
+
+struct Shaper {
+    snapshot: ComponentsShapes,
+}
+
+impl Shaper {
     fn shape_all_of(&self, def_shape: DefinitionShape) -> Result<DefinitionShape> {
         match def_shape {
             DefinitionShape::AllOf(AllOfShape { header, items }) => {

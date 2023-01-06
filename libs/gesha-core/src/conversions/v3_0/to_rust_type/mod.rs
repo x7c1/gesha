@@ -1,6 +1,6 @@
 mod components;
 
-use crate::conversions::v3_0::to_rust_type::components::request_bodies::to_request_bodies_shape;
+use crate::conversions::v3_0::to_rust_type::components::request_bodies::RequestBodiesShape;
 use crate::conversions::v3_0::to_rust_type::components::schemas::SchemasShape;
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShapes;
 use crate::conversions::{Result, ToRustType};
@@ -16,12 +16,13 @@ impl ToRustType<ComponentsObject> for Modules {
 
         let request_bodies = this
             .request_bodies
-            .map(to_request_bodies_shape)
-            .unwrap_or_else(|| Ok(vec![]))?;
+            .map(RequestBodiesShape::from)
+            .unwrap_or_else(|| Ok(RequestBodiesShape::empty()))?;
 
         let shapes = ComponentsShapes {
             schemas,
             request_bodies,
+            ..Default::default()
         };
         shapes.into_modules()
     }

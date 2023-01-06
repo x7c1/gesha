@@ -3,24 +3,25 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{
     Array, Expanded, Fixed, Higher, InlineObject, Ref,
 };
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, PostProcessor, SchemasShape,
-    StructShape, TypeHeaderShape, TypePath,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, StructShape,
+    TypeHeaderShape, TypePath,
 };
+use crate::conversions::v3_0::to_rust_type::components::ComponentsShapes;
 use crate::conversions::Result;
 use std::ops::Not;
 
-impl PostProcessor {
-    pub fn process_inline_schemas(&self, shapes: SchemasShape) -> Result<SchemasShape> {
-        let defs = shapes
-            .into_iter()
-            .map(expand)
-            .collect::<Result<Vec<Vec<_>>>>()?
-            .into_iter()
-            .flatten()
-            .collect();
+pub fn expand_inline_schemas(mut shapes: ComponentsShapes) -> Result<ComponentsShapes> {
+    let schemas = shapes
+        .schemas
+        .into_iter()
+        .map(expand)
+        .collect::<Result<Vec<Vec<_>>>>()?
+        .into_iter()
+        .flatten()
+        .collect();
 
-        Ok(defs)
-    }
+    shapes.schemas = schemas;
+    Ok(shapes)
 }
 
 fn expand(shape: DefinitionShape) -> Result<Vec<DefinitionShape>> {

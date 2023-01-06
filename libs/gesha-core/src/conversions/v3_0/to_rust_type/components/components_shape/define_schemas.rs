@@ -1,4 +1,4 @@
-use crate::conversions::v3_0::to_rust_type::components::schemas::post_processor::PostProcessor;
+use crate::conversions::v3_0::to_rust_type::components::components_shape::create_module;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
     DefinitionShape, FieldShape, ModShape, SchemasShape, StructShape, TypeHeaderShape, TypePath,
     TypeShape,
@@ -13,27 +13,27 @@ use crate::targets::rust_type::{
 };
 use openapi_types::v3_0::ComponentName;
 
-impl PostProcessor {
-    pub fn to_definitions(&self, shapes: &SchemasShape) -> Result<Definitions> {
-        let traverser = Traverser {
-            mod_path: TypePath::new(),
-        };
-        shapes.iter().map(|x| traverser.apply(x)).collect()
-    }
+pub fn define_schemas(shapes: SchemasShape) -> Result<Option<ModDef>> {
+    let define = Definer {
+        mod_path: TypePath::new(),
+    };
+    let defs = shapes
+        .into_iter()
+        .map(|x| define.apply(x))
+        .collect::<Result<Definitions>>()?;
+
+    create_module("schemas", defs)
 }
 
-struct Traverser {
+struct Definer {
     mod_path: TypePath,
 }
 
-impl Traverser {
-    fn apply(&self, shape: &DefinitionShape) -> Result<Definition> {
+impl Definer {
+    fn apply(&self, shape: DefinitionShape) -> Result<Definition> {
         match shape {
             DefinitionShape::Struct(StructShape { header, fields }) => {
-                let def = StructDef::new(
-                    to_type_header(header.clone()),
-                    self.shapes_to_fields(fields)?,
-                );
+                let def = StructDef::new(to_type_header(header), self.shapes_to_fields(fields)?);
                 Ok(def.into())
             }
             DefinitionShape::NewType { header, type_shape } => {
@@ -42,11 +42,7 @@ impl Traverser {
                 Ok(def.into())
             }
             DefinitionShape::Enum { header, values } => {
-                let variants = Clone::clone(values)
-                    .into_iter()
-                    .map(to_enum_variant)
-                    .collect();
-
+                let variants = values.into_iter().map(to_enum_variant).collect();
                 let def = EnumDef::new(to_type_header(header.clone()), variants);
                 Ok(def.into())
             }
@@ -59,7 +55,7 @@ impl Traverser {
             DefinitionShape::Mod(ModShape { name, defs }) => {
                 let mod_path = self.mod_path.clone().add(name.clone());
                 let inline_defs = defs
-                    .iter()
+                    .into_iter()
                     .map(|x| self.apply_in_mod(mod_path.clone(), x))
                     .collect::<Result<Vec<_>>>()?;
 
@@ -73,30 +69,30 @@ impl Traverser {
         }
     }
 
-    fn apply_in_mod(&self, mod_path: TypePath, shape: &DefinitionShape) -> Result<Definition> {
+    fn apply_in_mod(&self, mod_path: TypePath, shape: DefinitionShape) -> Result<Definition> {
         let resolver = Self { mod_path };
         resolver.apply(shape)
     }
 
-    fn shapes_to_fields(&self, shapes: &[FieldShape]) -> Result<Vec<StructField>> {
+    fn shapes_to_fields(&self, shapes: Vec<FieldShape>) -> Result<Vec<StructField>> {
         shapes
-            .iter()
+            .into_iter()
             .map(|shape| self.field_shape_to_struct_field(shape))
             .collect()
     }
 
-    fn field_shape_to_struct_field(&self, shape: &FieldShape) -> Result<StructField> {
-        let data_type = type_shape_to_data_type(&shape.type_shape)?;
+    fn field_shape_to_struct_field(&self, shape: FieldShape) -> Result<StructField> {
+        let data_type = type_shape_to_data_type(shape.type_shape)?;
         let name = StructFieldName::new(shape.name.as_ref());
         let attrs = to_field_attrs(&shape.name, &name, &data_type);
         let field = StructField::new(name, data_type, attrs);
         Ok(field)
     }
 }
-fn type_shape_to_data_type(shape: &TypeShape) -> Result<DataType> {
+fn type_shape_to_data_type(shape: TypeShape) -> Result<DataType> {
     let data_type = match shape {
         TypeShape::Array { type_shape, .. } => {
-            DataType::Vec(Box::new(type_shape_to_data_type(type_shape)?))
+            DataType::Vec(Box::new(type_shape_to_data_type(*type_shape)?))
         }
         TypeShape::Ref { .. } => {
             todo!()
@@ -114,12 +110,12 @@ fn type_shape_to_data_type(shape: &TypeShape) -> Result<DataType> {
             type_name,
         } => {
             if type_name == "Patch" {
-                DataType::Patch(Box::new(type_shape_to_data_type(type_shape)?))
+                DataType::Patch(Box::new(type_shape_to_data_type(*type_shape)?))
             } else {
                 DataType::Custom(format!(
                     "{}<{}>",
                     type_name,
-                    type_shape_to_data_type(type_shape)?
+                    type_shape_to_data_type(*type_shape)?
                 ))
             }
         }

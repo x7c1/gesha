@@ -13,9 +13,6 @@ pub use field_shape::FieldShape;
 mod mod_shape;
 pub use mod_shape::ModShape;
 
-mod post_processor;
-pub use post_processor::PostProcessor;
-
 mod schemas_shape;
 pub use schemas_shape::SchemasShape;
 

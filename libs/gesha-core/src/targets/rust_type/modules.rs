@@ -47,3 +47,10 @@ impl IntoIterator for Modules {
         self.0.into_iter()
     }
 }
+
+impl FromIterator<ModDef> for Modules {
+    fn from_iter<T: IntoIterator<Item = ModDef>>(iter: T) -> Self {
+        let xs = iter.into_iter().collect();
+        Self(xs)
+    }
+}
