@@ -1,4 +1,3 @@
-use crate::conversions::v3_0::to_rust_type::components::schemas::to_type_shape::to_type_shape;
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape;
 use crate::conversions::Result;
 use openapi_types::v3_0::{
@@ -46,7 +45,7 @@ impl ToFieldShapes {
         let is_required = self.is_required(&name);
         Ok(FieldShape {
             name,
-            type_shape: to_type_shape(case, is_required)?,
+            type_shape: TypeShape::from_case(case, is_required)?,
         })
     }
 

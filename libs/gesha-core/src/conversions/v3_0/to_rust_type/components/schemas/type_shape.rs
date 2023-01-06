@@ -1,36 +1,80 @@
-use super::TypeShape;
-use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::InlineObject;
+use crate::conversions::v3_0::to_rust_type::components::schemas::TypePath;
+use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{Fixed, InlineObject};
 use crate::conversions::Error::UnknownFormat;
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
 use openapi_types::v3_0::SchemaCase;
 use openapi_types::v3_0::SchemaCase::{Reference, Schema};
-use openapi_types::v3_0::{FormatModifier, OpenApiDataType, SchemaObject};
-use TypeShape::Fixed;
+use openapi_types::v3_0::{FormatModifier, OpenApiDataType, ReferenceObject, SchemaObject};
 
-pub fn to_type_shape(schema_case: SchemaCase, is_required: bool) -> Result<TypeShape> {
-    let shape = match schema_case {
-        Schema(object) => from_object(*object, is_required)?,
-        Reference(object) => TypeShape::Ref {
-            object,
-            is_required,
-        },
-    };
-    Ok(shape)
+#[derive(Clone, Debug)]
+pub enum TypeShape {
+    Fixed {
+        data_type: DataType,
+        is_required: bool,
+        is_nullable: bool,
+    },
+    Array {
+        type_shape: Box<TypeShape>,
+        is_required: bool,
+        is_nullable: bool,
+    },
+    Ref {
+        object: ReferenceObject<SchemaObject>,
+        is_required: bool,
+    },
+    Expanded {
+        type_path: TypePath,
+        is_required: bool,
+        is_nullable: bool,
+    },
+    InlineObject {
+        object: SchemaObject,
+        is_required: bool,
+        is_nullable: bool,
+    },
+    Higher {
+        type_shape: Box<TypeShape>,
+        type_name: String,
+    },
 }
 
-pub fn from_object(object: SchemaObject, is_required: bool) -> Result<TypeShape> {
-    let data_type = object
-        .data_type
-        .clone()
-        .or_else(|| object.all_of.is_some().then_some(OpenApiDataType::Object))
-        .unwrap_or_else(|| unimplemented!());
+impl TypeShape {
+    pub fn from_case(schema_case: SchemaCase, is_required: bool) -> Result<TypeShape> {
+        let shape = match schema_case {
+            Schema(object) => Self::from_object(*object, is_required)?,
+            Reference(object) => TypeShape::Ref {
+                object,
+                is_required,
+            },
+        };
+        Ok(shape)
+    }
 
-    let to_type = TypeFactory {
-        object,
-        is_required,
-    };
-    to_type.apply(data_type)
+    pub fn from_object(object: SchemaObject, is_required: bool) -> Result<TypeShape> {
+        let data_type = object
+            .data_type
+            .clone()
+            .or_else(|| object.all_of.is_some().then_some(OpenApiDataType::Object))
+            .unwrap_or_else(|| unimplemented!());
+
+        let to_type = TypeFactory {
+            object,
+            is_required,
+        };
+        to_type.apply(data_type)
+    }
+
+    pub fn is_required(&self) -> bool {
+        match self {
+            Self::Fixed { is_required, .. } => *is_required,
+            Self::Array { is_required, .. } => *is_required,
+            Self::Ref { is_required, .. } => *is_required,
+            Self::InlineObject { is_required, .. } => *is_required,
+            Self::Expanded { is_required, .. } => *is_required,
+            Self::Higher { .. } => false,
+        }
+    }
 }
 
 /// OpenApiDataType -> TypeShape
@@ -97,7 +141,7 @@ impl TypeFactory {
             .items
             .unwrap_or_else(|| unimplemented!("array must have items"));
 
-        let items_shape = to_type_shape(items.into(), /* is_required */ true)?;
+        let items_shape = TypeShape::from_case(items.into(), /* is_required */ true)?;
         let type_shape = TypeShape::Array {
             type_shape: Box::new(items_shape),
             is_required: self.is_required,

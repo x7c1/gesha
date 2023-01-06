@@ -1,6 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    to_type_shape, AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, StructShape,
-    TypeHeaderShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, StructShape, TypeHeaderShape,
+    TypeShape,
 };
 use crate::conversions::Result;
 use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject, SchemasObject};
@@ -59,14 +59,14 @@ impl Shaper {
             return self.for_all_of();
         }
 
-        use openapi_types::v3_0::OpenApiDataType as ot;
+        use openapi_types::v3_0::OpenApiDataType as o;
         match self.object.data_type.as_ref() {
-            Some(ot::Object) => self.for_struct(),
-            Some(ot::String) => match self.object.enum_values {
+            Some(o::Object) => self.for_struct(),
+            Some(o::String) => match self.object.enum_values {
                 Some(_) => self.for_enum(),
                 None => self.for_newtype(),
             },
-            Some(ot::Integer | ot::Number | ot::Boolean | ot::Array) => self.for_newtype(),
+            Some(o::Integer | o::Number | o::Boolean | o::Array) => self.for_newtype(),
 
             // define it as 'object' if 'type' is not specified.
             None => self.for_struct(),
@@ -95,7 +95,7 @@ impl Shaper {
     fn for_newtype(self) -> Result<DefinitionShape> {
         let shape = DefinitionShape::NewType {
             header: self.create_type_header(),
-            type_shape: to_type_shape::from_object(self.object, /* is_required */ true)?,
+            type_shape: TypeShape::from_object(self.object, /* is_required */ true)?,
         };
         Ok(shape)
     }
