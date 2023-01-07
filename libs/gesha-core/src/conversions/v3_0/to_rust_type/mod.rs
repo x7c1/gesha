@@ -2,7 +2,7 @@ mod components;
 
 use crate::conversions::v3_0::to_rust_type::components::request_bodies::RequestBodiesShape;
 use crate::conversions::v3_0::to_rust_type::components::schemas::SchemasShape;
-use crate::conversions::v3_0::to_rust_type::components::ComponentsShapes;
+use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::{Result, ToRustType};
 use crate::targets::rust_type::{DataType, Modules};
 use openapi_types::v3_0::ComponentsObject;
@@ -19,7 +19,7 @@ impl ToRustType<ComponentsObject> for Modules {
             .map(RequestBodiesShape::from)
             .unwrap_or_else(|| Ok(RequestBodiesShape::empty()))?;
 
-        let shapes = ComponentsShapes {
+        let shapes = ComponentsShape {
             schemas,
             request_bodies,
             ..Default::default()

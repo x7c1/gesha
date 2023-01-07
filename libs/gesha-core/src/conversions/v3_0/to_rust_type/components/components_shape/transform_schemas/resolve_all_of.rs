@@ -1,10 +1,10 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, SchemasShape, StructShape,
 };
-use crate::conversions::v3_0::to_rust_type::components::ComponentsShapes;
+use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
 
-pub fn resolve_all_of(mut shapes: ComponentsShapes) -> Result<ComponentsShapes> {
+pub fn resolve_all_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let transformer = Transformer {
         snapshot: shapes.clone(),
     };
@@ -19,7 +19,7 @@ pub fn resolve_all_of(mut shapes: ComponentsShapes) -> Result<ComponentsShapes> 
 }
 
 struct Transformer {
-    snapshot: ComponentsShapes,
+    snapshot: ComponentsShape,
 }
 
 impl Transformer {

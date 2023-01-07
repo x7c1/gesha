@@ -10,10 +10,10 @@ use resolve_optional_fields::resolve_optional_fields;
 mod resolve_type_path;
 use resolve_type_path::resolve_type_path;
 
-use crate::conversions::v3_0::to_rust_type::components::ComponentsShapes;
+use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
 
-pub fn transform_schemas(shapes: ComponentsShapes) -> Result<ComponentsShapes> {
+pub fn transform_schemas(shapes: ComponentsShape) -> Result<ComponentsShape> {
     let shapes = expand_inline_schemas(shapes)?;
     let shapes = resolve_all_of(shapes)?;
     let shapes = resolve_type_path(shapes)?;

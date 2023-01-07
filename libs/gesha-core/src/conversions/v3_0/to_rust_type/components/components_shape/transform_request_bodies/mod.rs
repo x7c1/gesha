@@ -2,7 +2,7 @@ use crate::conversions::v3_0::to_rust_type::components::components_shape::create
 use crate::conversions::v3_0::to_rust_type::components::request_bodies::{
     ContentShape, DefinitionShape, MediaTypeShape, RequestBodiesShape,
 };
-use crate::conversions::v3_0::to_rust_type::components::ComponentsShapes;
+use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
     DataType, Definition, Definitions, EnumVariant, EnumVariantName, MediaTypeVariant, ModDef,
@@ -10,7 +10,7 @@ use crate::targets::rust_type::{
 };
 use openapi_types::v3_0::SchemaCase;
 
-pub fn transform_request_bodies(mut shapes: ComponentsShapes) -> Result<ComponentsShapes> {
+pub fn transform_request_bodies(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let transformer = Transformer {
         snapshot: shapes.clone(),
     };
@@ -25,7 +25,7 @@ pub fn transform_request_bodies(mut shapes: ComponentsShapes) -> Result<Componen
 }
 
 struct Transformer {
-    snapshot: ComponentsShapes,
+    snapshot: ComponentsShape,
 }
 
 impl Transformer {

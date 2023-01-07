@@ -6,11 +6,11 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, StructShape,
     TypeHeaderShape, TypePath, TypeShape,
 };
-use crate::conversions::v3_0::to_rust_type::components::ComponentsShapes;
+use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
 use std::ops::Not;
 
-pub fn expand_inline_schemas(mut shapes: ComponentsShapes) -> Result<ComponentsShapes> {
+pub fn expand_inline_schemas(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let schemas = shapes
         .schemas
         .into_iter()

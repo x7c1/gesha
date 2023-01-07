@@ -30,13 +30,13 @@ use indexmap::IndexMap;
 use openapi_types::v3_0::{ReferenceObject, SchemaObject};
 
 #[derive(Clone, Debug, Default)]
-pub struct ComponentsShapes {
+pub struct ComponentsShape {
     pub schemas: SchemasShape,
     pub request_bodies: RequestBodiesShape,
     pub core: CoreShape,
 }
 
-impl ComponentsShapes {
+impl ComponentsShape {
     pub fn into_modules(self) -> Result<Modules> {
         let this = transform(self)?;
         let modules = vec![
@@ -125,7 +125,7 @@ impl ComponentsShapes {
     // }
 }
 
-fn transform(shapes: ComponentsShapes) -> Result<ComponentsShapes> {
+fn transform(shapes: ComponentsShape) -> Result<ComponentsShape> {
     let shapes = transform_schemas(shapes)?;
     let shapes = transform_request_bodies(shapes)?;
     let shapes = transform_core(shapes)?;

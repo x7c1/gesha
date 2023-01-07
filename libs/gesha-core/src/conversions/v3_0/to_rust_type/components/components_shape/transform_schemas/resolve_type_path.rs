@@ -1,11 +1,11 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
     DefinitionShape, FieldShape, ModShape, SchemasShape, StructShape, TypePath, TypeShape,
 };
-use crate::conversions::v3_0::to_rust_type::components::ComponentsShapes;
+use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 
-pub fn resolve_type_path(mut shapes: ComponentsShapes) -> Result<ComponentsShapes> {
+pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let transformer = Transformer {
         prefix: "#/components/schemas/",
         snapshot: &shapes.clone(),
@@ -23,7 +23,7 @@ pub fn resolve_type_path(mut shapes: ComponentsShapes) -> Result<ComponentsShape
 
 struct Transformer<'a> {
     prefix: &'static str,
-    snapshot: &'a ComponentsShapes,
+    snapshot: &'a ComponentsShape,
     mod_path: TypePath,
 }
 
