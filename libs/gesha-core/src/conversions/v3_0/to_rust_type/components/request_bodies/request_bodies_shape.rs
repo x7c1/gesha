@@ -15,6 +15,7 @@ impl RequestBodiesShape {
         let xs = object.into_iter().map(new).collect::<Result<Vec<_>>>()?;
         Ok(RequestBodiesShape(xs))
     }
+
     pub fn empty() -> Self {
         Self(vec![])
     }
@@ -62,7 +63,7 @@ fn new(kv: (ComponentName, RequestBodyCase)) -> Result<DefinitionShape> {
     }
 }
 
-pub fn shape(name: ComponentName, object: RequestBodyObject) -> Result<DefinitionShape> {
+fn shape(name: ComponentName, object: RequestBodyObject) -> Result<DefinitionShape> {
     let contents = object
         .content
         .into_iter()
