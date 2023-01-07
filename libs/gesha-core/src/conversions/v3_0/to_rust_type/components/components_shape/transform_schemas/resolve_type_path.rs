@@ -110,18 +110,19 @@ impl Transformer<'_> {
                     is_nullable,
                 }
             }
-            TypeShape::Fixed { .. } | TypeShape::Higher { .. } => shape.clone(),
+            TypeShape::Fixed { .. } => shape.clone(),
+            TypeShape::Expanded { type_path, .. } => TypeShape::Expanded {
+                type_path: type_path.relative_from(self.mod_path.clone()),
+                is_required,
+                is_nullable,
+            },
+            TypeShape::Option(_) | TypeShape::Patch(_) => todo!("return error"),
             TypeShape::InlineObject { .. } => Err(PostProcessBroken {
                 detail: format!(
                     "InlineObject must be processed before '$ref'.\n{:#?}",
                     shape
                 ),
             })?,
-            TypeShape::Expanded { type_path, .. } => TypeShape::Expanded {
-                type_path: type_path.relative_from(self.mod_path.clone()),
-                is_required,
-                is_nullable,
-            },
         };
         Ok(resolved_type)
     }
@@ -136,7 +137,7 @@ impl Transformer<'_> {
                 .snapshot
                 .find_type_definition(object)
                 .map(|def| def.is_nullable()),
-            TypeShape::Higher { .. } => todo!(),
+            TypeShape::Option(_) | TypeShape::Patch(_) => todo!(),
         }
     }
 }

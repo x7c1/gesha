@@ -105,19 +105,11 @@ fn type_shape_to_data_type(shape: TypeShape) -> Result<DataType> {
             ),
         })?,
         TypeShape::Expanded { type_path, .. } => type_path.clone().into(),
-        TypeShape::Higher {
-            type_shape,
-            type_name,
-        } => {
-            if type_name == "Patch" {
-                DataType::Patch(Box::new(type_shape_to_data_type(*type_shape)?))
-            } else {
-                DataType::Custom(format!(
-                    "{}<{}>",
-                    type_name,
-                    type_shape_to_data_type(*type_shape)?
-                ))
-            }
+        TypeShape::Option(type_shape) => {
+            DataType::Option(Box::new(type_shape_to_data_type(*type_shape)?))
+        }
+        TypeShape::Patch(type_shape) => {
+            DataType::Patch(Box::new(type_shape_to_data_type(*type_shape)?))
         }
     };
     Ok(data_type)

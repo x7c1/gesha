@@ -94,9 +94,8 @@ impl Transformer<'_> {
                 is_required,
                 is_nullable,
             },
-            TypeShape::Fixed { .. } | TypeShape::Higher { .. } | TypeShape::Expanded { .. } => {
-                shape.clone()
-            }
+            TypeShape::Fixed { .. } | TypeShape::Expanded { .. } => shape.clone(),
+            TypeShape::Option { .. } | TypeShape::Patch { .. } => todo!("return error"),
             TypeShape::Ref { .. } => Err(PostProcessBroken {
                 detail: format!(
                     "Ref must be processed before 'optional-fields'.\n{:#?}",
@@ -112,16 +111,10 @@ impl Transformer<'_> {
         };
         match (is_required, is_nullable) {
             (true, true) | (false, false) => {
-                expanded_type = TypeShape::Higher {
-                    type_shape: Box::new(expanded_type),
-                    type_name: "Option".to_string(),
-                };
+                expanded_type = TypeShape::Option(Box::new(expanded_type));
             }
             (false, true) => {
-                expanded_type = TypeShape::Higher {
-                    type_shape: Box::new(expanded_type),
-                    type_name: "Patch".to_string(),
-                };
+                expanded_type = TypeShape::Patch(Box::new(expanded_type));
             }
             (true, false) => {
                 // nop
@@ -141,7 +134,7 @@ impl Transformer<'_> {
                 // todo: return error
                 panic!()
             }
-            TypeShape::Higher { .. } => todo!(),
+            TypeShape::Option(..) | TypeShape::Patch(..) => todo!(),
         }
     }
 }

@@ -1,10 +1,10 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::DefinitionShape::Mod;
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{
-    Array, Expanded, Fixed, Higher, InlineObject, Ref,
+    Array, Expanded, Fixed, InlineObject, Ref,
 };
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, StructShape,
-    TypeHeaderShape, TypePath,
+    TypeHeaderShape, TypePath, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShapes;
 use crate::conversions::Result;
@@ -98,9 +98,12 @@ fn expand_field(
     field: FieldShape,
 ) -> Result<(FieldShape, Vec<DefinitionShape>)> {
     match field.type_shape {
-        Ref { .. } | Fixed { .. } | Array { .. } | Expanded { .. } | Higher { .. } => {
-            Ok((field, vec![]))
-        }
+        Ref { .. }
+        | Fixed { .. }
+        | Array { .. }
+        | Expanded { .. }
+        | TypeShape::Option { .. }
+        | TypeShape::Patch { .. } => Ok((field, vec![])),
         InlineObject {
             object,
             is_required,

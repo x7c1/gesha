@@ -33,10 +33,8 @@ pub enum TypeShape {
         is_required: bool,
         is_nullable: bool,
     },
-    Higher {
-        type_shape: Box<TypeShape>,
-        type_name: String,
-    },
+    Option(Box<TypeShape>),
+    Patch(Box<TypeShape>),
 }
 
 impl TypeShape {
@@ -72,7 +70,7 @@ impl TypeShape {
             Self::Ref { is_required, .. } => *is_required,
             Self::InlineObject { is_required, .. } => *is_required,
             Self::Expanded { is_required, .. } => *is_required,
-            Self::Higher { .. } => false,
+            Self::Option { .. } | Self::Patch { .. } => false,
         }
     }
 }
