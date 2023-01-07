@@ -2,8 +2,10 @@ use crate::conversions::v3_0::to_rust_type::components::request_bodies::{
     ContentShape, DefinitionShape, MediaTypeShape,
 };
 use crate::conversions::Result;
-use crate::targets::rust_type::DocComments;
+use crate::targets::rust_type::{DocComments, EnumVariantName, MediaTypeDef};
+use indexmap::IndexMap;
 use openapi_types::v3_0::{ComponentName, RequestBodiesObject, RequestBodyCase, RequestBodyObject};
+use std::ops::Not;
 
 #[derive(Debug, Clone, Default)]
 pub struct RequestBodiesShape(Vec<DefinitionShape>);
@@ -15,6 +17,24 @@ impl RequestBodiesShape {
     }
     pub fn empty() -> Self {
         Self(vec![])
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &DefinitionShape> {
+        self.0.iter()
+    }
+
+    pub fn define_media_type(&self) -> Result<Option<MediaTypeDef>> {
+        let translator = self
+            .iter()
+            .flat_map(|def| def.media_types())
+            .collect::<IndexMap<EnumVariantName, String>>();
+
+        let def = translator
+            .is_empty()
+            .not()
+            .then_some(MediaTypeDef { translator });
+
+        Ok(def)
     }
 }
 

@@ -48,8 +48,7 @@ fn new_schemas_cases() -> ComponentCases {
             "object_inline_nested.yaml",
             "object_inline_ref.yaml",
             "object_inline_all_of.yaml",
-            // TODO:
-            // "object_inline_nullable.yaml",
+            "object_inline_nullable.yaml",
         ],
     )
 }
