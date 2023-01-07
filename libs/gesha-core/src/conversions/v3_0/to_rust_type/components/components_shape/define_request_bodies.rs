@@ -10,7 +10,7 @@ use crate::targets::rust_type::{
 pub fn define_request_bodies(shape: RequestBodiesShape) -> Result<Option<ModDef>> {
     let definitions = shape
         .into_iter()
-        .map(|shape| define(shape))
+        .map(define)
         .collect::<Result<Definitions>>()?;
 
     create_module("request_bodies", definitions)

@@ -33,12 +33,12 @@ impl Definer {
             }
             DefinitionShape::NewType { header, type_shape } => {
                 let def_type = type_shape_to_data_type(type_shape)?;
-                let def = NewTypeDef::new(to_type_header(header.clone()), def_type);
+                let def = NewTypeDef::new(to_type_header(header), def_type);
                 Ok(def.into())
             }
             DefinitionShape::Enum { header, values } => {
                 let variants = values.into_iter().map(to_enum_variant).collect();
-                let def = EnumDef::new(to_type_header(header.clone()), variants);
+                let def = EnumDef::new(to_type_header(header), variants);
                 Ok(def.into())
             }
             DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
@@ -54,7 +54,7 @@ impl Definer {
                     .collect::<Result<Vec<_>>>()?;
 
                 let def = ModDef {
-                    name: ModuleName::new(name.clone()),
+                    name: ModuleName::new(name),
                     imports: vec![Package::Deserialize, Package::Serialize].into(),
                     defs: inline_defs.into_iter().collect(),
                 };
@@ -86,14 +86,14 @@ fn type_shape_to_data_type(shape: TypeShape) -> Result<DataType> {
         TypeShape::Ref { .. } => {
             todo!()
         }
-        TypeShape::Fixed { data_type, .. } => data_type.clone(),
+        TypeShape::Fixed { data_type, .. } => data_type,
         TypeShape::InlineObject { .. } => Err(PostProcessBroken {
             detail: format!(
                 "InlineObject must be processed before '$ref'.\n{:#?}",
                 shape
             ),
         })?,
-        TypeShape::Expanded { type_path, .. } => type_path.clone().into(),
+        TypeShape::Expanded { type_path, .. } => type_path.into(),
         TypeShape::Option(type_shape) => {
             DataType::Option(Box::new(type_shape_to_data_type(*type_shape)?))
         }

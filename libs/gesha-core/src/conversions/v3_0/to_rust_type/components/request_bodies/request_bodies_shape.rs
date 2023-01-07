@@ -53,7 +53,7 @@ pub fn shape(name: ComponentName, object: RequestBodyObject) -> Result<Definitio
         .collect();
 
     Ok(DefinitionShape {
-        name: name,
+        name,
         doc_comments: DocComments::wrap(object.description),
         is_required: object.required,
         contents,
