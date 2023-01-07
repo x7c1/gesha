@@ -7,7 +7,6 @@ use crate::conversions::Result;
 
 pub fn resolve_optional_fields(mut shapes: ComponentsShapes) -> Result<ComponentsShapes> {
     let resolver = Transformer {
-        prefix: "#/components/schemas/",
         snapshot: &shapes.clone(),
     };
     let schemas = shapes
@@ -21,7 +20,6 @@ pub fn resolve_optional_fields(mut shapes: ComponentsShapes) -> Result<Component
 }
 
 struct Transformer<'a> {
-    prefix: &'static str,
     snapshot: &'a ComponentsShapes,
 }
 
@@ -52,7 +50,7 @@ impl Transformer<'_> {
             DefinitionShape::Mod(ModShape { name, defs }) => {
                 let next_defs = defs
                     .into_iter()
-                    .map(|x| self.resolve_ref_in_mod(x))
+                    .map(|x| self.resolve_ref(x))
                     .collect::<Result<Vec<_>>>()?;
 
                 Ok(DefinitionShape::Mod(ModShape {
@@ -61,14 +59,6 @@ impl Transformer<'_> {
                 }))
             }
         }
-    }
-
-    fn resolve_ref_in_mod(&self, shape: DefinitionShape) -> Result<DefinitionShape> {
-        let resolver = Self {
-            prefix: self.prefix,
-            snapshot: self.snapshot,
-        };
-        resolver.resolve_ref(shape)
     }
 
     fn shape_fields(&self, shapes: Vec<FieldShape>) -> Result<Vec<FieldShape>> {

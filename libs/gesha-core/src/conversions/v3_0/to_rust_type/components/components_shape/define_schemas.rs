@@ -14,9 +14,7 @@ use crate::targets::rust_type::{
 use openapi_types::v3_0::ComponentName;
 
 pub fn define_schemas(shapes: SchemasShape) -> Result<Option<ModDef>> {
-    let define = Definer {
-        mod_path: TypePath::new(),
-    };
+    let define = Definer {};
     let defs = shapes
         .into_iter()
         .map(|x| define.apply(x))
@@ -25,9 +23,7 @@ pub fn define_schemas(shapes: SchemasShape) -> Result<Option<ModDef>> {
     create_module("schemas", defs)
 }
 
-struct Definer {
-    mod_path: TypePath,
-}
+struct Definer {}
 
 impl Definer {
     fn apply(&self, shape: DefinitionShape) -> Result<Definition> {
@@ -53,10 +49,9 @@ impl Definer {
                 ),
             }),
             DefinitionShape::Mod(ModShape { name, defs }) => {
-                let mod_path = self.mod_path.clone().add(name.clone());
                 let inline_defs = defs
                     .into_iter()
-                    .map(|x| self.apply_in_mod(mod_path.clone(), x))
+                    .map(|x| self.apply(x))
                     .collect::<Result<Vec<_>>>()?;
 
                 let def = ModDef {
@@ -67,11 +62,6 @@ impl Definer {
                 Ok(def.into())
             }
         }
-    }
-
-    fn apply_in_mod(&self, mod_path: TypePath, shape: DefinitionShape) -> Result<Definition> {
-        let resolver = Self { mod_path };
-        resolver.apply(shape)
     }
 
     fn shapes_to_fields(&self, shapes: Vec<FieldShape>) -> Result<Vec<StructField>> {
