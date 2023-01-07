@@ -6,7 +6,7 @@ use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 
 pub fn resolve_optional_fields(mut shapes: ComponentsShapes) -> Result<ComponentsShapes> {
-    let resolver = Shaper {
+    let resolver = Transformer {
         prefix: "#/components/schemas/",
         snapshot: &shapes.clone(),
     };
@@ -20,12 +20,12 @@ pub fn resolve_optional_fields(mut shapes: ComponentsShapes) -> Result<Component
     Ok(shapes)
 }
 
-struct Shaper<'a> {
+struct Transformer<'a> {
     prefix: &'static str,
     snapshot: &'a ComponentsShapes,
 }
 
-impl Shaper<'_> {
+impl Transformer<'_> {
     fn resolve_ref(&self, shape: DefinitionShape) -> Result<DefinitionShape> {
         match shape {
             DefinitionShape::Struct(StructShape { header, fields }) => {

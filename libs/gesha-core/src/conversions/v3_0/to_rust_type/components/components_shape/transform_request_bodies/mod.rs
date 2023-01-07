@@ -11,24 +11,24 @@ use crate::targets::rust_type::{
 use openapi_types::v3_0::SchemaCase;
 
 pub fn transform_request_bodies(mut shapes: ComponentsShapes) -> Result<ComponentsShapes> {
-    let shaper = Definer {
+    let transformer = Transformer {
         snapshot: shapes.clone(),
     };
     let request_bodies = shapes
         .request_bodies
         .into_iter()
-        .map(|x| shaper.run(x))
+        .map(|x| transformer.run(x))
         .collect::<Result<RequestBodiesShape>>()?;
 
     shapes.request_bodies = request_bodies;
     Ok(shapes)
 }
 
-struct Definer {
+struct Transformer {
     snapshot: ComponentsShapes,
 }
 
-impl Definer {
+impl Transformer {
     fn run(&self, mut shape: DefinitionShape) -> Result<DefinitionShape> {
         let defined = shape
             .contents

@@ -6,7 +6,7 @@ use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 
 pub fn resolve_type_path(mut shapes: ComponentsShapes) -> Result<ComponentsShapes> {
-    let resolver = Shaper {
+    let transformer = Transformer {
         prefix: "#/components/schemas/",
         snapshot: &shapes.clone(),
         mod_path: TypePath::new(),
@@ -14,20 +14,20 @@ pub fn resolve_type_path(mut shapes: ComponentsShapes) -> Result<ComponentsShape
     let schemas = shapes
         .schemas
         .into_iter()
-        .map(|x| resolver.resolve_ref(x))
+        .map(|x| transformer.resolve_ref(x))
         .collect::<Result<SchemasShape>>()?;
 
     shapes.schemas = schemas;
     Ok(shapes)
 }
 
-struct Shaper<'a> {
+struct Transformer<'a> {
     prefix: &'static str,
     snapshot: &'a ComponentsShapes,
     mod_path: TypePath,
 }
 
-impl Shaper<'_> {
+impl Transformer<'_> {
     fn resolve_ref(&self, shape: DefinitionShape) -> Result<DefinitionShape> {
         match shape {
             DefinitionShape::Struct(StructShape { header, fields }) => {

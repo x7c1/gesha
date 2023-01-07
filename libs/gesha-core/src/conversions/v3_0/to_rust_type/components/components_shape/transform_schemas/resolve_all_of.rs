@@ -5,24 +5,24 @@ use crate::conversions::v3_0::to_rust_type::components::ComponentsShapes;
 use crate::conversions::Result;
 
 pub fn resolve_all_of(mut shapes: ComponentsShapes) -> Result<ComponentsShapes> {
-    let shaper = Shaper {
+    let transformer = Transformer {
         snapshot: shapes.clone(),
     };
     let schemas = shapes
         .schemas
         .into_iter()
-        .map(|x| shaper.shape_all_of(x))
+        .map(|x| transformer.shape_all_of(x))
         .collect::<Result<SchemasShape>>()?;
 
     shapes.schemas = schemas;
     Ok(shapes)
 }
 
-struct Shaper {
+struct Transformer {
     snapshot: ComponentsShapes,
 }
 
-impl Shaper {
+impl Transformer {
     fn shape_all_of(&self, def_shape: DefinitionShape) -> Result<DefinitionShape> {
         match def_shape {
             DefinitionShape::AllOf(AllOfShape { header, items }) => {

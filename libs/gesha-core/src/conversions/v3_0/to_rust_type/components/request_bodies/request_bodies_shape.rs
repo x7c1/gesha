@@ -39,37 +39,25 @@ impl IntoIterator for RequestBodiesShape {
 fn new(kv: (ComponentName, RequestBodyCase)) -> Result<DefinitionShape> {
     let (field_name, request_body_case) = kv;
     match request_body_case {
-        RequestBodyCase::RequestBody(obj) => {
-            let (name, object) = (field_name, *obj);
-            Shaper { name, object }.run()
-        }
+        RequestBodyCase::RequestBody(object) => shape(field_name, *object),
         RequestBodyCase::Reference(_) => todo!(),
     }
 }
 
-#[derive(Debug)]
-struct Shaper {
-    name: ComponentName,
-    object: RequestBodyObject,
-}
-
-impl Shaper {
-    fn run(self) -> Result<DefinitionShape> {
-        let contents = self
-            .object
-            .content
-            .into_iter()
-            .map(|(key, value)| ContentShape::Raw {
-                media_type: MediaTypeShape::new(key),
-                schema: value.schema,
-            })
-            .collect();
-
-        Ok(DefinitionShape {
-            name: self.name,
-            doc_comments: DocComments::wrap(self.object.description),
-            is_required: self.object.required,
-            contents,
+pub fn shape(name: ComponentName, object: RequestBodyObject) -> Result<DefinitionShape> {
+    let contents = object
+        .content
+        .into_iter()
+        .map(|(key, value)| ContentShape::Raw {
+            media_type: MediaTypeShape::new(key),
+            schema: value.schema,
         })
-    }
+        .collect();
+
+    Ok(DefinitionShape {
+        name: name,
+        doc_comments: DocComments::wrap(object.description),
+        is_required: object.required,
+        contents,
+    })
 }
