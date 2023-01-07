@@ -52,7 +52,7 @@ impl ComponentsShape {
         .flatten()
         .collect();
 
-        add_core_mod(modules)
+        Ok(modules)
     }
 
     pub fn find_type_definition(
@@ -76,63 +76,6 @@ impl ComponentsShape {
         self.schemas.iter().any(|x| x.any_type(&f))
         // TODO: check self.request_bodies
     }
-
-    // fn create_core_module(&self, modules: &Modules) -> Option<ModDef> {
-    //     let mut core_defs = Definitions::new();
-    //     let mut imports = Imports::new();
-    //     let mut error_def = ErrorDef::new();
-    //
-    //     if modules.any_type(contains_patch) {
-    //         core_defs.set(PresetDef::Patch);
-    //         imports.set(vec![
-    //             Package::Deserialize,
-    //             Package::Deserializer,
-    //             Package::Serialize,
-    //             Package::Serializer,
-    //         ]);
-    //     }
-    //
-    //     // if let Some(media_type) = self.create_media_type_def() {
-    //     //     imports.set(vec![
-    //     //         Package::Deserialize,
-    //     //         Package::Display,
-    //     //         Package::Formatter,
-    //     //     ]);
-    //     //     core_defs.set(PresetDef::MediaType(media_type));
-    //     //     core_defs.set(PresetDef::FromJson);
-    //     //     error_def.set(ErrorVariant::InvalidJson);
-    //     //     error_def.set(ErrorVariant::UnsupportedMediaType);
-    //     // }
-    //
-    //     if !error_def.is_empty() {
-    //         core_defs.set(PresetDef::Error(error_def));
-    //     }
-    //
-    //     if core_defs.is_empty() {
-    //         None
-    //     } else {
-    //         let module = ModDef {
-    //             name: ModuleName::new("core"),
-    //             imports,
-    //             defs: core_defs,
-    //         };
-    //         Some(module)
-    //     }
-    // }
-
-    // fn create_media_type_def(&self) -> Option<MediaTypeDef> {
-    //     let translator = self
-    //         .request_bodies
-    //         .iter()
-    //         .flat_map(|def| def.translate_media_types())
-    //         .collect::<IndexMap<EnumVariantName, &str>>();
-    //
-    //     if translator.is_empty() {
-    //         None
-    //     } else {
-    //         Some(MediaTypeDef { translator })
-    //     }
-    // }
 }
 
 fn transform(shapes: ComponentsShape) -> Result<ComponentsShape> {
@@ -159,46 +102,4 @@ fn create_module<A: Into<String>>(name: A, definitions: Definitions) -> Result<O
         };
         Ok(Some(module))
     }
-}
-
-fn add_core_mod(mut modules: Modules) -> Result<Modules> {
-    let mut core_defs = Definitions::new();
-    let mut imports = Imports::new();
-    let mut error_def = ErrorDef::new();
-
-    if modules.any_type(contains_patch) {
-        core_defs.set(PresetDef::Patch);
-        imports.set(vec![
-            Package::Deserialize,
-            Package::Deserializer,
-            Package::Serialize,
-            Package::Serializer,
-        ]);
-    }
-
-    // if let Some(media_type) = self.create_media_type_def() {
-    //     imports.set(vec![
-    //         Package::Deserialize,
-    //         Package::Display,
-    //         Package::Formatter,
-    //     ]);
-    //     core_defs.set(PresetDef::MediaType(media_type));
-    //     core_defs.set(PresetDef::FromJson);
-    //     error_def.set(ErrorVariant::InvalidJson);
-    //     error_def.set(ErrorVariant::UnsupportedMediaType);
-    // }
-
-    if !error_def.is_empty() {
-        core_defs.set(PresetDef::Error(error_def));
-    }
-
-    if !core_defs.is_empty() {
-        let module = ModDef {
-            name: ModuleName::new("core"),
-            imports,
-            defs: core_defs,
-        };
-        modules.push(module);
-    }
-    Ok(modules)
 }

@@ -10,7 +10,6 @@ pub fn transform_core(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let mut error_def = ErrorDef::new();
 
     let is_patch_used = shapes.any_type(|x| matches!(x, TypeShape::Patch(_)));
-
     if is_patch_used {
         shapes.core.defs.set(PresetDef::Patch);
         shapes.core.imports.set(vec![
@@ -38,3 +37,17 @@ pub fn transform_core(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     }
     Ok(shapes)
 }
+
+// fn create_media_type_def(&self) -> Option<MediaTypeDef> {
+//     let translator = self
+//         .request_bodies
+//         .iter()
+//         .flat_map(|def| def.translate_media_types())
+//         .collect::<IndexMap<EnumVariantName, &str>>();
+//
+//     if translator.is_empty() {
+//         None
+//     } else {
+//         Some(MediaTypeDef { translator })
+//     }
+// }
