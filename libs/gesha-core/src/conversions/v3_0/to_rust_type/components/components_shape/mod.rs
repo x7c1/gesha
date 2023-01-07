@@ -17,20 +17,14 @@ mod transform_schemas;
 use transform_schemas::transform_schemas;
 
 use crate::conversions::v3_0::to_rust_type::components::core::CoreShape;
-use crate::conversions::v3_0::to_rust_type::components::request_bodies;
 use crate::conversions::v3_0::to_rust_type::components::request_bodies::RequestBodiesShape;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, SchemasShape, StructShape,
-    TypeDefinitionShape, TypeShape,
+    SchemasShape, TypeDefinitionShape, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::contains_patch;
 use crate::conversions::Error::ReferenceObjectNotFound;
 use crate::conversions::Result;
-use crate::targets::rust_type::{
-    Definitions, EnumVariantName, ErrorDef, ErrorVariant, Imports, MediaTypeDef, ModDef,
-    ModuleName, Modules, Package, PresetDef,
-};
-use indexmap::IndexMap;
+use crate::targets::rust_type::{Definitions, Imports, ModDef, ModuleName, Modules, Package};
 use openapi_types::v3_0::{ReferenceObject, SchemaObject};
 
 #[derive(Clone, Debug, Default)]

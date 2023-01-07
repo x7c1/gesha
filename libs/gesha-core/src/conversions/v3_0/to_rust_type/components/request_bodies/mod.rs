@@ -4,11 +4,8 @@ pub use media_type_shape::MediaTypeShape;
 mod request_bodies_shape;
 pub use request_bodies_shape::RequestBodiesShape;
 
-use crate::conversions::Result;
-use crate::targets::rust_type::{DocComments, EnumVariantName, MediaTypeVariant};
-use openapi_types::v3_0::{
-    ComponentName, RequestBodiesObject, RequestBodyCase, RequestBodyObject, SchemaCase,
-};
+use crate::targets::rust_type::{DocComments, MediaTypeVariant};
+use openapi_types::v3_0::{ComponentName, SchemaCase};
 
 #[derive(Clone, Debug)]
 pub struct DefinitionShape {

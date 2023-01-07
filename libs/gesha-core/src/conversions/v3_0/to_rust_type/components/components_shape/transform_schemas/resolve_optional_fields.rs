@@ -1,14 +1,12 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    DefinitionShape, FieldShape, ModShape, SchemasShape, StructShape, TypePath, TypeShape,
+    DefinitionShape, FieldShape, ModShape, SchemasShape, StructShape, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 
 pub fn resolve_optional_fields(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
-    let resolver = Transformer {
-        snapshot: &shapes.clone(),
-    };
+    let resolver = Transformer {};
     let schemas = shapes
         .schemas
         .into_iter()
@@ -19,11 +17,9 @@ pub fn resolve_optional_fields(mut shapes: ComponentsShape) -> Result<Components
     Ok(shapes)
 }
 
-struct Transformer<'a> {
-    snapshot: &'a ComponentsShape,
-}
+struct Transformer {}
 
-impl Transformer<'_> {
+impl Transformer {
     fn resolve_ref(&self, shape: DefinitionShape) -> Result<DefinitionShape> {
         match shape {
             DefinitionShape::Struct(StructShape { header, fields }) => {

@@ -1,4 +1,4 @@
-use crate::targets::rust_type::{DataType, Definition, ModDef};
+use crate::targets::rust_type::ModDef;
 use std::vec::IntoIter;
 
 #[derive(Clone, Debug)]

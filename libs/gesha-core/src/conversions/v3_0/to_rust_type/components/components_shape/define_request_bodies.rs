@@ -1,14 +1,11 @@
 use crate::conversions::v3_0::to_rust_type::components::components_shape::create_module;
 use crate::conversions::v3_0::to_rust_type::components::request_bodies::{
-    ContentShape, DefinitionShape, MediaTypeShape, RequestBodiesShape,
+    ContentShape, DefinitionShape, RequestBodiesShape,
 };
-use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, Definitions, EnumVariant, EnumVariantName, MediaTypeVariant, ModDef,
-    RequestBodyDef, TypeHeader,
+    Definition, Definitions, MediaTypeVariant, ModDef, RequestBodyDef, TypeHeader,
 };
-use openapi_types::v3_0::SchemaCase;
 
 pub fn define_request_bodies(shape: RequestBodiesShape) -> Result<Option<ModDef>> {
     let definitions = shape

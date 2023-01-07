@@ -1,5 +1,5 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, AllOfShape, FieldShape, ModShape, StructShape, TypeHeaderShape, TypeShape,
+    AllOfShape, FieldShape, ModShape, StructShape, TypeHeaderShape, TypeShape,
 };
 use openapi_types::v3_0::{ComponentName, EnumValues};
 

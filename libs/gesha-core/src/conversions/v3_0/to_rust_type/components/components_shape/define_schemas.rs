@@ -1,7 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::components::components_shape::create_module;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    DefinitionShape, FieldShape, ModShape, SchemasShape, StructShape, TypeHeaderShape, TypePath,
-    TypeShape,
+    DefinitionShape, FieldShape, ModShape, SchemasShape, StructShape, TypeHeaderShape, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::is_patch;
 use crate::conversions::Error::PostProcessBroken;

@@ -3,9 +3,7 @@ use crate::conversions::v3_0::to_rust_type::components::request_bodies::{
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::DocComments;
-use openapi_types::v3_0::{
-    ComponentName, RequestBodiesObject, RequestBodyCase, RequestBodyObject, SchemaCase,
-};
+use openapi_types::v3_0::{ComponentName, RequestBodiesObject, RequestBodyCase, RequestBodyObject};
 
 #[derive(Debug, Clone, Default)]
 pub struct RequestBodiesShape(Vec<DefinitionShape>);
