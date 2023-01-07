@@ -13,9 +13,9 @@ use crate::targets::rust_type::{
 };
 use openapi_types::v3_0::ComponentName;
 
-pub fn define_schemas(shapes: SchemasShape) -> Result<Option<ModDef>> {
+pub fn define_schemas(shape: SchemasShape) -> Result<Option<ModDef>> {
     let define = Definer {};
-    let defs = shapes
+    let defs = shape
         .into_iter()
         .map(|x| define.apply(x))
         .collect::<Result<Definitions>>()?;

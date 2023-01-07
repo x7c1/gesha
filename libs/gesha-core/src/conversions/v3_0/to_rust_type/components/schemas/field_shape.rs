@@ -19,6 +19,10 @@ impl FieldShape {
         Self::from_properties(object.properties.clone(), object.required.clone())
     }
 
+    pub fn any_type(xs: &[Self], f: &impl Fn(&TypeShape) -> bool) -> bool {
+        xs.iter().any(|x| f(&x.type_shape))
+    }
+
     fn from_properties(
         properties: Option<SchemaProperties>,
         required: Option<RequiredSchemaFields>,

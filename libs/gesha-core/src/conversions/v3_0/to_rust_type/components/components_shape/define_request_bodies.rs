@@ -10,8 +10,8 @@ use crate::targets::rust_type::{
 };
 use openapi_types::v3_0::SchemaCase;
 
-pub fn define_request_bodies(shapes: RequestBodiesShape) -> Result<Option<ModDef>> {
-    let definitions = shapes
+pub fn define_request_bodies(shape: RequestBodiesShape) -> Result<Option<ModDef>> {
+    let definitions = shape
         .into_iter()
         .map(|shape| define(shape))
         .collect::<Result<Definitions>>()?;

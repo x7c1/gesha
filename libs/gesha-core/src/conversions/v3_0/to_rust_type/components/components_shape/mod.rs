@@ -1,3 +1,6 @@
+mod define_core;
+use define_core::define_core;
+
 mod define_request_bodies;
 use define_request_bodies::define_request_bodies;
 
@@ -17,7 +20,8 @@ use crate::conversions::v3_0::to_rust_type::components::core::CoreShape;
 use crate::conversions::v3_0::to_rust_type::components::request_bodies;
 use crate::conversions::v3_0::to_rust_type::components::request_bodies::RequestBodiesShape;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    SchemasShape, TypeDefinitionShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, SchemasShape, StructShape,
+    TypeDefinitionShape, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::contains_patch;
 use crate::conversions::Error::ReferenceObjectNotFound;
@@ -42,6 +46,7 @@ impl ComponentsShape {
         let modules = vec![
             define_request_bodies(this.request_bodies)?,
             define_schemas(this.schemas)?,
+            define_core(this.core)?,
         ]
         .into_iter()
         .flatten()
@@ -65,6 +70,11 @@ impl ComponentsShape {
             .filter_map(|shape| shape.as_type_definition())
             .find(|shape| shape.is_type_name(&name))
             .ok_or_else(|| ReferenceObjectNotFound(type_ref.to_string()))
+    }
+
+    pub fn any_type(&self, f: impl Fn(&TypeShape) -> bool) -> bool {
+        self.schemas.iter().any(|x| x.any_type(&f))
+        // TODO: check self.request_bodies
     }
 
     // fn create_core_module(&self, modules: &Modules) -> Option<ModDef> {

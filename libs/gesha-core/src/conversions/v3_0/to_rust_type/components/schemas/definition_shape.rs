@@ -1,5 +1,5 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfShape, FieldShape, ModShape, StructShape, TypeHeaderShape, TypeShape,
+    AllOfItemShape, AllOfShape, FieldShape, ModShape, StructShape, TypeHeaderShape, TypeShape,
 };
 use openapi_types::v3_0::{ComponentName, EnumValues};
 
@@ -29,6 +29,16 @@ impl DefinitionShape {
             | DefinitionShape::NewType { .. }
             | DefinitionShape::Enum { .. }
             | DefinitionShape::Mod { .. } => None,
+        }
+    }
+
+    pub fn any_type(&self, f: &impl Fn(&TypeShape) -> bool) -> bool {
+        match self {
+            DefinitionShape::AllOf(x) => x.any_type(f),
+            DefinitionShape::Struct(x) => FieldShape::any_type(&x.fields, f),
+            DefinitionShape::NewType { type_shape, .. } => f(type_shape),
+            DefinitionShape::Enum { .. } => false,
+            DefinitionShape::Mod(x) => x.defs.iter().any(|x| x.any_type(f)),
         }
     }
 }
