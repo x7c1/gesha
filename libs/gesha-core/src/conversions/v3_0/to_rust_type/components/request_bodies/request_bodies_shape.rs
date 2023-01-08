@@ -1,8 +1,9 @@
+use crate::conversions::v3_0::to_rust_type::components::components_shape::create_module;
 use crate::conversions::v3_0::to_rust_type::components::request_bodies::{
     ContentShape, DefinitionShape, MediaTypeShape,
 };
 use crate::conversions::Result;
-use crate::targets::rust_type::{DocComments, EnumVariantName, MediaTypeDef};
+use crate::targets::rust_type::{Definitions, DocComments, EnumVariantName, MediaTypeDef, ModDef};
 use indexmap::IndexMap;
 use openapi_types::v3_0::{ComponentName, RequestBodiesObject, RequestBodyCase, RequestBodyObject};
 use std::ops::Not;
@@ -36,6 +37,15 @@ impl RequestBodiesShape {
             .then_some(MediaTypeDef { translator });
 
         Ok(def)
+    }
+
+    pub fn define(self) -> Result<Option<ModDef>> {
+        let definitions = self
+            .into_iter()
+            .map(|x| x.define())
+            .collect::<Result<Definitions>>()?;
+
+        create_module("request_bodies", definitions)
     }
 }
 

@@ -1,9 +1,3 @@
-mod define_core;
-use define_core::define_core;
-
-mod define_request_bodies;
-use define_request_bodies::define_request_bodies;
-
 mod transform_core;
 use transform_core::transform_core;
 
@@ -35,9 +29,9 @@ impl ComponentsShape {
     pub fn into_modules(self) -> Result<Modules> {
         let this = transform(self)?;
         let modules = vec![
-            define_request_bodies(this.request_bodies)?,
+            this.request_bodies.define()?,
             this.schemas.define()?,
-            define_core(this.core)?,
+            this.core.define()?,
         ]
         .into_iter()
         .flatten()
@@ -77,7 +71,7 @@ fn transform(shapes: ComponentsShape) -> Result<ComponentsShape> {
 }
 
 // TODO: delete this fn
-fn create_module<A: Into<String>>(name: A, definitions: Definitions) -> Result<Option<ModDef>> {
+pub fn create_module<A: Into<String>>(name: A, definitions: Definitions) -> Result<Option<ModDef>> {
     let mut imports = Imports::new();
     imports.set(vec![Package::Deserialize, Package::Serialize]);
 

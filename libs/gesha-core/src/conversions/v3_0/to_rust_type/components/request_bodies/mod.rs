@@ -4,7 +4,10 @@ pub use media_type_shape::MediaTypeShape;
 mod request_bodies_shape;
 pub use request_bodies_shape::RequestBodiesShape;
 
-use crate::targets::rust_type::{DocComments, EnumVariantName, MediaTypeVariant};
+use crate::conversions::Result;
+use crate::targets::rust_type::{
+    Definition, DocComments, EnumVariantName, MediaTypeVariant, RequestBodyDef, TypeHeader,
+};
 use openapi_types::v3_0::{ComponentName, SchemaCase};
 
 #[derive(Clone, Debug)]
@@ -24,6 +27,18 @@ impl DefinitionShape {
             Raw { .. } => unimplemented!("return error"),
         })
     }
+
+    pub fn define(self) -> Result<Definition> {
+        let header = TypeHeader::new(self.name.to_string(), self.doc_comments);
+        let variants = self
+            .contents
+            .into_iter()
+            .filter_map(|x| content_shape_to_variant(x).transpose())
+            .collect::<Result<Vec<MediaTypeVariant>>>()?;
+
+        let def = RequestBodyDef::new(header, variants);
+        Ok(def.into())
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -33,4 +48,14 @@ pub enum ContentShape {
         schema: SchemaCase,
     },
     Defined(Option<MediaTypeVariant>),
+}
+
+fn content_shape_to_variant(shape: ContentShape) -> Result<Option<MediaTypeVariant>> {
+    match shape {
+        ContentShape::Raw { .. } => {
+            // todo: return error
+            unimplemented!()
+        }
+        ContentShape::Defined(x) => Ok(x),
+    }
 }
