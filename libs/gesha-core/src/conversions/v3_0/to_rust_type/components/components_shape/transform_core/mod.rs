@@ -26,7 +26,6 @@ pub fn transform_core(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
         error_def.set(ErrorVariant::InvalidJson);
         error_def.set(ErrorVariant::UnsupportedMediaType);
     }
-
     if !error_def.is_empty() {
         shapes.core.defs.set(PresetDef::Error(error_def))
     }

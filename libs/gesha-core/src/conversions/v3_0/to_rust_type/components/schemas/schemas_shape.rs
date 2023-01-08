@@ -26,6 +26,9 @@ impl SchemasShape {
         let schemas = self.root.define()?;
         Ok(schemas.defs.is_empty().not().then_some(schemas))
     }
+    pub fn any_type(&self, f: &impl Fn(&TypeShape) -> bool) -> bool {
+        self.root.defs.iter().any(|x| x.any_type(f))
+    }
 }
 
 fn new(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {

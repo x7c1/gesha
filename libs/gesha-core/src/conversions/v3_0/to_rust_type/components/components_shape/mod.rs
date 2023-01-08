@@ -57,8 +57,7 @@ impl ComponentsShape {
     }
 
     pub fn any_type(&self, f: impl Fn(&TypeShape) -> bool) -> bool {
-        self.schemas.root.defs.iter().any(|x| x.any_type(&f))
-        // TODO: check self.request_bodies
+        self.schemas.any_type(&f)
     }
 }
 
