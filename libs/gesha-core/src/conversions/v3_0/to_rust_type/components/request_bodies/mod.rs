@@ -1,6 +1,9 @@
 mod media_type_shape;
 pub use media_type_shape::MediaTypeShape;
 
+mod mod_shape;
+pub use mod_shape::ModShape;
+
 mod request_bodies_shape;
 pub use request_bodies_shape::RequestBodiesShape;
 

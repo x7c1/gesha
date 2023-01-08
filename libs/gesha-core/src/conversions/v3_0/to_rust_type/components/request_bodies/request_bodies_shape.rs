@@ -1,38 +1,38 @@
-use crate::conversions::v3_0::to_rust_type::components::components_shape::create_module;
 use crate::conversions::v3_0::to_rust_type::components::request_bodies::{
-    ContentShape, DefinitionShape, MediaTypeShape,
+    ContentShape, DefinitionShape, MediaTypeShape, ModShape,
 };
 use crate::conversions::Result;
-use crate::targets::rust_type::{Definitions, DocComments, EnumVariantName, MediaTypeDef, ModDef};
+use crate::targets::rust_type::{DocComments, EnumVariantName, MediaTypeDef, ModDef};
 use indexmap::IndexMap;
 use openapi_types::v3_0::{ComponentName, RequestBodiesObject, RequestBodyCase, RequestBodyObject};
 use std::ops::Not;
 
 #[derive(Debug, Clone)]
-pub struct RequestBodiesShape(Vec<DefinitionShape>);
+pub struct RequestBodiesShape {
+    pub root: ModShape,
+}
 
 impl RequestBodiesShape {
     pub fn shape(maybe: Option<RequestBodiesObject>) -> Result<Self> {
+        let mut this = Self {
+            root: ModShape::new(ComponentName::new("request_bodies"), vec![]),
+        };
         if let Some(object) = maybe {
-            let defs = object.into_iter().map(new).collect::<Result<Vec<_>>>();
-            defs.map(Self)
-        } else {
-            Ok(Self(vec![]))
+            this.root.defs = object.into_iter().map(new).collect::<Result<Vec<_>>>()?;
         }
+        Ok(this)
     }
 
     pub fn define(self) -> Result<Option<ModDef>> {
-        let definitions = self
-            .into_iter()
-            .map(|x| x.define())
-            .collect::<Result<Definitions>>()?;
-
-        create_module("request_bodies", definitions)
+        let def = self.root.define()?;
+        let maybe = def.defs.is_empty().not().then_some(def);
+        Ok(maybe)
     }
 
     pub fn define_media_type(&self) -> Result<Option<MediaTypeDef>> {
         let translator = self
-            .0
+            .root
+            .defs
             .iter()
             .flat_map(|def| def.media_types())
             .collect::<IndexMap<EnumVariantName, String>>();
@@ -43,22 +43,6 @@ impl RequestBodiesShape {
             .then_some(MediaTypeDef { translator });
 
         Ok(def)
-    }
-}
-
-impl FromIterator<DefinitionShape> for RequestBodiesShape {
-    fn from_iter<T: IntoIterator<Item = DefinitionShape>>(iter: T) -> Self {
-        let xs = iter.into_iter().collect();
-        Self(xs)
-    }
-}
-
-impl IntoIterator for RequestBodiesShape {
-    type Item = <Vec<DefinitionShape> as IntoIterator>::Item;
-    type IntoIter = <Vec<DefinitionShape> as IntoIterator>::IntoIter;
-
-    fn into_iter(self) -> Self::IntoIter {
-        IntoIterator::into_iter(self.0)
     }
 }
 

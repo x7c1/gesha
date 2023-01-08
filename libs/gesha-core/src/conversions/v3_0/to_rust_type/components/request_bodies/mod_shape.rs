@@ -1,4 +1,4 @@
-use crate::conversions::v3_0::to_rust_type::components::schemas::{DefinitionShape, TypeShape};
+use crate::conversions::v3_0::to_rust_type::components::request_bodies::DefinitionShape;
 use crate::conversions::Result;
 use crate::targets::rust_type::{ModDef, ModuleName, Package};
 use openapi_types::v3_0::ComponentName;
@@ -19,22 +19,6 @@ impl ModShape {
         }
     }
 
-    pub fn any_type(&self, f: &impl Fn(&TypeShape) -> bool) -> bool {
-        self.defs.iter().any(|x| x.any_type(f))
-    }
-
-    pub fn any_type_directly(&self, f: &impl Fn(&TypeShape) -> bool) -> bool {
-        self.defs.iter().any(|x| x.any_type_directly(f))
-    }
-
-    pub fn map_defs(
-        mut self,
-        f: impl Fn(DefinitionShape) -> Result<DefinitionShape>,
-    ) -> Result<Self> {
-        self.defs = self.defs.into_iter().map(f).collect::<Result<Vec<_>>>()?;
-        Ok(self)
-    }
-
     pub fn define(self) -> Result<ModDef> {
         let defs = self
             .defs
@@ -48,11 +32,5 @@ impl ModShape {
             defs: defs.into_iter().collect(),
         };
         Ok(def)
-    }
-}
-
-impl From<ModShape> for DefinitionShape {
-    fn from(this: ModShape) -> Self {
-        DefinitionShape::Mod(this)
     }
 }

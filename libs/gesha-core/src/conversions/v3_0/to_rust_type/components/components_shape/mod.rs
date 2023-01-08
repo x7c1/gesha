@@ -12,10 +12,9 @@ use crate::conversions::v3_0::to_rust_type::components::request_bodies::RequestB
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
     SchemasShape, TypeDefinitionShape, TypeShape,
 };
-use crate::conversions::v3_0::to_rust_type::contains_patch;
 use crate::conversions::Error::ReferenceObjectNotFound;
 use crate::conversions::Result;
-use crate::targets::rust_type::{Definitions, Imports, ModDef, ModuleName, Modules, Package};
+use crate::targets::rust_type::Modules;
 use openapi_types::v3_0::{ReferenceObject, SchemaObject};
 
 #[derive(Clone, Debug)]
@@ -68,24 +67,4 @@ fn transform(shapes: ComponentsShape) -> Result<ComponentsShape> {
     let shapes = transform_request_bodies(shapes)?;
     let shapes = transform_core(shapes)?;
     Ok(shapes)
-}
-
-// TODO: delete this fn
-pub fn create_module<A: Into<String>>(name: A, definitions: Definitions) -> Result<Option<ModDef>> {
-    let mut imports = Imports::new();
-    imports.set(vec![Package::Deserialize, Package::Serialize]);
-
-    if definitions.iter().any(|x| x.any_type(contains_patch)) {
-        imports.set(Package::Patch { depth: 1 });
-    }
-    if definitions.is_empty() {
-        Ok(None)
-    } else {
-        let module = ModDef {
-            name: ModuleName::new(name),
-            imports,
-            defs: definitions,
-        };
-        Ok(Some(module))
-    }
 }

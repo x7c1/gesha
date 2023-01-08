@@ -1,23 +1,23 @@
 use crate::conversions::v3_0::to_rust_type::components::request_bodies::{
-    ContentShape, DefinitionShape, MediaTypeShape, RequestBodiesShape,
+    ContentShape, DefinitionShape, MediaTypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
 use crate::targets::rust_type::{DataType, EnumVariant, EnumVariantName, MediaTypeVariant};
 use openapi_types::v3_0::SchemaCase;
 
-pub fn transform_request_bodies(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
+pub fn transform_request_bodies(mut shape: ComponentsShape) -> Result<ComponentsShape> {
     let transformer = Transformer {
-        snapshot: shapes.clone(),
+        snapshot: shape.clone(),
     };
-    let request_bodies = shapes
-        .request_bodies
+    let defs = shape.request_bodies.root.defs;
+    let request_bodies = defs
         .into_iter()
         .map(|x| transformer.run(x))
-        .collect::<Result<RequestBodiesShape>>()?;
+        .collect::<Result<Vec<_>>>()?;
 
-    shapes.request_bodies = request_bodies;
-    Ok(shapes)
+    shape.request_bodies.root.defs = request_bodies;
+    Ok(shape)
 }
 
 struct Transformer {

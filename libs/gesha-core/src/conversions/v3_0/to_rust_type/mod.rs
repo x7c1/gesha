@@ -30,21 +30,6 @@ impl ToRustType<ComponentsObject> for Modules {
     }
 }
 
-fn contains_patch(x: &DataType) -> bool {
-    match x {
-        DataType::Bool => false,
-        DataType::Int32 => false,
-        DataType::Int64 => false,
-        DataType::Float32 => false,
-        DataType::Float64 => false,
-        DataType::Option(x) => contains_patch(x),
-        DataType::Patch(_) => true,
-        DataType::String => false,
-        DataType::Vec(x) => contains_patch(x),
-        DataType::Custom(_) => false,
-    }
-}
-
 fn is_patch(x: &DataType) -> bool {
     matches!(x, DataType::Patch(_))
 }

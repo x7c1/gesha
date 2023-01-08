@@ -19,10 +19,8 @@ impl SchemasShape {
         };
         if let Some(object) = maybe {
             this.root.defs = object.into_iter().map(new).collect::<Result<Vec<_>>>()?;
-            Ok(this)
-        } else {
-            Ok(this)
         }
+        Ok(this)
     }
     pub fn define(self) -> Result<Option<ModDef>> {
         let schemas = self.root.define()?;

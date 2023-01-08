@@ -9,8 +9,8 @@ use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
 use std::ops::Not;
 
-pub fn expand_inline_schemas(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
-    let defs = shapes.schemas.root.defs;
+pub fn expand_inline_schemas(mut shape: ComponentsShape) -> Result<ComponentsShape> {
+    let defs = shape.schemas.root.defs;
     let defs = defs
         .into_iter()
         .map(expand)
@@ -19,8 +19,8 @@ pub fn expand_inline_schemas(mut shapes: ComponentsShape) -> Result<ComponentsSh
         .flatten()
         .collect();
 
-    shapes.schemas.root.defs = defs;
-    Ok(shapes)
+    shape.schemas.root.defs = defs;
+    Ok(shape)
 }
 
 fn expand(shape: DefinitionShape) -> Result<Vec<DefinitionShape>> {
