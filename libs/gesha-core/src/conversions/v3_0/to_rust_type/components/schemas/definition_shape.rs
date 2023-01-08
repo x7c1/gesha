@@ -21,24 +21,34 @@ pub enum DefinitionShape {
 impl DefinitionShape {
     pub fn as_type_definition(&self) -> Option<TypeDefinitionShape> {
         match self {
-            DefinitionShape::Struct(shape) => Some(TypeDefinitionShape {
+            Self::Struct(shape) => Some(TypeDefinitionShape {
                 type_header: &shape.header,
                 fields: &shape.fields,
             }),
-            DefinitionShape::AllOf { .. } // TODO: return here to merge multiple allOf
-            | DefinitionShape::NewType { .. }
-            | DefinitionShape::Enum { .. }
-            | DefinitionShape::Mod { .. } => None,
+            Self::AllOf { .. } // TODO: return here to merge multiple allOf
+            | Self::NewType { .. }
+            | Self::Enum { .. }
+            | Self::Mod { .. } => None,
         }
     }
 
     pub fn any_type(&self, f: &impl Fn(&TypeShape) -> bool) -> bool {
         match self {
-            DefinitionShape::AllOf(x) => x.any_type(f),
-            DefinitionShape::Struct(x) => FieldShape::any_type(&x.fields, f),
-            DefinitionShape::NewType { type_shape, .. } => f(type_shape),
-            DefinitionShape::Enum { .. } => false,
-            DefinitionShape::Mod(x) => x.defs.iter().any(|x| x.any_type(f)),
+            Self::AllOf(x) => x.any_type(f),
+            Self::Struct(x) => x.any_type(f),
+            Self::NewType { type_shape, .. } => f(type_shape),
+            Self::Enum { .. } => false,
+            Self::Mod(x) => x.any_type(f),
+        }
+    }
+
+    pub fn any_type_directly(&self, f: &impl Fn(&TypeShape) -> bool) -> bool {
+        match self {
+            Self::AllOf(x) => x.any_type_directly(f),
+            Self::Struct(x) => x.any_type_directly(f),
+            Self::NewType { type_shape, .. } => f(type_shape),
+            Self::Enum { .. } => false,
+            Self::Mod(_) => false,
         }
     }
 }

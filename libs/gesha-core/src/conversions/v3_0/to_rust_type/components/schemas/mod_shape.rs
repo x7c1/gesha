@@ -1,4 +1,4 @@
-use crate::conversions::v3_0::to_rust_type::components::schemas::DefinitionShape;
+use crate::conversions::v3_0::to_rust_type::components::schemas::{DefinitionShape, TypeShape};
 use crate::conversions::Result;
 use crate::targets::rust_type::Package;
 use openapi_types::v3_0::ComponentName;
@@ -17,6 +17,14 @@ impl ModShape {
             defs,
             imports: vec![Package::Deserialize, Package::Serialize],
         }
+    }
+
+    pub fn any_type(&self, f: &impl Fn(&TypeShape) -> bool) -> bool {
+        self.defs.iter().any(|x| x.any_type(f))
+    }
+
+    pub fn any_type_directly(&self, f: &impl Fn(&TypeShape) -> bool) -> bool {
+        self.defs.iter().any(|x| x.any_type_directly(f))
     }
 
     pub fn map_defs(

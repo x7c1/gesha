@@ -6,15 +6,15 @@ use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
     DataType, Definition, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName, ModDef,
-    ModuleName, NewTypeDef, Package, StructDef, StructField, StructFieldAttribute, StructFieldName,
+    ModuleName, NewTypeDef, StructDef, StructField, StructFieldAttribute, StructFieldName,
     TypeHeader,
 };
 use openapi_types::v3_0::ComponentName;
+use std::ops::Not;
 
 pub fn define_schemas(shape: SchemasShape) -> Result<Option<ModDef>> {
-    let def = define_mod(shape.root)?;
-    // TODO: unwrap option
-    Ok(Some(def))
+    let schemas = define_mod(shape.root)?;
+    Ok(schemas.defs.is_empty().not().then_some(schemas))
 }
 
 fn define_mod(shape: ModShape) -> Result<ModDef> {
@@ -26,7 +26,7 @@ fn define_mod(shape: ModShape) -> Result<ModDef> {
 
     let def = ModDef {
         name: ModuleName::new(shape.name),
-        imports: vec![Package::Deserialize, Package::Serialize].into(),
+        imports: shape.imports.into(),
         defs: inline_defs.into_iter().collect(),
     };
     Ok(def)

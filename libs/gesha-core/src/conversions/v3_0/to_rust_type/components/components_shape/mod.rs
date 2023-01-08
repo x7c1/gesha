@@ -85,7 +85,7 @@ fn create_module<A: Into<String>>(name: A, definitions: Definitions) -> Result<O
     imports.set(vec![Package::Deserialize, Package::Serialize]);
 
     if definitions.iter().any(|x| x.any_type(contains_patch)) {
-        imports.set(Package::Patch);
+        imports.set(Package::Patch { depth: 1 });
     }
     if definitions.is_empty() {
         Ok(None)

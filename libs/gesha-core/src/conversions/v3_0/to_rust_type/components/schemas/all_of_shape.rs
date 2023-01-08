@@ -15,6 +15,13 @@ impl AllOfShape {
             AllOfItemShape::Ref(_) => false,
         })
     }
+
+    pub fn any_type_directly(&self, f: &impl Fn(&TypeShape) -> bool) -> bool {
+        self.items.iter().any(|item| match item {
+            AllOfItemShape::Object(xs) => xs.iter().any(|x| f(&x.type_shape)),
+            AllOfItemShape::Ref(_) => false,
+        })
+    }
 }
 
 impl From<AllOfShape> for DefinitionShape {
