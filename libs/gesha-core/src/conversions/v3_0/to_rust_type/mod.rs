@@ -21,19 +21,9 @@ impl ToRustType<Document> for Modules {
 
 impl ToRustType<ComponentsObject> for Modules {
     fn apply(this: ComponentsObject) -> Result<Self> {
-        let schemas = this
-            .schemas
-            .map(SchemasShape::from)
-            .unwrap_or_else(|| Ok(SchemasShape::empty()))?;
-
-        let request_bodies = this
-            .request_bodies
-            .map(RequestBodiesShape::from)
-            .unwrap_or_else(|| Ok(RequestBodiesShape::empty()))?;
-
         let shapes = ComponentsShape {
-            schemas,
-            request_bodies,
+            schemas: SchemasShape::shape(this.schemas)?,
+            request_bodies: RequestBodiesShape::shape(this.request_bodies)?,
             core: CoreShape::default(),
         };
         shapes.into_modules()

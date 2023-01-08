@@ -12,21 +12,27 @@ use std::ops::Not;
 pub struct RequestBodiesShape(Vec<DefinitionShape>);
 
 impl RequestBodiesShape {
-    pub fn from(object: RequestBodiesObject) -> Result<Self> {
-        let xs = object.into_iter().map(new).collect::<Result<Vec<_>>>()?;
-        Ok(RequestBodiesShape(xs))
+    pub fn shape(maybe: Option<RequestBodiesObject>) -> Result<Self> {
+        if let Some(object) = maybe {
+            let defs = object.into_iter().map(new).collect::<Result<Vec<_>>>();
+            defs.map(Self)
+        } else {
+            Ok(Self(vec![]))
+        }
     }
 
-    pub fn empty() -> Self {
-        Self(vec![])
-    }
+    pub fn define(self) -> Result<Option<ModDef>> {
+        let definitions = self
+            .into_iter()
+            .map(|x| x.define())
+            .collect::<Result<Definitions>>()?;
 
-    pub fn iter(&self) -> impl Iterator<Item = &DefinitionShape> {
-        self.0.iter()
+        create_module("request_bodies", definitions)
     }
 
     pub fn define_media_type(&self) -> Result<Option<MediaTypeDef>> {
         let translator = self
+            .0
             .iter()
             .flat_map(|def| def.media_types())
             .collect::<IndexMap<EnumVariantName, String>>();
@@ -37,15 +43,6 @@ impl RequestBodiesShape {
             .then_some(MediaTypeDef { translator });
 
         Ok(def)
-    }
-
-    pub fn define(self) -> Result<Option<ModDef>> {
-        let definitions = self
-            .into_iter()
-            .map(|x| x.define())
-            .collect::<Result<Definitions>>()?;
-
-        create_module("request_bodies", definitions)
     }
 }
 

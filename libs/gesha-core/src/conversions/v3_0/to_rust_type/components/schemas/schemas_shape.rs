@@ -13,14 +13,15 @@ pub struct SchemasShape {
 }
 
 impl SchemasShape {
-    pub fn from(object: SchemasObject) -> Result<Self> {
-        let mut shape = Self::empty();
-        shape.root.defs = object.into_iter().map(new).collect::<Result<Vec<_>>>()?;
-        Ok(shape)
-    }
-    pub fn empty() -> Self {
-        Self {
+    pub fn shape(maybe: Option<SchemasObject>) -> Result<Self> {
+        let mut this = Self {
             root: ModShape::new(ComponentName::new("schemas"), vec![]),
+        };
+        if let Some(object) = maybe {
+            this.root.defs = object.into_iter().map(new).collect::<Result<Vec<_>>>()?;
+            Ok(this)
+        } else {
+            Ok(this)
         }
     }
     pub fn define(self) -> Result<Option<ModDef>> {
