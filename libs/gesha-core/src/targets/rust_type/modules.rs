@@ -4,6 +4,12 @@ use std::vec::IntoIter;
 #[derive(Clone, Debug)]
 pub struct Modules(Vec<ModDef>);
 
+impl Modules {
+    pub fn empty() -> Self {
+        Self(vec![])
+    }
+}
+
 impl IntoIterator for Modules {
     type Item = ModDef;
     type IntoIter = IntoIter<ModDef>;
