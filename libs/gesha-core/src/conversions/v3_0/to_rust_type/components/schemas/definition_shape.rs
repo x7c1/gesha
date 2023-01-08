@@ -60,21 +60,21 @@ impl DefinitionShape {
 
     pub fn define(self) -> Result<Definition> {
         match self {
-            DefinitionShape::Struct(StructShape { header, fields }) => {
+            Self::Struct(StructShape { header, fields }) => {
                 let def = StructDef::new(header.define(), define_fields(fields)?);
                 Ok(def.into())
             }
-            DefinitionShape::NewType { header, type_shape } => {
+            Self::NewType { header, type_shape } => {
                 let def = NewTypeDef::new(header.define(), type_shape.define()?);
                 Ok(def.into())
             }
-            DefinitionShape::Enum { header, values } => {
+            Self::Enum { header, values } => {
                 let variants = values.into_iter().map(to_enum_variant).collect();
                 let def = EnumDef::new(header.define(), variants);
                 Ok(def.into())
             }
-            DefinitionShape::Mod(x) => x.define().map(|x| x.into()),
-            DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
+            Self::Mod(x) => x.define().map(|x| x.into()),
+            Self::AllOf { .. } => Err(PostProcessBroken {
                 detail: format!(
                     "'allOf' must be processed before 'to_definitions'.\n{:#?}",
                     self

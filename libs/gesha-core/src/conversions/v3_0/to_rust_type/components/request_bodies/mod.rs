@@ -55,10 +55,10 @@ pub enum ContentShape {
 
 fn content_shape_to_variant(shape: ContentShape) -> Result<Option<MediaTypeVariant>> {
     match shape {
+        ContentShape::Defined(x) => Ok(x),
         ContentShape::Raw { .. } => {
             // todo: return error
             unimplemented!()
         }
-        ContentShape::Defined(x) => Ok(x),
     }
 }

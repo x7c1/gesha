@@ -65,13 +65,13 @@ impl Transformer {
 
     fn require_schema_type_name(&self, schema: &SchemaCase) -> Result<String> {
         match schema {
-            SchemaCase::Schema(_) => {
-                unimplemented!("inline object not supported yet")
-            }
             SchemaCase::Reference(x) => self
                 .snapshot
                 .find_type_definition(x)
                 .map(|x| x.type_name().to_string()),
+            SchemaCase::Schema(_) => {
+                unimplemented!("inline object not supported yet")
+            }
         }
     }
 }

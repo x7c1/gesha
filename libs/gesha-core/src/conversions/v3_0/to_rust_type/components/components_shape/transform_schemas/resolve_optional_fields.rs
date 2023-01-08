@@ -37,15 +37,15 @@ impl Transformer {
                 Ok(next)
             }
             DefinitionShape::Enum { .. } => Ok(shape.clone()),
+            DefinitionShape::Mod(shape) => Ok(DefinitionShape::Mod(
+                shape.map_defs(|x| self.resolve_ref(x))?,
+            )),
             DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
                 detail: format!(
                     "'allOf' must be processed before 'optional-fields'.\n{:#?}",
                     shape
                 ),
             }),
-            DefinitionShape::Mod(shape) => Ok(DefinitionShape::Mod(
-                shape.map_defs(|x| self.resolve_ref(x))?,
-            )),
         }
     }
 
