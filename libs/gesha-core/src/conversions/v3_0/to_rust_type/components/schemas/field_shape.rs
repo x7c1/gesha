@@ -1,5 +1,7 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape;
+use crate::conversions::v3_0::to_rust_type::is_patch;
 use crate::conversions::Result;
+use crate::targets::rust_type::{DataType, StructField, StructFieldAttribute, StructFieldName};
 use openapi_types::v3_0::{
     ComponentName, RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
 };
@@ -21,6 +23,14 @@ impl FieldShape {
 
     pub fn any_type(xs: &[Self], f: &impl Fn(&TypeShape) -> bool) -> bool {
         xs.iter().any(|x| f(&x.type_shape))
+    }
+
+    pub fn define(self) -> Result<StructField> {
+        let data_type = self.type_shape.define()?;
+        let name = StructFieldName::new(self.name.as_ref());
+        let attrs = to_field_attrs(&self.name, &name, &data_type);
+        let field = StructField::new(name, data_type, attrs);
+        Ok(field)
     }
 
     fn from_properties(
@@ -59,4 +69,23 @@ impl ToFieldShapes {
             None => false,
         }
     }
+}
+
+fn to_field_attrs(
+    original: &ComponentName,
+    name: &StructFieldName,
+    tpe: &DataType,
+) -> Vec<StructFieldAttribute> {
+    let mut attrs = vec![];
+    if original.as_ref() != name.as_str() {
+        attrs.push(StructFieldAttribute::new(format!(
+            r#"serde(rename="{original}")"#
+        )));
+    }
+    if is_patch(tpe) {
+        attrs.push(StructFieldAttribute::new(
+            r#"serde(default, skip_serializing_if = "Patch::is_absent")"#,
+        ));
+    }
+    attrs
 }

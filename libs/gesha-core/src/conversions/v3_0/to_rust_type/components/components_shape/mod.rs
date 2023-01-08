@@ -4,9 +4,6 @@ use define_core::define_core;
 mod define_request_bodies;
 use define_request_bodies::define_request_bodies;
 
-mod define_schemas;
-use define_schemas::define_schemas;
-
 mod transform_core;
 use transform_core::transform_core;
 
@@ -39,7 +36,7 @@ impl ComponentsShape {
         let this = transform(self)?;
         let modules = vec![
             define_request_bodies(this.request_bodies)?,
-            define_schemas(this.schemas)?,
+            this.schemas.define()?,
             define_core(this.core)?,
         ]
         .into_iter()

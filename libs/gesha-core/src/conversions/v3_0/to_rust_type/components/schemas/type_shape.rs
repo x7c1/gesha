@@ -1,6 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypePath;
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{Fixed, InlineObject};
-use crate::conversions::Error::UnknownFormat;
+use crate::conversions::Error::{PostProcessBroken, UnknownFormat};
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
 use openapi_types::v3_0::SchemaCase;
@@ -72,6 +72,23 @@ impl TypeShape {
             Self::Expanded { is_required, .. } => *is_required,
             Self::Option { .. } | Self::Patch { .. } => false,
         }
+    }
+
+    pub fn define(self) -> Result<DataType> {
+        let data_type = match self {
+            Self::Fixed { data_type, .. } => data_type,
+            Self::Array { type_shape, .. } => DataType::Vec(Box::new((*type_shape).define()?)),
+            Self::Expanded { type_path, .. } => type_path.into(),
+            Self::Option(type_shape) => DataType::Option(Box::new((*type_shape).define()?)),
+            Self::Patch(type_shape) => DataType::Patch(Box::new((*type_shape).define()?)),
+            Self::Ref { .. } => {
+                todo!()
+            }
+            Self::InlineObject { .. } => Err(PostProcessBroken {
+                detail: format!("InlineObject must be processed before '$ref'.\n{:#?}", self),
+            })?,
+        };
+        Ok(data_type)
     }
 }
 

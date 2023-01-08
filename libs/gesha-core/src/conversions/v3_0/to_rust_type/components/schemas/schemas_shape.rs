@@ -3,7 +3,9 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
     TypeHeaderShape, TypeShape,
 };
 use crate::conversions::Result;
+use crate::targets::rust_type::ModDef;
 use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject, SchemasObject};
+use std::ops::Not;
 
 #[derive(Debug, Clone)]
 pub struct SchemasShape {
@@ -20,6 +22,10 @@ impl SchemasShape {
         Self {
             root: ModShape::new(ComponentName::new("schemas"), vec![]),
         }
+    }
+    pub fn define(self) -> Result<Option<ModDef>> {
+        let schemas = self.root.define()?;
+        Ok(schemas.defs.is_empty().not().then_some(schemas))
     }
 }
 

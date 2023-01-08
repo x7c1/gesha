@@ -1,6 +1,12 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
     AllOfShape, FieldShape, ModShape, StructShape, TypeHeaderShape, TypeShape,
 };
+use crate::conversions::Error::PostProcessBroken;
+use crate::conversions::Result;
+use crate::targets::rust_type::{
+    Definition, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName, NewTypeDef, StructDef,
+    StructField,
+};
 use openapi_types::v3_0::{ComponentName, EnumValues};
 
 #[derive(Clone, Debug)]
@@ -51,6 +57,31 @@ impl DefinitionShape {
             Self::Mod(_) => false,
         }
     }
+
+    pub fn define(self) -> Result<Definition> {
+        match self {
+            DefinitionShape::Struct(StructShape { header, fields }) => {
+                let def = StructDef::new(header.define(), define_fields(fields)?);
+                Ok(def.into())
+            }
+            DefinitionShape::NewType { header, type_shape } => {
+                let def = NewTypeDef::new(header.define(), type_shape.define()?);
+                Ok(def.into())
+            }
+            DefinitionShape::Enum { header, values } => {
+                let variants = values.into_iter().map(to_enum_variant).collect();
+                let def = EnumDef::new(header.define(), variants);
+                Ok(def.into())
+            }
+            DefinitionShape::Mod(x) => x.define().map(|x| x.into()),
+            DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
+                detail: format!(
+                    "'allOf' must be processed before 'to_definitions'.\n{:#?}",
+                    self
+                ),
+            }),
+        }
+    }
 }
 
 pub struct TypeDefinitionShape<'a> {
@@ -74,4 +105,19 @@ impl TypeDefinitionShape<'_> {
     pub fn field_shapes(&self) -> &[FieldShape] {
         self.fields
     }
+}
+
+fn define_fields(shapes: Vec<FieldShape>) -> Result<Vec<StructField>> {
+    shapes.into_iter().map(|field| field.define()).collect()
+}
+
+fn to_enum_variant(original: String) -> EnumVariant {
+    let name = EnumVariantName::new(original.as_str());
+    let mut attrs = vec![];
+    if name.as_str() != original {
+        attrs.push(EnumVariantAttribute::new(format!(
+            r#"serde(rename="{original}")"#
+        )))
+    }
+    EnumVariant::unit(name, attrs)
 }
