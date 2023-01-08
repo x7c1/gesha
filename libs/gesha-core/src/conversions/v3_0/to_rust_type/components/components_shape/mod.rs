@@ -27,7 +27,7 @@ use crate::conversions::Result;
 use crate::targets::rust_type::{Definitions, Imports, ModDef, ModuleName, Modules, Package};
 use openapi_types::v3_0::{ReferenceObject, SchemaObject};
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct ComponentsShape {
     pub schemas: SchemasShape,
     pub request_bodies: RequestBodiesShape,
@@ -59,15 +59,15 @@ impl ComponentsShape {
             unimplemented!()
         }
         let name = type_ref.replace(prefix, "");
-        self.schemas
-            .iter()
+        let defs = &self.schemas.root.defs;
+        defs.iter()
             .filter_map(|shape| shape.as_type_definition())
             .find(|shape| shape.is_type_name(&name))
             .ok_or_else(|| ReferenceObjectNotFound(type_ref.to_string()))
     }
 
     pub fn any_type(&self, f: impl Fn(&TypeShape) -> bool) -> bool {
-        self.schemas.iter().any(|x| x.any_type(&f))
+        self.schemas.root.defs.iter().any(|x| x.any_type(&f))
         // TODO: check self.request_bodies
     }
 }
@@ -79,6 +79,7 @@ fn transform(shapes: ComponentsShape) -> Result<ComponentsShape> {
     Ok(shapes)
 }
 
+// TODO: delete this fn
 fn create_module<A: Into<String>>(name: A, definitions: Definitions) -> Result<Option<ModDef>> {
     let mut imports = Imports::new();
     imports.set(vec![Package::Deserialize, Package::Serialize]);

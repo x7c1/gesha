@@ -1,5 +1,6 @@
 mod components;
 
+use crate::conversions::v3_0::to_rust_type::components::core::CoreShape;
 use crate::conversions::v3_0::to_rust_type::components::request_bodies::RequestBodiesShape;
 use crate::conversions::v3_0::to_rust_type::components::schemas::SchemasShape;
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
@@ -33,7 +34,7 @@ impl ToRustType<ComponentsObject> for Modules {
         let shapes = ComponentsShape {
             schemas,
             request_bodies,
-            ..Default::default()
+            core: CoreShape::default(),
         };
         shapes.into_modules()
     }

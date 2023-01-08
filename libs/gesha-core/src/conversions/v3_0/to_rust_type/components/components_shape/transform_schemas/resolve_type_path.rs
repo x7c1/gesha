@@ -1,5 +1,5 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    DefinitionShape, FieldShape, ModShape, SchemasShape, StructShape, TypePath, TypeShape,
+    DefinitionShape, FieldShape, StructShape, TypePath, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Error::PostProcessBroken;
@@ -11,13 +11,13 @@ pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape>
         snapshot: &shapes.clone(),
         mod_path: TypePath::new(),
     };
-    let schemas = shapes
-        .schemas
+    let defs = shapes.schemas.root.defs;
+    let defs = defs
         .into_iter()
         .map(|x| transformer.resolve_ref(x))
-        .collect::<Result<SchemasShape>>()?;
+        .collect::<Result<Vec<_>>>()?;
 
-    shapes.schemas = schemas;
+    shapes.schemas.root.defs = defs;
     Ok(shapes)
 }
 
@@ -45,21 +45,14 @@ impl Transformer<'_> {
                 Ok(next)
             }
             DefinitionShape::Enum { .. } => Ok(shape.clone()),
+            DefinitionShape::Mod(shape) => {
+                let mod_path = self.mod_path.clone().add(shape.name.clone());
+                let next = shape.map_defs(|x| self.resolve_ref_in_mod(mod_path.clone(), x))?;
+                Ok(next.into())
+            }
             DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
                 detail: format!("'allOf' must be processed before '$ref'.\n{:#?}", shape),
             }),
-            DefinitionShape::Mod(ModShape { name, defs }) => {
-                let mod_path = self.mod_path.clone().add(name.clone());
-                let next_defs = defs
-                    .into_iter()
-                    .map(|x| self.resolve_ref_in_mod(mod_path.clone(), x))
-                    .collect::<Result<Vec<_>>>()?;
-
-                Ok(DefinitionShape::Mod(ModShape {
-                    name,
-                    defs: next_defs,
-                }))
-            }
         }
     }
 

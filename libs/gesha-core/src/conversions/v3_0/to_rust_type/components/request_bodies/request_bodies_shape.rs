@@ -7,7 +7,7 @@ use indexmap::IndexMap;
 use openapi_types::v3_0::{ComponentName, RequestBodiesObject, RequestBodyCase, RequestBodyObject};
 use std::ops::Not;
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone)]
 pub struct RequestBodiesShape(Vec<DefinitionShape>);
 
 impl RequestBodiesShape {

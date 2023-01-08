@@ -1,6 +1,9 @@
 mod expand_inline_schemas;
 use expand_inline_schemas::expand_inline_schemas;
 
+mod insert_imports;
+use insert_imports::insert_imports;
+
 mod resolve_all_of;
 use resolve_all_of::resolve_all_of;
 
@@ -18,5 +21,6 @@ pub fn transform_schemas(shapes: ComponentsShape) -> Result<ComponentsShape> {
     let shapes = resolve_all_of(shapes)?;
     let shapes = resolve_type_path(shapes)?;
     let shapes = resolve_optional_fields(shapes)?;
+    let shapes = insert_imports(shapes)?;
     Ok(shapes)
 }

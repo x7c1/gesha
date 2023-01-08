@@ -1,4 +1,3 @@
-use crate::conversions::v3_0::to_rust_type::components::components_shape::create_module;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
     DefinitionShape, FieldShape, ModShape, SchemasShape, StructShape, TypeHeaderShape, TypeShape,
 };
@@ -6,78 +5,74 @@ use crate::conversions::v3_0::to_rust_type::is_patch;
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
-    DataType, Definition, Definitions, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName,
-    ModDef, ModuleName, NewTypeDef, Package, StructDef, StructField, StructFieldAttribute,
-    StructFieldName, TypeHeader,
+    DataType, Definition, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName, ModDef,
+    ModuleName, NewTypeDef, Package, StructDef, StructField, StructFieldAttribute, StructFieldName,
+    TypeHeader,
 };
 use openapi_types::v3_0::ComponentName;
 
 pub fn define_schemas(shape: SchemasShape) -> Result<Option<ModDef>> {
-    let define = Definer {};
-    let defs = shape
+    let def = define_mod(shape.root)?;
+    // TODO: unwrap option
+    Ok(Some(def))
+}
+
+fn define_mod(shape: ModShape) -> Result<ModDef> {
+    let inline_defs = shape
+        .defs
         .into_iter()
-        .map(|x| define.apply(x))
-        .collect::<Result<Definitions>>()?;
+        .map(define)
+        .collect::<Result<Vec<_>>>()?;
 
-    create_module("schemas", defs)
+    let def = ModDef {
+        name: ModuleName::new(shape.name),
+        imports: vec![Package::Deserialize, Package::Serialize].into(),
+        defs: inline_defs.into_iter().collect(),
+    };
+    Ok(def)
 }
 
-struct Definer {}
-
-impl Definer {
-    fn apply(&self, shape: DefinitionShape) -> Result<Definition> {
-        match shape {
-            DefinitionShape::Struct(StructShape { header, fields }) => {
-                let def = StructDef::new(to_type_header(header), self.shapes_to_fields(fields)?);
-                Ok(def.into())
-            }
-            DefinitionShape::NewType { header, type_shape } => {
-                let def_type = type_shape_to_data_type(type_shape)?;
-                let def = NewTypeDef::new(to_type_header(header), def_type);
-                Ok(def.into())
-            }
-            DefinitionShape::Enum { header, values } => {
-                let variants = values.into_iter().map(to_enum_variant).collect();
-                let def = EnumDef::new(to_type_header(header), variants);
-                Ok(def.into())
-            }
-            DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
-                detail: format!(
-                    "'allOf' must be processed before 'to_definitions'.\n{:#?}",
-                    shape
-                ),
-            }),
-            DefinitionShape::Mod(ModShape { name, defs }) => {
-                let inline_defs = defs
-                    .into_iter()
-                    .map(|x| self.apply(x))
-                    .collect::<Result<Vec<_>>>()?;
-
-                let def = ModDef {
-                    name: ModuleName::new(name),
-                    imports: vec![Package::Deserialize, Package::Serialize].into(),
-                    defs: inline_defs.into_iter().collect(),
-                };
-                Ok(def.into())
-            }
+fn define(shape: DefinitionShape) -> Result<Definition> {
+    match shape {
+        DefinitionShape::Struct(StructShape { header, fields }) => {
+            let def = StructDef::new(to_type_header(header), shapes_to_fields(fields)?);
+            Ok(def.into())
         }
-    }
-
-    fn shapes_to_fields(&self, shapes: Vec<FieldShape>) -> Result<Vec<StructField>> {
-        shapes
-            .into_iter()
-            .map(|shape| self.field_shape_to_struct_field(shape))
-            .collect()
-    }
-
-    fn field_shape_to_struct_field(&self, shape: FieldShape) -> Result<StructField> {
-        let data_type = type_shape_to_data_type(shape.type_shape)?;
-        let name = StructFieldName::new(shape.name.as_ref());
-        let attrs = to_field_attrs(&shape.name, &name, &data_type);
-        let field = StructField::new(name, data_type, attrs);
-        Ok(field)
+        DefinitionShape::NewType { header, type_shape } => {
+            let def_type = type_shape_to_data_type(type_shape)?;
+            let def = NewTypeDef::new(to_type_header(header), def_type);
+            Ok(def.into())
+        }
+        DefinitionShape::Enum { header, values } => {
+            let variants = values.into_iter().map(to_enum_variant).collect();
+            let def = EnumDef::new(to_type_header(header), variants);
+            Ok(def.into())
+        }
+        DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
+            detail: format!(
+                "'allOf' must be processed before 'to_definitions'.\n{:#?}",
+                shape
+            ),
+        }),
+        DefinitionShape::Mod(x) => define_mod(x).map(|x| x.into()),
     }
 }
+
+fn shapes_to_fields(shapes: Vec<FieldShape>) -> Result<Vec<StructField>> {
+    shapes
+        .into_iter()
+        .map(field_shape_to_struct_field)
+        .collect()
+}
+
+fn field_shape_to_struct_field(shape: FieldShape) -> Result<StructField> {
+    let data_type = type_shape_to_data_type(shape.type_shape)?;
+    let name = StructFieldName::new(shape.name.as_ref());
+    let attrs = to_field_attrs(&shape.name, &name, &data_type);
+    let field = StructField::new(name, data_type, attrs);
+    Ok(field)
+}
+
 fn type_shape_to_data_type(shape: TypeShape) -> Result<DataType> {
     let data_type = match shape {
         TypeShape::Array { type_shape, .. } => {

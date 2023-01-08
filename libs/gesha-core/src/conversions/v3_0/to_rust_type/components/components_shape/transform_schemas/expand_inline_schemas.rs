@@ -1,4 +1,3 @@
-use crate::conversions::v3_0::to_rust_type::components::schemas::DefinitionShape::Mod;
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{
     Array, Expanded, Fixed, InlineObject, Ref,
 };
@@ -11,8 +10,8 @@ use crate::conversions::Result;
 use std::ops::Not;
 
 pub fn expand_inline_schemas(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
-    let schemas = shapes
-        .schemas
+    let defs = shapes.schemas.root.defs;
+    let defs = defs
         .into_iter()
         .map(expand)
         .collect::<Result<Vec<Vec<_>>>>()?
@@ -20,7 +19,7 @@ pub fn expand_inline_schemas(mut shapes: ComponentsShape) -> Result<ComponentsSh
         .flatten()
         .collect();
 
-    shapes.schemas = schemas;
+    shapes.schemas.root.defs = defs;
     Ok(shapes)
 }
 
@@ -32,7 +31,7 @@ fn expand(shape: DefinitionShape) -> Result<Vec<DefinitionShape>> {
         DefinitionShape::AllOf(_)// TODO: add test
         | DefinitionShape::NewType { .. }
         | DefinitionShape::Enum { .. }
-        | Mod { .. } => Ok(vec![shape]),
+        | DefinitionShape::Mod { .. } => Ok(vec![shape]),
     }
 }
 
@@ -51,10 +50,11 @@ fn expand_struct_fields(path: TypePath, shape: StructShape) -> Result<Vec<Defini
         header: shape.header,
         fields,
     };
-    let mod_def = defs.is_empty().not().then_some(Mod(ModShape {
-        name: mod_name,
-        defs,
-    }));
+    let mod_def = defs
+        .is_empty()
+        .not()
+        .then_some(ModShape::new(mod_name, defs).into());
+
     Ok(vec![next.into()].into_iter().chain(mod_def).collect())
 }
 
@@ -73,10 +73,11 @@ fn expand_all_of_fields(path: TypePath, shape: AllOfShape) -> Result<Vec<Definit
         header: shape.header,
         items,
     };
-    let mod_def = defs.is_empty().not().then_some(Mod(ModShape {
-        name: mod_name,
-        defs,
-    }));
+    let mod_def = defs
+        .is_empty()
+        .not()
+        .then_some(ModShape::new(mod_name, defs).into());
+
     Ok(vec![next.into()].into_iter().chain(mod_def).collect())
 }
 

@@ -1,5 +1,5 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, SchemasShape, StructShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, StructShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
@@ -8,13 +8,13 @@ pub fn resolve_all_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let transformer = Transformer {
         snapshot: shapes.clone(),
     };
-    let schemas = shapes
-        .schemas
+    let defs = shapes.schemas.root.defs;
+    let defs = defs
         .into_iter()
         .map(|x| transformer.shape_all_of(x))
-        .collect::<Result<SchemasShape>>()?;
+        .collect::<Result<Vec<_>>>()?;
 
-    shapes.schemas = schemas;
+    shapes.schemas.root.defs = defs;
     Ok(shapes)
 }
 
@@ -31,13 +31,9 @@ impl Transformer {
                     fields: self.merge_fields_all_of(items)?,
                 }))
             }
-            DefinitionShape::Mod(ModShape { name, defs }) => Ok(DefinitionShape::Mod(ModShape {
-                name,
-                defs: defs
-                    .into_iter()
-                    .map(|x| self.shape_all_of(x))
-                    .collect::<Result<_>>()?,
-            })),
+            DefinitionShape::Mod(shape) => Ok(DefinitionShape::Mod(
+                shape.map_defs(|x| self.shape_all_of(x))?,
+            )),
             DefinitionShape::Struct { .. }
             | DefinitionShape::NewType { .. }
             | DefinitionShape::Enum { .. } => Ok(def_shape),
