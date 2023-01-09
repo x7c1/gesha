@@ -44,6 +44,14 @@ impl DefinitionShape {
     }
 }
 
+impl TryFrom<DefinitionShape> for Definition {
+    type Error = crate::conversions::Error;
+
+    fn try_from(this: DefinitionShape) -> Result<Self> {
+        this.define()
+    }
+}
+
 #[derive(Clone, Debug)]
 pub enum ContentShape {
     Raw {

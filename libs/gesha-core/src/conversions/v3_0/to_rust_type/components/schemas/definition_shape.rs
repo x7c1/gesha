@@ -84,6 +84,14 @@ impl DefinitionShape {
     }
 }
 
+impl TryFrom<DefinitionShape> for Definition {
+    type Error = crate::conversions::Error;
+
+    fn try_from(this: DefinitionShape) -> Result<Self> {
+        this.define()
+    }
+}
+
 pub struct TypeDefinitionShape<'a> {
     type_header: &'a TypeHeaderShape,
     fields: &'a Vec<FieldShape>,

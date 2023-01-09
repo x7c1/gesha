@@ -20,6 +20,16 @@ impl Definitions {
     pub fn iter(&self) -> impl Iterator<Item = &Definition> {
         self.0.iter()
     }
+
+    pub fn from<A, E>(xs: Vec<A>) -> Result<Self, E>
+    where
+        A: TryInto<Definition, Error = E>,
+    {
+        xs.into_iter()
+            .map(|x| x.try_into())
+            .collect::<Result<Vec<_>, E>>()
+            .map(Self)
+    }
 }
 
 impl FromIterator<Definition> for Definitions {
