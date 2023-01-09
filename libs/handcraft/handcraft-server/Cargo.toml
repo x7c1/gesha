@@ -8,5 +8,5 @@ edition = "2018"
 [dependencies]
 handcraft-models = { path = "../handcraft-models" }
 actix-web = "4.2.1"
-async-trait = "0.1.60"
-serde = { version = "1.0.152", features = ["derive"] }
+async-trait = { workspace = true }
+serde = { workspace = true }
