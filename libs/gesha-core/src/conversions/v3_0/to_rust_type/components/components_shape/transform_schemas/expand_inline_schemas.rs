@@ -1,5 +1,5 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{
-    Array, Expanded, Fixed, InlineObject, Ref,
+    Array, Expanded, Inline, Proper, Ref,
 };
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, StructShape,
@@ -100,12 +100,12 @@ fn expand_field(
 ) -> Result<(FieldShape, Vec<DefinitionShape>)> {
     match field.type_shape {
         Ref { .. }
-        | Fixed { .. }
+        | Proper { .. }
         | Array { .. }
         | Expanded { .. }
         | TypeShape::Option { .. }
         | TypeShape::Patch { .. } => Ok((field, vec![])),
-        InlineObject {
+        Inline {
             object,
             optionality,
         } => {

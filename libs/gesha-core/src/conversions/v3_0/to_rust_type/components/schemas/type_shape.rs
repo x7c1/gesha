@@ -1,4 +1,4 @@
-use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{Fixed, InlineObject};
+use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{Inline, Proper};
 use crate::conversions::v3_0::to_rust_type::components::schemas::{Optionality, TypePath};
 use crate::conversions::Error::{PostProcessBroken, UnknownFormat};
 use crate::conversions::Result;
@@ -9,7 +9,7 @@ use openapi_types::v3_0::{FormatModifier, OpenApiDataType, ReferenceObject, Sche
 
 #[derive(Clone, Debug)]
 pub enum TypeShape {
-    Fixed {
+    Proper {
         data_type: DataType,
         optionality: Optionality,
     },
@@ -25,7 +25,7 @@ pub enum TypeShape {
         type_path: TypePath,
         optionality: Optionality,
     },
-    InlineObject {
+    Inline {
         object: SchemaObject,
         optionality: Optionality,
     },
@@ -61,14 +61,14 @@ impl TypeShape {
 
     pub fn resolve_optionality(self) -> Result<Self> {
         let optionality = match &self {
-            Self::Fixed { optionality, .. }
+            Self::Proper { optionality, .. }
             | Self::Array { optionality, .. }
             | Self::Expanded { optionality, .. } => optionality,
             Self::Option(_) | Self::Patch(_) => {
                 // already resolved
                 return Ok(self);
             }
-            Self::InlineObject { .. } => {
+            Self::Inline { .. } => {
                 todo!()
             }
             Self::Ref { .. } => {
@@ -85,7 +85,7 @@ impl TypeShape {
 
     pub fn define(self) -> Result<DataType> {
         let data_type = match self {
-            Self::Fixed { data_type, .. } => data_type,
+            Self::Proper { data_type, .. } => data_type,
             Self::Array { type_shape, .. } => DataType::Vec(Box::new((*type_shape).define()?)),
             Self::Expanded { type_path, .. } => type_path.into(),
             Self::Option(type_shape) => DataType::Option(Box::new((*type_shape).define()?)),
@@ -93,7 +93,7 @@ impl TypeShape {
             Self::Ref { .. } => {
                 todo!()
             }
-            Self::InlineObject { .. } => Err(PostProcessBroken {
+            Self::Inline { .. } => Err(PostProcessBroken {
                 detail: format!("InlineObject must be processed before '$ref'.\n{:#?}", self),
             })?,
         };
@@ -119,31 +119,31 @@ impl TypeFactory {
         };
         match (&data_type, &self.object.format) {
             (ot::Array, _) => self.items_to_shape(),
-            (ot::Boolean, _) => Ok(Fixed {
+            (ot::Boolean, _) => Ok(Proper {
                 data_type: tp::Bool,
                 optionality,
             }),
-            (ot::Integer, Some(fm::Int32)) => Ok(Fixed {
+            (ot::Integer, Some(fm::Int32)) => Ok(Proper {
                 data_type: tp::Int32,
                 optionality,
             }),
-            (ot::Integer, Some(fm::Int64) | None) => Ok(Fixed {
+            (ot::Integer, Some(fm::Int64) | None) => Ok(Proper {
                 data_type: tp::Int64,
                 optionality,
             }),
-            (ot::Number, Some(fm::Float)) => Ok(Fixed {
+            (ot::Number, Some(fm::Float)) => Ok(Proper {
                 data_type: tp::Float32,
                 optionality,
             }),
-            (ot::Number, Some(fm::Double) | None) => Ok(Fixed {
+            (ot::Number, Some(fm::Double) | None) => Ok(Proper {
                 data_type: tp::Float64,
                 optionality,
             }),
-            (ot::String, _) => Ok(Fixed {
+            (ot::String, _) => Ok(Proper {
                 data_type: tp::String,
                 optionality,
             }),
-            (ot::Object, _) => Ok(InlineObject {
+            (ot::Object, _) => Ok(Inline {
                 object: self.object,
                 optionality,
             }),

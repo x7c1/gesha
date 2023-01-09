@@ -98,7 +98,7 @@ impl Transformer<'_> {
                     x if x.starts_with(self.prefix) => x.replace(self.prefix, ""),
                     x => unimplemented!("not implemented: {x}"),
                 };
-                TypeShape::Fixed {
+                TypeShape::Proper {
                     data_type: self.mod_path.ancestors().add(type_name).into(),
                     optionality: Optionality {
                         is_required,
@@ -106,7 +106,7 @@ impl Transformer<'_> {
                     },
                 }
             }
-            TypeShape::Fixed { .. } => shape,
+            TypeShape::Proper { .. } => shape,
             TypeShape::Array {
                 type_shape,
                 optionality,
@@ -122,7 +122,7 @@ impl Transformer<'_> {
                 optionality,
             },
             TypeShape::Option(_) | TypeShape::Patch(_) => todo!("return error"),
-            TypeShape::InlineObject { .. } => Err(PostProcessBroken {
+            TypeShape::Inline { .. } => Err(PostProcessBroken {
                 detail: format!(
                     "InlineObject must be processed before '$ref'.\n{:#?}",
                     shape
