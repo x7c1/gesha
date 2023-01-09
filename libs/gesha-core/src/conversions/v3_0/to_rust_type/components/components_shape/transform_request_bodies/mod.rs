@@ -59,7 +59,7 @@ impl Transformer {
             }
             ContentShape::Defined(_) => {
                 // already processed
-                shape
+                Ok(shape)
             }
         }
     }

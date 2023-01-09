@@ -35,6 +35,8 @@ impl RequestBodiesShape {
             .defs
             .iter()
             .flat_map(|def| def.media_types())
+            .collect::<Result<Vec<_>>>()?
+            .into_iter()
             .collect::<IndexMap<EnumVariantName, String>>();
 
         let def = translator

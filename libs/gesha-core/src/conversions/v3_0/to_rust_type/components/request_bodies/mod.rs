@@ -23,12 +23,14 @@ pub struct DefinitionShape {
 }
 
 impl DefinitionShape {
-    pub fn media_types(&self) -> impl Iterator<Item = (EnumVariantName, String)> + '_ {
+    pub fn media_types(&self) -> impl Iterator<Item = Result<(EnumVariantName, String)>> + '_ {
         use ContentShape::{Defined, Raw};
-        self.contents.iter().flat_map(|content| match content {
+        self.contents.iter().filter_map(|content| match content {
             Defined(None) => None,
-            Defined(Some(x)) => Some((x.variant.name.clone(), x.header_value.clone())),
-            Raw { .. } => unimplemented!("return error"),
+            Defined(Some(x)) => Some(Ok((x.variant.name.clone(), x.header_value.clone()))),
+            Raw { .. } => Some(Err(PostProcessBroken {
+                detail: format!("not processed: \n{:#?}", content),
+            })),
         })
     }
 
