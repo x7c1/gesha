@@ -58,7 +58,8 @@ impl Transformer {
                 })))
             }
             ContentShape::Defined(_) => {
-                unimplemented!()
+                // already processed
+                shape
             }
         }
     }
