@@ -1,10 +1,37 @@
-use super::{to_type_shape, AllOfItemShape, DefinitionShape, TypeHeaderShape};
-use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_field_shapes;
-use crate::conversions::v3_0::to_rust_type::from_schemas::{AllOfShape, StructShape};
+use crate::conversions::v3_0::to_rust_type::components::schemas::{
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, StructShape,
+    TypeHeaderShape, TypeShape,
+};
 use crate::conversions::Result;
-use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject};
+use crate::targets::rust_type::ModDef;
+use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject, SchemasObject};
+use std::ops::Not;
 
-pub(super) fn to_shape(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
+#[derive(Debug, Clone)]
+pub struct SchemasShape {
+    pub root: ModShape,
+}
+
+impl SchemasShape {
+    pub fn shape(maybe: Option<SchemasObject>) -> Result<Self> {
+        let mut this = Self {
+            root: ModShape::new(ComponentName::new("schemas"), vec![]),
+        };
+        if let Some(object) = maybe {
+            this.root.defs = object.into_iter().map(new).collect::<Result<Vec<_>>>()?;
+        }
+        Ok(this)
+    }
+    pub fn define(self) -> Result<Option<ModDef>> {
+        let schemas = self.root.define()?;
+        Ok(schemas.defs.is_empty().not().then_some(schemas))
+    }
+    pub fn any_type(&self, f: &impl Fn(&TypeShape) -> bool) -> bool {
+        self.root.defs.iter().any(|x| x.any_type(f))
+    }
+}
+
+fn new(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
     let (field_name, schema_case) = kv;
     match schema_case {
         SchemaCase::Schema(obj) => {
@@ -26,14 +53,14 @@ impl Shaper {
             return self.for_all_of();
         }
 
-        use openapi_types::v3_0::OpenApiDataType as ot;
+        use openapi_types::v3_0::OpenApiDataType as o;
         match self.object.data_type.as_ref() {
-            Some(ot::Object) => self.for_struct(),
-            Some(ot::String) => match self.object.enum_values {
+            Some(o::Object) => self.for_struct(),
+            Some(o::String) => match self.object.enum_values {
                 Some(_) => self.for_enum(),
                 None => self.for_newtype(),
             },
-            Some(ot::Integer | ot::Number | ot::Boolean | ot::Array) => self.for_newtype(),
+            Some(o::Integer | o::Number | o::Boolean | o::Array) => self.for_newtype(),
 
             // define it as 'object' if 'type' is not specified.
             None => self.for_struct(),
@@ -43,7 +70,7 @@ impl Shaper {
     fn for_struct(self) -> Result<DefinitionShape> {
         let shape = StructShape {
             header: self.create_type_header(),
-            fields: to_field_shapes(self.object.properties, self.object.required)?,
+            fields: FieldShape::from_object(self.object)?,
         };
         Ok(shape.into())
     }
@@ -62,7 +89,7 @@ impl Shaper {
     fn for_newtype(self) -> Result<DefinitionShape> {
         let shape = DefinitionShape::NewType {
             header: self.create_type_header(),
-            type_shape: to_type_shape::from_object(self.object, /* is_required */ true)?,
+            type_shape: TypeShape::from_object(self.object, /* is_required */ true)?,
         };
         Ok(shape)
     }

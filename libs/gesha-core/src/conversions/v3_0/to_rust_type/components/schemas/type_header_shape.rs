@@ -1,4 +1,4 @@
-use crate::targets::rust_type::DocComments;
+use crate::targets::rust_type::{DocComments, TypeHeader};
 use openapi_types::v3_0::{ComponentName, SchemaObject};
 
 #[derive(Clone, Debug)]
@@ -15,6 +15,9 @@ impl TypeHeaderShape {
             doc_comments: to_doc_comments(object.title.as_deref(), object.description.as_deref()),
             is_nullable: object.nullable.unwrap_or(false),
         }
+    }
+    pub fn define(self) -> TypeHeader {
+        TypeHeader::new(self.name, self.doc_comments)
     }
 }
 

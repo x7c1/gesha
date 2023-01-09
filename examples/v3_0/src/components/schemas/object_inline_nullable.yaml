@@ -1,0 +1,14 @@
+schemas:
+  SamplePet:
+    type: object
+    required:
+      - id
+    properties:
+      id:
+        type: integer
+      registered_profile:
+        type: object
+        properties:
+          name:
+            type: string
+            nullable: true

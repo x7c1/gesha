@@ -14,6 +14,7 @@ pub mod numeric_fields;
 pub mod object_inline;
 pub mod object_inline_all_of;
 pub mod object_inline_nested;
+pub mod object_inline_nullable;
 pub mod object_inline_ref;
 pub mod object_simple;
 pub mod optional_field;

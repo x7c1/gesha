@@ -38,26 +38,6 @@ mod struct_field_name;
 pub use struct_field_name::StructFieldName;
 
 use std::fmt::{Debug, Display, Formatter};
-use std::hash::{Hash, Hasher};
-
-#[derive(Clone, Debug)]
-pub struct Module {
-    pub name: ModuleName,
-    pub definitions: Definitions,
-    pub imports: Imports,
-    _hide_default_constructor: bool,
-}
-
-impl Module {
-    pub fn new(name: ModuleName, definitions: Definitions, imports: Imports) -> Self {
-        Self {
-            name,
-            definitions,
-            imports,
-            _hide_default_constructor: true,
-        }
-    }
-}
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct ModuleName(String);
@@ -107,12 +87,4 @@ impl Display for DocComments {
             None => Ok(()),
         }
     }
-}
-
-fn hash_items<A, H>(xs: impl Iterator<Item = A>, state: &mut H)
-where
-    A: Hash,
-    H: Hasher,
-{
-    xs.for_each(|x| x.hash(state))
 }

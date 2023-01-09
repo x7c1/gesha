@@ -1,5 +1,4 @@
-use crate::conversions::v3_0::to_rust_type::from_schemas::to_field_shapes::to_field_shapes;
-use crate::conversions::v3_0::to_rust_type::from_schemas::FieldShape;
+use crate::conversions::v3_0::to_rust_type::components::schemas::{DefinitionShape, FieldShape};
 use crate::conversions::Result;
 use openapi_types::v3_0::{ReferenceObject, SchemaCase, SchemaObject};
 
@@ -14,8 +13,21 @@ impl AllOfItemShape {
         cases.into_iter().map(Self::from_schema_case).collect()
     }
 
+    pub fn expand_fields<F>(self, f: F) -> Result<(Self, Vec<DefinitionShape>)>
+    where
+        F: Fn(Vec<FieldShape>) -> Result<(Vec<FieldShape>, Vec<DefinitionShape>)>,
+    {
+        match self {
+            AllOfItemShape::Object(fields) => {
+                let (fields, defs) = f(fields)?;
+                Ok((AllOfItemShape::Object(fields), defs))
+            }
+            AllOfItemShape::Ref(_) => Ok((self, vec![])),
+        }
+    }
+
     fn from_schema_object(object: SchemaObject) -> Result<Self> {
-        let shapes = to_field_shapes(object.properties, object.required)?;
+        let shapes = FieldShape::from_object(object)?;
         Ok(Self::Object(shapes))
     }
 

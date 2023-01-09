@@ -11,12 +11,6 @@ pub mod schemas {
         pub nested1: sample_pet::Nested1,
     }
 
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Coordinate {
-        pub latitude: f64,
-        pub longitude: f64,
-    }
-
     pub mod sample_pet {
         use serde::Deserialize;
         use serde::Serialize;
@@ -36,5 +30,11 @@ pub mod schemas {
                 pub location: super::super::Coordinate,
             }
         }
+    }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct Coordinate {
+        pub latitude: f64,
+        pub longitude: f64,
     }
 }

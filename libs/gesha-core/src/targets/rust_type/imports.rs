@@ -1,7 +1,9 @@
 use indexmap::IndexSet;
+use std::borrow::Cow;
 use std::fmt::{Display, Formatter};
+use Cow::{Borrowed, Owned};
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, PartialEq, Default)]
 pub struct Imports(IndexSet<Package>);
 
 impl Imports {
@@ -40,26 +42,21 @@ pub enum Package {
     Serializer,
     Display,
     Formatter,
-    Patch,
-}
-
-impl AsRef<str> for Package {
-    fn as_ref(&self) -> &str {
-        match self {
-            Self::Deserialize => "serde::Deserialize",
-            Self::Deserializer => "serde::Deserializer",
-            Self::Serialize => "serde::Serialize",
-            Self::Serializer => "serde::Serializer",
-            Self::Display => "std::fmt::Display",
-            Self::Formatter => "std::fmt::Formatter",
-            Self::Patch => "super::core::Patch",
-        }
-    }
+    Patch { depth: usize },
 }
 
 impl Display for Package {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        Display::fmt(self.as_ref(), f)
+        let x = match self {
+            Self::Deserialize => Borrowed("serde::Deserialize"),
+            Self::Deserializer => Borrowed("serde::Deserializer"),
+            Self::Serialize => Borrowed("serde::Serialize"),
+            Self::Serializer => Borrowed("serde::Serializer"),
+            Self::Display => Borrowed("std::fmt::Display"),
+            Self::Formatter => Borrowed("std::fmt::Formatter"),
+            Self::Patch { depth } => Owned("super::".repeat(*depth) + "core::Patch"),
+        };
+        Display::fmt(&x, f)
     }
 }
 
