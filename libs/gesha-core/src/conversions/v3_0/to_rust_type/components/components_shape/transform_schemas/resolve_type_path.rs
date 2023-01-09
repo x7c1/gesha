@@ -121,7 +121,8 @@ impl Transformer<'_> {
                 type_path: type_path.relative_from(self.mod_path.clone()),
                 optionality,
             },
-            TypeShape::Option(_) | TypeShape::Patch(_) => todo!("return error"),
+            TypeShape::Option(x) => TypeShape::Option(Box::new(self.transform_field_type(*x)?)),
+            TypeShape::Patch(x) => TypeShape::Patch(Box::new(self.transform_field_type(*x)?)),
             TypeShape::Inline { .. } => Err(PostProcessBroken {
                 detail: format!(
                     "InlineObject must be processed before '$ref'.\n{:#?}",

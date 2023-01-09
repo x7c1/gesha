@@ -68,12 +68,12 @@ impl TypeShape {
                 // already resolved
                 return Ok(self);
             }
-            Self::Inline { .. } => {
-                todo!()
-            }
-            Self::Ref { .. } => {
-                todo!()
-            }
+            Self::Inline { .. } => Err(PostProcessBroken {
+                detail: "inline object must be processed before resolving optionality".to_string(),
+            })?,
+            Self::Ref { .. } => Err(PostProcessBroken {
+                detail: "$ref must be processed before resolving optionality".to_string(),
+            })?,
         };
         let resolved = match (optionality.is_required, optionality.is_nullable) {
             (true, true) | (false, false) => TypeShape::Option(Box::new(self)),
@@ -90,11 +90,11 @@ impl TypeShape {
             Self::Expanded { type_path, .. } => type_path.into(),
             Self::Option(type_shape) => DataType::Option(Box::new((*type_shape).define()?)),
             Self::Patch(type_shape) => DataType::Patch(Box::new((*type_shape).define()?)),
-            Self::Ref { .. } => {
-                todo!()
-            }
+            Self::Ref { .. } => Err(PostProcessBroken {
+                detail: format!("$ref not processed: \n{:#?}", self),
+            })?,
             Self::Inline { .. } => Err(PostProcessBroken {
-                detail: format!("InlineObject must be processed before '$ref'.\n{:#?}", self),
+                detail: format!("inline object not processed: \n{:#?}", self),
             })?,
         };
         Ok(data_type)

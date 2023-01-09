@@ -50,7 +50,7 @@ fn new(kv: (ComponentName, RequestBodyCase)) -> Result<DefinitionShape> {
     let (field_name, request_body_case) = kv;
     match request_body_case {
         RequestBodyCase::RequestBody(object) => shape(field_name, *object),
-        RequestBodyCase::Reference(_) => todo!(),
+        RequestBodyCase::Reference(_) => unimplemented!(),
     }
 }
 
