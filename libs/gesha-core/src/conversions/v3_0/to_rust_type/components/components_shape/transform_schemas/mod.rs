@@ -8,7 +8,7 @@ mod resolve_all_of;
 use resolve_all_of::resolve_all_of;
 
 mod resolve_optional_fields;
-use resolve_optional_fields::resolve_optional_fields;
+use resolve_optional_fields::resolve_optionality;
 
 mod resolve_type_path;
 use resolve_type_path::resolve_type_path;
@@ -20,7 +20,7 @@ pub fn transform_schemas(shapes: ComponentsShape) -> Result<ComponentsShape> {
     let shapes = expand_inline_schemas(shapes)?;
     let shapes = resolve_all_of(shapes)?;
     let shapes = resolve_type_path(shapes)?;
-    let shapes = resolve_optional_fields(shapes)?;
+    let shapes = resolve_optionality(shapes)?;
     let shapes = insert_imports(shapes)?;
     Ok(shapes)
 }

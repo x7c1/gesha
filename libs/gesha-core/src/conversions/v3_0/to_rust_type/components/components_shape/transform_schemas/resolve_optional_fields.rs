@@ -5,18 +5,14 @@ use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 
-pub fn resolve_optional_fields(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
+pub fn resolve_optionality(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let defs = shapes.schemas.root.defs;
-    let defs = defs
-        .into_iter()
-        .map(resolve_ref)
-        .collect::<Result<Vec<_>>>()?;
-
+    let defs = defs.into_iter().map(resolve).collect::<Result<Vec<_>>>()?;
     shapes.schemas.root.defs = defs;
     Ok(shapes)
 }
 
-fn resolve_ref(shape: DefinitionShape) -> Result<DefinitionShape> {
+fn resolve(shape: DefinitionShape) -> Result<DefinitionShape> {
     match shape {
         DefinitionShape::Struct(StructShape { header, fields }) => {
             let next = StructShape {
@@ -33,7 +29,7 @@ fn resolve_ref(shape: DefinitionShape) -> Result<DefinitionShape> {
             Ok(next)
         }
         DefinitionShape::Enum { .. } => Ok(shape),
-        DefinitionShape::Mod(shape) => Ok(DefinitionShape::Mod(shape.map_defs(resolve_ref)?)),
+        DefinitionShape::Mod(shape) => Ok(DefinitionShape::Mod(shape.map_defs(resolve)?)),
         DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
             detail: format!(
                 "'allOf' must be processed before 'optional-fields'.\n{:#?}",

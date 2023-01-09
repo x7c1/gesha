@@ -61,11 +61,14 @@ impl TypeShape {
 
     pub fn resolve_optionality(self) -> Self {
         let optionality = match &self {
-            Self::Fixed { optionality, .. } => optionality,
-            Self::Array { optionality, .. } => optionality,
-            Self::Expanded { optionality, .. } => optionality,
-            Self::InlineObject { optionality, .. } => optionality,
-            Self::Option(_) | Self::Patch(_) => return self,
+            Self::Fixed { optionality, .. }
+            | Self::Array { optionality, .. }
+            | Self::Expanded { optionality, .. }
+            | Self::InlineObject { optionality, .. } => optionality,
+            Self::Option(_) | Self::Patch(_) => {
+                // already resolved
+                return self;
+            }
             Self::Ref { .. } => {
                 todo!()
             }
