@@ -13,6 +13,9 @@ pub use field_shape::FieldShape;
 mod mod_shape;
 pub use mod_shape::ModShape;
 
+mod optionality;
+pub use optionality::Optionality;
+
 mod schemas_shape;
 pub use schemas_shape::SchemasShape;
 

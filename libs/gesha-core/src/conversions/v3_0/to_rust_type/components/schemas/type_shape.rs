@@ -1,5 +1,5 @@
-use crate::conversions::v3_0::to_rust_type::components::schemas::TypePath;
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{Fixed, InlineObject};
+use crate::conversions::v3_0::to_rust_type::components::schemas::{Optionality, TypePath};
 use crate::conversions::Error::{PostProcessBroken, UnknownFormat};
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
@@ -11,13 +11,11 @@ use openapi_types::v3_0::{FormatModifier, OpenApiDataType, ReferenceObject, Sche
 pub enum TypeShape {
     Fixed {
         data_type: DataType,
-        is_required: bool,
-        is_nullable: bool,
+        optionality: Optionality,
     },
     Array {
         type_shape: Box<TypeShape>,
-        is_required: bool,
-        is_nullable: bool,
+        optionality: Optionality,
     },
     Ref {
         object: ReferenceObject<SchemaObject>,
@@ -25,13 +23,11 @@ pub enum TypeShape {
     },
     Expanded {
         type_path: TypePath,
-        is_required: bool,
-        is_nullable: bool,
+        optionality: Optionality,
     },
     InlineObject {
         object: SchemaObject,
-        is_required: bool,
-        is_nullable: bool,
+        optionality: Optionality,
     },
     Option(Box<TypeShape>),
     Patch(Box<TypeShape>),
@@ -63,14 +59,21 @@ impl TypeShape {
         to_type.apply(data_type)
     }
 
-    pub fn is_required(&self) -> bool {
-        match self {
-            Self::Fixed { is_required, .. } => *is_required,
-            Self::Array { is_required, .. } => *is_required,
-            Self::Ref { is_required, .. } => *is_required,
-            Self::InlineObject { is_required, .. } => *is_required,
-            Self::Expanded { is_required, .. } => *is_required,
-            Self::Option { .. } | Self::Patch { .. } => false,
+    pub fn resolve_optionality(self) -> Self {
+        let optionality = match &self {
+            Self::Fixed { optionality, .. } => optionality,
+            Self::Array { optionality, .. } => optionality,
+            Self::Expanded { optionality, .. } => optionality,
+            Self::InlineObject { optionality, .. } => optionality,
+            Self::Option(_) | Self::Patch(_) => return self,
+            Self::Ref { .. } => {
+                todo!()
+            }
+        };
+        match (optionality.is_required, optionality.is_nullable) {
+            (true, true) | (false, false) => TypeShape::Option(Box::new(self)),
+            (false, true) => TypeShape::Patch(Box::new(self)),
+            (true, false) => self,
         }
     }
 
@@ -104,44 +107,39 @@ impl TypeFactory {
         use FormatModifier as fm;
         use OpenApiDataType as ot;
 
-        let is_required = self.is_required;
-        let is_nullable = self.object.nullable.unwrap_or(false);
+        let optionality = Optionality {
+            is_required: self.is_required,
+            is_nullable: self.object.nullable.unwrap_or(false),
+        };
         match (&data_type, &self.object.format) {
             (ot::Array, _) => self.items_to_shape(),
             (ot::Boolean, _) => Ok(Fixed {
                 data_type: tp::Bool,
-                is_required,
-                is_nullable,
+                optionality,
             }),
             (ot::Integer, Some(fm::Int32)) => Ok(Fixed {
                 data_type: tp::Int32,
-                is_required,
-                is_nullable,
+                optionality,
             }),
             (ot::Integer, Some(fm::Int64) | None) => Ok(Fixed {
                 data_type: tp::Int64,
-                is_required,
-                is_nullable,
+                optionality,
             }),
             (ot::Number, Some(fm::Float)) => Ok(Fixed {
                 data_type: tp::Float32,
-                is_required,
-                is_nullable,
+                optionality,
             }),
             (ot::Number, Some(fm::Double) | None) => Ok(Fixed {
                 data_type: tp::Float64,
-                is_required,
-                is_nullable,
+                optionality,
             }),
             (ot::String, _) => Ok(Fixed {
                 data_type: tp::String,
-                is_required,
-                is_nullable,
+                optionality,
             }),
             (ot::Object, _) => Ok(InlineObject {
                 object: self.object,
-                is_required,
-                is_nullable,
+                optionality,
             }),
             (_, Some(x)) => Err(UnknownFormat {
                 data_type,
@@ -159,8 +157,10 @@ impl TypeFactory {
         let items_shape = TypeShape::from_case(items.into(), /* is_required */ true)?;
         let type_shape = TypeShape::Array {
             type_shape: Box::new(items_shape),
-            is_required: self.is_required,
-            is_nullable: self.object.nullable.unwrap_or(false),
+            optionality: Optionality {
+                is_required: self.is_required,
+                is_nullable: self.object.nullable.unwrap_or(false),
+            },
         };
         Ok(type_shape)
     }

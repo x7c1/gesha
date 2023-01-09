@@ -1,5 +1,5 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    DefinitionShape, FieldShape, StructShape, TypePath, TypeShape,
+    DefinitionShape, FieldShape, Optionality, StructShape, TypePath, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Error::PostProcessBroken;
@@ -44,7 +44,7 @@ impl Transformer<'_> {
                 };
                 Ok(next)
             }
-            DefinitionShape::Enum { .. } => Ok(shape.clone()),
+            DefinitionShape::Enum { .. } => Ok(shape),
             DefinitionShape::Mod(shape) => {
                 let mod_path = self.mod_path.clone().add(shape.name.clone());
                 let next = shape.map_defs(|x| self.resolve_ref_in_mod(mod_path.clone(), x))?;
@@ -84,30 +84,42 @@ impl Transformer<'_> {
     }
 
     fn shape_field_type(&self, shape: TypeShape) -> Result<TypeShape> {
-        let is_required = shape.is_required();
-        let is_nullable = self.is_nullable(&shape)?;
         let resolved_type = match shape {
-            TypeShape::Array { type_shape, .. } => TypeShape::Array {
+            TypeShape::Array {
+                type_shape,
+                optionality,
+            } => TypeShape::Array {
                 type_shape: Box::new(self.shape_field_type(*type_shape)?),
-                is_required,
-                is_nullable,
+                optionality,
             },
-            TypeShape::Ref { object, .. } => {
+            TypeShape::Ref {
+                object,
+                is_required,
+            } => {
+                let is_nullable = self
+                    .snapshot
+                    .find_type_definition(&object)
+                    .map(|def| def.is_nullable())?;
+
                 let type_name = match String::from(object) {
                     x if x.starts_with(self.prefix) => x.replace(self.prefix, ""),
                     x => unimplemented!("not implemented: {x}"),
                 };
                 TypeShape::Fixed {
                     data_type: self.mod_path.ancestors().add(type_name).into(),
-                    is_required,
-                    is_nullable,
+                    optionality: Optionality {
+                        is_required,
+                        is_nullable,
+                    },
                 }
             }
-            TypeShape::Fixed { .. } => shape.clone(),
-            TypeShape::Expanded { type_path, .. } => TypeShape::Expanded {
+            TypeShape::Fixed { .. } => shape,
+            TypeShape::Expanded {
+                type_path,
+                optionality,
+            } => TypeShape::Expanded {
                 type_path: type_path.relative_from(self.mod_path.clone()),
-                is_required,
-                is_nullable,
+                optionality,
             },
             TypeShape::Option(_) | TypeShape::Patch(_) => todo!("return error"),
             TypeShape::InlineObject { .. } => Err(PostProcessBroken {
@@ -118,19 +130,5 @@ impl Transformer<'_> {
             })?,
         };
         Ok(resolved_type)
-    }
-
-    fn is_nullable(&self, shape: &TypeShape) -> Result<bool> {
-        match shape {
-            TypeShape::Fixed { is_nullable, .. }
-            | TypeShape::Array { is_nullable, .. }
-            | TypeShape::InlineObject { is_nullable, .. }
-            | TypeShape::Expanded { is_nullable, .. } => Ok(*is_nullable),
-            TypeShape::Ref { object, .. } => self
-                .snapshot
-                .find_type_definition(object)
-                .map(|def| def.is_nullable()),
-            TypeShape::Option(_) | TypeShape::Patch(_) => todo!(),
-        }
     }
 }

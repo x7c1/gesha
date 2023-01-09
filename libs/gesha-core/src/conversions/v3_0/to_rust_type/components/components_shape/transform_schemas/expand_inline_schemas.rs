@@ -107,8 +107,7 @@ fn expand_field(
         | TypeShape::Patch { .. } => Ok((field, vec![])),
         InlineObject {
             object,
-            is_required,
-            is_nullable,
+            optionality,
         } => {
             let type_name = field.name.to_upper_camel_case();
             let defs = if let Some(cases) = object.all_of.as_ref() {
@@ -128,8 +127,7 @@ fn expand_field(
                 name: field.name,
                 type_shape: Expanded {
                     type_path: mod_path.add(type_name),
-                    is_required,
-                    is_nullable,
+                    optionality,
                 },
             };
             Ok((field_shape, defs))
