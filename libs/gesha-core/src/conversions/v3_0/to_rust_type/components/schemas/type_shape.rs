@@ -59,25 +59,28 @@ impl TypeShape {
         to_type.apply(data_type)
     }
 
-    pub fn resolve_optionality(self) -> Self {
+    pub fn resolve_optionality(self) -> Result<Self> {
         let optionality = match &self {
             Self::Fixed { optionality, .. }
             | Self::Array { optionality, .. }
-            | Self::Expanded { optionality, .. }
-            | Self::InlineObject { optionality, .. } => optionality,
+            | Self::Expanded { optionality, .. } => optionality,
             Self::Option(_) | Self::Patch(_) => {
                 // already resolved
-                return self;
+                return Ok(self);
+            }
+            Self::InlineObject { .. } => {
+                todo!()
             }
             Self::Ref { .. } => {
                 todo!()
             }
         };
-        match (optionality.is_required, optionality.is_nullable) {
+        let resolved = match (optionality.is_required, optionality.is_nullable) {
             (true, true) | (false, false) => TypeShape::Option(Box::new(self)),
             (false, true) => TypeShape::Patch(Box::new(self)),
             (true, false) => self,
-        }
+        };
+        Ok(resolved)
     }
 
     pub fn define(self) -> Result<DataType> {

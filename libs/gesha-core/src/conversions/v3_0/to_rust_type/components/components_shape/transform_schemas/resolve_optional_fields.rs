@@ -1,9 +1,10 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    DefinitionShape, FieldShape, StructShape, TypeShape,
+    DefinitionShape, FieldShape, StructShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
+use DefinitionShape::{AllOf, Enum, Mod, NewType, Struct};
 
 pub fn resolve_optionality(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let defs = shapes.schemas.root.defs;
@@ -14,23 +15,23 @@ pub fn resolve_optionality(mut shapes: ComponentsShape) -> Result<ComponentsShap
 
 fn resolve(shape: DefinitionShape) -> Result<DefinitionShape> {
     match shape {
-        DefinitionShape::Struct(StructShape { header, fields }) => {
+        Struct(StructShape { header, fields }) => {
             let next = StructShape {
                 header,
                 fields: transform_fields(fields)?,
             };
             Ok(next.into())
         }
-        DefinitionShape::NewType { header, type_shape } => {
-            let next = DefinitionShape::NewType {
+        NewType { header, type_shape } => {
+            let next = NewType {
                 header,
-                type_shape: transform_field_type(type_shape)?,
+                type_shape: type_shape.resolve_optionality()?,
             };
             Ok(next)
         }
-        DefinitionShape::Enum { .. } => Ok(shape),
-        DefinitionShape::Mod(shape) => Ok(DefinitionShape::Mod(shape.map_defs(resolve)?)),
-        DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
+        Enum { .. } => Ok(shape),
+        Mod(shape) => Ok(Mod(shape.map_defs(resolve)?)),
+        AllOf { .. } => Err(PostProcessBroken {
             detail: format!(
                 "'allOf' must be processed before 'optional-fields'.\n{:#?}",
                 shape
@@ -43,39 +44,7 @@ fn transform_fields(shapes: Vec<FieldShape>) -> Result<Vec<FieldShape>> {
     shapes.into_iter().map(transform_field).collect()
 }
 
-fn transform_field(shape: FieldShape) -> Result<FieldShape> {
-    Ok(FieldShape {
-        name: shape.name,
-        type_shape: transform_field_type(shape.type_shape)?,
-    })
-}
-
-fn transform_field_type(shape: TypeShape) -> Result<TypeShape> {
-    let expanded_type = match shape {
-        TypeShape::Array {
-            type_shape,
-            optionality,
-        } => {
-            println!("{:#?}", optionality);
-            TypeShape::Array {
-                type_shape: Box::new(transform_field_type(*type_shape)?),
-                optionality,
-            }
-        }
-        TypeShape::Fixed { .. } | TypeShape::Expanded { .. } => shape,
-        TypeShape::Option { .. } | TypeShape::Patch { .. } => todo!("return error"),
-        TypeShape::Ref { .. } => Err(PostProcessBroken {
-            detail: format!(
-                "Ref must be processed before 'optional-fields'.\n{:#?}",
-                shape
-            ),
-        })?,
-        TypeShape::InlineObject { .. } => Err(PostProcessBroken {
-            detail: format!(
-                "InlineObject must be processed before 'optional-fields'.\n{:#?}",
-                shape
-            ),
-        })?,
-    };
-    Ok(expanded_type.resolve_optionality())
+fn transform_field(mut shape: FieldShape) -> Result<FieldShape> {
+    shape.type_shape = shape.type_shape.resolve_optionality()?;
+    Ok(shape)
 }
