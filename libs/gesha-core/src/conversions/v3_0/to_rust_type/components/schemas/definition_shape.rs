@@ -31,13 +31,13 @@ impl DefinitionShape {
                 type_header: &shape.header,
                 fields: Some(&shape.fields),
             }),
-            Self::NewType { header, .. } => Some(TypeDefinitionShape {
+            Self::NewType { header, .. } | Self::Enum { header, .. } => Some(TypeDefinitionShape {
                 type_header: header,
                 fields: None,
             }),
             // TODO: return here to merge multiple allOf
             Self::AllOf { .. } => None,
-            Self::Enum { .. } | Self::Mod { .. } => None,
+            Self::Mod { .. } => None,
         }
     }
 
