@@ -29,12 +29,15 @@ impl DefinitionShape {
         match self {
             Self::Struct(shape) => Some(TypeDefinitionShape {
                 type_header: &shape.header,
-                fields: &shape.fields,
+                fields: Some(&shape.fields),
             }),
-            Self::AllOf { .. } // TODO: return here to merge multiple allOf
-            | Self::NewType { .. }
-            | Self::Enum { .. }
-            | Self::Mod { .. } => None,
+            Self::NewType { header, .. } => Some(TypeDefinitionShape {
+                type_header: header,
+                fields: None,
+            }),
+            // TODO: return here to merge multiple allOf
+            Self::AllOf { .. } => None,
+            Self::Enum { .. } | Self::Mod { .. } => None,
         }
     }
 
@@ -94,7 +97,7 @@ impl TryFrom<DefinitionShape> for Definition {
 
 pub struct TypeDefinitionShape<'a> {
     type_header: &'a TypeHeaderShape,
-    fields: &'a Vec<FieldShape>,
+    fields: Option<&'a Vec<FieldShape>>,
 }
 
 impl TypeDefinitionShape<'_> {
@@ -110,7 +113,7 @@ impl TypeDefinitionShape<'_> {
         self.type_header.is_nullable
     }
 
-    pub fn field_shapes(&self) -> &[FieldShape] {
+    pub fn field_shapes(&self) -> Option<&Vec<FieldShape>> {
         self.fields
     }
 }

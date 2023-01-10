@@ -57,7 +57,7 @@ impl Transformer {
             AllOfItemShape::Object(shapes) => Ok(shapes),
             AllOfItemShape::Ref(object) => {
                 let shape = self.snapshot.find_type_definition(&object)?;
-                Ok(shape.field_shapes().to_vec())
+                Ok(shape.field_shapes().map(|x| x.to_vec()).unwrap_or_default())
             }
         }
     }
