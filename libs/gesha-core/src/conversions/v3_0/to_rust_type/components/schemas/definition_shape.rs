@@ -35,9 +35,8 @@ impl DefinitionShape {
                 type_header: header,
                 fields: None,
             }),
-            // TODO: return here to merge multiple allOf
-            Self::AllOf { .. } => None,
             Self::Mod { .. } => None,
+            Self::AllOf { .. } => unimplemented!(),
         }
     }
 
