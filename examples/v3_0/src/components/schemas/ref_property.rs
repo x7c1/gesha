@@ -10,6 +10,7 @@ pub mod schemas {
         pub x0: ObjectSample,
         pub x1: NewTypeSample,
         pub x2: EnumSample,
+        pub x3: AllOfSample,
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -39,5 +40,11 @@ pub mod schemas {
         B,
         #[serde(rename = "c")]
         C,
+    }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct AllOfSample {
+        pub id: i64,
+        pub name: String,
     }
 }
