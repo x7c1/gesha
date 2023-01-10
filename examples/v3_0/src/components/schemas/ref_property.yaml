@@ -9,6 +9,8 @@ schemas:
         $ref: '#/components/schemas/ObjectSample'
       x1:
         $ref: '#/components/schemas/NewTypeSample'
+      x2:
+        $ref: '#/components/schemas/EnumSample'
   ObjectSample:
     type: object
     required:
@@ -21,3 +23,6 @@ schemas:
         type: string
   NewTypeSample:
     type: string
+  EnumSample:
+    type: string
+    enum: [a, b, c]
