@@ -4,6 +4,7 @@ schemas:
     required:
       - x0
       - x1
+      - x2
     properties:
       x0:
         $ref: '#/components/schemas/ObjectSample'

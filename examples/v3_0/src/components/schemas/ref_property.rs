@@ -9,6 +9,7 @@ pub mod schemas {
     pub struct Container {
         pub x0: ObjectSample,
         pub x1: NewTypeSample,
+        pub x2: EnumSample,
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -28,5 +29,15 @@ pub mod schemas {
         fn from(this: NewTypeSample) -> Self {
             this.0
         }
+    }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub enum EnumSample {
+        #[serde(rename = "a")]
+        A,
+        #[serde(rename = "b")]
+        B,
+        #[serde(rename = "c")]
+        C,
     }
 }
