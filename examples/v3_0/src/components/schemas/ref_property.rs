@@ -6,13 +6,27 @@ pub mod schemas {
     use serde::Serialize;
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct PetContainer {
-        pub pet: Pet,
+    pub struct Container {
+        pub x0: ObjectSample,
+        pub x1: NewTypeSample,
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Pet {
+    pub struct ObjectSample {
         pub id: i64,
         pub name: String,
+    }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct NewTypeSample(String);
+    impl From<String> for NewTypeSample {
+        fn from(this: String) -> Self {
+            Self(this)
+        }
+    }
+    impl From<NewTypeSample> for String {
+        fn from(this: NewTypeSample) -> Self {
+            this.0
+        }
     }
 }
