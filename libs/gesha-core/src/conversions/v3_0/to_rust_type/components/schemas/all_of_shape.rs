@@ -1,6 +1,7 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
     AllOfItemShape, DefinitionShape, FieldShape, TypeHeaderShape, TypeShape,
 };
+use openapi_types::v3_0::{ReferenceObject, SchemaObject};
 
 #[derive(Clone, Debug)]
 pub struct AllOfShape {
@@ -21,6 +22,16 @@ impl AllOfShape {
             AllOfItemShape::Object(xs) => xs.iter().any(|x| f(&x.type_shape)),
             AllOfItemShape::Ref(_) => false,
         })
+    }
+
+    pub fn collect_fields(
+        &self,
+        f: impl Fn(&ReferenceObject<SchemaObject>) -> Vec<FieldShape>,
+    ) -> Vec<FieldShape> {
+        self.items
+            .iter()
+            .flat_map(|x| x.collect_fields(&f))
+            .collect()
     }
 }
 

@@ -7,7 +7,7 @@ use crate::targets::rust_type::{
     Definition, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName, NewTypeDef, StructDef,
     StructField,
 };
-use openapi_types::v3_0::{ComponentName, EnumValues};
+use openapi_types::v3_0::{EnumValues, ReferenceObject, SchemaObject};
 
 #[derive(Clone, Debug)]
 pub enum DefinitionShape {
@@ -25,18 +25,13 @@ pub enum DefinitionShape {
 }
 
 impl DefinitionShape {
-    pub fn as_type_definition(&self) -> Option<TypeDefinitionShape> {
+    pub fn type_header(&self) -> Option<&TypeHeaderShape> {
         match self {
-            Self::Struct(shape) => Some(TypeDefinitionShape {
-                type_header: &shape.header,
-                fields: Some(&shape.fields),
-            }),
-            Self::NewType { header, .. } | Self::Enum { header, .. } => Some(TypeDefinitionShape {
-                type_header: header,
-                fields: None,
-            }),
-            Self::Mod { .. } => None,
-            Self::AllOf { .. } => unimplemented!(),
+            Self::AllOf(shape) => Some(&shape.header),
+            Self::Struct(shape) => Some(&shape.header),
+            Self::NewType { header, .. } => Some(header),
+            Self::Enum { header, .. } => Some(header),
+            Self::Mod(_) => None,
         }
     }
 
@@ -57,6 +52,17 @@ impl DefinitionShape {
             Self::NewType { type_shape, .. } => f(type_shape),
             Self::Enum { .. } => false,
             Self::Mod(_) => false,
+        }
+    }
+
+    pub fn collect_fields(
+        &self,
+        f: impl Fn(&ReferenceObject<SchemaObject>) -> Vec<FieldShape>,
+    ) -> Vec<FieldShape> {
+        match self {
+            Self::Struct(shape) => shape.fields.clone(),
+            Self::AllOf(shape) => shape.collect_fields(f),
+            Self::NewType { .. } | Self::Enum { .. } | Self::Mod(_) => vec![],
         }
     }
 
@@ -91,29 +97,6 @@ impl TryFrom<DefinitionShape> for Definition {
 
     fn try_from(this: DefinitionShape) -> Result<Self> {
         this.define()
-    }
-}
-
-pub struct TypeDefinitionShape<'a> {
-    type_header: &'a TypeHeaderShape,
-    fields: Option<&'a Vec<FieldShape>>,
-}
-
-impl TypeDefinitionShape<'_> {
-    pub fn type_name(&self) -> &ComponentName {
-        &self.type_header.name
-    }
-
-    pub fn is_type_name(&self, name: &str) -> bool {
-        self.type_name().as_ref() == name
-    }
-
-    pub fn is_nullable(&self) -> bool {
-        self.type_header.is_nullable
-    }
-
-    pub fn field_shapes(&self) -> Option<&Vec<FieldShape>> {
-        self.fields
     }
 }
 

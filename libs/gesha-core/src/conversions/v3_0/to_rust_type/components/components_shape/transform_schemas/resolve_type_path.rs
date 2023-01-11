@@ -89,11 +89,7 @@ impl Transformer<'_> {
                 object,
                 is_required,
             } => {
-                let is_nullable = self
-                    .snapshot
-                    .find_type_definition(&object)
-                    .map(|def| def.is_nullable())?;
-
+                let is_nullable = self.snapshot.schemas.is_nullable(&object);
                 let type_name = match String::from(object) {
                     x if x.starts_with(self.prefix) => x.replace(self.prefix, ""),
                     x => unimplemented!("not implemented: {x}"),
@@ -125,8 +121,9 @@ impl Transformer<'_> {
             TypeShape::Patch(x) => TypeShape::Patch(Box::new(self.transform_field_type(*x)?)),
             TypeShape::Inline { .. } => Err(PostProcessBroken {
                 detail: format!(
-                    "InlineObject must be processed before '$ref'.\n{:#?}",
-                    shape
+                    "unprocessed shape found:\n  at {file}:{line}\n{shape:#?}",
+                    file = file!(),
+                    line = line!(),
                 ),
             })?,
         };

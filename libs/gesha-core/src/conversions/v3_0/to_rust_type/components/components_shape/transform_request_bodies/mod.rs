@@ -2,6 +2,7 @@ use crate::conversions::v3_0::to_rust_type::components::request_bodies::{
     ContentShape, DefinitionShape, MediaTypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
+use crate::conversions::Error::ReferenceObjectNotFound;
 use crate::conversions::Result;
 use crate::targets::rust_type::{DataType, EnumVariant, EnumVariantName, MediaTypeVariant};
 use openapi_types::v3_0::SchemaCase;
@@ -68,8 +69,11 @@ impl Transformer {
         match schema {
             SchemaCase::Reference(x) => self
                 .snapshot
-                .find_type_definition(x)
-                .map(|x| x.type_name().to_string()),
+                .schemas
+                .find_type_name(x)
+                .ok_or_else(|| ReferenceObjectNotFound(x.clone().into()))
+                .map(|name| name.clone().into()),
+
             SchemaCase::Schema(_) => {
                 unimplemented!("inline object not supported yet")
             }

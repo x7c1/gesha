@@ -4,7 +4,9 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::ModDef;
-use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject, SchemasObject};
+use openapi_types::v3_0::{
+    ComponentName, ReferenceObject, SchemaCase, SchemaObject, SchemasObject,
+};
 use std::ops::Not;
 
 #[derive(Debug, Clone)]
@@ -22,12 +24,47 @@ impl SchemasShape {
         }
         Ok(this)
     }
+
     pub fn define(self) -> Result<Option<ModDef>> {
         let schemas = self.root.define()?;
         Ok(schemas.defs.is_empty().not().then_some(schemas))
     }
+
     pub fn any_type(&self, f: &impl Fn(&TypeShape) -> bool) -> bool {
         self.root.defs.iter().any(|x| x.any_type(f))
+    }
+
+    pub fn find_type_name(&self, object: &ReferenceObject<SchemaObject>) -> Option<&ComponentName> {
+        self.find_header(object).map(|x| &x.name)
+    }
+
+    pub fn is_nullable(&self, object: &ReferenceObject<SchemaObject>) -> bool {
+        self.find_header(object)
+            .map(|x| x.is_nullable)
+            .unwrap_or(false)
+    }
+
+    pub fn collect_fields(&self, object: &ReferenceObject<SchemaObject>) -> Vec<FieldShape> {
+        let name = extract_ref_name(object);
+        self.root
+            .defs
+            .iter()
+            .find(|def| {
+                def.type_header()
+                    .map(|x| x.name.as_ref() == name)
+                    .unwrap_or(false)
+            })
+            .map(|def| def.collect_fields(|x| self.collect_fields(x)))
+            .unwrap_or_default()
+    }
+
+    fn find_header(&self, object: &ReferenceObject<SchemaObject>) -> Option<&TypeHeaderShape> {
+        let name = extract_ref_name(object);
+        self.root
+            .defs
+            .iter()
+            .flat_map(|x| x.type_header())
+            .find(|x| x.name.as_ref() == name)
     }
 }
 
@@ -40,6 +77,17 @@ fn new(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
         }
         SchemaCase::Reference(_) => todo!(),
     }
+}
+
+fn extract_ref_name(object: &ReferenceObject<SchemaObject>) -> String {
+    let prefix = "#/components/schemas/";
+    let type_ref = object.as_ref();
+    if !type_ref.starts_with(prefix) {
+        unimplemented!()
+    }
+    // TODO: avoid generating String
+    // type_ref.strip_prefix()
+    type_ref.replace(prefix, "")
 }
 
 struct Shaper {

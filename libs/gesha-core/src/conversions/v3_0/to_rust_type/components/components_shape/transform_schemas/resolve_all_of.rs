@@ -55,10 +55,7 @@ impl Transformer {
     fn shape_item_to_fields(&self, item_shape: AllOfItemShape) -> Result<Vec<FieldShape>> {
         match item_shape {
             AllOfItemShape::Object(shapes) => Ok(shapes),
-            AllOfItemShape::Ref(object) => {
-                let shape = self.snapshot.find_type_definition(&object)?;
-                Ok(shape.field_shapes().map(|x| x.to_vec()).unwrap_or_default())
-            }
+            AllOfItemShape::Ref(object) => Ok(self.snapshot.schemas.collect_fields(&object)),
         }
     }
 }

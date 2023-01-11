@@ -25,11 +25,9 @@ pub fn expand_inline_schemas(mut shape: ComponentsShape) -> Result<ComponentsSha
 
 fn expand(shape: DefinitionShape) -> Result<Vec<DefinitionShape>> {
     match shape {
-        DefinitionShape::Struct(x) => {
-            expand_struct_fields(TypePath::new(), x)
-        }
-        DefinitionShape::AllOf(_)// TODO: add test
-        | DefinitionShape::NewType { .. }
+        DefinitionShape::Struct(x) => expand_struct_fields(TypePath::new(), x),
+        DefinitionShape::AllOf(x) => expand_all_of_fields(TypePath::new(), x),
+        DefinitionShape::NewType { .. }
         | DefinitionShape::Enum { .. }
         | DefinitionShape::Mod { .. } => Ok(vec![shape]),
     }
