@@ -79,15 +79,12 @@ fn new(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
     }
 }
 
-fn extract_ref_name(object: &ReferenceObject<SchemaObject>) -> String {
-    let prefix = "#/components/schemas/";
-    let type_ref = object.as_ref();
-    if !type_ref.starts_with(prefix) {
+fn extract_ref_name(object: &ReferenceObject<SchemaObject>) -> &str {
+    if let Some(x) = object.as_ref().strip_prefix("#/components/schemas/") {
+        x
+    } else {
         unimplemented!()
     }
-    // TODO: avoid generating String
-    // type_ref.strip_prefix()
-    type_ref.replace(prefix, "")
 }
 
 struct Shaper {
