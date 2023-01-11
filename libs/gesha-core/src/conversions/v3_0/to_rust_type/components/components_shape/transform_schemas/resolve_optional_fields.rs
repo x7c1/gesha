@@ -1,8 +1,8 @@
+use crate::broken;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
     DefinitionShape, FieldShape, StructShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
-use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, Struct};
 
@@ -31,12 +31,7 @@ fn resolve(shape: DefinitionShape) -> Result<DefinitionShape> {
         }
         Enum { .. } => Ok(shape),
         Mod(shape) => Ok(Mod(shape.map_defs(resolve)?)),
-        AllOf { .. } => Err(PostProcessBroken {
-            detail: format!(
-                "'allOf' must be processed before 'optional-fields'.\n{:#?}",
-                shape
-            ),
-        }),
+        AllOf { .. } => Err(broken!(shape)),
     }
 }
 

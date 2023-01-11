@@ -7,7 +7,7 @@ pub use mod_shape::ModShape;
 mod request_bodies_shape;
 pub use request_bodies_shape::RequestBodiesShape;
 
-use crate::conversions::Error::PostProcessBroken;
+use crate::broken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
     Definition, DocComments, EnumVariantName, MediaTypeVariant, RequestBodyDef, TypeHeader,
@@ -28,9 +28,7 @@ impl DefinitionShape {
         self.contents.iter().filter_map(|content| match content {
             Defined(None) => None,
             Defined(Some(x)) => Some(Ok((x.variant.name.clone(), x.header_value.clone()))),
-            Raw { .. } => Some(Err(PostProcessBroken {
-                detail: format!("not processed: \n{:#?}", content),
-            })),
+            Raw { .. } => Some(Err(broken!(content))),
         })
     }
 
@@ -67,8 +65,6 @@ pub enum ContentShape {
 fn content_shape_to_variant(shape: ContentShape) -> Result<Option<MediaTypeVariant>> {
     match shape {
         ContentShape::Defined(x) => Ok(x),
-        ContentShape::Raw { .. } => Err(PostProcessBroken {
-            detail: format!("not processed: \n{:#?}", shape),
-        }),
+        ContentShape::Raw { .. } => Err(broken!(shape)),
     }
 }

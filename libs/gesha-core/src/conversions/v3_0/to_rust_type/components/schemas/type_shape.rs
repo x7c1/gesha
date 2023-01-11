@@ -1,6 +1,7 @@
+use crate::broken;
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{Inline, Proper};
 use crate::conversions::v3_0::to_rust_type::components::schemas::{Optionality, TypePath};
-use crate::conversions::Error::{PostProcessBroken, UnknownFormat};
+use crate::conversions::Error::UnknownFormat;
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
 use openapi_types::v3_0::SchemaCase;
@@ -68,12 +69,8 @@ impl TypeShape {
                 // already resolved
                 return Ok(self);
             }
-            Self::Inline { .. } => Err(PostProcessBroken {
-                detail: "inline object must be processed before resolving optionality".to_string(),
-            })?,
-            Self::Ref { .. } => Err(PostProcessBroken {
-                detail: "$ref must be processed before resolving optionality".to_string(),
-            })?,
+            Self::Inline { .. } => Err(broken!(self))?,
+            Self::Ref { .. } => Err(broken!(self))?,
         };
         let resolved = match (optionality.is_required, optionality.is_nullable) {
             (true, true) | (false, false) => TypeShape::Option(Box::new(self)),
@@ -90,12 +87,8 @@ impl TypeShape {
             Self::Expanded { type_path, .. } => type_path.into(),
             Self::Option(type_shape) => DataType::Option(Box::new((*type_shape).define()?)),
             Self::Patch(type_shape) => DataType::Patch(Box::new((*type_shape).define()?)),
-            Self::Ref { .. } => Err(PostProcessBroken {
-                detail: format!("$ref not processed: \n{:#?}", self),
-            })?,
-            Self::Inline { .. } => Err(PostProcessBroken {
-                detail: format!("inline object not processed: \n{:#?}", self),
-            })?,
+            Self::Ref { .. } => Err(broken!(self))?,
+            Self::Inline { .. } => Err(broken!(self))?,
         };
         Ok(data_type)
     }

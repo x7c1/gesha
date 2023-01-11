@@ -13,7 +13,7 @@ pub enum Error {
 
     // module errors
     IncompatibleVersion,
-    PostProcessBroken {
+    TransformBroken {
         detail: String,
     },
     UnknownFormat {
@@ -27,4 +27,18 @@ impl From<yaml::Error> for Error {
     fn from(cause: yaml::Error) -> Self {
         Yaml(cause)
     }
+}
+
+#[macro_export]
+macro_rules! broken {
+    ($shape: expr) => {
+        $crate::conversions::Error::TransformBroken {
+            detail: format!(
+                "unprocessed shape found:\n  at {file}:{line}\n{shape:#?}",
+                file = file!(),
+                line = line!(),
+                shape = $shape,
+            ),
+        }
+    };
 }

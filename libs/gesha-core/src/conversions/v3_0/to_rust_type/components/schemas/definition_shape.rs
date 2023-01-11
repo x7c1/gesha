@@ -1,7 +1,7 @@
+use crate::broken;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
     AllOfShape, FieldShape, ModShape, StructShape, TypeHeaderShape, TypeShape,
 };
-use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
     Definition, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName, NewTypeDef, StructDef,
@@ -82,12 +82,7 @@ impl DefinitionShape {
                 Ok(def.into())
             }
             Self::Mod(x) => x.define().map(|x| x.into()),
-            Self::AllOf { .. } => Err(PostProcessBroken {
-                detail: format!(
-                    "'allOf' must be processed before 'to_definitions'.\n{:#?}",
-                    self
-                ),
-            }),
+            Self::AllOf { .. } => Err(broken!(self)),
         }
     }
 }

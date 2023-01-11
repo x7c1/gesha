@@ -1,8 +1,8 @@
+use crate::broken;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
     DefinitionShape, FieldShape, Optionality, StructShape, TypePath, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
-use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 
 pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
@@ -50,9 +50,7 @@ impl Transformer<'_> {
                 let next = shape.map_defs(|x| self.resolve_in_mod(mod_path.clone(), x))?;
                 Ok(next.into())
             }
-            DefinitionShape::AllOf { .. } => Err(PostProcessBroken {
-                detail: format!("'allOf' must be processed before '$ref'.\n{:#?}", shape),
-            }),
+            DefinitionShape::AllOf { .. } => Err(broken!(shape)),
         }
     }
 
@@ -119,13 +117,7 @@ impl Transformer<'_> {
             },
             TypeShape::Option(x) => TypeShape::Option(Box::new(self.transform_field_type(*x)?)),
             TypeShape::Patch(x) => TypeShape::Patch(Box::new(self.transform_field_type(*x)?)),
-            TypeShape::Inline { .. } => Err(PostProcessBroken {
-                detail: format!(
-                    "unprocessed shape found:\n  at {file}:{line}\n{shape:#?}",
-                    file = file!(),
-                    line = line!(),
-                ),
-            })?,
+            TypeShape::Inline { .. } => Err(broken!(shape))?,
         };
         Ok(resolved_type)
     }
