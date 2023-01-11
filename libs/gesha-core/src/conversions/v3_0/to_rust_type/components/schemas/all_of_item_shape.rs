@@ -18,11 +18,21 @@ impl AllOfItemShape {
         F: Fn(Vec<FieldShape>) -> Result<(Vec<FieldShape>, Vec<DefinitionShape>)>,
     {
         match self {
-            AllOfItemShape::Object(fields) => {
+            Self::Object(fields) => {
                 let (fields, defs) = f(fields)?;
-                Ok((AllOfItemShape::Object(fields), defs))
+                Ok((Self::Object(fields), defs))
             }
-            AllOfItemShape::Ref(_) => Ok((self, vec![])),
+            Self::Ref(_) => Ok((self, vec![])),
+        }
+    }
+
+    pub fn collect_fields(
+        &self,
+        f: impl Fn(&ReferenceObject<SchemaObject>) -> Vec<FieldShape>,
+    ) -> Vec<FieldShape> {
+        match self {
+            Self::Object(x) => x.clone(),
+            Self::Ref(x) => f(x),
         }
     }
 

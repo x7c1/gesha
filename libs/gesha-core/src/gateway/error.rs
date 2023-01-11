@@ -1,4 +1,4 @@
-use crate::conversions::Error::PostProcessBroken;
+use crate::conversions::Error::TransformBroken;
 use crate::{conversions, renderer, yaml};
 use console::{Style, StyledObject};
 use std::path::PathBuf;
@@ -67,8 +67,8 @@ impl Error {
             Error::FormatFailed { detail, .. } => {
                 format!("rustfmt>\n{}", detail)
             }
-            Error::Conversions(PostProcessBroken { detail }) => {
-                format!("internal error: post-process broken.\n{}", detail)
+            Error::Conversions(TransformBroken { detail }) => {
+                format!("internal error: transform broken.\n{}", detail)
             }
             _ => {
                 format!("{:#?}", self)

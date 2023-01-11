@@ -5,7 +5,7 @@ mod all_of_shape;
 pub use all_of_shape::AllOfShape;
 
 mod definition_shape;
-pub use definition_shape::{DefinitionShape, TypeDefinitionShape};
+pub use definition_shape::DefinitionShape;
 
 mod field_shape;
 pub use field_shape::FieldShape;

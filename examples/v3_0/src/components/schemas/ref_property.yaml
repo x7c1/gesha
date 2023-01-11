@@ -1,12 +1,21 @@
 schemas:
-  PetContainer:
+  Container:
     type: object
     required:
-      - pet
+      - x0
+      - x1
+      - x2
+      - x3
     properties:
-      pet:
-        $ref: '#/components/schemas/Pet'
-  Pet:
+      x0:
+        $ref: '#/components/schemas/ObjectSample'
+      x1:
+        $ref: '#/components/schemas/NewTypeSample'
+      x2:
+        $ref: '#/components/schemas/EnumSample'
+      x3:
+        $ref: '#/components/schemas/AllOfSample'
+  ObjectSample:
     type: object
     required:
       - id
@@ -16,3 +25,11 @@ schemas:
         type: integer
       name:
         type: string
+  NewTypeSample:
+    type: string
+  EnumSample:
+    type: string
+    enum: [a, b, c]
+  AllOfSample:
+    allOf:
+      - $ref: '#/components/schemas/ObjectSample'

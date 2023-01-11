@@ -1,13 +1,13 @@
+use crate::broken;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
     AllOfShape, FieldShape, ModShape, StructShape, TypeHeaderShape, TypeShape,
 };
-use crate::conversions::Error::PostProcessBroken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
     Definition, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName, NewTypeDef, StructDef,
     StructField,
 };
-use openapi_types::v3_0::{ComponentName, EnumValues};
+use openapi_types::v3_0::{EnumValues, ReferenceObject, SchemaObject};
 
 #[derive(Clone, Debug)]
 pub enum DefinitionShape {
@@ -25,16 +25,13 @@ pub enum DefinitionShape {
 }
 
 impl DefinitionShape {
-    pub fn as_type_definition(&self) -> Option<TypeDefinitionShape> {
+    pub fn type_header(&self) -> Option<&TypeHeaderShape> {
         match self {
-            Self::Struct(shape) => Some(TypeDefinitionShape {
-                type_header: &shape.header,
-                fields: &shape.fields,
-            }),
-            Self::AllOf { .. } // TODO: return here to merge multiple allOf
-            | Self::NewType { .. }
-            | Self::Enum { .. }
-            | Self::Mod { .. } => None,
+            Self::AllOf(shape) => Some(&shape.header),
+            Self::Struct(shape) => Some(&shape.header),
+            Self::NewType { header, .. } => Some(header),
+            Self::Enum { header, .. } => Some(header),
+            Self::Mod(_) => None,
         }
     }
 
@@ -58,6 +55,17 @@ impl DefinitionShape {
         }
     }
 
+    pub fn collect_fields(
+        &self,
+        f: impl Fn(&ReferenceObject<SchemaObject>) -> Vec<FieldShape>,
+    ) -> Vec<FieldShape> {
+        match self {
+            Self::Struct(shape) => shape.fields.clone(),
+            Self::AllOf(shape) => shape.collect_fields(f),
+            Self::NewType { .. } | Self::Enum { .. } | Self::Mod(_) => vec![],
+        }
+    }
+
     pub fn define(self) -> Result<Definition> {
         match self {
             Self::Struct(StructShape { header, fields }) => {
@@ -74,12 +82,7 @@ impl DefinitionShape {
                 Ok(def.into())
             }
             Self::Mod(x) => x.define().map(|x| x.into()),
-            Self::AllOf { .. } => Err(PostProcessBroken {
-                detail: format!(
-                    "'allOf' must be processed before 'to_definitions'.\n{:#?}",
-                    self
-                ),
-            }),
+            Self::AllOf { .. } => Err(broken!(self)),
         }
     }
 }
@@ -89,29 +92,6 @@ impl TryFrom<DefinitionShape> for Definition {
 
     fn try_from(this: DefinitionShape) -> Result<Self> {
         this.define()
-    }
-}
-
-pub struct TypeDefinitionShape<'a> {
-    type_header: &'a TypeHeaderShape,
-    fields: &'a Vec<FieldShape>,
-}
-
-impl TypeDefinitionShape<'_> {
-    pub fn type_name(&self) -> &ComponentName {
-        &self.type_header.name
-    }
-
-    pub fn is_type_name(&self, name: &str) -> bool {
-        self.type_name().as_ref() == name
-    }
-
-    pub fn is_nullable(&self) -> bool {
-        self.type_header.is_nullable
-    }
-
-    pub fn field_shapes(&self) -> &[FieldShape] {
-        self.fields
     }
 }
 

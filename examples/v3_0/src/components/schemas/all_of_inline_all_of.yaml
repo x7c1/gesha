@@ -19,10 +19,27 @@ schemas:
         properties:
           root_cause:
             type: string
-  ExtendedMore:
-    allOf:
-      - $ref: '#/components/schemas/ExtendedErrorModel'
-      - type: object
-        properties:
-          foo:
-            type: integer
+          sample1_nested:
+            allOf:
+              - $ref: '#/components/schemas/Foo'
+              - $ref: '#/components/schemas/Bar'
+  Foo:
+    type: object
+    required:
+      - foo1
+      - foo2
+    properties:
+      foo1:
+        type: string
+      foo2:
+        type: number
+  Bar:
+    type: object
+    required:
+      - bar1
+      - bar2
+    properties:
+      bar1:
+        type: string
+      bar2:
+        type: number

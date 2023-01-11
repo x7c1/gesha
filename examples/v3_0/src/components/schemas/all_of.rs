@@ -17,4 +17,12 @@ pub mod schemas {
         pub code: i64,
         pub root_cause: String,
     }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct ExtendedMore {
+        pub message: String,
+        pub code: i64,
+        pub root_cause: String,
+        pub foo: Option<i64>,
+    }
 }

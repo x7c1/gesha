@@ -9,13 +9,9 @@ use transform_schemas::transform_schemas;
 
 use crate::conversions::v3_0::to_rust_type::components::core::CoreShape;
 use crate::conversions::v3_0::to_rust_type::components::request_bodies::RequestBodiesShape;
-use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    SchemasShape, TypeDefinitionShape, TypeShape,
-};
-use crate::conversions::Error::ReferenceObjectNotFound;
+use crate::conversions::v3_0::to_rust_type::components::schemas::{SchemasShape, TypeShape};
 use crate::conversions::Result;
 use crate::targets::rust_type::Modules;
-use openapi_types::v3_0::{ReferenceObject, SchemaObject};
 
 #[derive(Clone, Debug)]
 pub struct ComponentsShape {
@@ -37,23 +33,6 @@ impl ComponentsShape {
         .collect();
 
         Ok(modules)
-    }
-
-    pub fn find_type_definition(
-        &self,
-        object: &ReferenceObject<SchemaObject>,
-    ) -> Result<TypeDefinitionShape> {
-        let prefix = "#/components/schemas/";
-        let type_ref = object.as_ref();
-        if !type_ref.starts_with(prefix) {
-            unimplemented!()
-        }
-        let name = type_ref.replace(prefix, "");
-        let defs = &self.schemas.root.defs;
-        defs.iter()
-            .filter_map(|shape| shape.as_type_definition())
-            .find(|shape| shape.is_type_name(&name))
-            .ok_or_else(|| ReferenceObjectNotFound(type_ref.to_string()))
     }
 
     pub fn any_type(&self, f: impl Fn(&TypeShape) -> bool) -> bool {
