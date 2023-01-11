@@ -19,3 +19,10 @@ schemas:
         properties:
           root_cause:
             type: string
+  ExtendedMore:
+    allOf:
+      - $ref: '#/components/schemas/ExtendedErrorModel'
+      - type: object
+        properties:
+          foo:
+            type: integer
