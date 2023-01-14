@@ -1,0 +1,25 @@
+# https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/
+schemas:
+  Base:
+    type: object
+    properties:
+      x1:
+        type: string
+      x2:
+        type: integer
+  Extended:
+    required: [ x1 ]
+    allOf:
+      - $ref: '#/components/schemas/Base'
+      - type: object
+        properties:
+          foo:
+            type: string
+  ExtendedMore:
+    required: [ x2 ]
+    allOf:
+      - $ref: '#/components/schemas/Extended'
+      - type: object
+        properties:
+          bar:
+            type: integer
