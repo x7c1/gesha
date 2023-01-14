@@ -1,5 +1,5 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, DefinitionShape, FieldShape, TypeHeaderShape, TypeShape,
+    AllOfItemShape, DefinitionShape, FieldShape, Ref, TypeHeaderShape, TypeShape,
 };
 use openapi_types::v3_0::{ReferenceObject, RequiredSchemaFields, SchemaObject};
 
@@ -25,10 +25,7 @@ impl AllOfShape {
         })
     }
 
-    pub fn expand_fields(
-        &self,
-        resolve_ref: impl Fn(&ReferenceObject<SchemaObject>) -> Vec<FieldShape>,
-    ) -> Vec<FieldShape> {
+    pub fn expand_fields(&self, resolve_ref: impl Fn(&Ref) -> Vec<FieldShape>) -> Vec<FieldShape> {
         let to_required = |mut field: FieldShape| {
             let is_required = self
                 .required

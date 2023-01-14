@@ -1,6 +1,6 @@
 use crate::broken;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfShape, FieldShape, ModShape, StructShape, TypeHeaderShape, TypeShape,
+    AllOfShape, FieldShape, ModShape, Ref, StructShape, TypeHeaderShape, TypeShape,
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::{
@@ -55,10 +55,7 @@ impl DefinitionShape {
         }
     }
 
-    pub fn collect_fields(
-        &self,
-        resolve_ref: impl Fn(&ReferenceObject<SchemaObject>) -> Vec<FieldShape>,
-    ) -> Vec<FieldShape> {
+    pub fn collect_fields(&self, resolve_ref: impl Fn(&Ref) -> Vec<FieldShape>) -> Vec<FieldShape> {
         match self {
             Self::Struct(shape) => shape.fields.clone(),
             Self::AllOf(shape) => shape.expand_fields(resolve_ref),

@@ -1,5 +1,5 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, StructShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, Ref, StructShape,
     TypeHeaderShape, TypeShape,
 };
 use crate::conversions::Result;
@@ -34,17 +34,17 @@ impl SchemasShape {
         self.root.defs.iter().any(|x| x.any_type(f))
     }
 
-    pub fn find_type_name(&self, object: &ReferenceObject<SchemaObject>) -> Option<&ComponentName> {
+    pub fn find_type_name(&self, object: &Ref) -> Option<&ComponentName> {
         self.find_header(object).map(|x| &x.name)
     }
 
-    pub fn is_nullable(&self, object: &ReferenceObject<SchemaObject>) -> bool {
+    pub fn is_nullable(&self, object: &Ref) -> bool {
         self.find_header(object)
             .map(|x| x.is_nullable)
             .unwrap_or(false)
     }
 
-    pub fn collect_fields(&self, object: &ReferenceObject<SchemaObject>) -> Vec<FieldShape> {
+    pub fn collect_fields(&self, object: &Ref) -> Vec<FieldShape> {
         let name = extract_ref_name(object);
         self.root
             .defs
@@ -58,7 +58,7 @@ impl SchemasShape {
             .unwrap_or_default()
     }
 
-    fn find_header(&self, object: &ReferenceObject<SchemaObject>) -> Option<&TypeHeaderShape> {
+    fn find_header(&self, object: &Ref) -> Option<&TypeHeaderShape> {
         let name = extract_ref_name(object);
         self.root
             .defs
@@ -79,7 +79,7 @@ fn new(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
     }
 }
 
-fn extract_ref_name(object: &ReferenceObject<SchemaObject>) -> &str {
+fn extract_ref_name(object: &Ref) -> &str {
     if let Some(x) = object.as_ref().strip_prefix("#/components/schemas/") {
         x
     } else {

@@ -1,12 +1,12 @@
 use crate::broken;
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{Inline, Proper};
-use crate::conversions::v3_0::to_rust_type::components::schemas::{Optionality, TypePath};
+use crate::conversions::v3_0::to_rust_type::components::schemas::{Optionality, Ref, TypePath};
 use crate::conversions::Error::UnknownFormat;
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
 use openapi_types::v3_0::SchemaCase;
 use openapi_types::v3_0::SchemaCase::{Reference, Schema};
-use openapi_types::v3_0::{FormatModifier, OpenApiDataType, ReferenceObject, SchemaObject};
+use openapi_types::v3_0::{FormatModifier, OpenApiDataType, SchemaObject};
 
 #[derive(Clone, Debug)]
 pub enum TypeShape {
@@ -19,7 +19,7 @@ pub enum TypeShape {
         optionality: Optionality,
     },
     Ref {
-        object: ReferenceObject<SchemaObject>,
+        object: Ref,
         is_required: bool,
     },
     Expanded {
