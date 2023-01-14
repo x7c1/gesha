@@ -21,26 +21,22 @@ struct Transformer {
 }
 
 impl Transformer {
-    fn shape_all_of(&self, def_shape: DefinitionShape) -> Result<DefinitionShape> {
-        match def_shape {
-            DefinitionShape::AllOf(x) => {
-                let header = x.header.clone();
-                let fields = DefinitionShape::from(x).collect_fields(|object| {
-                    self.snapshot.schemas.collect_fields(object)
-                });
+    fn shape_all_of(&self, def: DefinitionShape) -> Result<DefinitionShape> {
+        match def {
+            DefinitionShape::AllOf(shape) => {
+                let fields = shape.expand_fields(|x| self.snapshot.schemas.collect_fields(x));
                 let next = StructShape {
-                    header,
+                    header: shape.header,
                     fields,
                 };
                 Ok(next.into())
-            },
-
+            }
             DefinitionShape::Mod(shape) => Ok(DefinitionShape::Mod(
                 shape.map_defs(|x| self.shape_all_of(x))?,
             )),
-            DefinitionShape::Struct { .. }// TODO add test
+            DefinitionShape::Struct { .. }
             | DefinitionShape::NewType { .. }
-            | DefinitionShape::Enum { .. } => Ok(def_shape),
+            | DefinitionShape::Enum { .. } => Ok(def),
         }
     }
 }

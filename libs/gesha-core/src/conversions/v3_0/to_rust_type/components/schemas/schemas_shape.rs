@@ -32,18 +32,18 @@ impl SchemasShape {
         self.root.defs.iter().any(|x| x.any_type(f))
     }
 
-    pub fn find_type_name(&self, object: &Ref) -> Option<&ComponentName> {
-        self.find_header(object).map(|x| &x.name)
+    pub fn find_type_name(&self, target: &Ref) -> Option<&ComponentName> {
+        self.find_header(target).map(|x| &x.name)
     }
 
-    pub fn is_nullable(&self, object: &Ref) -> bool {
-        self.find_header(object)
+    pub fn is_nullable(&self, target: &Ref) -> bool {
+        self.find_header(target)
             .map(|x| x.is_nullable)
             .unwrap_or(false)
     }
 
-    pub fn collect_fields(&self, object: &Ref) -> Vec<FieldShape> {
-        let name = extract_ref_name(object);
+    pub fn collect_fields(&self, target: &Ref) -> Vec<FieldShape> {
+        let name = extract_ref_name(target);
         self.root
             .defs
             .iter()
@@ -56,8 +56,8 @@ impl SchemasShape {
             .unwrap_or_default()
     }
 
-    fn find_header(&self, object: &Ref) -> Option<&TypeHeaderShape> {
-        let name = extract_ref_name(object);
+    fn find_header(&self, target: &Ref) -> Option<&TypeHeaderShape> {
+        let name = extract_ref_name(target);
         self.root
             .defs
             .iter()
@@ -77,8 +77,8 @@ fn new(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
     }
 }
 
-fn extract_ref_name(object: &Ref) -> &str {
-    if let Some(x) = object.as_ref().strip_prefix("#/components/schemas/") {
+fn extract_ref_name(target: &Ref) -> &str {
+    if let Some(x) = target.as_ref().strip_prefix("#/components/schemas/") {
         x
     } else {
         unimplemented!()
