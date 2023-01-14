@@ -19,7 +19,7 @@ pub enum TypeShape {
         optionality: Optionality,
     },
     Ref {
-        object: Ref,
+        target: Ref,
         is_required: bool,
     },
     Expanded {
@@ -38,8 +38,8 @@ impl TypeShape {
     pub fn from_case(schema_case: SchemaCase, is_required: bool) -> Result<TypeShape> {
         let shape = match schema_case {
             Schema(object) => Self::from_object(*object, is_required)?,
-            Reference(object) => TypeShape::Ref {
-                object,
+            Reference(target) => TypeShape::Ref {
+                target,
                 is_required,
             },
         };
