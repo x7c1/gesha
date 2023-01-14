@@ -2,7 +2,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{
     Array, Expanded, Inline, Proper, Ref,
 };
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, FieldsShape, ModShape, StructShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, StructShape,
     TypeHeaderShape, TypePath, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
@@ -82,17 +82,14 @@ fn expand_all_of_fields(path: TypePath, shape: AllOfShape) -> Result<Vec<Definit
 
 fn expand_fields_from(
     path: &TypePath,
-) -> impl Fn(FieldsShape) -> Result<(FieldsShape, Vec<DefinitionShape>)> + '_ {
-    |mut fields| {
+) -> impl Fn(Vec<FieldShape>) -> Result<(Vec<FieldShape>, Vec<DefinitionShape>)> + '_ {
+    |fields| {
         let expanded = fields
-            .items
             .into_iter()
             .map(|field| expand_field(path.clone(), field))
             .collect::<Result<Vec<_>>>()?;
 
-        let (items, defs) = collect(expanded);
-        fields.items = items;
-        Ok((fields, defs))
+        Ok(collect(expanded))
     }
 }
 

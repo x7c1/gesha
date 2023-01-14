@@ -1,12 +1,10 @@
-use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    DefinitionShape, FieldShape, FieldsShape,
-};
+use crate::conversions::v3_0::to_rust_type::components::schemas::{DefinitionShape, FieldShape};
 use crate::conversions::Result;
 use openapi_types::v3_0::{ReferenceObject, SchemaCase, SchemaObject};
 
 #[derive(Clone, Debug)]
 pub enum AllOfItemShape {
-    Object(FieldsShape),
+    Object(Vec<FieldShape>),
     Ref(ReferenceObject<SchemaObject>),
 }
 
@@ -17,7 +15,7 @@ impl AllOfItemShape {
 
     pub fn expand_fields<F>(self, f: F) -> Result<(Self, Vec<DefinitionShape>)>
     where
-        F: Fn(FieldsShape) -> Result<(FieldsShape, Vec<DefinitionShape>)>,
+        F: Fn(Vec<FieldShape>) -> Result<(Vec<FieldShape>, Vec<DefinitionShape>)>,
     {
         match self {
             Self::Object(fields) => {
@@ -33,18 +31,14 @@ impl AllOfItemShape {
         resolve_ref: impl Fn(&ReferenceObject<SchemaObject>) -> Vec<FieldShape>,
     ) -> Vec<FieldShape> {
         match self {
-            Self::Object(x) => {
-                // TODO: resolve optionalities
-                x.clone().items
-            }
+            Self::Object(x) => x.clone(),
             Self::Ref(x) => resolve_ref(x),
         }
     }
 
     fn from_schema_object(object: SchemaObject) -> Result<Self> {
-        let required = object.required.clone();
         let items = FieldShape::from_object(object)?;
-        Ok(Self::Object(FieldsShape { required, items }))
+        Ok(Self::Object(items))
     }
 
     fn from_schema_case(case: SchemaCase) -> Result<Self> {

@@ -13,14 +13,14 @@ pub struct AllOfShape {
 impl AllOfShape {
     pub fn any_type(&self, f: &impl Fn(&TypeShape) -> bool) -> bool {
         self.items.iter().any(|item| match item {
-            AllOfItemShape::Object(x) => FieldShape::any_type(&x.items, f),
+            AllOfItemShape::Object(xs) => FieldShape::any_type(xs, f),
             AllOfItemShape::Ref(_) => false,
         })
     }
 
     pub fn any_type_directly(&self, f: &impl Fn(&TypeShape) -> bool) -> bool {
         self.items.iter().any(|item| match item {
-            AllOfItemShape::Object(x) => x.items.iter().any(|x| f(&x.type_shape)),
+            AllOfItemShape::Object(xs) => xs.iter().any(|x| f(&x.type_shape)),
             AllOfItemShape::Ref(_) => false,
         })
     }
