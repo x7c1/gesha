@@ -2,7 +2,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{
     Array, Expanded, Inline, Proper, Ref,
 };
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, StructShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, FieldsShape, ModShape, StructShape,
     TypeHeaderShape, TypePath, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
@@ -70,6 +70,7 @@ fn expand_all_of_fields(path: TypePath, shape: AllOfShape) -> Result<Vec<Definit
     let next = AllOfShape {
         header: shape.header,
         items,
+        required: shape.required,
     };
     let mod_def = defs
         .is_empty()
@@ -81,14 +82,17 @@ fn expand_all_of_fields(path: TypePath, shape: AllOfShape) -> Result<Vec<Definit
 
 fn expand_fields_from(
     path: &TypePath,
-) -> impl Fn(Vec<FieldShape>) -> Result<(Vec<FieldShape>, Vec<DefinitionShape>)> + '_ {
-    move |fields| {
+) -> impl Fn(FieldsShape) -> Result<(FieldsShape, Vec<DefinitionShape>)> + '_ {
+    |mut fields| {
         let expanded = fields
+            .items
             .into_iter()
             .map(|field| expand_field(path.clone(), field))
             .collect::<Result<Vec<_>>>()?;
 
-        Ok(collect(expanded))
+        let (items, defs) = collect(expanded);
+        fields.items = items;
+        Ok((fields, defs))
     }
 }
 
@@ -112,6 +116,7 @@ fn expand_field(
                 let all_of_def = AllOfShape {
                     header: TypeHeaderShape::new(type_name.clone(), &object),
                     items: AllOfItemShape::from_schema_cases(cases.clone())?,
+                    required: object.required,
                 };
                 expand_all_of_fields(mod_path.clone(), all_of_def)?
             } else {

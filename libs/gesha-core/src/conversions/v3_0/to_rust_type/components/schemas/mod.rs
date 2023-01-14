@@ -10,6 +10,9 @@ pub use definition_shape::DefinitionShape;
 mod field_shape;
 pub use field_shape::FieldShape;
 
+mod fields_shape;
+pub use fields_shape::FieldsShape;
+
 mod mod_shape;
 pub use mod_shape::ModShape;
 

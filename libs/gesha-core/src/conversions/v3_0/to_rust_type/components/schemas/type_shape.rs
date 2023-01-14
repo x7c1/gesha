@@ -80,6 +80,34 @@ impl TypeShape {
         Ok(resolved)
     }
 
+    pub fn require(mut self) -> Self {
+        match self {
+            Proper {
+                ref mut optionality,
+                ..
+            } => optionality.is_required = true,
+            TypeShape::Array {
+                ref mut optionality,
+                ..
+            } => optionality.is_required = true,
+            TypeShape::Ref {
+                ref mut is_required,
+                ..
+            } => *is_required = true,
+            TypeShape::Expanded {
+                ref mut optionality,
+                ..
+            } => optionality.is_required = true,
+            Inline {
+                ref mut optionality,
+                ..
+            } => optionality.is_required = true,
+            TypeShape::Option(_) => {}
+            TypeShape::Patch(_) => {}
+        }
+        self
+    }
+
     pub fn define(self) -> Result<DataType> {
         let data_type = match self {
             Self::Proper { data_type, .. } => data_type,

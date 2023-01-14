@@ -123,6 +123,7 @@ impl Shaper {
     fn for_all_of(self) -> Result<DefinitionShape> {
         let shape = AllOfShape {
             header: self.create_type_header(),
+            required: self.object.required,
             items: {
                 let cases = self.object.all_of.expect("all_of must be Some.");
                 AllOfItemShape::from_schema_cases(cases)?

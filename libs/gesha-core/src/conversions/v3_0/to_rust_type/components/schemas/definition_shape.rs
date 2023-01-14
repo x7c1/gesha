@@ -57,11 +57,11 @@ impl DefinitionShape {
 
     pub fn collect_fields(
         &self,
-        f: impl Fn(&ReferenceObject<SchemaObject>) -> Vec<FieldShape>,
+        resolve_ref: impl Fn(&ReferenceObject<SchemaObject>) -> Vec<FieldShape>,
     ) -> Vec<FieldShape> {
         match self {
             Self::Struct(shape) => shape.fields.clone(),
-            Self::AllOf(shape) => shape.collect_fields(f),
+            Self::AllOf(shape) => shape.expand_fields(resolve_ref),
             Self::NewType { .. } | Self::Enum { .. } | Self::Mod(_) => vec![],
         }
     }
