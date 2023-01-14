@@ -2,7 +2,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
     DefinitionShape, FieldShape, Ref,
 };
 use crate::conversions::Result;
-use openapi_types::v3_0::{ReferenceObject, SchemaCase, SchemaObject};
+use openapi_types::v3_0::{SchemaCase, SchemaObject};
 
 #[derive(Clone, Debug)]
 pub enum AllOfItemShape {

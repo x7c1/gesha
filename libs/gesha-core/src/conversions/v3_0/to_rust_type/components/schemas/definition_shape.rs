@@ -7,7 +7,7 @@ use crate::targets::rust_type::{
     Definition, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName, NewTypeDef, StructDef,
     StructField,
 };
-use openapi_types::v3_0::{EnumValues, ReferenceObject, SchemaObject};
+use openapi_types::v3_0::EnumValues;
 
 #[derive(Clone, Debug)]
 pub enum DefinitionShape {

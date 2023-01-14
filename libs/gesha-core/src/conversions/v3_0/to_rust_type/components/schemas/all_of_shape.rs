@@ -1,7 +1,7 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
     AllOfItemShape, DefinitionShape, FieldShape, Ref, TypeHeaderShape, TypeShape,
 };
-use openapi_types::v3_0::{ReferenceObject, RequiredSchemaFields, SchemaObject};
+use openapi_types::v3_0::RequiredSchemaFields;
 
 #[derive(Clone, Debug)]
 pub struct AllOfShape {

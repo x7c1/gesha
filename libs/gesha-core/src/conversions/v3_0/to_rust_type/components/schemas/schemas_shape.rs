@@ -4,9 +4,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::ModDef;
-use openapi_types::v3_0::{
-    ComponentName, ReferenceObject, SchemaCase, SchemaObject, SchemasObject,
-};
+use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject, SchemasObject};
 use std::ops::Not;
 
 #[derive(Debug, Clone)]
