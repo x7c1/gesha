@@ -32,7 +32,7 @@ fn expand(shape: DefinitionShape) -> Result<Vec<DefinitionShape>> {
 }
 
 // return (struct-shape, mod-shape)
-fn expand_struct_fields(path: TypePath, shape: StructShape) -> Result<Vec<DefinitionShape>> {
+fn expand_struct_fields(path: TypePath, mut shape: StructShape) -> Result<Vec<DefinitionShape>> {
     let mod_name = shape.header.name.to_snake_case();
     let path = path.add(mod_name.clone());
     let expanded = shape
@@ -42,20 +42,18 @@ fn expand_struct_fields(path: TypePath, shape: StructShape) -> Result<Vec<Defini
         .collect::<Result<Vec<_>>>()?;
 
     let (fields, defs) = collect(expanded);
-    let next = StructShape {
-        header: shape.header,
-        fields,
-    };
+    shape.fields = fields;
+
     let mod_def = defs
         .is_empty()
         .not()
         .then_some(ModShape::new(mod_name, defs).into());
 
-    Ok(vec![next.into()].into_iter().chain(mod_def).collect())
+    Ok(vec![shape.into()].into_iter().chain(mod_def).collect())
 }
 
 // return (all-of-shape, mod-shape)
-fn expand_all_of_fields(path: TypePath, shape: AllOfShape) -> Result<Vec<DefinitionShape>> {
+fn expand_all_of_fields(path: TypePath, mut shape: AllOfShape) -> Result<Vec<DefinitionShape>> {
     let mod_name = shape.header.name.to_snake_case();
     let path = path.add(mod_name.clone());
     let expanded = shape
@@ -65,17 +63,14 @@ fn expand_all_of_fields(path: TypePath, shape: AllOfShape) -> Result<Vec<Definit
         .collect::<Result<Vec<_>>>()?;
 
     let (items, defs) = collect(expanded);
-    let next = AllOfShape {
-        header: shape.header,
-        items,
-        required: shape.required,
-    };
+    shape.items = items;
+
     let mod_def = defs
         .is_empty()
         .not()
         .then_some(ModShape::new(mod_name, defs).into());
 
-    Ok(vec![next.into()].into_iter().chain(mod_def).collect())
+    Ok(vec![shape.into()].into_iter().chain(mod_def).collect())
 }
 
 fn expand_fields_from(
