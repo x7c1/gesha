@@ -30,3 +30,6 @@ pub use type_path::TypePath;
 
 mod type_shape;
 pub use type_shape::TypeShape;
+
+use openapi_types::v3_0::{ReferenceObject, SchemaObject};
+type Ref = ReferenceObject<SchemaObject>;

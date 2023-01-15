@@ -145,7 +145,7 @@ mod tests {
         let stream = quote! {
             pub async fn index(&self, param1: u32, param2: foo::Bar) -> String
         };
-        let actual = MethodSignature::from_stream(stream.into());
+        let actual = MethodSignature::from_stream(stream);
         let expected = MethodSignature {
             modifiers: vec![Pub, Async],
             method_name: MethodName("index".to_string()),
@@ -174,7 +174,7 @@ mod tests {
         let stream = quote! {
             pub async fn show_pet_by_id(&self, req: show_pet_by_id::Request) -> impl show_pet_by_id::Responder
         };
-        let actual = MethodSignature::from_stream(stream.into());
+        let actual = MethodSignature::from_stream(stream);
         let expected = MethodSignature {
             modifiers: vec![Pub, Async],
             method_name: MethodName("show_pet_by_id".to_string()),

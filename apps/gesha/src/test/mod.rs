@@ -49,6 +49,8 @@ fn new_schemas_cases() -> ComponentCases {
             "object_inline_ref.yaml",
             "object_inline_all_of.yaml",
             "object_inline_nullable.yaml",
+            "all_of_inline_all_of.yaml",
+            "all_of_override_optional.yaml",
         ],
     )
 }

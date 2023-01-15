@@ -1,12 +1,10 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, StructShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, Ref, StructShape,
     TypeHeaderShape, TypeShape,
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::ModDef;
-use openapi_types::v3_0::{
-    ComponentName, ReferenceObject, SchemaCase, SchemaObject, SchemasObject,
-};
+use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject, SchemasObject};
 use std::ops::Not;
 
 #[derive(Debug, Clone)]
@@ -34,18 +32,18 @@ impl SchemasShape {
         self.root.defs.iter().any(|x| x.any_type(f))
     }
 
-    pub fn find_type_name(&self, object: &ReferenceObject<SchemaObject>) -> Option<&ComponentName> {
-        self.find_header(object).map(|x| &x.name)
+    pub fn find_type_name(&self, target: &Ref) -> Option<&ComponentName> {
+        self.find_header(target).map(|x| &x.name)
     }
 
-    pub fn is_nullable(&self, object: &ReferenceObject<SchemaObject>) -> bool {
-        self.find_header(object)
+    pub fn is_nullable(&self, target: &Ref) -> bool {
+        self.find_header(target)
             .map(|x| x.is_nullable)
             .unwrap_or(false)
     }
 
-    pub fn collect_fields(&self, object: &ReferenceObject<SchemaObject>) -> Vec<FieldShape> {
-        let name = extract_ref_name(object);
+    pub fn collect_fields(&self, target: &Ref) -> Vec<FieldShape> {
+        let name = extract_ref_name(target);
         self.root
             .defs
             .iter()
@@ -58,8 +56,8 @@ impl SchemasShape {
             .unwrap_or_default()
     }
 
-    fn find_header(&self, object: &ReferenceObject<SchemaObject>) -> Option<&TypeHeaderShape> {
-        let name = extract_ref_name(object);
+    fn find_header(&self, target: &Ref) -> Option<&TypeHeaderShape> {
+        let name = extract_ref_name(target);
         self.root
             .defs
             .iter()
@@ -79,8 +77,8 @@ fn new(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
     }
 }
 
-fn extract_ref_name(object: &ReferenceObject<SchemaObject>) -> &str {
-    if let Some(x) = object.as_ref().strip_prefix("#/components/schemas/") {
+fn extract_ref_name(target: &Ref) -> &str {
+    if let Some(x) = target.as_ref().strip_prefix("#/components/schemas/") {
         x
     } else {
         unimplemented!()
@@ -123,6 +121,7 @@ impl Shaper {
     fn for_all_of(self) -> Result<DefinitionShape> {
         let shape = AllOfShape {
             header: self.create_type_header(),
+            required: self.object.required,
             items: {
                 let cases = self.object.all_of.expect("all_of must be Some.");
                 AllOfItemShape::from_schema_cases(cases)?

@@ -84,11 +84,11 @@ impl Transformer<'_> {
     fn transform_field_type(&self, shape: TypeShape) -> Result<TypeShape> {
         let resolved_type = match shape {
             TypeShape::Ref {
-                object,
+                target,
                 is_required,
             } => {
-                let is_nullable = self.snapshot.schemas.is_nullable(&object);
-                let type_name = match String::from(object) {
+                let is_nullable = self.snapshot.schemas.is_nullable(&target);
+                let type_name = match String::from(target) {
                     x if x.starts_with(self.prefix) => x.replace(self.prefix, ""),
                     x => unimplemented!("not implemented: {x}"),
                 };

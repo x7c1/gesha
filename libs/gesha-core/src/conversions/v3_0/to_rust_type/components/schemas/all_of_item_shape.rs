@@ -1,11 +1,13 @@
-use crate::conversions::v3_0::to_rust_type::components::schemas::{DefinitionShape, FieldShape};
+use crate::conversions::v3_0::to_rust_type::components::schemas::{
+    DefinitionShape, FieldShape, Ref,
+};
 use crate::conversions::Result;
-use openapi_types::v3_0::{ReferenceObject, SchemaCase, SchemaObject};
+use openapi_types::v3_0::{SchemaCase, SchemaObject};
 
 #[derive(Clone, Debug)]
 pub enum AllOfItemShape {
     Object(Vec<FieldShape>),
-    Ref(ReferenceObject<SchemaObject>),
+    Ref(Ref),
 }
 
 impl AllOfItemShape {
@@ -26,19 +28,16 @@ impl AllOfItemShape {
         }
     }
 
-    pub fn collect_fields(
-        &self,
-        f: impl Fn(&ReferenceObject<SchemaObject>) -> Vec<FieldShape>,
-    ) -> Vec<FieldShape> {
+    pub fn collect_fields(&self, resolve_ref: impl Fn(&Ref) -> Vec<FieldShape>) -> Vec<FieldShape> {
         match self {
             Self::Object(x) => x.clone(),
-            Self::Ref(x) => f(x),
+            Self::Ref(x) => resolve_ref(x),
         }
     }
 
     fn from_schema_object(object: SchemaObject) -> Result<Self> {
-        let shapes = FieldShape::from_object(object)?;
-        Ok(Self::Object(shapes))
+        let items = FieldShape::from_object(object)?;
+        Ok(Self::Object(items))
     }
 
     fn from_schema_case(case: SchemaCase) -> Result<Self> {

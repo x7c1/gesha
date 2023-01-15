@@ -1,12 +1,12 @@
 use crate::broken;
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{Inline, Proper};
-use crate::conversions::v3_0::to_rust_type::components::schemas::{Optionality, TypePath};
+use crate::conversions::v3_0::to_rust_type::components::schemas::{Optionality, Ref, TypePath};
 use crate::conversions::Error::UnknownFormat;
 use crate::conversions::Result;
 use crate::targets::rust_type::DataType;
 use openapi_types::v3_0::SchemaCase;
 use openapi_types::v3_0::SchemaCase::{Reference, Schema};
-use openapi_types::v3_0::{FormatModifier, OpenApiDataType, ReferenceObject, SchemaObject};
+use openapi_types::v3_0::{FormatModifier, OpenApiDataType, SchemaObject};
 
 #[derive(Clone, Debug)]
 pub enum TypeShape {
@@ -19,7 +19,7 @@ pub enum TypeShape {
         optionality: Optionality,
     },
     Ref {
-        object: ReferenceObject<SchemaObject>,
+        target: Ref,
         is_required: bool,
     },
     Expanded {
@@ -38,8 +38,8 @@ impl TypeShape {
     pub fn from_case(schema_case: SchemaCase, is_required: bool) -> Result<TypeShape> {
         let shape = match schema_case {
             Schema(object) => Self::from_object(*object, is_required)?,
-            Reference(object) => TypeShape::Ref {
-                object,
+            Reference(target) => TypeShape::Ref {
+                target,
                 is_required,
             },
         };
@@ -78,6 +78,34 @@ impl TypeShape {
             (true, false) => self,
         };
         Ok(resolved)
+    }
+
+    pub fn require(mut self) -> Self {
+        match self {
+            Proper {
+                ref mut optionality,
+                ..
+            } => optionality.is_required = true,
+            TypeShape::Array {
+                ref mut optionality,
+                ..
+            } => optionality.is_required = true,
+            TypeShape::Ref {
+                ref mut is_required,
+                ..
+            } => *is_required = true,
+            TypeShape::Expanded {
+                ref mut optionality,
+                ..
+            } => optionality.is_required = true,
+            Inline {
+                ref mut optionality,
+                ..
+            } => optionality.is_required = true,
+            TypeShape::Option(_) => {}
+            TypeShape::Patch(_) => {}
+        }
+        self
     }
 
     pub fn define(self) -> Result<DataType> {

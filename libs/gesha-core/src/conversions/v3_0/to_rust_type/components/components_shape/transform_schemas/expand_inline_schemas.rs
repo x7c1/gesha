@@ -70,6 +70,7 @@ fn expand_all_of_fields(path: TypePath, shape: AllOfShape) -> Result<Vec<Definit
     let next = AllOfShape {
         header: shape.header,
         items,
+        required: shape.required,
     };
     let mod_def = defs
         .is_empty()
@@ -82,7 +83,7 @@ fn expand_all_of_fields(path: TypePath, shape: AllOfShape) -> Result<Vec<Definit
 fn expand_fields_from(
     path: &TypePath,
 ) -> impl Fn(Vec<FieldShape>) -> Result<(Vec<FieldShape>, Vec<DefinitionShape>)> + '_ {
-    move |fields| {
+    |fields| {
         let expanded = fields
             .into_iter()
             .map(|field| expand_field(path.clone(), field))
@@ -112,6 +113,7 @@ fn expand_field(
                 let all_of_def = AllOfShape {
                     header: TypeHeaderShape::new(type_name.clone(), &object),
                     items: AllOfItemShape::from_schema_cases(cases.clone())?,
+                    required: object.required,
                 };
                 expand_all_of_fields(mod_path.clone(), all_of_def)?
             } else {

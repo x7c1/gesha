@@ -1,13 +1,13 @@
 use crate::broken;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfShape, FieldShape, ModShape, StructShape, TypeHeaderShape, TypeShape,
+    AllOfShape, FieldShape, ModShape, Ref, StructShape, TypeHeaderShape, TypeShape,
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::{
     Definition, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName, NewTypeDef, StructDef,
     StructField,
 };
-use openapi_types::v3_0::{EnumValues, ReferenceObject, SchemaObject};
+use openapi_types::v3_0::EnumValues;
 
 #[derive(Clone, Debug)]
 pub enum DefinitionShape {
@@ -55,13 +55,10 @@ impl DefinitionShape {
         }
     }
 
-    pub fn collect_fields(
-        &self,
-        f: impl Fn(&ReferenceObject<SchemaObject>) -> Vec<FieldShape>,
-    ) -> Vec<FieldShape> {
+    pub fn collect_fields(&self, resolve_ref: impl Fn(&Ref) -> Vec<FieldShape>) -> Vec<FieldShape> {
         match self {
             Self::Struct(shape) => shape.fields.clone(),
-            Self::AllOf(shape) => shape.collect_fields(f),
+            Self::AllOf(shape) => shape.expand_fields(resolve_ref),
             Self::NewType { .. } | Self::Enum { .. } | Self::Mod(_) => vec![],
         }
     }

@@ -1,12 +1,13 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, DefinitionShape, FieldShape, TypeHeaderShape, TypeShape,
+    AllOfItemShape, DefinitionShape, FieldShape, Ref, TypeHeaderShape, TypeShape,
 };
-use openapi_types::v3_0::{ReferenceObject, SchemaObject};
+use openapi_types::v3_0::RequiredSchemaFields;
 
 #[derive(Clone, Debug)]
 pub struct AllOfShape {
     pub header: TypeHeaderShape,
     pub items: Vec<AllOfItemShape>,
+    pub required: Option<RequiredSchemaFields>,
 }
 
 impl AllOfShape {
@@ -24,13 +25,22 @@ impl AllOfShape {
         })
     }
 
-    pub fn collect_fields(
-        &self,
-        f: impl Fn(&ReferenceObject<SchemaObject>) -> Vec<FieldShape>,
-    ) -> Vec<FieldShape> {
+    pub fn expand_fields(&self, resolve_ref: impl Fn(&Ref) -> Vec<FieldShape>) -> Vec<FieldShape> {
+        let to_required = |mut field: FieldShape| {
+            let is_required = self
+                .required
+                .as_ref()
+                .map(|fields| fields.contains(field.name.as_ref()))
+                .unwrap_or(false);
+
+            if is_required {
+                field.type_shape = field.type_shape.require();
+            }
+            field
+        };
         self.items
             .iter()
-            .flat_map(|x| x.collect_fields(&f))
+            .flat_map(|x| x.collect_fields(&resolve_ref).into_iter().map(to_required))
             .collect()
     }
 }

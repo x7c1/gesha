@@ -37,8 +37,7 @@ mod tests {
                 "type": "QueryStringBroken",
                 "content": "abcde"
             }"#
-            .replace(" ", "")
-            .replace("\n", "")
+            .replace([' ', '\n'], "")
         );
     }
 
@@ -57,8 +56,7 @@ mod tests {
                     "message": "m1"
                 }
             }"#
-            .replace(" ", "")
-            .replace("\n", "")
+            .replace([' ', '\n'], "")
         );
     }
 }
