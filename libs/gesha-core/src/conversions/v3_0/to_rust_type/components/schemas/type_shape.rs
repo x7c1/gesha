@@ -160,6 +160,10 @@ impl TypeFactory {
                 data_type: tp::Float64,
                 optionality,
             }),
+            (ot::String, _) if self.object.enum_values.is_some() => Ok(Inline {
+                object: self.object,
+                optionality,
+            }),
             (ot::String, _) => Ok(Proper {
                 data_type: tp::String,
                 optionality,

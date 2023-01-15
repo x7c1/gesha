@@ -116,6 +116,11 @@ fn expand_field(
                     required: object.required,
                 };
                 expand_all_of_fields(mod_path.clone(), all_of_def)?
+            } else if let Some(values) = object.enum_values.as_ref() {
+                vec![DefinitionShape::Enum {
+                    header: TypeHeaderShape::new(type_name.clone(), &object),
+                    values: values.clone(),
+                }]
             } else {
                 let struct_def = StructShape {
                     header: TypeHeaderShape::new(type_name.clone(), &object),
