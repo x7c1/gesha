@@ -97,47 +97,37 @@ fn expand_field(
     mod_path: TypePath,
     field: FieldShape,
 ) -> Result<(FieldShape, Vec<DefinitionShape>)> {
-    match field.type_shape {
-        Ref { .. }
-        | Proper { .. }
-        | Array { .. }
-        | Expanded { .. }
-        | TypeShape::Option { .. }
-        | TypeShape::Patch { .. } => Ok((field, vec![])),
-        Inline {
-            object,
+    let Inline { object, optionality } = field.type_shape else {
+        return Ok((field, vec![]));
+    };
+    let type_name = field.name.to_upper_camel_case();
+    let defs = if let Some(cases) = object.all_of.as_ref() {
+        let all_of_def = AllOfShape {
+            header: TypeHeaderShape::new(type_name.clone(), &object),
+            items: AllOfItemShape::from_schema_cases(cases.clone())?,
+            required: object.required,
+        };
+        expand_all_of_fields(mod_path.clone(), all_of_def)?
+    } else if let Some(values) = object.enum_values.as_ref() {
+        vec![DefinitionShape::Enum {
+            header: TypeHeaderShape::new(type_name.clone(), &object),
+            values: values.clone(),
+        }]
+    } else {
+        let struct_def = StructShape {
+            header: TypeHeaderShape::new(type_name.clone(), &object),
+            fields: FieldShape::from_object_ref(&object)?,
+        };
+        expand_struct_fields(mod_path.clone(), struct_def)?
+    };
+    let field_shape = FieldShape {
+        name: field.name,
+        type_shape: Expanded {
+            type_path: mod_path.add(type_name),
             optionality,
-        } => {
-            let type_name = field.name.to_upper_camel_case();
-            let defs = if let Some(cases) = object.all_of.as_ref() {
-                let all_of_def = AllOfShape {
-                    header: TypeHeaderShape::new(type_name.clone(), &object),
-                    items: AllOfItemShape::from_schema_cases(cases.clone())?,
-                    required: object.required,
-                };
-                expand_all_of_fields(mod_path.clone(), all_of_def)?
-            } else if let Some(values) = object.enum_values.as_ref() {
-                vec![DefinitionShape::Enum {
-                    header: TypeHeaderShape::new(type_name.clone(), &object),
-                    values: values.clone(),
-                }]
-            } else {
-                let struct_def = StructShape {
-                    header: TypeHeaderShape::new(type_name.clone(), &object),
-                    fields: FieldShape::from_object_ref(&object)?,
-                };
-                expand_struct_fields(mod_path.clone(), struct_def)?
-            };
-            let field_shape = FieldShape {
-                name: field.name,
-                type_shape: Expanded {
-                    type_path: mod_path.add(type_name),
-                    optionality,
-                },
-            };
-            Ok((field_shape, defs))
-        }
-    }
+        },
+    };
+    Ok((field_shape, defs))
 }
 
 fn collect<A, B>(pairs: Vec<(A, Vec<B>)>) -> (Vec<A>, Vec<B>) {
