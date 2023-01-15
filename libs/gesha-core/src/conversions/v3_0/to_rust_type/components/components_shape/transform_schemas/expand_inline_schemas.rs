@@ -1,9 +1,7 @@
-use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{
-    Array, Expanded, Inline, Proper, Ref,
-};
+use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{Expanded, Inline};
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, StructShape,
-    TypeHeaderShape, TypePath, TypeShape,
+    TypeHeaderShape, TypePath,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
