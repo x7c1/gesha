@@ -12,21 +12,21 @@ schemas:
         enum:
           - x1
           - x2
-#  Sample1:
-#    type: object
-#    required:
-#      - id
-#      - sample1_nested1
-#    properties:
-#      id:
-#        type: integer
-#      sample1_nested1:
-#        type: object
-#        required:
-#          - sample1_nested2
-#        properties:
-#          sample1_nested2:
-#            type: string
-#            enum:
-#              - y1
-#              - y2
+  Sample1:
+    type: object
+    required:
+      - id
+      - sample1_nested1
+    properties:
+      id:
+        type: integer
+      sample1_nested1:
+        type: object
+        required:
+          - sample1_nested2
+        properties:
+          sample1_nested2:
+            type: string
+            enum:
+              - y1
+              - y2
