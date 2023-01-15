@@ -99,24 +99,29 @@ fn expand_field(
         return Ok((field, vec![]));
     };
     let type_name = field.name.to_upper_camel_case();
+    let header = TypeHeaderShape::new(type_name.clone(), &object);
     let defs = if let Some(cases) = object.all_of.as_ref() {
-        let all_of_def = AllOfShape {
-            header: TypeHeaderShape::new(type_name.clone(), &object),
-            items: AllOfItemShape::from_schema_cases(cases.clone())?,
-            required: object.required,
-        };
-        expand_all_of_fields(mod_path.clone(), all_of_def)?
+        expand_all_of_fields(
+            mod_path.clone(),
+            AllOfShape {
+                header,
+                items: AllOfItemShape::from_schema_cases(cases.clone())?,
+                required: object.required,
+            },
+        )?
     } else if let Some(values) = object.enum_values.as_ref() {
         vec![DefinitionShape::Enum {
-            header: TypeHeaderShape::new(type_name.clone(), &object),
+            header,
             values: values.clone(),
         }]
     } else {
-        let struct_def = StructShape {
-            header: TypeHeaderShape::new(type_name.clone(), &object),
-            fields: FieldShape::from_object_ref(&object)?,
-        };
-        expand_struct_fields(mod_path.clone(), struct_def)?
+        expand_struct_fields(
+            mod_path.clone(),
+            StructShape {
+                header,
+                fields: FieldShape::from_object_ref(&object)?,
+            },
+        )?
     };
     let field_shape = FieldShape {
         name: field.name,
