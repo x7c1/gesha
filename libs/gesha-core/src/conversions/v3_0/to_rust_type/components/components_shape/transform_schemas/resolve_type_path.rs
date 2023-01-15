@@ -1,6 +1,6 @@
 use crate::broken;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    DefinitionShape, FieldShape, Optionality, StructShape, TypePath, TypeShape,
+    DefinitionShape, FieldShape, Optionality, TypePath, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
@@ -28,14 +28,11 @@ struct Transformer<'a> {
 }
 
 impl Transformer<'_> {
-    fn apply(&self, shape: DefinitionShape) -> Result<DefinitionShape> {
-        match shape {
-            DefinitionShape::Struct(StructShape { header, fields }) => {
-                let next = StructShape {
-                    header,
-                    fields: self.transform_fields(fields)?,
-                };
-                Ok(next.into())
+    fn apply(&self, def: DefinitionShape) -> Result<DefinitionShape> {
+        match def {
+            DefinitionShape::Struct(mut shape) => {
+                shape.fields = self.transform_fields(shape.fields)?;
+                Ok(shape.into())
             }
             DefinitionShape::NewType { header, type_shape } => {
                 let next = DefinitionShape::NewType {
@@ -44,13 +41,13 @@ impl Transformer<'_> {
                 };
                 Ok(next)
             }
-            DefinitionShape::Enum { .. } => Ok(shape),
+            DefinitionShape::Enum { .. } => Ok(def),
             DefinitionShape::Mod(shape) => {
                 let mod_path = self.mod_path.clone().add(shape.name.clone());
                 let next = shape.map_defs(|x| self.resolve_in_mod(mod_path.clone(), x))?;
                 Ok(next.into())
             }
-            DefinitionShape::AllOf { .. } => Err(broken!(shape)),
+            DefinitionShape::AllOf { .. } => Err(broken!(def)),
         }
     }
 
