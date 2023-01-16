@@ -52,6 +52,7 @@ fn new_schemas_cases() -> ComponentCases {
             "all_of_inline_all_of.yaml",
             "all_of_override_optional.yaml",
             "object_inline_enum.yaml",
+            "one_of.yaml",
         ],
     )
 }
