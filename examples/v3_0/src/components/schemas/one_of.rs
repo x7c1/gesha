@@ -3,6 +3,7 @@ pub mod schemas {
     use serde::Serialize;
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    #[serde(untagged)]
     pub enum Pet {
         Dog(Dog),
         Cat(Cat),

@@ -6,3 +6,4 @@ mod object_inline;
 mod object_simple;
 mod ref_property;
 mod reserved_keywords;
+mod one_of;
