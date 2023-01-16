@@ -67,7 +67,7 @@ mod from_json {
             Error::UnsupportedMediaType { given } => {
                 assert_eq!(given, "abcde")
             }
-            _ => assert!(false),
+            _ => panic!("expected error not returned"),
         }
     }
 }
