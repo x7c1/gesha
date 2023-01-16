@@ -1,9 +1,11 @@
-# https://swagger.io/docs/specification/data-models/oneof-anyof-allof-not/
 schemas:
   Pet:
+    description:
+      "https://swagger.io/docs/specification/data-models/oneof-anyof-allof-not/"
     oneOf:
       - $ref: '#/components/schemas/Cat'
       - $ref: '#/components/schemas/Dog'
+
   Dog:
     type: object
     required:
@@ -14,6 +16,7 @@ schemas:
       breed:
         type: string
         enum: [Dingo, Husky, Retriever, Shepherd]
+
   Cat:
     type: object
     required:

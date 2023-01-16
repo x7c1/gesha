@@ -2,6 +2,9 @@ pub mod schemas {
     use serde::Deserialize;
     use serde::Serialize;
 
+    /**
+    https://swagger.io/docs/specification/data-models/oneof-anyof-allof-not/
+    */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     #[serde(untagged)]
     pub enum Pet {
