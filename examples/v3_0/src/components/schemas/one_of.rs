@@ -8,8 +8,8 @@ pub mod schemas {
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     #[serde(untagged)]
     pub enum Pet {
-        Dog(Dog),
         Cat(Cat),
+        Dog(Dog),
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
