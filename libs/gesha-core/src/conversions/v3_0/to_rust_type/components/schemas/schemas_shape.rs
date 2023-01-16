@@ -95,6 +95,7 @@ impl Shaper {
         if self.object.all_of.is_some() {
             return self.for_all_of();
         }
+        // TODO: shape oneOf properties.
 
         use openapi_types::v3_0::OpenApiDataType as o;
         match self.object.data_type.as_ref() {

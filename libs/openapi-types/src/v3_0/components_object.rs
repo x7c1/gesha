@@ -63,7 +63,15 @@ pub enum SchemaCase {
 ///       rootCause:
 ///         type: string
 /// ```
-/// rf. https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
+///
+/// ex.6
+/// ```yaml
+/// oneOf:
+///   - $ref: '#/components/schemas/Cat'
+///   - $ref: '#/components/schemas/Dog'
+/// ```
+///
+/// rf. https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schema-object
 #[derive(Clone, Debug)]
 pub struct SchemaObject {
     pub title: Option<String>,
@@ -88,6 +96,8 @@ pub struct SchemaObject {
     pub enum_values: Option<EnumValues>,
 
     pub all_of: Option<AllOf>,
+
+    pub one_of: Option<OneOf>,
 }
 
 impl From<SchemaObject> for SchemaCase {
@@ -148,7 +158,7 @@ impl From<ArrayItems> for SchemaCase {
 /// > Elements in the array MAY be of any type, including null.
 pub type EnumValues = IndexSet<String>;
 
-/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schema-object
 /// > Inline or referenced schema MUST be of a Schema Object and not a standard JSON Schema.
 ///
 /// https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.22
@@ -156,3 +166,12 @@ pub type EnumValues = IndexSet<String>;
 ///
 /// > Elements of the array MUST be objects.  Each object MUST be a valid JSON Schema.
 pub type AllOf = Vec<SchemaCase>;
+
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schema-object
+/// > Inline or referenced schema MUST be of a Schema Object and not a standard JSON Schema.
+///
+/// https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.24
+/// > This keyword's value MUST be an array.  This array MUST have at least one element.
+///
+/// > Elements of the array MUST be objects.  Each object MUST be a valid JSON Schema.
+pub type OneOf = Vec<SchemaCase>;
