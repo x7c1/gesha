@@ -7,7 +7,7 @@ mod to_json {
     fn ok() {
         let pet = Pet::Cat(Cat {
             hunts: Some(true),
-            age: Some(3),
+            age: 3,
         });
         let actual = serde_json::to_string(&pet).unwrap();
         let expected = flatten(
@@ -20,7 +20,7 @@ mod to_json {
 
         let pet = Pet::Dog(Dog {
             bark: Some(true),
-            breed: Some(Breed::Dingo),
+            breed: Breed::Dingo,
         });
         let actual = serde_json::to_string(&pet).unwrap();
         let expected = flatten(
@@ -29,6 +29,27 @@ mod to_json {
                 "breed": "Dingo"
             }"#,
         );
+        assert_eq!(actual, expected);
+    }
+}
+
+mod from_json {
+    use examples_v3_0::components::schemas::one_of::schemas::{Cat, Pet};
+
+    #[test]
+    fn ok() {
+        let actual = serde_json::from_str::<Pet>(
+            r#"{
+                "hunts": true,
+                "age": 3
+            }"#,
+        )
+        .unwrap();
+
+        let expected = Pet::Cat(Cat {
+            hunts: Some(true),
+            age: 3,
+        });
         assert_eq!(actual, expected);
     }
 }

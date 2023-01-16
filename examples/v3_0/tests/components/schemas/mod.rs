@@ -4,6 +4,6 @@ mod newtype;
 mod nullable_field;
 mod object_inline;
 mod object_simple;
+mod one_of;
 mod ref_property;
 mod reserved_keywords;
-mod one_of;
