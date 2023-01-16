@@ -12,7 +12,7 @@ pub mod schemas {
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Dog {
         pub bark: Option<bool>,
-        pub breed: Option<dog::Breed>,
+        pub breed: dog::Breed,
     }
 
     pub mod dog {
@@ -31,6 +31,6 @@ pub mod schemas {
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Cat {
         pub hunts: Option<bool>,
-        pub age: Option<i64>,
+        pub age: i64,
     }
 }

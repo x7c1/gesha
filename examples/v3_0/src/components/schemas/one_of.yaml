@@ -6,6 +6,8 @@ schemas:
       - $ref: '#/components/schemas/Dog'
   Dog:
     type: object
+    required:
+      - breed
     properties:
       bark:
         type: boolean
@@ -14,6 +16,8 @@ schemas:
         enum: [Dingo, Husky, Retriever, Shepherd]
   Cat:
     type: object
+    required:
+      - age
     properties:
       hunts:
         type: boolean
