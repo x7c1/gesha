@@ -11,23 +11,21 @@ pub fn resolve_optionality(mut shapes: ComponentsShape) -> Result<ComponentsShap
     Ok(shapes)
 }
 
-fn resolve(shape: DefinitionShape) -> Result<DefinitionShape> {
-    match shape {
+fn resolve(def: DefinitionShape) -> Result<DefinitionShape> {
+    let def = match def {
         Struct(mut shape) => {
             shape.fields = transform_fields(shape.fields)?;
-            Ok(shape.into())
+            shape.into()
         }
-        NewType { header, type_shape } => {
-            let next = NewType {
-                header,
-                type_shape: type_shape.resolve_optionality()?,
-            };
-            Ok(next)
-        }
-        Enum { .. } => Ok(shape),
-        Mod(shape) => Ok(Mod(shape.map_defs(resolve)?)),
-        AllOf(_) | OneOf(_) => Err(broken!(shape)),
-    }
+        NewType { header, type_shape } => NewType {
+            header,
+            type_shape: type_shape.resolve_optionality()?,
+        },
+        Enum { .. } => def,
+        Mod(shape) => Mod(shape.map_defs(resolve)?),
+        AllOf(_) | OneOf(_) => Err(broken!(def))?,
+    };
+    Ok(def)
 }
 
 fn transform_fields(shapes: Vec<FieldShape>) -> Result<Vec<FieldShape>> {
