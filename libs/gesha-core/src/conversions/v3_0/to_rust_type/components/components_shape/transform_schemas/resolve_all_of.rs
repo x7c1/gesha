@@ -34,9 +34,7 @@ impl Transformer {
             DefinitionShape::Mod(shape) => Ok(DefinitionShape::Mod(
                 shape.map_defs(|x| self.shape_all_of(x))?,
             )),
-            DefinitionShape::Struct { .. }
-            | DefinitionShape::NewType { .. }
-            | DefinitionShape::Enum { .. } => Ok(def),
+            _ => Ok(def),
         }
     }
 }

@@ -1,6 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, Ref, StructShape,
-    TypeHeaderShape, TypeShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, OneOfShape, Ref,
+    StructShape, TypeHeaderShape, TypeShape,
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::ModDef;
@@ -95,8 +95,9 @@ impl Shaper {
         if self.object.all_of.is_some() {
             return self.for_all_of();
         }
-        // TODO: shape oneOf properties.
-
+        if self.object.one_of.is_some() {
+            return self.for_one_of();
+        }
         use openapi_types::v3_0::OpenApiDataType as o;
         match self.object.data_type.as_ref() {
             Some(o::Object) => self.for_struct(),
@@ -128,6 +129,12 @@ impl Shaper {
                 AllOfItemShape::from_schema_cases(cases)?
             },
         };
+        Ok(shape.into())
+    }
+
+    fn for_one_of(self) -> Result<DefinitionShape> {
+        // TODO:
+        let shape = OneOfShape {};
         Ok(shape.into())
     }
 

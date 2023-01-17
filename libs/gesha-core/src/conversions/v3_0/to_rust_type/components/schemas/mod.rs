@@ -13,6 +13,9 @@ pub use field_shape::FieldShape;
 mod mod_shape;
 pub use mod_shape::ModShape;
 
+mod one_of_shape;
+pub use one_of_shape::OneOfShape;
+
 mod optionality;
 pub use optionality::Optionality;
 

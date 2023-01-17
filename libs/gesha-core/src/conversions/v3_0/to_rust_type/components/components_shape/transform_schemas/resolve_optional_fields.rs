@@ -4,7 +4,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
-use DefinitionShape::{AllOf, Enum, Mod, NewType, Struct};
+use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn resolve_optionality(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let defs = shapes.schemas.root.defs;
@@ -31,7 +31,7 @@ fn resolve(shape: DefinitionShape) -> Result<DefinitionShape> {
         }
         Enum { .. } => Ok(shape),
         Mod(shape) => Ok(Mod(shape.map_defs(resolve)?)),
-        AllOf { .. } => Err(broken!(shape)),
+        AllOf { .. } | OneOf(_) => Err(broken!(shape)),
     }
 }
 

@@ -25,6 +25,10 @@ fn expand(shape: DefinitionShape) -> Result<Vec<DefinitionShape>> {
     match shape {
         DefinitionShape::Struct(x) => expand_struct_fields(TypePath::new(), x),
         DefinitionShape::AllOf(x) => expand_all_of_fields(TypePath::new(), x),
+        DefinitionShape::OneOf(_) => {
+            // inline definition in oneOf is not supported
+            Ok(vec![shape])
+        },
         DefinitionShape::NewType { .. }
         | DefinitionShape::Enum { .. }
         | DefinitionShape::Mod { .. } => Ok(vec![shape]),

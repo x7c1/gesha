@@ -4,6 +4,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
+use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let transformer = Transformer {
@@ -30,24 +31,24 @@ struct Transformer<'a> {
 impl Transformer<'_> {
     fn apply(&self, def: DefinitionShape) -> Result<DefinitionShape> {
         match def {
-            DefinitionShape::Struct(mut shape) => {
+            Struct(mut shape) => {
                 shape.fields = self.transform_fields(shape.fields)?;
                 Ok(shape.into())
             }
-            DefinitionShape::NewType { header, type_shape } => {
-                let next = DefinitionShape::NewType {
+            NewType { header, type_shape } => {
+                let next = NewType {
                     header,
                     type_shape: self.transform_field_type(type_shape)?,
                 };
                 Ok(next)
             }
-            DefinitionShape::Enum { .. } => Ok(def),
-            DefinitionShape::Mod(shape) => {
+            Enum { .. } => Ok(def),
+            Mod(shape) => {
                 let mod_path = self.mod_path.clone().add(shape.name.clone());
                 let next = shape.map_defs(|x| self.resolve_in_mod(mod_path.clone(), x))?;
                 Ok(next.into())
             }
-            DefinitionShape::AllOf { .. } => Err(broken!(def)),
+            AllOf(_) | OneOf(_) => Err(broken!(def)),
         }
     }
 

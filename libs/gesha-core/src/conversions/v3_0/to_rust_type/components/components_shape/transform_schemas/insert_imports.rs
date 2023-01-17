@@ -4,7 +4,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
 use crate::targets::rust_type::Package;
-use DefinitionShape::{AllOf, Enum, Mod, NewType, Struct};
+use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn insert_imports(mut shape: ComponentsShape) -> Result<ComponentsShape> {
     shape.schemas.root = insert_patch(shape.schemas.root, 1)?;
@@ -21,7 +21,7 @@ fn insert_patch(mut shape: ModShape, depth: usize) -> Result<ModShape> {
         .into_iter()
         .map(|x| match x {
             Mod(x) => Ok(insert_patch(x, depth + 1)?.into()),
-            AllOf(_) | Struct(_) | NewType { .. } | Enum { .. } => Ok(x),
+            AllOf(_) | Struct(_) | NewType { .. } | Enum { .. } | OneOf(_) => Ok(x),
         })
         .collect::<Result<Vec<_>>>()?;
 

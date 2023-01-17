@@ -1,6 +1,6 @@
 use crate::broken;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfShape, FieldShape, ModShape, Ref, StructShape, TypeHeaderShape, TypeShape,
+    AllOfShape, FieldShape, ModShape, OneOfShape, Ref, StructShape, TypeHeaderShape, TypeShape,
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::{
@@ -12,16 +12,17 @@ use openapi_types::v3_0::EnumValues;
 #[derive(Clone, Debug)]
 pub enum DefinitionShape {
     AllOf(AllOfShape),
-    Struct(StructShape),
-    NewType {
-        header: TypeHeaderShape,
-        type_shape: TypeShape,
-    },
     Enum {
         header: TypeHeaderShape,
         values: EnumValues,
     },
     Mod(ModShape),
+    NewType {
+        header: TypeHeaderShape,
+        type_shape: TypeShape,
+    },
+    OneOf(OneOfShape),
+    Struct(StructShape),
 }
 
 impl DefinitionShape {
@@ -31,6 +32,7 @@ impl DefinitionShape {
             Self::Struct(shape) => Some(&shape.header),
             Self::NewType { header, .. } => Some(header),
             Self::Enum { header, .. } => Some(header),
+            Self::OneOf(_) => todo!(),
             Self::Mod(_) => None,
         }
     }
@@ -42,6 +44,7 @@ impl DefinitionShape {
             Self::NewType { type_shape, .. } => f(type_shape),
             Self::Enum { .. } => false,
             Self::Mod(x) => x.any_type(f),
+            Self::OneOf(_) => todo!(),
         }
     }
 
@@ -50,6 +53,7 @@ impl DefinitionShape {
             Self::AllOf(x) => x.any_type_directly(f),
             Self::Struct(x) => x.any_type_directly(f),
             Self::NewType { type_shape, .. } => f(type_shape),
+            Self::OneOf(_) => todo!(),
             Self::Enum { .. } => false,
             Self::Mod(_) => false,
         }
@@ -60,6 +64,7 @@ impl DefinitionShape {
             Self::Struct(shape) => shape.fields.clone(),
             Self::AllOf(shape) => shape.expand_fields(resolve_ref),
             Self::NewType { .. } | Self::Enum { .. } | Self::Mod(_) => vec![],
+            Self::OneOf(_) => todo!(),
         }
     }
 
@@ -79,7 +84,7 @@ impl DefinitionShape {
                 Ok(def.into())
             }
             Self::Mod(x) => x.define().map(|x| x.into()),
-            Self::AllOf { .. } => Err(broken!(self)),
+            Self::AllOf(_) | Self::OneOf(_) => Err(broken!(self)),
         }
     }
 }
