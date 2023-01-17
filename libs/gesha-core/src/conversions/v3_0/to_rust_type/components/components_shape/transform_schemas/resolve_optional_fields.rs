@@ -1,7 +1,5 @@
 use crate::broken;
-use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    DefinitionShape, FieldShape, StructShape,
-};
+use crate::conversions::v3_0::to_rust_type::components::schemas::{DefinitionShape, FieldShape};
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
@@ -15,12 +13,9 @@ pub fn resolve_optionality(mut shapes: ComponentsShape) -> Result<ComponentsShap
 
 fn resolve(shape: DefinitionShape) -> Result<DefinitionShape> {
     match shape {
-        Struct(StructShape { header, fields }) => {
-            let next = StructShape {
-                header,
-                fields: transform_fields(fields)?,
-            };
-            Ok(next.into())
+        Struct(mut shape) => {
+            shape.fields = transform_fields(shape.fields)?;
+            Ok(shape.into())
         }
         NewType { header, type_shape } => {
             let next = NewType {
@@ -31,7 +26,7 @@ fn resolve(shape: DefinitionShape) -> Result<DefinitionShape> {
         }
         Enum { .. } => Ok(shape),
         Mod(shape) => Ok(Mod(shape.map_defs(resolve)?)),
-        AllOf { .. } | OneOf(_) => Err(broken!(shape)),
+        AllOf(_) | OneOf(_) => Err(broken!(shape)),
     }
 }
 

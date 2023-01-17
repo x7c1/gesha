@@ -28,7 +28,7 @@ fn expand(shape: DefinitionShape) -> Result<Vec<DefinitionShape>> {
         DefinitionShape::OneOf(_) => {
             // inline definition in oneOf is not supported
             Ok(vec![shape])
-        },
+        }
         DefinitionShape::NewType { .. }
         | DefinitionShape::Enum { .. }
         | DefinitionShape::Mod { .. } => Ok(vec![shape]),
