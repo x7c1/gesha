@@ -39,11 +39,14 @@ impl Transformer<'_> {
                 header,
                 type_shape: self.transform_field_type(type_shape)?,
             },
-            Enum { .. } => def,
             Mod(shape) => {
                 let mod_path = self.mod_path.clone().add(shape.name.clone());
                 let next = shape.map_defs(|x| self.resolve_in_mod(mod_path.clone(), x))?;
                 next.into()
+            }
+            Enum(_) => {
+                // nop
+                def
             }
             AllOf(_) | OneOf(_) => Err(broken!(def))?,
         };

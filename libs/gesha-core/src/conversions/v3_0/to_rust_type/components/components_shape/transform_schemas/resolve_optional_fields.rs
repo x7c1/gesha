@@ -21,7 +21,10 @@ fn resolve(def: DefinitionShape) -> Result<DefinitionShape> {
             header,
             type_shape: type_shape.resolve_optionality()?,
         },
-        Enum { .. } => def,
+        Enum(_) => {
+            // nop
+            def
+        }
         Mod(shape) => Mod(shape.map_defs(resolve)?),
         AllOf(_) | OneOf(_) => Err(broken!(def))?,
     };

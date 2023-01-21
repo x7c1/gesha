@@ -22,15 +22,18 @@ pub fn expand_inline_schemas(mut shape: ComponentsShape) -> Result<ComponentsSha
     Ok(shape)
 }
 
-fn expand(shape: DefinitionShape) -> Result<Vec<DefinitionShape>> {
-    match shape {
+fn expand(def: DefinitionShape) -> Result<Vec<DefinitionShape>> {
+    match def {
         Struct(x) => expand_struct_fields(TypePath::new(), x),
         AllOf(x) => expand_all_of_fields(TypePath::new(), x),
         OneOf(_) => {
             // inline definition in oneOf is not supported
-            Ok(vec![shape])
+            Ok(vec![def])
         }
-        NewType { .. } | Enum { .. } | Mod { .. } => Ok(vec![shape]),
+        NewType { .. } | Enum(_) | Mod(_) => {
+            // nop
+            Ok(vec![def])
+        }
     }
 }
 
