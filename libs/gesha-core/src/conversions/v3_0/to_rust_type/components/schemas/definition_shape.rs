@@ -4,11 +4,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
     TypeShape,
 };
 use crate::conversions::Result;
-use crate::targets::rust_type::{
-    Definition, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName, NewTypeDef, StructDef,
-    StructField,
-};
-use openapi_types::v3_0::EnumValues;
+use crate::targets::rust_type::{Definition, NewTypeDef, StructDef, StructField};
 
 #[derive(Clone, Debug)]
 pub enum DefinitionShape {

@@ -4,7 +4,7 @@ use openapi_types::v3_0::SchemaCase;
 
 #[derive(Clone, Debug)]
 pub struct OneOfItemShape {
-    target: Ref,
+    pub target: Ref,
 }
 
 impl OneOfItemShape {

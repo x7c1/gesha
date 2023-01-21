@@ -17,7 +17,7 @@ impl EnumShape {
             EnumVariantsShape::Unit(values) => {
                 let variants = values.into_iter().map(to_enum_variant).collect();
                 let def = EnumDef::new(self.header.define(), variants);
-                Ok(def.into())
+                Ok(def)
             }
             EnumVariantsShape::Tuple => {
                 todo!()
