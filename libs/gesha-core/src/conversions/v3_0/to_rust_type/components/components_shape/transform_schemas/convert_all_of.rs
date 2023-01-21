@@ -2,7 +2,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{DefinitionShap
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
 
-pub fn resolve_all_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
+pub fn convert_all_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let transformer = Transformer {
         snapshot: shapes.clone(),
     };

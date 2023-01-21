@@ -4,8 +4,8 @@ use expand_inline_schemas::expand_inline_schemas;
 mod insert_imports;
 use insert_imports::insert_imports;
 
-mod resolve_all_of;
-use resolve_all_of::resolve_all_of;
+mod convert_all_of;
+use convert_all_of::convert_all_of;
 
 mod resolve_optional_fields;
 use resolve_optional_fields::resolve_optionality;
@@ -18,7 +18,7 @@ use crate::conversions::Result;
 
 pub fn transform_schemas(shapes: ComponentsShape) -> Result<ComponentsShape> {
     let shapes = expand_inline_schemas(shapes)?;
-    let shapes = resolve_all_of(shapes)?;
+    let shapes = convert_all_of(shapes)?;
     let shapes = resolve_type_path(shapes)?;
     let shapes = resolve_optionality(shapes)?;
     let shapes = insert_imports(shapes)?;
