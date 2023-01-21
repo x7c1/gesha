@@ -6,6 +6,7 @@ pub struct TypeHeaderShape {
     pub name: ComponentName,
     pub doc_comments: DocComments,
     pub is_nullable: bool,
+    _hide_default_constructor: bool,
 }
 
 impl TypeHeaderShape {
@@ -14,6 +15,7 @@ impl TypeHeaderShape {
             name,
             doc_comments: to_doc_comments(object.title.as_deref(), object.description.as_deref()),
             is_nullable: object.nullable.unwrap_or(false),
+            _hide_default_constructor: true,
         }
     }
     pub fn define(self) -> TypeHeader {
