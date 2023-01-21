@@ -19,12 +19,12 @@ use resolve_type_path::resolve_type_path;
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
 
-pub fn transform_schemas(shapes: ComponentsShape) -> Result<ComponentsShape> {
-    let shapes = expand_inline_schemas(shapes)?;
-    let shapes = convert_all_of(shapes)?;
-    let shapes = convert_one_of(shapes)?;
-    let shapes = resolve_type_path(shapes)?;
-    let shapes = resolve_optionality(shapes)?;
-    let shapes = insert_imports(shapes)?;
-    Ok(shapes)
+pub fn transform_schemas(mut shape: ComponentsShape) -> Result<ComponentsShape> {
+    shape = expand_inline_schemas(shape)?;
+    shape = convert_all_of(shape)?;
+    shape = convert_one_of(shape)?;
+    shape = resolve_type_path(shape)?;
+    shape = resolve_optionality(shape)?;
+    shape = insert_imports(shape)?;
+    Ok(shape)
 }
