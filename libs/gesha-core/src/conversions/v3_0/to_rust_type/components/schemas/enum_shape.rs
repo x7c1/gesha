@@ -8,21 +8,20 @@ use openapi_types::v3_0::EnumValues;
 #[derive(Clone, Debug)]
 pub struct EnumShape {
     pub header: TypeHeaderShape,
-    pub variants: EnumVariantsShape,
+    pub variants: Vec<EnumVariant>,
 }
 
 impl EnumShape {
-    pub fn define(self) -> Result<EnumDef> {
-        match self.variants {
-            EnumVariantsShape::Unit(values) => {
-                let variants = values.into_iter().map(to_enum_variant).collect();
-                let def = EnumDef::new(self.header.define(), variants);
-                Ok(def)
-            }
-            EnumVariantsShape::Tuple => {
-                todo!()
-            }
+    pub fn new(header: TypeHeaderShape, values: EnumValues) -> Self {
+        Self {
+            header,
+            variants: values.into_iter().map(to_enum_variant).collect(),
         }
+    }
+
+    pub fn define(self) -> Result<EnumDef> {
+        let def = EnumDef::new(self.header.define(), self.variants);
+        Ok(def)
     }
 }
 
@@ -30,12 +29,6 @@ impl From<EnumShape> for DefinitionShape {
     fn from(this: EnumShape) -> Self {
         Self::Enum(this)
     }
-}
-
-#[derive(Clone, Debug)]
-pub enum EnumVariantsShape {
-    Unit(EnumValues),
-    Tuple,
 }
 
 fn to_enum_variant(original: String) -> EnumVariant {

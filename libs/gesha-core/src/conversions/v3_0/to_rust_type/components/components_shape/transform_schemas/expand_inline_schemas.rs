@@ -1,11 +1,12 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{Expanded, Inline};
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, EnumVariantsShape, FieldShape,
-    ModShape, StructShape, TypeHeaderShape, TypePath,
+    AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, StructShape,
+    TypeHeaderShape, TypePath,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
 use std::ops::Not;
+use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn expand_inline_schemas(mut shape: ComponentsShape) -> Result<ComponentsShape> {
     let defs = shape.schemas.root.defs;
@@ -23,15 +24,13 @@ pub fn expand_inline_schemas(mut shape: ComponentsShape) -> Result<ComponentsSha
 
 fn expand(shape: DefinitionShape) -> Result<Vec<DefinitionShape>> {
     match shape {
-        DefinitionShape::Struct(x) => expand_struct_fields(TypePath::new(), x),
-        DefinitionShape::AllOf(x) => expand_all_of_fields(TypePath::new(), x),
-        DefinitionShape::OneOf(_) => {
+        Struct(x) => expand_struct_fields(TypePath::new(), x),
+        AllOf(x) => expand_all_of_fields(TypePath::new(), x),
+        OneOf(_) => {
             // inline definition in oneOf is not supported
             Ok(vec![shape])
         }
-        DefinitionShape::NewType { .. }
-        | DefinitionShape::Enum { .. }
-        | DefinitionShape::Mod { .. } => Ok(vec![shape]),
+        NewType { .. } | Enum { .. } | Mod { .. } => Ok(vec![shape]),
     }
 }
 
@@ -109,10 +108,7 @@ fn expand_field(
             },
         )?
     } else if let Some(values) = object.enum_values.as_ref() {
-        vec![DefinitionShape::Enum(EnumShape {
-            header,
-            variants: EnumVariantsShape::Unit(values.clone()),
-        })]
+        vec![Enum(EnumShape::new(header, values.clone()))]
     } else {
         expand_struct_fields(
             mod_path.clone(),
