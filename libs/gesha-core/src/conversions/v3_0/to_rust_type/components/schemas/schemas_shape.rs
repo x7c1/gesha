@@ -1,6 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, OneOfShape, Ref,
-    StructShape, TypeHeaderShape, TypeShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, EnumVariantsShape, FieldShape,
+    ModShape, OneOfItemShape, OneOfShape, Ref, StructShape, TypeHeaderShape, TypeShape,
 };
 use crate::conversions::Result;
 use crate::targets::rust_type::ModDef;
@@ -133,8 +133,13 @@ impl Shaper {
     }
 
     fn for_one_of(self) -> Result<DefinitionShape> {
-        // TODO:
-        let shape = OneOfShape {};
+        let shape = OneOfShape {
+            header: self.create_type_header(),
+            items: {
+                let cases = self.object.one_of.expect("one_of must be Some.");
+                OneOfItemShape::from_schema_cases(cases)?
+            },
+        };
         Ok(shape.into())
     }
 
@@ -147,11 +152,13 @@ impl Shaper {
     }
 
     fn for_enum(self) -> Result<DefinitionShape> {
-        let shape = DefinitionShape::Enum {
+        let shape = EnumShape {
             header: self.create_type_header(),
-            values: self.object.enum_values.expect("enum_values must be Some."),
+            variants: EnumVariantsShape::Unit(
+                self.object.enum_values.expect("enum_values must be Some."),
+            ),
         };
-        Ok(shape)
+        Ok(shape.into())
     }
 
     fn create_type_header(&self) -> TypeHeaderShape {

@@ -1,7 +1,7 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{Expanded, Inline};
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, StructShape,
-    TypeHeaderShape, TypePath,
+    AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, EnumVariantsShape, FieldShape,
+    ModShape, StructShape, TypeHeaderShape, TypePath,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
@@ -109,10 +109,10 @@ fn expand_field(
             },
         )?
     } else if let Some(values) = object.enum_values.as_ref() {
-        vec![DefinitionShape::Enum {
+        vec![DefinitionShape::Enum(EnumShape {
             header,
-            values: values.clone(),
-        }]
+            variants: EnumVariantsShape::Unit(values.clone()),
+        })]
     } else {
         expand_struct_fields(
             mod_path.clone(),
