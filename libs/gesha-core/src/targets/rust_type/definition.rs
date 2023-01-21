@@ -48,7 +48,6 @@ impl From<PresetDef> for Definition {
 pub struct StructDef {
     pub header: TypeHeader,
     pub fields: Vec<StructField>,
-    pub derive_attrs: Vec<DeriveAttribute>,
     _hide_default_constructor: bool,
 }
 
@@ -57,7 +56,6 @@ impl StructDef {
         Self {
             header,
             fields,
-            derive_attrs: DeriveAttribute::all(),
             _hide_default_constructor: true,
         }
     }
@@ -73,7 +71,6 @@ impl From<StructDef> for Definition {
 pub struct NewTypeDef {
     pub header: TypeHeader,
     pub data_type: DataType,
-    pub derive_attrs: Vec<DeriveAttribute>,
     _hide_default_constructor: bool,
 }
 
@@ -82,7 +79,6 @@ impl NewTypeDef {
         Self {
             header,
             data_type,
-            derive_attrs: DeriveAttribute::all(),
             _hide_default_constructor: true,
         }
     }
@@ -98,7 +94,6 @@ impl From<NewTypeDef> for Definition {
 pub struct EnumDef {
     pub header: TypeHeader,
     pub variants: Vec<EnumVariant>,
-    pub derive_attrs: Vec<DeriveAttribute>,
     _hide_default_constructor: bool,
 }
 
@@ -107,7 +102,6 @@ impl EnumDef {
         Self {
             header,
             variants,
-            derive_attrs: DeriveAttribute::all(),
             _hide_default_constructor: true,
         }
     }
