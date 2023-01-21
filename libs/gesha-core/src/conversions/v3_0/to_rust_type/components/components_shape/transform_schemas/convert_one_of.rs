@@ -5,7 +5,7 @@ use crate::conversions::Result;
 
 pub fn convert_one_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let transformer = Transformer {
-        snapshot: shapes.clone(),
+        _snapshot: shapes.clone(),
     };
     let defs = shapes.schemas.root.defs;
     let defs = defs
@@ -18,10 +18,11 @@ pub fn convert_one_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
 }
 
 struct Transformer {
-    snapshot: ComponentsShape,
+    _snapshot: ComponentsShape,
 }
 
 impl Transformer {
+    #[allow(clippy::only_used_in_recursion)]
     fn shape_one_of(&self, def: DefinitionShape) -> Result<DefinitionShape> {
         match def {
             OneOf(shape) => {

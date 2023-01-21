@@ -1,6 +1,6 @@
 use crate::targets::rust_type::{
-    DataType, Definitions, DeriveAttribute, EnumVariant, ErrorDef, Imports, MediaTypeDef,
-    ModuleName, RequestBodyDef, StructField, TypeHeader,
+    DataType, Definitions, EnumVariant, ErrorDef, Imports, MediaTypeDef, ModuleName,
+    RequestBodyDef, StructField, TypeHeader,
 };
 
 #[derive(Clone, Debug, PartialEq)]

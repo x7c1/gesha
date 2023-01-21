@@ -1,5 +1,5 @@
 use crate::render;
-use crate::renderer::rust_type::{render_derive_attrs, render_enum_variants, render_header};
+use crate::renderer::rust_type::{render_enum_variants, render_header};
 use crate::renderer::Result;
 use crate::targets::rust_type::{MediaTypeVariant, MediaTypeVariants, RequestBodyDef};
 use std::io::Write;

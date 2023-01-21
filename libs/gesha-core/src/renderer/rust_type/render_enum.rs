@@ -1,5 +1,5 @@
 use crate::render;
-use crate::renderer::rust_type::{render_data_types, render_derive_attrs, render_header};
+use crate::renderer::rust_type::{render_data_types, render_header};
 use crate::renderer::Result;
 use crate::targets::rust_type::{EnumCase, EnumDef, EnumVariant, EnumVariantAttribute};
 use std::io::Write;
