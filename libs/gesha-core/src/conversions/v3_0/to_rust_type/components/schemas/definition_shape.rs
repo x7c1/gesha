@@ -26,7 +26,7 @@ impl DefinitionShape {
             Self::Struct(shape) => Some(&shape.header),
             Self::NewType { header, .. } => Some(header),
             Self::Enum(shape) => Some(&shape.header),
-            Self::OneOf(_) => todo!(),
+            Self::OneOf(shape) => Some(&shape.header),
             Self::Mod(_) => None,
         }
     }
@@ -57,8 +57,8 @@ impl DefinitionShape {
         match self {
             Self::Struct(shape) => shape.fields.clone(),
             Self::AllOf(shape) => shape.expand_fields(resolve_ref),
+            Self::OneOf(shape) => shape.expand_fields(resolve_ref),
             Self::NewType { .. } | Self::Enum { .. } | Self::Mod(_) => vec![],
-            Self::OneOf(_) => todo!(),
         }
     }
 
@@ -74,8 +74,7 @@ impl DefinitionShape {
             }
             Self::Enum(x) => x.define().map(|x| x.into()),
             Self::Mod(x) => x.define().map(|x| x.into()),
-            Self::OneOf(x) => x.define().map(|x| x.into()),
-            Self::AllOf(_) => Err(broken!(self)),
+            Self::AllOf(_) | Self::OneOf(_) => Err(broken!(self)),
         }
     }
 }

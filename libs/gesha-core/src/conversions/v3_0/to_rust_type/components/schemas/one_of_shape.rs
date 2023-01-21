@@ -1,8 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    DefinitionShape, OneOfItemShape, TypeHeaderShape, TypeShape,
+    DefinitionShape, FieldShape, OneOfItemShape, Ref, TypeHeaderShape, TypeShape,
 };
-use crate::conversions::Result;
-use crate::targets::rust_type::EnumDef;
 
 #[derive(Clone, Debug)]
 pub struct OneOfShape {
@@ -12,17 +10,18 @@ pub struct OneOfShape {
 
 impl OneOfShape {
     pub fn any_type(&self, _: &impl Fn(&TypeShape) -> bool) -> bool {
-        // return true when inline item is supported
+        // implement when inline item is supported
         false
     }
 
     pub fn any_type_directly(&self, _: &impl Fn(&TypeShape) -> bool) -> bool {
-        // return true when inline item is supported
+        // implement when inline item is supported
         false
     }
 
-    pub fn define(self) -> Result<EnumDef> {
-        todo!("{:#?}", self)
+    pub fn expand_fields(&self, _: impl Fn(&Ref) -> Vec<FieldShape>) -> Vec<FieldShape> {
+        // implement when inline item is supported
+        vec![]
     }
 }
 
