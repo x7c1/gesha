@@ -37,6 +37,9 @@ pub use struct_field::{StructField, StructFieldAttribute};
 mod struct_field_name;
 pub use struct_field_name::StructFieldName;
 
+mod type_header;
+pub use type_header::TypeHeader;
+
 use std::fmt::{Debug, Display, Formatter};
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
@@ -51,23 +54,6 @@ impl ModuleName {
 impl Display for ModuleName {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         Display::fmt(&self.0, f)
-    }
-}
-
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
-pub struct TypeHeader {
-    pub name: String,
-    pub doc_comments: DocComments,
-    _hide_default_constructor: bool,
-}
-
-impl TypeHeader {
-    pub fn new<A: Into<String>>(name: A, doc_comments: DocComments) -> Self {
-        Self {
-            name: name.into(),
-            doc_comments,
-            _hide_default_constructor: true,
-        }
     }
 }
 
