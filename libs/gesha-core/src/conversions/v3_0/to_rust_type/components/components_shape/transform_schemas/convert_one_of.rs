@@ -2,10 +2,11 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::DefinitionShape
 use crate::conversions::v3_0::to_rust_type::components::schemas::{DefinitionShape, EnumShape};
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
+use crate::targets::rust_type::{DataType, EnumVariant, EnumVariantName};
 
 pub fn convert_one_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let transformer = Transformer {
-        _snapshot: shapes.clone(),
+        snapshot: shapes.clone(),
     };
     let defs = shapes.schemas.root.defs;
     let defs = defs
@@ -18,7 +19,7 @@ pub fn convert_one_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
 }
 
 struct Transformer {
-    _snapshot: ComponentsShape,
+    snapshot: ComponentsShape,
 }
 
 impl Transformer {
@@ -26,10 +27,25 @@ impl Transformer {
     fn shape_one_of(&self, def: DefinitionShape) -> Result<DefinitionShape> {
         match def {
             OneOf(shape) => {
+                let variants = shape
+                    .items
+                    .into_iter()
+                    .map(|item| {
+                        let name = self
+                            .snapshot
+                            .schemas
+                            .find_type_name(&item.target)
+                            .map(EnumVariantName::new)
+                            .unwrap();
+
+                        let data_type = DataType::Custom(name.to_string());
+                        EnumVariant::tuple(name, vec![data_type], vec![])
+                    })
+                    .collect();
+
                 let next = EnumShape {
                     header: shape.header,
-                    // TODO:
-                    variants: vec![],
+                    variants,
                 };
                 Ok(next.into())
             }
