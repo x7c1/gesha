@@ -1,6 +1,7 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{DefinitionShape, StructShape};
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
+use crate::misc::TryMap;
 use DefinitionShape::{AllOf, Mod};
 
 pub fn convert_all_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
@@ -8,11 +9,7 @@ pub fn convert_all_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
         snapshot: shapes.clone(),
     };
     let defs = shapes.schemas.root.defs;
-    let defs = defs
-        .into_iter()
-        .map(|x| transformer.shape_all_of(x))
-        .collect::<Result<Vec<_>>>()?;
-
+    let defs = defs.try_map(|x| transformer.shape_all_of(x))?;
     shapes.schemas.root.defs = defs;
     Ok(shapes)
 }

@@ -2,6 +2,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
     DefinitionShape, Ref, TypeHeaderShape, TypeShape,
 };
 use crate::conversions::Result;
+use crate::misc::TryMap;
 use crate::targets::rust_type::{EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName};
 use openapi_types::v3_0::EnumValues;
 
@@ -20,22 +21,12 @@ impl EnumShape {
     }
 
     pub fn map_type(mut self, f: impl Fn(TypeShape) -> Result<TypeShape>) -> Result<Self> {
-        self.variants = self
-            .variants
-            .into_iter()
-            .map(|variant| variant.map_type(&f))
-            .collect::<Result<Vec<_>>>()?;
-
+        self.variants = self.variants.try_map(|x| x.map_type(&f))?;
         Ok(self)
     }
 
     pub fn define(self) -> Result<EnumDef> {
-        let variants = self
-            .variants
-            .into_iter()
-            .map(|x| x.define())
-            .collect::<Result<Vec<_>>>()?;
-
+        let variants = self.variants.try_map(|x| x.define())?;
         let def = EnumDef::new(self.header.define(), variants);
         Ok(def)
     }
@@ -94,7 +85,7 @@ impl EnumVariantShape {
         self.case = match self.case {
             EnumCaseShape::Unit => self.case,
             EnumCaseShape::Tuple(types) => {
-                let types = types.into_iter().map(f).collect::<Result<Vec<_>>>()?;
+                let types = types.try_map(f)?;
                 EnumCaseShape::Tuple(types)
             }
         };
@@ -105,11 +96,7 @@ impl EnumVariantShape {
         let variant = match self.case {
             EnumCaseShape::Unit => EnumVariant::unit(self.name, self.attributes),
             EnumCaseShape::Tuple(xs) => {
-                let types = xs
-                    .into_iter()
-                    .map(|x| x.define())
-                    .collect::<Result<Vec<_>>>()?;
-
+                let types = xs.try_map(|x| x.define())?;
                 EnumVariant::tuple(self.name, types, self.attributes)
             }
         };

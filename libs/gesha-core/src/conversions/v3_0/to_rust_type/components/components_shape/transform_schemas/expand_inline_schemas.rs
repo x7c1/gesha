@@ -5,6 +5,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
+use crate::misc::TryMap;
 use std::ops::Not;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
@@ -43,9 +44,7 @@ fn expand_struct_fields(path: TypePath, mut shape: StructShape) -> Result<Vec<De
     let path = path.add(mod_name.clone());
     let expanded = shape
         .fields
-        .into_iter()
-        .map(|field| expand_field(path.clone(), field))
-        .collect::<Result<Vec<_>>>()?;
+        .try_map(|field| expand_field(path.clone(), field))?;
 
     let (fields, defs) = collect(expanded);
     shape.fields = fields;
@@ -64,9 +63,7 @@ fn expand_all_of_fields(path: TypePath, mut shape: AllOfShape) -> Result<Vec<Def
     let path = path.add(mod_name.clone());
     let expanded = shape
         .items
-        .into_iter()
-        .map(|x| x.expand_fields(expand_fields_from(&path)))
-        .collect::<Result<Vec<_>>>()?;
+        .try_map(|x| x.expand_fields(expand_fields_from(&path)))?;
 
     let (items, defs) = collect(expanded);
     shape.items = items;
@@ -83,11 +80,7 @@ fn expand_fields_from(
     path: &TypePath,
 ) -> impl Fn(Vec<FieldShape>) -> Result<(Vec<FieldShape>, Vec<DefinitionShape>)> + '_ {
     |fields| {
-        let expanded = fields
-            .into_iter()
-            .map(|field| expand_field(path.clone(), field))
-            .collect::<Result<Vec<_>>>()?;
-
+        let expanded = fields.try_map(|field| expand_field(path.clone(), field))?;
         Ok(collect(expanded))
     }
 }

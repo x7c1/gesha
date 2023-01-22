@@ -3,6 +3,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
+use crate::misc::TryMap;
 use crate::targets::rust_type::Package;
 use DefinitionShape::Mod;
 
@@ -16,14 +17,10 @@ fn insert_patch(mut shape: ModShape, depth: usize) -> Result<ModShape> {
     if is_patch_used {
         shape.imports.push(Package::Patch { depth });
     }
-    shape.defs = shape
-        .defs
-        .into_iter()
-        .map(|x| match x {
-            Mod(x) => Ok(insert_patch(x, depth + 1)?.into()),
-            _ => Ok(x),
-        })
-        .collect::<Result<Vec<_>>>()?;
+    shape.defs = shape.defs.try_map(|x| match x {
+        Mod(x) => Ok(insert_patch(x, depth + 1)?.into()),
+        _ => Result::Ok(x),
+    })?;
 
     Ok(shape)
 }

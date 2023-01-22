@@ -5,6 +5,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Error::ReferenceObjectNotFound;
 use crate::conversions::Result;
+use crate::misc::TryMap;
 use crate::targets::rust_type::{EnumVariantName, SerdeAttribute};
 use SerdeAttribute::Untagged;
 
@@ -13,11 +14,7 @@ pub fn convert_one_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
         snapshot: shapes.clone(),
     };
     let defs = shapes.schemas.root.defs;
-    let defs = defs
-        .into_iter()
-        .map(|x| transformer.shape_one_of(x))
-        .collect::<Result<Vec<_>>>()?;
-
+    let defs = defs.try_map(|x| transformer.shape_one_of(x))?;
     shapes.schemas.root.defs = defs;
     Ok(shapes)
 }
@@ -45,18 +42,12 @@ impl Transformer {
     }
 
     fn convert_to_enum(&self, mut shape: OneOfShape) -> Result<EnumShape> {
-        let variants = shape
-            .items
-            .into_iter()
-            .map(|item| self.to_variant(item))
-            .collect::<Result<Vec<_>>>()?;
-
         Ok(EnumShape {
             header: {
                 shape.header.serde_attrs.push(Untagged);
                 shape.header
             },
-            variants,
+            variants: shape.items.try_map(|item| self.to_variant(item))?,
         })
     }
 

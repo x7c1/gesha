@@ -4,6 +4,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
+use crate::misc::TryMap;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
@@ -13,12 +14,7 @@ pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape>
         mod_path: TypePath::new(),
     };
     let defs = shapes.schemas.root.defs;
-    let defs = defs
-        .into_iter()
-        .map(|x| transformer.apply(x))
-        .collect::<Result<Vec<_>>>()?;
-
-    shapes.schemas.root.defs = defs;
+    shapes.schemas.root.defs = defs.try_map(|x| transformer.apply(x))?;
     Ok(shapes)
 }
 

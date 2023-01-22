@@ -2,11 +2,12 @@ use crate::broken;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{DefinitionShape, FieldShape};
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
+use crate::misc::TryMap;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn resolve_optionality(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let defs = shapes.schemas.root.defs;
-    let defs = defs.into_iter().map(resolve).collect::<Result<Vec<_>>>()?;
+    let defs = defs.try_map(resolve)?;
     shapes.schemas.root.defs = defs;
     Ok(shapes)
 }

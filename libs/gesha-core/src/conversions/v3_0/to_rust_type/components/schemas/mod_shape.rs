@@ -1,5 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::{DefinitionShape, TypeShape};
 use crate::conversions::Result;
+use crate::misc::TryMap;
 use crate::targets::rust_type::{Definitions, ModDef, ModuleName, Package};
 use openapi_types::v3_0::ComponentName;
 
@@ -31,7 +32,7 @@ impl ModShape {
         mut self,
         f: impl Fn(DefinitionShape) -> Result<DefinitionShape>,
     ) -> Result<Self> {
-        self.defs = self.defs.into_iter().map(f).collect::<Result<Vec<_>>>()?;
+        self.defs = self.defs.try_map(f)?;
         Ok(self)
     }
 
