@@ -75,18 +75,18 @@ impl EnumVariantShape {
         types: Vec<Ref>,
         attributes: Vec<EnumVariantAttribute>,
     ) -> Self {
+        let types = types
+            .into_iter()
+            .map(|x| TypeShape::Ref {
+                target: x,
+                is_required: true,
+            })
+            .collect();
+
         EnumVariantShape {
             name,
             attributes,
-            case: EnumCaseShape::Tuple(
-                types
-                    .into_iter()
-                    .map(|x| TypeShape::Ref {
-                        target: x,
-                        is_required: true,
-                    })
-                    .collect(),
-            ),
+            case: EnumCaseShape::Tuple(types),
         }
     }
 
@@ -109,6 +109,7 @@ impl EnumVariantShape {
                     .into_iter()
                     .map(|x| x.define())
                     .collect::<Result<Vec<_>>>()?;
+
                 EnumVariant::tuple(self.name, types, self.attributes)
             }
         };
