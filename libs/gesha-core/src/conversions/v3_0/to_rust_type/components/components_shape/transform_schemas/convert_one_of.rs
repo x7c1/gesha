@@ -1,5 +1,7 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::DefinitionShape::{Mod, OneOf};
-use crate::conversions::v3_0::to_rust_type::components::schemas::{DefinitionShape, EnumShape};
+use crate::conversions::v3_0::to_rust_type::components::schemas::{
+    DefinitionShape, EnumShape, OneOfShape,
+};
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
 use crate::targets::rust_type::{DataType, EnumVariant, EnumVariantName, SerdeAttribute};
@@ -23,32 +25,11 @@ struct Transformer {
 }
 
 impl Transformer {
-    #[allow(clippy::only_used_in_recursion)]
     fn shape_one_of(&self, def: DefinitionShape) -> Result<DefinitionShape> {
         match def {
-            OneOf(mut shape) => {
-                let variants = shape
-                    .items
-                    .into_iter()
-                    .map(|item| {
-                        let name = self
-                            .snapshot
-                            .schemas
-                            .find_type_name(&item.target)
-                            .map(EnumVariantName::new)
-                            .unwrap();
-
-                        let data_type = DataType::Custom(name.to_string());
-                        EnumVariant::tuple(name, vec![data_type], vec![])
-                    })
-                    .collect();
-
-                shape.header.serde_attrs.push(SerdeAttribute::Untagged);
-                let next = EnumShape {
-                    header: shape.header,
-                    variants,
-                };
-                Ok(next.into())
+            OneOf(shape) => {
+                let shape = self.convert_to_enum(shape);
+                Ok(shape.into())
             }
             Mod(shape) => {
                 let shape = shape.map_defs(|x| self.shape_one_of(x))?;
@@ -58,6 +39,30 @@ impl Transformer {
                 // nop
                 Ok(def)
             }
+        }
+    }
+
+    fn convert_to_enum(&self, mut shape: OneOfShape) -> EnumShape {
+        let variants = shape
+            .items
+            .into_iter()
+            .map(|item| {
+                let name = self
+                    .snapshot
+                    .schemas
+                    .find_type_name(&item.target)
+                    .map(EnumVariantName::new)
+                    .unwrap();
+
+                let data_type = DataType::Custom(name.to_string());
+                EnumVariant::tuple(name, vec![data_type], vec![])
+            })
+            .collect();
+
+        shape.header.serde_attrs.push(SerdeAttribute::Untagged);
+        EnumShape {
+            header: shape.header,
+            variants,
         }
     }
 }
