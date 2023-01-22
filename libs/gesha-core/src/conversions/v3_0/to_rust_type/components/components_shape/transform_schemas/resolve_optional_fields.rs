@@ -25,7 +25,7 @@ fn resolve(def: DefinitionShape) -> Result<DefinitionShape> {
             // nop
             def
         }
-        Mod(shape) => Mod(shape.map_defs(resolve)?),
+        Mod(shape) => Mod(shape.map_def(resolve)?),
         AllOf(_) | OneOf(_) => Err(broken!(def))?,
     };
     Ok(def)

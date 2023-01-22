@@ -27,7 +27,7 @@ impl ModShape {
         self.defs.iter().any(|x| x.any_type_directly(f))
     }
 
-    pub fn map_defs(
+    pub fn map_def(
         mut self,
         f: impl Fn(DefinitionShape) -> Result<DefinitionShape>,
     ) -> Result<Self> {

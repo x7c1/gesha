@@ -41,7 +41,7 @@ impl Transformer<'_> {
             },
             Mod(shape) => {
                 let mod_path = self.mod_path.clone().add(shape.name.clone());
-                let next = shape.map_defs(|x| self.resolve_in_mod(mod_path.clone(), x))?;
+                let next = shape.map_def(|x| self.resolve_in_mod(mod_path.clone(), x))?;
                 next.into()
             }
             Enum(shape) => {

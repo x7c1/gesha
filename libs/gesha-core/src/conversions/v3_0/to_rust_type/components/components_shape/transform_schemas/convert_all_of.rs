@@ -33,7 +33,7 @@ impl Transformer {
                 Ok(next.into())
             }
             Mod(shape) => {
-                let shape = shape.map_defs(|x| self.shape_all_of(x))?;
+                let shape = shape.map_def(|x| self.shape_all_of(x))?;
                 Ok(Mod(shape))
             }
             _ => {
