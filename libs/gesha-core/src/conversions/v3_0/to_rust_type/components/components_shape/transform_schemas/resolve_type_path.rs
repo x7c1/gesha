@@ -1,6 +1,6 @@
 use crate::broken;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    DefinitionShape, FieldShape, Optionality, TypePath, TypeShape,
+    DefinitionShape, EnumCaseShape, FieldShape, Optionality, TypePath, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
@@ -44,9 +44,9 @@ impl Transformer<'_> {
                 let next = shape.map_defs(|x| self.resolve_in_mod(mod_path.clone(), x))?;
                 next.into()
             }
-            Enum(_) => {
-                // nop
-                def
+            Enum(shape) => {
+                let next = shape.map_type(|x| self.transform_field_type(x))?;
+                next.into()
             }
             AllOf(_) | OneOf(_) => Err(broken!(def))?,
         };

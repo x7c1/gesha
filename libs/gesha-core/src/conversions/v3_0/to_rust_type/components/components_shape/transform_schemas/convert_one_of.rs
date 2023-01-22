@@ -1,6 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::DefinitionShape::{Mod, OneOf};
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    DefinitionShape, EnumShape, OneOfItemShape, OneOfShape,
+    DefinitionShape, EnumShape, EnumVariantShape, OneOfItemShape, OneOfShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Error::ReferenceObjectNotFound;
@@ -60,15 +60,14 @@ impl Transformer {
         })
     }
 
-    fn to_variant(&self, item: OneOfItemShape) -> Result<EnumVariant> {
+    fn to_variant(&self, item: OneOfItemShape) -> Result<EnumVariantShape> {
         let name = self
             .snapshot
             .schemas
             .find_type_name(&item.target)
-            .ok_or_else(|| ReferenceObjectNotFound(item.target.into()))
+            .ok_or_else(|| ReferenceObjectNotFound(item.target.clone().into()))
             .map(EnumVariantName::new)?;
 
-        let data_type = DataType::Custom(name.to_string());
-        Ok(EnumVariant::tuple(name, vec![data_type], vec![]))
+        Ok(EnumVariantShape::tuple(name, vec![item.target], vec![]))
     }
 }
