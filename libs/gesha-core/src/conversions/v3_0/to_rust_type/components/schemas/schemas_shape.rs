@@ -160,6 +160,6 @@ impl Shaper {
     }
 
     fn create_type_header(&self) -> TypeHeaderShape {
-        TypeHeaderShape::new(self.name.clone(), &self.object)
+        TypeHeaderShape::new(self.name.clone(), &self.object, vec![])
     }
 }

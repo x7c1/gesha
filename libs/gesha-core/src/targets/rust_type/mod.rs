@@ -31,6 +31,9 @@ pub use modules::Modules;
 mod request_body_def;
 pub use request_body_def::{MediaTypeVariant, MediaTypeVariants, RequestBodyDef};
 
+mod serde_attribute;
+pub use serde_attribute::SerdeAttribute;
+
 mod struct_field;
 pub use struct_field::{StructField, StructFieldAttribute};
 

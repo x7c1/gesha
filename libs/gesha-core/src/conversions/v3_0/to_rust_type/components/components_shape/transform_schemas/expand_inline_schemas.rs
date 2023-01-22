@@ -100,7 +100,7 @@ fn expand_field(
         return Ok((field, vec![]));
     };
     let type_name = field.name.to_upper_camel_case();
-    let header = TypeHeaderShape::new(type_name.clone(), &object);
+    let header = TypeHeaderShape::new(type_name.clone(), &object, vec![]);
     let defs = if let Some(cases) = object.all_of.as_ref() {
         expand_all_of_fields(
             mod_path.clone(),

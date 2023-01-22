@@ -1,4 +1,4 @@
-use crate::targets::rust_type::{DocComments, TypeHeader};
+use crate::targets::rust_type::{DocComments, SerdeAttribute, TypeHeader};
 use openapi_types::v3_0::{ComponentName, SchemaObject};
 
 #[derive(Clone, Debug)]
@@ -6,20 +6,27 @@ pub struct TypeHeaderShape {
     pub name: ComponentName,
     pub doc_comments: DocComments,
     pub is_nullable: bool,
+    pub serde_attrs: Vec<SerdeAttribute>,
     _hide_default_constructor: bool,
 }
 
 impl TypeHeaderShape {
-    pub fn new(name: ComponentName, object: &SchemaObject) -> Self {
+    pub fn new(
+        name: ComponentName,
+        object: &SchemaObject,
+        serde_attrs: Vec<SerdeAttribute>,
+    ) -> Self {
         Self {
             name,
             doc_comments: to_doc_comments(object.title.as_deref(), object.description.as_deref()),
             is_nullable: object.nullable.unwrap_or(false),
+            serde_attrs,
             _hide_default_constructor: true,
         }
     }
+
     pub fn define(self) -> TypeHeader {
-        TypeHeader::new(self.name, self.doc_comments)
+        TypeHeader::new(self.name, self.doc_comments, self.serde_attrs)
     }
 }
 

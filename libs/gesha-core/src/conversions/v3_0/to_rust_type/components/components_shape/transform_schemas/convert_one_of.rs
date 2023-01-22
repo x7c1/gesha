@@ -2,7 +2,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::DefinitionShape
 use crate::conversions::v3_0::to_rust_type::components::schemas::{DefinitionShape, EnumShape};
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
-use crate::targets::rust_type::{DataType, EnumVariant, EnumVariantName};
+use crate::targets::rust_type::{DataType, EnumVariant, EnumVariantName, SerdeAttribute};
 
 pub fn convert_one_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let transformer = Transformer {
@@ -26,7 +26,7 @@ impl Transformer {
     #[allow(clippy::only_used_in_recursion)]
     fn shape_one_of(&self, def: DefinitionShape) -> Result<DefinitionShape> {
         match def {
-            OneOf(shape) => {
+            OneOf(mut shape) => {
                 let variants = shape
                     .items
                     .into_iter()
@@ -43,6 +43,7 @@ impl Transformer {
                     })
                     .collect();
 
+                shape.header.serde_attrs.push(SerdeAttribute::Untagged);
                 let next = EnumShape {
                     header: shape.header,
                     variants,

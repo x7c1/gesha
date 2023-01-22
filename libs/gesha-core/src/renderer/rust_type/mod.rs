@@ -17,7 +17,7 @@ use crate::renderer::Renderer;
 use crate::renderer::Result;
 use crate::targets::rust_type::{
     DataType, Definition, DeriveAttribute, Imports, ModDef, Modules, NewTypeDef, PresetDef,
-    StructDef, StructField, StructFieldAttribute, TypeHeader,
+    SerdeAttribute, StructDef, StructField, StructFieldAttribute, TypeHeader,
 };
 use std::io::Write;
 
@@ -73,6 +73,7 @@ fn render_header<W: Write>(mut write: W, x: &TypeHeader) -> Result<()> {
     render! { write =>
         echo > "{comments}", comments = x.doc_comments;
         call > render_derive_attrs => &x.derive_attrs;
+        call > render_serde_attrs => &x.serde_attrs;
     }
     Ok(())
 }
@@ -90,6 +91,17 @@ fn render_struct<W: Write>(mut write: W, x: StructDef) -> Result<()> {
 fn render_derive_attrs<W: Write>(mut write: W, attrs: &[DeriveAttribute]) -> Result<()> {
     render! { write =>
         echo > "#[derive({items})]", items = attrs.join(",");
+        echo > "\n";
+    };
+    Ok(())
+}
+
+fn render_serde_attrs<W: Write>(mut write: W, attrs: &[SerdeAttribute]) -> Result<()> {
+    if attrs.is_empty() {
+        return Ok(());
+    }
+    render! { write =>
+        echo > "#[serde({items})]", items = attrs.join(",");
         echo > "\n";
     };
     Ok(())

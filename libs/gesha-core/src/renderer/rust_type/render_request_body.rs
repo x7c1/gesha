@@ -7,7 +7,6 @@ use std::io::Write;
 pub fn render_request_body<W: Write>(mut write: W, x: RequestBodyDef) -> Result<()> {
     render! { write =>
         call > render_header => &x.header;
-        echo > "#[serde(untagged)]\n";
         echo > "pub enum {name}", name = x.header.name;
         "{}" > render_enum_variants => x.variants.clone();
         echo > "\n\n";
