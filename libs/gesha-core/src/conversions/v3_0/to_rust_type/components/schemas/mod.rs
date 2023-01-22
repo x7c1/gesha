@@ -8,7 +8,7 @@ mod definition_shape;
 pub use definition_shape::DefinitionShape;
 
 mod enum_shape;
-pub use enum_shape::{EnumShape, EnumVariantShape, EnumCaseShape};
+pub use enum_shape::{EnumCaseShape, EnumShape, EnumVariantShape};
 
 mod field_shape;
 pub use field_shape::FieldShape;

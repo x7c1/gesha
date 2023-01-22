@@ -5,7 +5,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Error::ReferenceObjectNotFound;
 use crate::conversions::Result;
-use crate::targets::rust_type::{DataType, EnumVariant, EnumVariantName, SerdeAttribute};
+use crate::targets::rust_type::{EnumVariantName, SerdeAttribute};
 use SerdeAttribute::Untagged;
 
 pub fn convert_one_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {

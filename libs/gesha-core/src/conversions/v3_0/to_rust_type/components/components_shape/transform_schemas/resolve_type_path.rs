@@ -1,6 +1,6 @@
 use crate::broken;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    DefinitionShape, EnumCaseShape, FieldShape, Optionality, TypePath, TypeShape,
+    DefinitionShape, FieldShape, Optionality, TypePath, TypeShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
