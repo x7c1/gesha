@@ -1,0 +1,38 @@
+schemas:
+  Sample1:
+    type: object
+    required:
+      - id
+      - sample1_nested1
+    properties:
+      id:
+        type: integer
+      sample1_nested1:
+        type: object
+        required:
+          - sample1_nested2
+        properties:
+          sample1_nested2:
+            oneOf:
+              - $ref: '#/components/schemas/Foo'
+              - $ref: '#/components/schemas/Bar'
+
+  Foo:
+    type: object
+    required:
+      - foo1
+    properties:
+      foo1:
+        type: string
+      foo2:
+        type: number
+
+  Bar:
+    type: object
+    required:
+      - bar1
+    properties:
+      bar1:
+        type: string
+      bar2:
+        type: number

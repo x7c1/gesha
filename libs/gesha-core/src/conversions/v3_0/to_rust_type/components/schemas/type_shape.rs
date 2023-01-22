@@ -51,6 +51,7 @@ impl TypeShape {
             .data_type
             .clone()
             .or_else(|| object.all_of.is_some().then_some(OpenApiDataType::Object))
+            .or_else(|| object.one_of.is_some().then_some(OpenApiDataType::Object))
             .unwrap_or_else(|| unimplemented!("type unspecified: {:#?}", object));
 
         let to_type = TypeFactory {
