@@ -3,8 +3,10 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
     DefinitionShape, EnumShape, OneOfShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
+use crate::conversions::Error::ReferenceObjectNotFound;
 use crate::conversions::Result;
 use crate::targets::rust_type::{DataType, EnumVariant, EnumVariantName, SerdeAttribute};
+use SerdeAttribute::Untagged;
 
 pub fn convert_one_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let transformer = Transformer {
@@ -28,7 +30,7 @@ impl Transformer {
     fn shape_one_of(&self, def: DefinitionShape) -> Result<DefinitionShape> {
         match def {
             OneOf(shape) => {
-                let shape = self.convert_to_enum(shape);
+                let shape = self.convert_to_enum(shape)?;
                 Ok(shape.into())
             }
             Mod(shape) => {
@@ -42,7 +44,7 @@ impl Transformer {
         }
     }
 
-    fn convert_to_enum(&self, mut shape: OneOfShape) -> EnumShape {
+    fn convert_to_enum(&self, mut shape: OneOfShape) -> Result<EnumShape> {
         let variants = shape
             .items
             .into_iter()
@@ -51,18 +53,19 @@ impl Transformer {
                     .snapshot
                     .schemas
                     .find_type_name(&item.target)
-                    .map(EnumVariantName::new)
-                    .unwrap();
+                    .ok_or_else(|| ReferenceObjectNotFound(item.target.into()))
+                    .map(EnumVariantName::new)?;
 
                 let data_type = DataType::Custom(name.to_string());
-                EnumVariant::tuple(name, vec![data_type], vec![])
+                Ok(EnumVariant::tuple(name, vec![data_type], vec![]))
             })
-            .collect();
+            .collect::<Result<Vec<_>>>()?;
 
-        shape.header.serde_attrs.push(SerdeAttribute::Untagged);
-        EnumShape {
+        shape.header.serde_attrs.push(Untagged);
+
+        Ok(EnumShape {
             header: shape.header,
             variants,
-        }
+        })
     }
 }

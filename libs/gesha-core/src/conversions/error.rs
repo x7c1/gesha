@@ -9,6 +9,7 @@ pub enum Error {
     // inherited errors
     Yaml(yaml::Error),
 
+    // client errors
     ReferenceObjectNotFound(String),
 
     // module errors
