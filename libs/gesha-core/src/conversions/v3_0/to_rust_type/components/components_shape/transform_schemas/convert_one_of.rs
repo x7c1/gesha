@@ -1,6 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::DefinitionShape::{Mod, OneOf};
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    DefinitionShape, EnumShape, OneOfShape,
+    DefinitionShape, EnumShape, OneOfItemShape, OneOfShape,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Error::ReferenceObjectNotFound;
@@ -48,24 +48,27 @@ impl Transformer {
         let variants = shape
             .items
             .into_iter()
-            .map(|item| {
-                let name = self
-                    .snapshot
-                    .schemas
-                    .find_type_name(&item.target)
-                    .ok_or_else(|| ReferenceObjectNotFound(item.target.into()))
-                    .map(EnumVariantName::new)?;
-
-                let data_type = DataType::Custom(name.to_string());
-                Ok(EnumVariant::tuple(name, vec![data_type], vec![]))
-            })
+            .map(|item| self.to_variant(item))
             .collect::<Result<Vec<_>>>()?;
 
-        shape.header.serde_attrs.push(Untagged);
-
         Ok(EnumShape {
-            header: shape.header,
+            header: {
+                shape.header.serde_attrs.push(Untagged);
+                shape.header
+            },
             variants,
         })
+    }
+
+    fn to_variant(&self, item: OneOfItemShape) -> Result<EnumVariant> {
+        let name = self
+            .snapshot
+            .schemas
+            .find_type_name(&item.target)
+            .ok_or_else(|| ReferenceObjectNotFound(item.target.into()))
+            .map(EnumVariantName::new)?;
+
+        let data_type = DataType::Custom(name.to_string());
+        Ok(EnumVariant::tuple(name, vec![data_type], vec![]))
     }
 }
