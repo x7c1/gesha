@@ -1,13 +1,12 @@
 use crate::render;
-use crate::renderer::rust_type::{render_data_types, render_derive_attrs};
+use crate::renderer::rust_type::{render_data_types, render_header};
 use crate::renderer::Result;
 use crate::targets::rust_type::{EnumCase, EnumDef, EnumVariant, EnumVariantAttribute};
 use std::io::Write;
 
 pub fn render_enum<W: Write>(mut write: W, x: EnumDef) -> Result<()> {
     render! { write =>
-        echo > "{comments}", comments = x.header.doc_comments;
-        call > render_derive_attrs => &x.derive_attrs;
+        call > render_header => &x.header;
         echo > "pub enum {name}", name = x.header.name;
         "{}" > render_enum_variants => x.variants;
         echo > "\n\n";

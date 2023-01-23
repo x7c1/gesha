@@ -1,11 +1,13 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape::{Expanded, Inline};
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, ModShape, StructShape,
-    TypeHeaderShape, TypePath,
+    AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, OneOfItemShape,
+    OneOfShape, StructShape, TypeHeaderShape, TypePath,
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
+use crate::misc::TryMap;
 use std::ops::Not;
+use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn expand_inline_schemas(mut shape: ComponentsShape) -> Result<ComponentsShape> {
     let defs = shape.schemas.root.defs;
@@ -21,13 +23,18 @@ pub fn expand_inline_schemas(mut shape: ComponentsShape) -> Result<ComponentsSha
     Ok(shape)
 }
 
-fn expand(shape: DefinitionShape) -> Result<Vec<DefinitionShape>> {
-    match shape {
-        DefinitionShape::Struct(x) => expand_struct_fields(TypePath::new(), x),
-        DefinitionShape::AllOf(x) => expand_all_of_fields(TypePath::new(), x),
-        DefinitionShape::NewType { .. }
-        | DefinitionShape::Enum { .. }
-        | DefinitionShape::Mod { .. } => Ok(vec![shape]),
+fn expand(def: DefinitionShape) -> Result<Vec<DefinitionShape>> {
+    match def {
+        Struct(x) => expand_struct_fields(TypePath::new(), x),
+        AllOf(x) => expand_all_of_fields(TypePath::new(), x),
+        OneOf(_) => {
+            // inline definition in oneOf is not supported
+            Ok(vec![def])
+        }
+        NewType { .. } | Enum(_) | Mod(_) => {
+            // nop
+            Ok(vec![def])
+        }
     }
 }
 
@@ -37,9 +44,7 @@ fn expand_struct_fields(path: TypePath, mut shape: StructShape) -> Result<Vec<De
     let path = path.add(mod_name.clone());
     let expanded = shape
         .fields
-        .into_iter()
-        .map(|field| expand_field(path.clone(), field))
-        .collect::<Result<Vec<_>>>()?;
+        .try_map(|field| expand_field(path.clone(), field))?;
 
     let (fields, defs) = collect(expanded);
     shape.fields = fields;
@@ -58,9 +63,7 @@ fn expand_all_of_fields(path: TypePath, mut shape: AllOfShape) -> Result<Vec<Def
     let path = path.add(mod_name.clone());
     let expanded = shape
         .items
-        .into_iter()
-        .map(|x| x.expand_fields(expand_fields_from(&path)))
-        .collect::<Result<Vec<_>>>()?;
+        .try_map(|x| x.expand_fields(expand_fields_from(&path)))?;
 
     let (items, defs) = collect(expanded);
     shape.items = items;
@@ -77,11 +80,7 @@ fn expand_fields_from(
     path: &TypePath,
 ) -> impl Fn(Vec<FieldShape>) -> Result<(Vec<FieldShape>, Vec<DefinitionShape>)> + '_ {
     |fields| {
-        let expanded = fields
-            .into_iter()
-            .map(|field| expand_field(path.clone(), field))
-            .collect::<Result<Vec<_>>>()?;
-
+        let expanded = fields.try_map(|field| expand_field(path.clone(), field))?;
         Ok(collect(expanded))
     }
 }
@@ -94,7 +93,7 @@ fn expand_field(
         return Ok((field, vec![]));
     };
     let type_name = field.name.to_upper_camel_case();
-    let header = TypeHeaderShape::new(type_name.clone(), &object);
+    let header = TypeHeaderShape::new(type_name.clone(), &object, vec![]);
     let defs = if let Some(cases) = object.all_of.as_ref() {
         expand_all_of_fields(
             mod_path.clone(),
@@ -104,17 +103,19 @@ fn expand_field(
                 required: object.required,
             },
         )?
-    } else if let Some(values) = object.enum_values.as_ref() {
-        vec![DefinitionShape::Enum {
+    } else if let Some(cases) = object.one_of.as_ref() {
+        vec![OneOf(OneOfShape {
             header,
-            values: values.clone(),
-        }]
+            items: OneOfItemShape::from_schema_cases(cases.clone())?,
+        })]
+    } else if let Some(values) = object.enum_values.as_ref() {
+        vec![Enum(EnumShape::new(header, values.clone()))]
     } else {
         expand_struct_fields(
             mod_path.clone(),
             StructShape {
                 header,
-                fields: FieldShape::from_object_ref(&object)?,
+                fields: FieldShape::from_object(object)?,
             },
         )?
     };

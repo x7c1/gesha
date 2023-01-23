@@ -4,6 +4,8 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
 };
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
+use crate::misc::TryMap;
+use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let transformer = Transformer {
@@ -12,12 +14,7 @@ pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape>
         mod_path: TypePath::new(),
     };
     let defs = shapes.schemas.root.defs;
-    let defs = defs
-        .into_iter()
-        .map(|x| transformer.apply(x))
-        .collect::<Result<Vec<_>>>()?;
-
-    shapes.schemas.root.defs = defs;
+    shapes.schemas.root.defs = defs.try_map(|x| transformer.apply(x))?;
     Ok(shapes)
 }
 
@@ -29,26 +26,27 @@ struct Transformer<'a> {
 
 impl Transformer<'_> {
     fn apply(&self, def: DefinitionShape) -> Result<DefinitionShape> {
-        match def {
-            DefinitionShape::Struct(mut shape) => {
+        let def = match def {
+            Struct(mut shape) => {
                 shape.fields = self.transform_fields(shape.fields)?;
-                Ok(shape.into())
+                shape.into()
             }
-            DefinitionShape::NewType { header, type_shape } => {
-                let next = DefinitionShape::NewType {
-                    header,
-                    type_shape: self.transform_field_type(type_shape)?,
-                };
-                Ok(next)
-            }
-            DefinitionShape::Enum { .. } => Ok(def),
-            DefinitionShape::Mod(shape) => {
+            NewType { header, type_shape } => NewType {
+                header,
+                type_shape: self.transform_field_type(type_shape)?,
+            },
+            Mod(shape) => {
                 let mod_path = self.mod_path.clone().add(shape.name.clone());
-                let next = shape.map_defs(|x| self.resolve_in_mod(mod_path.clone(), x))?;
-                Ok(next.into())
+                let next = shape.map_def(|x| self.resolve_in_mod(mod_path.clone(), x))?;
+                next.into()
             }
-            DefinitionShape::AllOf { .. } => Err(broken!(def)),
-        }
+            Enum(shape) => {
+                let next = shape.map_type(|x| self.transform_field_type(x))?;
+                next.into()
+            }
+            AllOf(_) | OneOf(_) => Err(broken!(def))?,
+        };
+        Ok(def)
     }
 
     fn resolve_in_mod(

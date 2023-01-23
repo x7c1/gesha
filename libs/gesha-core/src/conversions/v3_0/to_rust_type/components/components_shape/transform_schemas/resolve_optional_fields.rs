@@ -1,38 +1,35 @@
 use crate::broken;
-use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    DefinitionShape, FieldShape, StructShape,
-};
+use crate::conversions::v3_0::to_rust_type::components::schemas::{DefinitionShape, FieldShape};
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
-use DefinitionShape::{AllOf, Enum, Mod, NewType, Struct};
+use crate::misc::TryMap;
+use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn resolve_optionality(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let defs = shapes.schemas.root.defs;
-    let defs = defs.into_iter().map(resolve).collect::<Result<Vec<_>>>()?;
+    let defs = defs.try_map(resolve)?;
     shapes.schemas.root.defs = defs;
     Ok(shapes)
 }
 
-fn resolve(shape: DefinitionShape) -> Result<DefinitionShape> {
-    match shape {
-        Struct(StructShape { header, fields }) => {
-            let next = StructShape {
-                header,
-                fields: transform_fields(fields)?,
-            };
-            Ok(next.into())
+fn resolve(def: DefinitionShape) -> Result<DefinitionShape> {
+    let def = match def {
+        Struct(mut shape) => {
+            shape.fields = transform_fields(shape.fields)?;
+            shape.into()
         }
-        NewType { header, type_shape } => {
-            let next = NewType {
-                header,
-                type_shape: type_shape.resolve_optionality()?,
-            };
-            Ok(next)
+        NewType { header, type_shape } => NewType {
+            header,
+            type_shape: type_shape.resolve_optionality()?,
+        },
+        Enum(_) => {
+            // nop
+            def
         }
-        Enum { .. } => Ok(shape),
-        Mod(shape) => Ok(Mod(shape.map_defs(resolve)?)),
-        AllOf { .. } => Err(broken!(shape)),
-    }
+        Mod(shape) => Mod(shape.map_def(resolve)?),
+        AllOf(_) | OneOf(_) => Err(broken!(def))?,
+    };
+    Ok(def)
 }
 
 fn transform_fields(shapes: Vec<FieldShape>) -> Result<Vec<FieldShape>> {

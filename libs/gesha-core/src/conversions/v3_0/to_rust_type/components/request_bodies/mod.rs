@@ -10,7 +10,8 @@ pub use request_bodies_shape::RequestBodiesShape;
 use crate::broken;
 use crate::conversions::Result;
 use crate::targets::rust_type::{
-    Definition, DocComments, EnumVariantName, MediaTypeVariant, RequestBodyDef, TypeHeader,
+    Definition, DocComments, EnumVariantName, MediaTypeVariant, RequestBodyDef, SerdeAttribute,
+    TypeHeader,
 };
 use openapi_types::v3_0::{ComponentName, SchemaCase};
 
@@ -33,7 +34,11 @@ impl DefinitionShape {
     }
 
     pub fn define(self) -> Result<Definition> {
-        let header = TypeHeader::new(self.name.to_string(), self.doc_comments);
+        let header = TypeHeader::new(
+            self.name.to_string(),
+            self.doc_comments,
+            vec![SerdeAttribute::Untagged],
+        );
         let variants = self
             .contents
             .into_iter()

@@ -7,11 +7,20 @@ pub use all_of_shape::AllOfShape;
 mod definition_shape;
 pub use definition_shape::DefinitionShape;
 
+mod enum_shape;
+pub use enum_shape::{EnumCaseShape, EnumShape, EnumVariantShape};
+
 mod field_shape;
 pub use field_shape::FieldShape;
 
 mod mod_shape;
 pub use mod_shape::ModShape;
+
+mod one_of_shape;
+pub use one_of_shape::OneOfShape;
+
+mod one_of_item_shape;
+pub use one_of_item_shape::OneOfItemShape;
 
 mod optionality;
 pub use optionality::Optionality;

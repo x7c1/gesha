@@ -3,7 +3,7 @@ pub use component_name::ComponentName;
 
 mod components_object;
 pub use components_object::{
-    AllOf, ArrayItems, ComponentsObject, EnumValues, RequiredSchemaFields, SchemaCase,
+    AllOf, ArrayItems, ComponentsObject, EnumValues, OneOf, RequiredSchemaFields, SchemaCase,
     SchemaObject, SchemaProperties, SchemasObject,
 };
 

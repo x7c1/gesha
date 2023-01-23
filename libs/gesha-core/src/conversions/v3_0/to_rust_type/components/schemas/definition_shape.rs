@@ -1,27 +1,22 @@
 use crate::broken;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{
-    AllOfShape, FieldShape, ModShape, Ref, StructShape, TypeHeaderShape, TypeShape,
+    AllOfShape, EnumShape, FieldShape, ModShape, OneOfShape, Ref, StructShape, TypeHeaderShape,
+    TypeShape,
 };
 use crate::conversions::Result;
-use crate::targets::rust_type::{
-    Definition, EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName, NewTypeDef, StructDef,
-    StructField,
-};
-use openapi_types::v3_0::EnumValues;
+use crate::targets::rust_type::{Definition, NewTypeDef, StructDef, StructField};
 
 #[derive(Clone, Debug)]
 pub enum DefinitionShape {
     AllOf(AllOfShape),
-    Struct(StructShape),
+    Enum(EnumShape),
+    Mod(ModShape),
     NewType {
         header: TypeHeaderShape,
         type_shape: TypeShape,
     },
-    Enum {
-        header: TypeHeaderShape,
-        values: EnumValues,
-    },
-    Mod(ModShape),
+    OneOf(OneOfShape),
+    Struct(StructShape),
 }
 
 impl DefinitionShape {
@@ -30,7 +25,8 @@ impl DefinitionShape {
             Self::AllOf(shape) => Some(&shape.header),
             Self::Struct(shape) => Some(&shape.header),
             Self::NewType { header, .. } => Some(header),
-            Self::Enum { header, .. } => Some(header),
+            Self::Enum(shape) => Some(&shape.header),
+            Self::OneOf(shape) => Some(&shape.header),
             Self::Mod(_) => None,
         }
     }
@@ -42,6 +38,7 @@ impl DefinitionShape {
             Self::NewType { type_shape, .. } => f(type_shape),
             Self::Enum { .. } => false,
             Self::Mod(x) => x.any_type(f),
+            Self::OneOf(x) => x.any_type(f),
         }
     }
 
@@ -50,6 +47,7 @@ impl DefinitionShape {
             Self::AllOf(x) => x.any_type_directly(f),
             Self::Struct(x) => x.any_type_directly(f),
             Self::NewType { type_shape, .. } => f(type_shape),
+            Self::OneOf(x) => x.any_type_directly(f),
             Self::Enum { .. } => false,
             Self::Mod(_) => false,
         }
@@ -59,6 +57,7 @@ impl DefinitionShape {
         match self {
             Self::Struct(shape) => shape.fields.clone(),
             Self::AllOf(shape) => shape.expand_fields(resolve_ref),
+            Self::OneOf(shape) => shape.expand_fields(resolve_ref),
             Self::NewType { .. } | Self::Enum { .. } | Self::Mod(_) => vec![],
         }
     }
@@ -73,13 +72,9 @@ impl DefinitionShape {
                 let def = NewTypeDef::new(header.define(), type_shape.define()?);
                 Ok(def.into())
             }
-            Self::Enum { header, values } => {
-                let variants = values.into_iter().map(to_enum_variant).collect();
-                let def = EnumDef::new(header.define(), variants);
-                Ok(def.into())
-            }
+            Self::Enum(x) => x.define().map(|x| x.into()),
             Self::Mod(x) => x.define().map(|x| x.into()),
-            Self::AllOf { .. } => Err(broken!(self)),
+            Self::AllOf(_) | Self::OneOf(_) => Err(broken!(self)),
         }
     }
 }
@@ -94,15 +89,4 @@ impl TryFrom<DefinitionShape> for Definition {
 
 fn define_fields(shapes: Vec<FieldShape>) -> Result<Vec<StructField>> {
     shapes.into_iter().map(|field| field.define()).collect()
-}
-
-fn to_enum_variant(original: String) -> EnumVariant {
-    let name = EnumVariantName::new(original.as_str());
-    let mut attrs = vec![];
-    if name.as_str() != original {
-        attrs.push(EnumVariantAttribute::new(format!(
-            r#"serde(rename="{original}")"#
-        )))
-    }
-    EnumVariant::unit(name, attrs)
 }

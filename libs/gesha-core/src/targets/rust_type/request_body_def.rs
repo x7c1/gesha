@@ -1,9 +1,8 @@
-use crate::targets::rust_type::{Definition, DeriveAttribute, EnumVariant, TypeHeader};
+use crate::targets::rust_type::{Definition, EnumVariant, TypeHeader};
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct RequestBodyDef {
     pub header: TypeHeader,
-    pub derive_attrs: Vec<DeriveAttribute>,
     pub variants: MediaTypeVariants,
     _hide_default_constructor: bool,
 }
@@ -12,7 +11,6 @@ impl RequestBodyDef {
     pub fn new(header: TypeHeader, variants: Vec<MediaTypeVariant>) -> Self {
         Self {
             header,
-            derive_attrs: DeriveAttribute::all(),
             variants: MediaTypeVariants(variants),
             _hide_default_constructor: true,
         }

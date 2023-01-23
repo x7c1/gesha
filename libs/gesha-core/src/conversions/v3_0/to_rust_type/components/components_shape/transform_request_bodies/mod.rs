@@ -4,6 +4,7 @@ use crate::conversions::v3_0::to_rust_type::components::request_bodies::{
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Error::ReferenceObjectNotFound;
 use crate::conversions::Result;
+use crate::misc::TryMap;
 use crate::targets::rust_type::{DataType, EnumVariant, EnumVariantName, MediaTypeVariant};
 use openapi_types::v3_0::SchemaCase;
 
@@ -12,11 +13,7 @@ pub fn transform_request_bodies(mut shape: ComponentsShape) -> Result<Components
         snapshot: shape.clone(),
     };
     let defs = shape.request_bodies.root.defs;
-    let request_bodies = defs
-        .into_iter()
-        .map(|x| transformer.run(x))
-        .collect::<Result<Vec<_>>>()?;
-
+    let request_bodies = defs.try_map(|x| transformer.run(x))?;
     shape.request_bodies.root.defs = request_bodies;
     Ok(shape)
 }
@@ -29,9 +26,7 @@ impl Transformer {
     fn run(&self, mut shape: DefinitionShape) -> Result<DefinitionShape> {
         let defined = shape
             .contents
-            .into_iter()
-            .map(|x| self.content_shape_to_variant(x))
-            .collect::<Result<Vec<ContentShape>>>()?;
+            .try_map(|x| self.content_shape_to_variant(x))?;
 
         shape.contents = defined;
         Ok(shape)

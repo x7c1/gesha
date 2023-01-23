@@ -3,7 +3,7 @@ use crate::conversions::{reify_entry, reify_value, Result};
 use crate::yaml::{YamlArray, YamlMap};
 use indexmap::IndexSet;
 use openapi_types::v3_0::{
-    AllOf, ArrayItems, ComponentName, EnumValues, FormatModifier, OpenApiDataType, ReferenceObject,
+    ArrayItems, ComponentName, EnumValues, FormatModifier, OpenApiDataType, ReferenceObject,
     RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
 };
 
@@ -55,7 +55,12 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
 
     let all_of = map
         .remove_if_exists::<YamlArray>("allOf")?
-        .map(to_all_of)
+        .map(to_schema_cases)
+        .transpose()?;
+
+    let one_of = map
+        .remove_if_exists::<YamlArray>("oneOf")?
+        .map(to_schema_cases)
         .transpose()?;
 
     Ok(SchemaObject {
@@ -69,6 +74,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         items,
         enum_values,
         all_of,
+        one_of,
     })
 }
 
@@ -107,7 +113,7 @@ fn to_enum_values(array: YamlArray) -> Result<EnumValues> {
     array.into_iter().map(reify_value).collect()
 }
 
-fn to_all_of(array: YamlArray) -> Result<AllOf> {
+fn to_schema_cases(array: YamlArray) -> Result<Vec<SchemaCase>> {
     array
         .into_iter()
         .map(reify_value)
