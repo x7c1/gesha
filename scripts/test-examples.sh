@@ -9,7 +9,6 @@ main () {
 
   cargo clippy -- \
     --no-deps \
-    --allow clippy::derive_partial_eq_without_eq \
     --deny warnings
 
   cargo test
