@@ -14,7 +14,7 @@ schemas:
         properties:
           sample1_nested2:
             oneOf:
-              - $ref: '#/components/schemas/Foo'
+              - $ref: '#/components/schemas/Foos'
               - $ref: '#/components/schemas/Bar'
 
   Foo:

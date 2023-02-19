@@ -7,8 +7,13 @@ edition = "2021"
 
 [dependencies]
 openapi-types = { path = "../../libs/openapi-types" }
-yaml-rust = "0.4.5"
-indexmap = "1.9.2"
-similar = "2.2.1"
+tracing = { workspace = true }
+
 console = "0.15.5"
+futures = "0.3"
 heck = "0.4.0"
+indexmap = "1.9.2"
+opentelemetry = { version = "0.18.0", default-features = false, features = ["trace", "rt-tokio", "metrics"] }
+similar = "2.2.1"
+tokio = { version = "1.25.0", features = ["full"] }
+yaml-rust = "0.4.5"

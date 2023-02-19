@@ -6,6 +6,7 @@ use gesha_core::gateway::testing::v3_0::{ComponentCase, ComponentCases};
 use gesha_core::gateway::testing::{test_rust_type, test_rust_types, TestCase};
 use gesha_core::targets::rust_type::Modules;
 use openapi_types::v3_0;
+use tracing::instrument;
 
 #[derive(clap::Args, Debug)]
 pub struct Params {
@@ -15,13 +16,17 @@ pub struct Params {
 
 type SupportedTestCase = TestCase<(v3_0::ComponentsObject, Modules)>;
 
-pub fn run(params: Params) -> gateway::Result<()> {
+#[instrument]
+pub async fn run(params: Params) -> gateway::Result<()> {
     if let Some(schema) = params.schema {
         let case = ComponentCase::from_path(schema)?;
-        test_rust_type(case)?;
+        test_rust_type(case).await?;
         return Ok(());
     }
-    all_cases().into_iter().try_for_each(test_rust_types)
+    for case in all_cases() {
+        test_rust_types(case).await?
+    }
+    Ok(())
 }
 
 fn new_schemas_cases() -> ComponentCases {

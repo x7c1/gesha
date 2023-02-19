@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use crate::gateway::testing::{new_writer, TestCase};
 use crate::renderer::Renderer;
 use crate::{gateway, render};
@@ -7,12 +8,14 @@ use std::path::PathBuf;
 
 pub fn generate_module_file<A, P>(path: P, cases: Vec<TestCase<A>>) -> gateway::Result<()>
 where
-    P: Into<PathBuf>,
+    A: Debug,
+    P: Into<PathBuf> + Debug,
 {
     let writer = new_writer(path);
     writer.create_file(ModuleFile { cases })
 }
 
+#[derive(Debug)]
 struct ModuleFile<A> {
     cases: Vec<TestCase<A>>,
 }

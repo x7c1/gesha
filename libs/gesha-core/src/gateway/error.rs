@@ -2,6 +2,7 @@ use crate::conversions::Error::TransformBroken;
 use crate::{conversions, renderer, yaml};
 use console::{Style, StyledObject};
 use std::path::PathBuf;
+use tracing::error;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
@@ -77,7 +78,7 @@ impl Error {
     }
     pub fn dump(&self) {
         let message = self.detail(ErrorTheme::Test);
-        println!("[failed] {}", message)
+        error!("[failed] {}", message)
     }
 }
 

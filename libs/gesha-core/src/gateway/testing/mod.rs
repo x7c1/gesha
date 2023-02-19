@@ -7,9 +7,12 @@ use crate::conversions::{ToOpenApi, ToRustType};
 use crate::gateway;
 use crate::gateway::{detect_diff, Reader, Writer};
 use crate::renderer::Renderer;
+
 use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::path::PathBuf;
+
+use tracing::{info, instrument, Instrument};
 
 #[derive(Debug)]
 pub struct TestCase<A> {
@@ -37,30 +40,44 @@ where
     A: Debug + ToOpenApi,
     B: Debug + ToRustType<A> + Renderer,
 {
-    println!("target> {:#?}", target);
+    info!("target> {:#?}", target);
 
     let reader = Reader::new::<A>();
     let rust_types: B = reader.open_rust_type(target.schema)?;
-    println!("rust_types> {:#?}", rust_types);
+    info!("rust_types> {:#?}", rust_types);
 
     let writer = new_writer(target.output);
     writer.create_file(rust_types)
 }
 
-pub fn test_rust_types<X, A, B>(targets: X) -> gateway::Result<()>
+#[instrument]
+pub async fn test_rust_types<X, A, B>(targets: X) -> gateway::Result<()>
 where
-    X: Into<Vec<TestCase<(A, B)>>>,
-    A: Debug + ToOpenApi,
-    B: Debug + ToRustType<A> + Renderer,
+    X: Into<Vec<TestCase<(A, B)>>> + Debug,
+    A: Debug + ToOpenApi + Send + 'static,
+    B: Debug + ToRustType<A> + Renderer + Send + 'static,
 {
-    targets.into().into_iter().try_for_each(test_rust_type)
+    let futures = targets
+        .into()
+        .into_iter()
+        .map(|x| tokio::spawn(test_rust_type(x).in_current_span()));
+
+    let ys = futures::future::join_all(futures).await;
+    match ys.into_iter().find(|x| x.is_err()) {
+        None => Ok(()),
+        Some(Ok(_)) => Ok(()),
+        Some(Err(e)) => {
+            todo!("{}", e)
+        }
+    }
 }
 
-pub fn test_rust_type<X, A, B>(target: X) -> gateway::Result<()>
+#[instrument]
+pub async fn test_rust_type<X, A, B>(target: X) -> gateway::Result<()>
 where
-    X: Into<TestCase<(A, B)>>,
-    A: Debug + ToOpenApi,
-    B: Debug + ToRustType<A> + Renderer,
+    X: Into<TestCase<(A, B)>> + Debug,
+    A: Debug + ToOpenApi + Send + 'static,
+    B: Debug + ToRustType<A> + Renderer + Send + 'static,
 {
     let target = target.into();
     generate_rust_type(target.clone())?;
@@ -69,8 +86,8 @@ where
 
 pub fn test_rust_type_to_overwrite<A, B>(target: TestCase<(A, B)>) -> gateway::Result<()>
 where
-    A: Debug + ToOpenApi,
-    B: Debug + ToRustType<A> + Renderer,
+    A: Debug + ToOpenApi + Send + 'static,
+    B: Debug + ToRustType<A> + Renderer + Send + 'static,
 {
     generate_rust_type(target.clone())?;
 

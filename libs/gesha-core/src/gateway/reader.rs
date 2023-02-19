@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use crate::conversions::ToOpenApi;
 use crate::conversions::ToRustType;
 use crate::gateway::Error::CannotReadFile;
@@ -6,7 +7,9 @@ use crate::yaml::{load_from_str, YamlMap};
 use std::fs;
 use std::marker::PhantomData;
 use std::path::Path;
+use tracing::instrument;
 
+#[derive(Debug)]
 pub struct Reader<A>(PhantomData<A>);
 
 impl Reader<()> {
@@ -17,11 +20,12 @@ impl Reader<()> {
 
 impl<A> Reader<A>
 where
-    A: ToOpenApi,
+    A: ToOpenApi + Debug,
 {
+    #[instrument]
     pub fn open_rust_type<P, B>(&self, path: P) -> Result<B>
     where
-        P: AsRef<Path>,
+        P: AsRef<Path> + Debug,
         B: ToRustType<A>,
     {
         let map = open_yaml_map(path)?;

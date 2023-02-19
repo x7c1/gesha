@@ -1,24 +1,36 @@
 mod generate;
 mod test;
+mod trace;
 
 use clap::Parser;
-use std::process::exit;
+use std::process::ExitCode;
+use tracing::info;
 use Subcommand::{Generate, Test, TestOverwrite};
 
-fn main() {
+#[tokio::main]
+async fn main() -> ExitCode {
+    trace::init();
+
     let args: Args = Args::parse();
-    println!("main> {:?}", args);
+    info!("main> {:?}", args);
 
     let result = match args.sub {
         Generate(x) => generate::run(x),
-        Test(x) => test::run(x),
+        Test(x) => test::run(x).await,
         TestOverwrite(x) => test::overwrite::run(x),
     };
-    result.unwrap_or_else(|cause| {
-        cause.dump();
-        exit(1);
-    });
-    println!("[done]");
+    let code = match result {
+        Ok(_) => {
+            info!("done");
+            ExitCode::SUCCESS
+        }
+        Err(cause) => {
+            cause.dump();
+            ExitCode::FAILURE
+        }
+    };
+    trace::shutdown();
+    code
 }
 
 #[derive(Parser, Debug)]
