@@ -2,6 +2,7 @@ use crate::conversions::Error::TransformBroken;
 use crate::{conversions, renderer, yaml};
 use console::{Style, StyledObject};
 use std::path::PathBuf;
+use tokio::task::JoinError;
 use tracing::error;
 
 pub type Result<A> = std::result::Result<A, Error>;
@@ -12,6 +13,9 @@ pub enum Error {
     Conversions(conversions::Error),
     Renderer(renderer::Error),
     Yaml(yaml::Error),
+
+    // thread errors
+    JoinError(JoinError),
 
     // module errors
     DiffDetected {
@@ -44,6 +48,7 @@ pub enum Error {
         path: PathBuf,
         detail: String,
     },
+    Errors(Vec<Self>),
     UnsupportedExampleLocation(String),
 }
 

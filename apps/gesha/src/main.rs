@@ -25,6 +25,7 @@ async fn main() -> ExitCode {
             ExitCode::SUCCESS
         }
         Err(cause) => {
+            println!("[failed] {:#?}", cause);
             cause.dump();
             ExitCode::FAILURE
         }

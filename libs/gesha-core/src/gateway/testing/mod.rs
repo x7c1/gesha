@@ -5,13 +5,12 @@ pub mod v3_0;
 
 use crate::conversions::{ToOpenApi, ToRustType};
 use crate::gateway;
-use crate::gateway::{detect_diff, Reader, Writer};
+use crate::gateway::{detect_diff, Error, Reader, Writer};
 use crate::renderer::Renderer;
-
+use futures::future::join_all;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::path::PathBuf;
-
 use tracing::{info, instrument, Instrument};
 
 #[derive(Debug)]
@@ -57,18 +56,22 @@ where
     A: ToOpenApi + Debug + Send + 'static,
     B: ToRustType<A> + Debug + Renderer + Send + 'static,
 {
-    let futures = targets
+    let run_tests = targets
         .into()
         .into_iter()
         .map(|x| tokio::spawn(test_rust_type(x).in_current_span()));
 
-    let ys = futures::future::join_all(futures).await;
-    match ys.into_iter().find(|x| x.is_err()) {
-        None => Ok(()),
-        Some(Ok(_)) => Ok(()),
-        Some(Err(e)) => {
-            todo!("{}", e)
-        }
+    let errors = join_all(run_tests)
+        .await
+        .into_iter()
+        .flatten()
+        .filter_map(|result| result.err())
+        .collect::<Vec<Error>>();
+
+    if errors.is_empty() {
+        Ok(())
+    } else {
+        Err(Error::Errors(errors))
     }
 }
 

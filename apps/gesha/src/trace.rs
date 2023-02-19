@@ -33,7 +33,7 @@ pub fn init() {
         .with(otel_trace_layer)
         .with(file_log_layer())
         // .with(otel_metrics_layer)
-        .with(tracing_subscriber::filter::LevelFilter::INFO)
+        .with(LevelFilter::INFO)
         .init();
 }
 
