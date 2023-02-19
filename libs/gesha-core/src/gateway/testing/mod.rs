@@ -54,8 +54,8 @@ where
 pub async fn test_rust_types<X, A, B>(targets: X) -> gateway::Result<()>
 where
     X: Into<Vec<TestCase<(A, B)>>> + Debug,
-    A: Debug + ToOpenApi + Send + 'static,
-    B: Debug + ToRustType<A> + Renderer + Send + 'static,
+    A: ToOpenApi + Debug + Send + 'static,
+    B: ToRustType<A> + Debug + Renderer + Send + 'static,
 {
     let futures = targets
         .into()
@@ -76,8 +76,8 @@ where
 pub async fn test_rust_type<X, A, B>(target: X) -> gateway::Result<()>
 where
     X: Into<TestCase<(A, B)>> + Debug,
-    A: Debug + ToOpenApi + Send + 'static,
-    B: Debug + ToRustType<A> + Renderer + Send + 'static,
+    A: Debug + ToOpenApi,
+    B: Debug + ToRustType<A> + Renderer,
 {
     let target = target.into();
     generate_rust_type(target.clone())?;
@@ -86,8 +86,8 @@ where
 
 pub fn test_rust_type_to_overwrite<A, B>(target: TestCase<(A, B)>) -> gateway::Result<()>
 where
-    A: Debug + ToOpenApi + Send + 'static,
-    B: Debug + ToRustType<A> + Renderer + Send + 'static,
+    A: Debug + ToOpenApi,
+    B: Debug + ToRustType<A> + Renderer,
 {
     generate_rust_type(target.clone())?;
 
