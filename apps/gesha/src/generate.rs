@@ -1,8 +1,8 @@
-use tracing::log::info;
 use gesha_core::gateway;
 use gesha_core::gateway::Reader;
 use gesha_core::targets::rust_type::Modules;
 use openapi_types::v3_0;
+use tracing::log::info;
 
 #[derive(clap::Args, Debug)]
 pub struct Params {

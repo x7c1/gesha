@@ -1,9 +1,9 @@
-use std::fmt::Debug;
 use super::Result;
 use crate::gateway::file_to_string;
 use crate::gateway::Error::DiffDetected;
 use console::Style;
 use similar::{Change, ChangeTag, TextDiff};
+use std::fmt::Debug;
 use std::path::Path;
 use tracing::instrument;
 

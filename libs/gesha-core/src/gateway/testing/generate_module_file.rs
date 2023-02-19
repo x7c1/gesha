@@ -1,7 +1,7 @@
-use std::fmt::Debug;
 use crate::gateway::testing::{new_writer, TestCase};
 use crate::renderer::Renderer;
 use crate::{gateway, render};
+use std::fmt::Debug;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;

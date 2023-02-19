@@ -1,9 +1,9 @@
-use std::fmt::Debug;
 use crate::conversions::ToOpenApi;
 use crate::conversions::ToRustType;
 use crate::gateway::Error::CannotReadFile;
 use crate::gateway::Result;
 use crate::yaml::{load_from_str, YamlMap};
+use std::fmt::Debug;
 use std::fs;
 use std::marker::PhantomData;
 use std::path::Path;
