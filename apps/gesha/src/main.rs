@@ -4,7 +4,7 @@ mod trace;
 
 use clap::Parser;
 use std::process::ExitCode;
-use tracing::info;
+use tracing::{error, info};
 use Subcommand::{Generate, Test, TestOverwrite};
 
 #[tokio::main]
@@ -26,7 +26,7 @@ async fn main() -> ExitCode {
         }
         Err(cause) => {
             println!("[failed] {:#?}", cause);
-            cause.dump();
+            error!("{}", cause.dump());
             ExitCode::FAILURE
         }
     };

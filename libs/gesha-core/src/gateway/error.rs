@@ -3,7 +3,6 @@ use crate::{conversions, renderer, yaml};
 use console::{Style, StyledObject};
 use std::path::PathBuf;
 use tokio::task::JoinError;
-use tracing::error;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
@@ -81,9 +80,8 @@ impl Error {
             }
         }
     }
-    pub fn dump(&self) {
-        let message = self.detail(ErrorTheme::Test);
-        error!("[failed] {}", message)
+    pub fn dump(&self) -> String {
+        self.detail(ErrorTheme::Test)
     }
 }
 
