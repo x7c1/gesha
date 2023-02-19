@@ -1,0 +1,27 @@
+# https://github.com/open-telemetry/opentelemetry-collector/blob/main/receiver/otlpreceiver/README.md
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "0.0.0.0:4317"
+
+processors:
+  batch:
+
+# https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/README.md
+exporters:
+  # https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/loggingexporter/README.md
+  logging:
+    verbosity: detailed
+    sampling_initial: 5
+  jaeger:
+    endpoint: "jaeger:14250"
+    tls:
+      insecure: true
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [logging, jaeger]
