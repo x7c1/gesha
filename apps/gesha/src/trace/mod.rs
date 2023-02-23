@@ -1,10 +1,13 @@
+mod message_layer;
+use message_layer::MessageLayer;
+
 use opentelemetry::{runtime, sdk};
 use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_semantic_conventions::resource::SERVICE_NAME;
 use std::fs::File;
+use std::io;
 use tracing::metadata::LevelFilter;
 use tracing::Subscriber;
-use tracing_subscriber::fmt::format::FmtSpan;
 use tracing_subscriber::fmt::layer;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::registry::LookupSpan;
@@ -27,20 +30,11 @@ fn stdout_layer<S>() -> impl Layer<S>
 where
     S: Subscriber + for<'a> LookupSpan<'a>,
 {
-    layer()
-        // tracing_subscriber::fmt::Layer::new()
-        .with_ansi(false)
-        .with_line_number(false)
-        .with_file(false)
-        .with_target(false)
-        .with_span_events(FmtSpan::NONE)
-        // .with_
-        // .fmt_fields()
-        // .fmt_fields(Pretty::default()).format_fields(Format::with_source_location(false))
-        // .pretty()
-        // .event_format(Pretty::default())
-        .pretty()
-        .with_filter(LevelFilter::INFO)
+    let env_filter = EnvFilter::builder()
+        .with_default_directive(LevelFilter::INFO.into())
+        .from_env_lossy();
+
+    MessageLayer::new(io::stdout).with_filter(env_filter)
 }
 
 fn trace_layer<S>() -> impl Layer<S>

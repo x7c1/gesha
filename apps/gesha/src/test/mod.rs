@@ -21,7 +21,7 @@ pub struct Args {
 
 type SupportedTestCase = TestCase<(v3_0::ComponentsObject, Modules)>;
 
-#[instrument(name="test::run")]
+#[instrument(name = "test::run")]
 pub async fn run(args: Args) -> gateway::Result<()> {
     if let Some(schema) = args.schema {
         let case = ComponentCase::from_path(schema)?;
