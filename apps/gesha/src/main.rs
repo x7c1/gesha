@@ -25,8 +25,9 @@ async fn main() -> ExitCode {
             ExitCode::SUCCESS
         }
         Err(cause) => {
-            println!("[failed] {:#?}", cause);
-            error!("{}", cause.dump());
+            let message = cause.dump();
+            println!("[failed] {}", message);
+            error!("{}", message);
             ExitCode::FAILURE
         }
     };

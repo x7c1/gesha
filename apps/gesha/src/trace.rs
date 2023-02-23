@@ -1,3 +1,4 @@
+use opentelemetry::sdk;
 use opentelemetry_otlp::WithExportConfig;
 use std::fs::File;
 use tracing::metadata::LevelFilter;
@@ -16,12 +17,9 @@ pub fn init() {
                 .tonic()
                 .with_endpoint("http://localhost:4317"),
         )
-        .with_trace_config(opentelemetry::sdk::trace::config().with_resource(
-            opentelemetry::sdk::Resource::new(vec![opentelemetry::KeyValue::new(
-                "service.name",
-                "gesha-test",
-            )]),
-        ))
+        .with_trace_config(sdk::trace::config().with_resource(sdk::Resource::new(vec![
+            opentelemetry::KeyValue::new("service.name", "gesha-test"),
+        ])))
         .install_batch(opentelemetry::runtime::Tokio)
         .expect("Not running in tokio runtime");
 
