@@ -11,8 +11,8 @@ openapi-types = { path = "../../libs/openapi-types" }
 
 clap = { version = "4.1.1", features = ["derive"] }
 opentelemetry = { version = "0.18.0", default-features = false, features = ["trace", "rt-tokio", "metrics"] }
-opentelemetry-otlp = "0.11.0"
+opentelemetry-otlp = { version = "0.11.0", features = ["metrics"] }
 tokio = { version = "1.25.0", features = ["full"] }
-tracing-opentelemetry = "0.18"
+tracing-opentelemetry = { version = "0.18", features = ["metrics"] }
 tracing = { workspace = true }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
