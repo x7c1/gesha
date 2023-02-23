@@ -5,6 +5,10 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[bin]]
+name = "gesha-test"
+path = "src/gesha-test.rs"
+
 [dependencies]
 gesha-core = { path = "../../libs/gesha-core" }
 openapi-types = { path = "../../libs/openapi-types" }

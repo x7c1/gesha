@@ -1,18 +1,12 @@
 use crate::test;
-use crate::test::SupportedTestCase;
+use crate::test::{Args, SupportedTestCase};
 use gesha_core::gateway;
 use gesha_core::gateway::testing::v3_0::ComponentCase;
 use gesha_core::gateway::testing::{generate_module_file, test_rust_type_to_overwrite};
 use gesha_core::gateway::{Error, ErrorTheme, Writer};
 
-#[derive(clap::Args, Debug)]
-pub struct Params {
-    #[clap(long)]
-    schema: Option<String>,
-}
-
-pub fn run(params: Params) -> gateway::Result<()> {
-    let test_cases = if let Some(schema) = params.schema {
+pub fn run(args: Args) -> gateway::Result<()> {
+    let test_cases = if let Some(schema) = args.schema {
         let case = ComponentCase::from_path(schema)?;
         vec![case.into()]
     } else {

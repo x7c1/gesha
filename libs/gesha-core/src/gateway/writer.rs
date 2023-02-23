@@ -24,7 +24,7 @@ impl Writer {
         })
     }
 
-    #[instrument]
+    #[instrument(skip_all)]
     pub fn create_file<A: Renderer + Debug>(self, a: A) -> Result<()> {
         let mut file = self.touch()?;
         if let Some(preamble) = self.preamble {

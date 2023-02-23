@@ -49,7 +49,7 @@ where
     writer.create_file(rust_types)
 }
 
-#[instrument]
+#[instrument(skip_all)]
 pub async fn test_rust_types<X, A, B>(targets: X) -> gateway::Result<()>
 where
     X: Into<Vec<TestCase<(A, B)>>> + Debug,

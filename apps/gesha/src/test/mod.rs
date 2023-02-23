@@ -1,5 +1,6 @@
 pub mod overwrite;
 
+use clap::Parser;
 use gesha_core::gateway;
 use gesha_core::gateway::testing::v3_0::ComponentKind::{RequestBodies, Schemas};
 use gesha_core::gateway::testing::v3_0::{ComponentCase, ComponentCases};
@@ -8,17 +9,21 @@ use gesha_core::targets::rust_type::Modules;
 use openapi_types::v3_0;
 use tracing::instrument;
 
-#[derive(clap::Args, Debug)]
-pub struct Params {
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+pub struct Args {
     #[clap(long)]
-    schema: Option<String>,
+    pub schema: Option<String>,
+
+    #[arg(long)]
+    pub overwrite: bool,
 }
 
 type SupportedTestCase = TestCase<(v3_0::ComponentsObject, Modules)>;
 
 #[instrument]
-pub async fn run(params: Params) -> gateway::Result<()> {
-    if let Some(schema) = params.schema {
+pub async fn run(args: Args) -> gateway::Result<()> {
+    if let Some(schema) = args.schema {
         let case = ComponentCase::from_path(schema)?;
         test_rust_type(case).await?;
         return Ok(());
