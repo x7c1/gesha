@@ -8,7 +8,7 @@ use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use tracing::{info, instrument};
+use tracing::{debug, instrument};
 
 #[derive(Debug)]
 pub struct Writer {
@@ -41,7 +41,7 @@ impl Writer {
         })?;
 
         let output = format(self.path)?;
-        info!("rustfmt>\n{}", output);
+        debug!("rustfmt>\n{}", output);
         Ok(())
     }
 

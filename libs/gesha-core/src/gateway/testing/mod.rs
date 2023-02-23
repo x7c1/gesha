@@ -11,7 +11,7 @@ use futures::future::join_all;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::path::PathBuf;
-use tracing::{info, instrument, Instrument};
+use tracing::{debug, info, instrument, Instrument};
 
 #[derive(Debug)]
 pub struct TestCase<A> {
@@ -39,11 +39,11 @@ where
     A: Debug + ToOpenApi,
     B: Debug + ToRustType<A> + Renderer,
 {
-    info!("target> {:#?}", target);
+    debug!("target> {:#?}", target);
 
     let reader = Reader::new::<A>();
     let rust_types: B = reader.open_rust_type(target.schema)?;
-    info!("rust_types> {:#?}", rust_types);
+    debug!("rust_types> {:#?}", rust_types);
 
     let writer = new_writer(target.output);
     writer.create_file(rust_types)
@@ -84,7 +84,10 @@ where
 {
     let target = target.into();
     generate_rust_type(target.clone())?;
-    detect_diff(&target.output, &target.example)
+    detect_diff(&target.output, &target.example)?;
+
+    info!("done");
+    Ok(())
 }
 
 pub fn test_rust_type_to_overwrite<A, B>(target: TestCase<(A, B)>) -> gateway::Result<()>
