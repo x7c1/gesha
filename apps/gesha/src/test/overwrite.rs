@@ -12,7 +12,7 @@ pub async fn run(args: Args) -> gateway::Result<()> {
         let case = ComponentCase::from_path(schema)?;
         vec![case.into()]
     } else {
-        test::new_schemas_cases().into()
+        test::all_cases().into_iter().flat_map(Vec::from).collect()
     };
     let cases = collect_modified_cases(test_cases).await?;
     if cases.is_empty() {
