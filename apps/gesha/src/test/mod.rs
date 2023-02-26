@@ -28,10 +28,12 @@ pub async fn run(args: Args) -> gateway::Result<()> {
         test_rust_type(case).await?;
         return Ok(());
     }
-    for case in all_cases() {
-        test_rust_types(case).await?
-    }
-    Ok(())
+    let cases = all_cases()
+        .into_iter()
+        .flat_map(Vec::<SupportedTestCase>::from)
+        .collect::<Vec<_>>();
+
+    test_rust_types(cases).await
 }
 
 fn new_schemas_cases() -> ComponentCases {
