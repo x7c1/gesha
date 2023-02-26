@@ -11,7 +11,7 @@ async fn main() -> ExitCode {
     trace::init();
 
     let args = Args::parse();
-    info!("main> {:?}", args);
+    info!("start: {:?}", args);
 
     let result = if args.overwrite {
         // TODO: make it async

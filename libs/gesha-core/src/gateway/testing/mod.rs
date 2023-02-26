@@ -86,7 +86,7 @@ where
     generate_rust_type(target.clone())?;
     detect_diff(&target.output, &target.example)?;
 
-    info!("done");
+    info!("passed: {path}", path = target.schema.to_string_lossy());
     Ok(())
 }
 
