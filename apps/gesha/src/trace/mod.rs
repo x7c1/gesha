@@ -1,13 +1,15 @@
 mod message_layer;
 use message_layer::MessageLayer;
 
+use opentelemetry::global::set_error_handler;
+use opentelemetry::trace::TraceError::ExportFailed;
 use opentelemetry::{runtime, sdk};
 use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_semantic_conventions::resource::SERVICE_NAME;
 use std::fs::File;
 use std::io;
 use tracing::metadata::LevelFilter;
-use tracing::Subscriber;
+use tracing::{debug, Subscriber};
 use tracing_subscriber::fmt::layer;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::registry::LookupSpan;
@@ -20,6 +22,8 @@ pub fn init() {
         .with(trace_layer())
         .with(file_log_layer())
         .init();
+
+    set_error_handler(handle_error).expect("failed to set error handler");
 }
 
 pub fn shutdown() {
@@ -71,4 +75,15 @@ where
     let file = File::create(file_path).expect("unable to create log file");
     let layer = layer().pretty().with_writer(file).with_filter(env_filter);
     Some(layer)
+}
+
+fn handle_error(err: opentelemetry::global::Error) {
+    use opentelemetry::global::Error;
+    match err {
+        Error::Trace(ExportFailed(e)) => {
+            debug!("notes: `docker-compose run` to launch OpenTelemetry collector.");
+            debug!("{e:?}");
+        }
+        _ => opentelemetry::global::handle_error(err),
+    }
 }
