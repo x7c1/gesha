@@ -75,6 +75,12 @@ impl Error {
             Error::Conversions(TransformBroken { detail }) => {
                 format!("internal error: transform broken.\n{}", detail)
             }
+            Error::Errors(errors) => errors
+                .iter()
+                .map(|e| e.detail(theme))
+                .collect::<Vec<_>>()
+                .join("\n"),
+
             _ => {
                 format!("{:#?}", self)
             }
@@ -103,6 +109,7 @@ impl From<yaml::Error> for Error {
     }
 }
 
+#[derive(Copy, Clone)]
 pub enum ErrorTheme {
     Test,
     Overwrite,
