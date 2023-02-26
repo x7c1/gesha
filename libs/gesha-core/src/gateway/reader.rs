@@ -1,7 +1,7 @@
 use crate::conversions::ToOpenApi;
 use crate::conversions::ToRustType;
 use crate::gateway::Error::CannotReadFile;
-use crate::gateway::Result;
+use crate::gateway::{Error, Result};
 use crate::yaml::{load_from_str, YamlMap};
 use std::fmt::Debug;
 use std::fs;
@@ -28,9 +28,10 @@ where
         P: AsRef<Path> + Debug,
         B: ToRustType<A>,
     {
+        let path = path.as_ref();
         let map = open_yaml_map(path)?;
-        let openapi_value = ToOpenApi::apply(map)?;
-        let rust_type = ToRustType::apply(openapi_value)?;
+        let openapi_value = ToOpenApi::apply(map).map_err(Error::conversion(path))?;
+        let rust_type = ToRustType::apply(openapi_value).map_err(Error::conversion(path))?;
         Ok(rust_type)
     }
 }

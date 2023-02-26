@@ -9,7 +9,10 @@ pub type Result<A> = std::result::Result<A, Error>;
 #[derive(Debug)]
 pub enum Error {
     // inherited errors
-    Conversions(conversions::Error),
+    Conversions {
+        path: PathBuf,
+        cause: conversions::Error,
+    },
     Renderer(renderer::Error),
     Yaml(yaml::Error),
 
@@ -72,8 +75,15 @@ impl Error {
             Error::FormatFailed { detail, .. } => {
                 format!("rustfmt>\n{}", detail)
             }
-            Error::Conversions(TransformBroken { detail }) => {
-                format!("internal error: transform broken.\n{}", detail)
+            Error::Conversions {
+                path,
+                cause: TransformBroken { detail },
+            } => {
+                format!(
+                    "internal error: transform broken.\n{}\n{}",
+                    path.display(),
+                    detail,
+                )
             }
             Error::Errors(errors) => errors
                 .iter()
@@ -86,6 +96,12 @@ impl Error {
             }
         }
     }
+    pub fn conversion<A: Into<PathBuf>>(path: A) -> impl FnOnce(conversions::Error) -> Self {
+        |cause| Self::Conversions {
+            path: path.into(),
+            cause,
+        }
+    }
     pub fn dump(&self) -> String {
         self.detail(ErrorTheme::Test)
     }
@@ -94,12 +110,6 @@ impl Error {
 impl From<renderer::Error> for Error {
     fn from(cause: renderer::Error) -> Self {
         Self::Renderer(cause)
-    }
-}
-
-impl From<conversions::Error> for Error {
-    fn from(cause: conversions::Error) -> Self {
-        Self::Conversions(cause)
     }
 }
 
