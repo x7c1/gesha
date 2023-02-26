@@ -91,7 +91,7 @@ where
 }
 
 #[instrument(skip_all)]
-pub async fn test_rust_types_to_overwrite<A, B>(
+pub async fn collect_modified_cases<A, B>(
     cases: Vec<TestCase<(A, B)>>,
 ) -> gateway::Result<Vec<ModifiedTestCase<(A, B)>>>
 where
@@ -100,7 +100,7 @@ where
 {
     let run_tests = cases
         .into_iter()
-        .map(|x| tokio::spawn(test_rust_type_to_overwrite(x).in_current_span()));
+        .map(|x| tokio::spawn(detect_modified_case(x).in_current_span()));
 
     let init = (vec![], vec![]);
     let (modified, errors) =
@@ -125,7 +125,7 @@ where
 }
 
 #[instrument]
-pub async fn test_rust_type_to_overwrite<A, B>(
+pub async fn detect_modified_case<A, B>(
     case: TestCase<(A, B)>,
 ) -> gateway::Result<Option<ModifiedTestCase<(A, B)>>>
 where
@@ -146,10 +146,7 @@ where
         detect_diff(&target.example, &target.output)
     };
     match run(case.clone()) {
-        Ok(_) => {
-            info!("passed: {path}", path = case.schema.to_string_lossy());
-            Ok(None)
-        }
+        Ok(_) => Ok(None),
         Err(e @ Error::DiffDetected { .. }) => Ok(Some(ModifiedTestCase {
             target: case.clone(),
             diff: e.detail(ErrorTheme::Overwrite),

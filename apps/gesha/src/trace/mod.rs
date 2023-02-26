@@ -64,7 +64,7 @@ where
     S: Subscriber + for<'a> LookupSpan<'a>,
 {
     let env_filter = EnvFilter::builder()
-        .with_default_directive(LevelFilter::INFO.into())
+        .with_default_directive("gesha=debug".parse().unwrap())
         .from_env_lossy();
 
     let file_path = "./logs/gesha-test.log";
