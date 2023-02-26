@@ -14,8 +14,7 @@ async fn main() -> ExitCode {
     info!("start: {:?}", args);
 
     let result = if args.overwrite {
-        // TODO: make it async
-        overwrite::run(args)
+        overwrite::run(args).await
     } else {
         test::run(args).await
     };
