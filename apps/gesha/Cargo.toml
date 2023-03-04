@@ -13,7 +13,7 @@ path = "src/gesha_test.rs"
 gesha-core = { path = "../../libs/gesha-core" }
 openapi-types = { path = "../../libs/openapi-types" }
 
-clap = { version = "4.1.1", features = ["derive"] }
+clap = { version = "4.1.8", features = ["derive"] }
 opentelemetry = { workspace = true }
 opentelemetry-otlp = { version = "0.11.0", features = ["metrics"] }
 opentelemetry-semantic-conventions = "0.10.0"
