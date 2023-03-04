@@ -27,6 +27,7 @@ jobs:
         with:
           toolchain: stable
 
+      # rf. https://github.com/open-telemetry/opentelemetry-rust/issues/934
       - name: Install Protoc
         uses: arduino/setup-protoc@v1
 
