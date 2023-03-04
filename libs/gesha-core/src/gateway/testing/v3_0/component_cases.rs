@@ -8,6 +8,7 @@ use std::borrow::Cow;
 
 const COMPONENTS_PATH: &str = "examples/v3_0/src/components";
 
+#[derive(Debug)]
 pub struct ComponentCase {
     inner: TestCase<(v3_0::ComponentsObject, Modules)>,
 }
@@ -51,6 +52,7 @@ impl From<ComponentCase> for TestCase<(v3_0::ComponentsObject, Modules)> {
     }
 }
 
+#[derive(Debug)]
 pub struct ComponentCases {
     pub module_path: String,
     cases: Vec<ComponentCase>,

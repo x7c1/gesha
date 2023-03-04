@@ -20,8 +20,10 @@ use crate::targets::rust_type::{
     SerdeAttribute, StructDef, StructField, StructFieldAttribute, TypeHeader,
 };
 use std::io::Write;
+use tracing::instrument;
 
 impl Renderer for Modules {
+    #[instrument]
     fn render(self, mut write: File) -> Result<()> {
         self.into_iter()
             .try_for_each(|module| render_module(&mut write, module))

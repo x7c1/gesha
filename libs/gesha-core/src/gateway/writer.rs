@@ -3,11 +3,14 @@ use crate::gateway::Error::{
 };
 use crate::gateway::Result;
 use crate::renderer::Renderer;
+use std::fmt::Debug;
 use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use tracing::{debug, instrument};
 
+#[derive(Debug)]
 pub struct Writer {
     pub path: PathBuf,
     pub preamble: Option<String>,
@@ -21,7 +24,8 @@ impl Writer {
         })
     }
 
-    pub fn create_file<A: Renderer>(self, a: A) -> Result<()> {
+    #[instrument(skip_all)]
+    pub fn create_file<A: Renderer + Debug>(self, a: A) -> Result<()> {
         let mut file = self.touch()?;
         if let Some(preamble) = self.preamble {
             let bytes = preamble.as_bytes();
@@ -37,7 +41,7 @@ impl Writer {
         })?;
 
         let output = format(self.path)?;
-        println!("rustfmt>\n{}", output);
+        debug!("rustfmt>\n{}", output);
         Ok(())
     }
 
@@ -51,6 +55,7 @@ impl Writer {
     }
 }
 
+#[instrument]
 fn format(path: PathBuf) -> Result<String> {
     let output = Command::new("rustfmt")
         .arg("--verbose")

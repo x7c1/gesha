@@ -1,16 +1,24 @@
-mod generate;
+mod test;
+mod trace;
 
-use crate::generate::Args;
+use crate::test::{overwrite, Args};
 use clap::Parser;
 use std::process::ExitCode;
 use tracing::{error, info};
 
 #[tokio::main]
 async fn main() -> ExitCode {
-    let args = Args::parse();
-    info!("main> {:?}", args);
+    trace::init();
 
-    let code = match generate::run(args) {
+    let args = Args::parse();
+    info!("start: {:?}", args);
+
+    let result = if args.overwrite {
+        overwrite::run(args).await
+    } else {
+        test::run(args).await
+    };
+    let code = match result {
         Ok(_) => {
             info!("done");
             ExitCode::SUCCESS
@@ -21,5 +29,6 @@ async fn main() -> ExitCode {
             ExitCode::FAILURE
         }
     };
+    trace::shutdown();
     code
 }

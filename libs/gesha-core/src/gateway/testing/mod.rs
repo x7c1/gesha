@@ -5,11 +5,13 @@ pub mod v3_0;
 
 use crate::conversions::{ToOpenApi, ToRustType};
 use crate::gateway;
-use crate::gateway::{detect_diff, Reader, Writer};
+use crate::gateway::{detect_diff, Error, ErrorTheme, Reader, Writer};
 use crate::renderer::Renderer;
+use futures::future::join_all;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::path::PathBuf;
+use tracing::{debug, info, instrument, Instrument};
 
 #[derive(Debug)]
 pub struct TestCase<A> {
@@ -37,52 +39,120 @@ where
     A: Debug + ToOpenApi,
     B: Debug + ToRustType<A> + Renderer,
 {
-    println!("target> {:#?}", target);
+    debug!("target> {:#?}", target);
 
     let reader = Reader::new::<A>();
     let rust_types: B = reader.open_rust_type(target.schema)?;
-    println!("rust_types> {:#?}", rust_types);
+    debug!("rust_types> {:#?}", rust_types);
 
     let writer = new_writer(target.output);
     writer.create_file(rust_types)
 }
 
-pub fn test_rust_types<X, A, B>(targets: X) -> gateway::Result<()>
+#[instrument(skip_all)]
+pub async fn test_rust_types<X, A, B>(targets: X) -> gateway::Result<()>
 where
-    X: Into<Vec<TestCase<(A, B)>>>,
-    A: Debug + ToOpenApi,
-    B: Debug + ToRustType<A> + Renderer,
+    X: Into<Vec<TestCase<(A, B)>>> + Debug,
+    A: ToOpenApi + Debug + Send + 'static,
+    B: ToRustType<A> + Debug + Renderer + Send + 'static,
 {
-    targets.into().into_iter().try_for_each(test_rust_type)
+    let run_tests = targets
+        .into()
+        .into_iter()
+        .map(|x| tokio::spawn(test_rust_type(x).in_current_span()));
+
+    let errors = join_all(run_tests)
+        .await
+        .into_iter()
+        .flatten()
+        .filter_map(|result| result.err())
+        .collect::<Vec<Error>>();
+
+    if errors.is_empty() {
+        Ok(())
+    } else {
+        Err(Error::Errors(errors))
+    }
 }
 
-pub fn test_rust_type<X, A, B>(target: X) -> gateway::Result<()>
+#[instrument]
+pub async fn test_rust_type<X, A, B>(target: X) -> gateway::Result<()>
 where
-    X: Into<TestCase<(A, B)>>,
+    X: Into<TestCase<(A, B)>> + Debug,
     A: Debug + ToOpenApi,
     B: Debug + ToRustType<A> + Renderer,
 {
     let target = target.into();
     generate_rust_type(target.clone())?;
-    detect_diff(&target.output, &target.example)
+    detect_diff(&target.output, &target.example)?;
+
+    info!("passed: {path}", path = target.schema.to_string_lossy());
+    Ok(())
 }
 
-pub fn test_rust_type_to_overwrite<A, B>(target: TestCase<(A, B)>) -> gateway::Result<()>
+#[instrument(skip_all)]
+pub async fn collect_modified_cases<A, B>(
+    cases: Vec<TestCase<(A, B)>>,
+) -> gateway::Result<Vec<ModifiedTestCase<(A, B)>>>
+where
+    A: Debug + ToOpenApi + Send + 'static,
+    B: Debug + ToRustType<A> + Renderer + Send + 'static,
+{
+    let run_tests = cases
+        .into_iter()
+        .map(|x| tokio::spawn(detect_modified_case(x).in_current_span()));
+
+    let init = (vec![], vec![]);
+    let (modified, errors) =
+        join_all(run_tests)
+            .await
+            .into_iter()
+            .fold(init, |(mut modified, mut errors), result| {
+                match result {
+                    Ok(Ok(Some(x))) => modified.push(x),
+                    Ok(Ok(None)) => { /* nop */ }
+                    Ok(Err(e)) => errors.push(e),
+                    Err(e) => errors.push(Error::JoinError(e)),
+                }
+                (modified, errors)
+            });
+
+    if errors.is_empty() {
+        Ok(modified)
+    } else {
+        Err(Error::Errors(errors))
+    }
+}
+
+#[instrument]
+pub async fn detect_modified_case<A, B>(
+    case: TestCase<(A, B)>,
+) -> gateway::Result<Option<ModifiedTestCase<(A, B)>>>
 where
     A: Debug + ToOpenApi,
     B: Debug + ToRustType<A> + Renderer,
 {
-    generate_rust_type(target.clone())?;
+    let run = |target: TestCase<(A, B)>| {
+        generate_rust_type(target.clone())?;
 
-    // example doesn't exist at first attempt.
-    let not_exist = !target.example.exists();
-    if not_exist {
-        new_writer(&target.example).touch()?;
+        // example doesn't exist at first attempt.
+        let not_exist = !target.example.exists();
+        if not_exist {
+            new_writer(&target.example).touch()?;
+        }
+
+        // contrary to test_rust_type(),
+        // target.example is actual file, target.output modified is expected file.
+        detect_diff(&target.example, &target.output)
+    };
+    match run(case.clone()) {
+        Ok(_) => Ok(None),
+        Err(e @ Error::DiffDetected { .. }) => Ok(Some(ModifiedTestCase {
+            target: case.clone(),
+            diff: e.detail(ErrorTheme::Overwrite),
+        })),
+        Err(e) => Err(e),
     }
-
-    // contrary to test_rust_type(),
-    // target.example is actual file, target.output modified is expected file.
-    detect_diff(&target.example, &target.output)
 }
 
 pub fn new_writer<A: Into<PathBuf>>(path: A) -> Writer {
@@ -90,4 +160,10 @@ pub fn new_writer<A: Into<PathBuf>>(path: A) -> Writer {
         path: path.into(),
         preamble: Some("/*\n    Generated by gesha command; DO NOT EDIT BY HAND!\n*/".to_string()),
     }
+}
+
+#[derive(Debug)]
+pub struct ModifiedTestCase<A> {
+    pub target: TestCase<A>,
+    pub diff: String,
 }

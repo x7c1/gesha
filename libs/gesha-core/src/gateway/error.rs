@@ -2,15 +2,22 @@ use crate::conversions::Error::TransformBroken;
 use crate::{conversions, renderer, yaml};
 use console::{Style, StyledObject};
 use std::path::PathBuf;
+use tokio::task::JoinError;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {
     // inherited errors
-    Conversions(conversions::Error),
+    Conversions {
+        path: PathBuf,
+        cause: conversions::Error,
+    },
     Renderer(renderer::Error),
     Yaml(yaml::Error),
+
+    // thread errors
+    JoinError(JoinError),
 
     // module errors
     DiffDetected {
@@ -43,6 +50,7 @@ pub enum Error {
         path: PathBuf,
         detail: String,
     },
+    Errors(Vec<Self>),
     UnsupportedExampleLocation(String),
 }
 
@@ -67,17 +75,35 @@ impl Error {
             Error::FormatFailed { detail, .. } => {
                 format!("rustfmt>\n{}", detail)
             }
-            Error::Conversions(TransformBroken { detail }) => {
-                format!("internal error: transform broken.\n{}", detail)
+            Error::Conversions {
+                path,
+                cause: TransformBroken { detail },
+            } => {
+                format!(
+                    "internal error: transform broken.\n{}\n{}",
+                    path.display(),
+                    detail,
+                )
             }
+            Error::Errors(errors) => errors
+                .iter()
+                .map(|e| e.detail(theme))
+                .collect::<Vec<_>>()
+                .join("\n"),
+
             _ => {
                 format!("{:#?}", self)
             }
         }
     }
-    pub fn dump(&self) {
-        let message = self.detail(ErrorTheme::Test);
-        println!("[failed] {}", message)
+    pub fn conversion<A: Into<PathBuf>>(path: A) -> impl FnOnce(conversions::Error) -> Self {
+        |cause| Self::Conversions {
+            path: path.into(),
+            cause,
+        }
+    }
+    pub fn dump(&self) -> String {
+        self.detail(ErrorTheme::Test)
     }
 }
 
@@ -87,18 +113,13 @@ impl From<renderer::Error> for Error {
     }
 }
 
-impl From<conversions::Error> for Error {
-    fn from(cause: conversions::Error) -> Self {
-        Self::Conversions(cause)
-    }
-}
-
 impl From<yaml::Error> for Error {
     fn from(cause: yaml::Error) -> Self {
         Self::Yaml(cause)
     }
 }
 
+#[derive(Copy, Clone)]
 pub enum ErrorTheme {
     Test,
     Overwrite,

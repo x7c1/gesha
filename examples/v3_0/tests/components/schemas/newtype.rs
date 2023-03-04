@@ -4,14 +4,14 @@ use serde_json::Value;
 #[test]
 fn to_json_string() {
     let x1 = StringValue::from("x1".to_string());
-    let actual = serde_json::to_value(&x1).unwrap();
+    let actual = serde_json::to_value(x1).unwrap();
     assert_eq!(actual, Value::String("x1".to_string()))
 }
 
 #[test]
 fn to_json_bool() {
     let x1 = BooleanValue::from(true);
-    let actual = serde_json::to_value(&x1).unwrap();
+    let actual = serde_json::to_value(x1).unwrap();
     assert_eq!(actual, Value::Bool(true))
 }
 

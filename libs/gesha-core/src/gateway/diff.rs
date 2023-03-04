@@ -3,13 +3,16 @@ use crate::gateway::file_to_string;
 use crate::gateway::Error::DiffDetected;
 use console::Style;
 use similar::{Change, ChangeTag, TextDiff};
+use std::fmt::Debug;
 use std::path::Path;
+use tracing::instrument;
 
 /// return DiffDetected error if the contents of given files are not same.
+#[instrument]
 pub fn detect_diff<A, B>(src: A, dst: B) -> Result<()>
 where
-    A: AsRef<Path>,
-    B: AsRef<Path>,
+    A: AsRef<Path> + Debug,
+    B: AsRef<Path> + Debug,
 {
     let diff = Diff::load(&src, &dst)?;
     if diff.has_change {
