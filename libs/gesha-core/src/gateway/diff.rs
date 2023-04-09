@@ -57,7 +57,7 @@ fn is_changed(change: Change<&str>) -> bool {
 }
 
 fn format_text_diff<'a>(diff: &TextDiff<'a, 'a, 'a, str>) -> String {
-    diff.iter_all_changes().into_iter().map(to_line).collect()
+    diff.iter_all_changes().map(to_line).collect()
 }
 
 fn to_line(change: Change<&str>) -> String {
