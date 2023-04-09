@@ -52,8 +52,9 @@ pub mod core {
     use serde::Serialize;
     use serde::Serializer;
 
-    #[derive(Clone, Debug, PartialEq)]
+    #[derive(Clone, Debug, Default, PartialEq)]
     pub enum Patch<A> {
+        #[default]
         Absent,
         Null,
         Value(A),
@@ -62,12 +63,6 @@ pub mod core {
     impl<A> Patch<A> {
         pub fn is_absent(&self) -> bool {
             matches!(self, Patch::Absent)
-        }
-    }
-
-    impl<T> Default for Patch<T> {
-        fn default() -> Self {
-            Patch::Absent
         }
     }
 
