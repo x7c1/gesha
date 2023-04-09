@@ -1,5 +1,6 @@
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub enum Patch<A> {
+    #[default]
     Absent,
     Null,
     Value(A),
@@ -8,12 +9,6 @@ pub enum Patch<A> {
 impl<A> Patch<A> {
     pub fn is_absent(&self) -> bool {
         matches!(self, Patch::Absent)
-    }
-}
-
-impl<T> Default for Patch<T> {
-    fn default() -> Self {
-        Patch::Absent
     }
 }
 
