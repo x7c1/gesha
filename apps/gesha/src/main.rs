@@ -10,7 +10,7 @@ async fn main() -> ExitCode {
     let args = Args::parse();
     info!("main> {:?}", args);
 
-    let code = match generate::run(args) {
+    match generate::run(args) {
         Ok(_) => {
             info!("done");
             ExitCode::SUCCESS
@@ -20,6 +20,5 @@ async fn main() -> ExitCode {
             error!("{message}");
             ExitCode::FAILURE
         }
-    };
-    code
+    }
 }
