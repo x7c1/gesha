@@ -11,7 +11,7 @@ openapi-types = { path = "../../libs/openapi-types" }
 console = "0.15.5"
 futures = "0.3"
 heck = "0.4.1"
-indexmap = "1.9.2"
+indexmap = "1.9.3"
 opentelemetry = { workspace = true }
 similar = "2.2.1"
 tokio = { workspace = true }
