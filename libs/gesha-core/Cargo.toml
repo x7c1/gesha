@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 openapi-types = { path = "../../libs/openapi-types" }
 
-console = "0.15.5"
+console = "0.15.7"
 futures = "0.3"
 heck = "0.4.1"
 indexmap = "1.9.3"
