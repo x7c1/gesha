@@ -1,7 +1,7 @@
 use crate::render;
 use crate::renderer::rust_type::{render_enum_variants, render_header};
 use crate::renderer::Result;
-use crate::targets::rust_type::{MediaTypeVariant, MediaTypeVariants, RequestBodyDef};
+use gesha_rust_types::{MediaTypeVariant, MediaTypeVariants, RequestBodyDef};
 use std::io::Write;
 
 pub fn render_request_body<W: Write>(mut write: W, x: RequestBodyDef) -> Result<()> {

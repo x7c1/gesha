@@ -1,6 +1,6 @@
 use crate::render;
 use crate::renderer::Result;
-use crate::targets::rust_type::{ErrorDef, ErrorVariant};
+use gesha_rust_types::{ErrorDef, ErrorVariant};
 use std::io::Write;
 
 pub fn render_error<W: Write>(mut write: W, x: ErrorDef) -> Result<()> {

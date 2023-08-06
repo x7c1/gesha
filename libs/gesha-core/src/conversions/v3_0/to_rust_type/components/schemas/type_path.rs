@@ -1,4 +1,4 @@
-use crate::targets::rust_type::DataType;
+use gesha_rust_types::DataType;
 use std::fmt::{Display, Formatter};
 
 #[derive(Debug, Clone)]

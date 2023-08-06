@@ -1,4 +1,4 @@
-use crate::targets::rust_type::{DocComments, SerdeAttribute, TypeHeader};
+use gesha_rust_types::{DocComments, SerdeAttribute, TypeHeader};
 use heck::ToUpperCamelCase;
 use openapi_types::v3_0::{ComponentName, SchemaObject};
 

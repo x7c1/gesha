@@ -1,7 +1,7 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape;
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
-use crate::targets::rust_type::{ErrorDef, ErrorVariant, Package, PresetDef};
+use gesha_rust_types::{ErrorDef, ErrorVariant, Package, PresetDef};
 
 pub fn transform_core(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let is_patch_used = shapes.any_type(|x| matches!(x, TypeShape::Patch(_)));

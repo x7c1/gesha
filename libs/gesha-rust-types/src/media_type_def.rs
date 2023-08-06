@@ -1,4 +1,4 @@
-use crate::targets::rust_type::EnumVariantName;
+use crate::EnumVariantName;
 use indexmap::IndexMap;
 
 #[derive(Clone, Debug, PartialEq)]

@@ -5,7 +5,7 @@ use gesha_core::gateway;
 use gesha_core::gateway::testing::v3_0::ComponentKind::{RequestBodies, Schemas};
 use gesha_core::gateway::testing::v3_0::{ComponentCase, ComponentCases};
 use gesha_core::gateway::testing::{test_rust_type, test_rust_types, TestCase};
-use gesha_core::targets::rust_type::Modules;
+use gesha_rust_types::Modules;
 use openapi_types::v3_0;
 use tracing::instrument;
 

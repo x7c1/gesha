@@ -11,7 +11,7 @@ use crate::conversions::v3_0::to_rust_type::components::core::CoreShape;
 use crate::conversions::v3_0::to_rust_type::components::request_bodies::RequestBodiesShape;
 use crate::conversions::v3_0::to_rust_type::components::schemas::{SchemasShape, TypeShape};
 use crate::conversions::Result;
-use crate::targets::rust_type::Modules;
+use gesha_rust_types::Modules;
 
 #[derive(Clone, Debug)]
 pub struct ComponentsShape {

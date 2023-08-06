@@ -9,7 +9,7 @@ pub use request_bodies_shape::RequestBodiesShape;
 
 use crate::broken;
 use crate::conversions::Result;
-use crate::targets::rust_type::{
+use gesha_rust_types::{
     Definition, DocComments, EnumVariantName, MediaTypeVariant, RequestBodyDef, SerdeAttribute,
     TypeHeader,
 };

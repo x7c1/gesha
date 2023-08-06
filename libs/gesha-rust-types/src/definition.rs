@@ -1,4 +1,4 @@
-use crate::targets::rust_type::{
+use crate::{
     DataType, Definitions, EnumVariant, ErrorDef, Imports, MediaTypeDef, ModuleName,
     RequestBodyDef, StructField, TypeHeader,
 };

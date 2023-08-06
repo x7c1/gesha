@@ -1,7 +1,7 @@
 use crate::render;
 use crate::renderer::rust_type::{render_data_types, render_header};
 use crate::renderer::Result;
-use crate::targets::rust_type::{EnumCase, EnumDef, EnumVariant, EnumVariantAttribute};
+use gesha_rust_types::{EnumCase, EnumDef, EnumVariant, EnumVariantAttribute};
 use std::io::Write;
 
 pub fn render_enum<W: Write>(mut write: W, x: EnumDef) -> Result<()> {

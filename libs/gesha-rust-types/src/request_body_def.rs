@@ -1,4 +1,4 @@
-use crate::targets::rust_type::{Definition, EnumVariant, TypeHeader};
+use crate::{Definition, EnumVariant, TypeHeader};
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct RequestBodyDef {

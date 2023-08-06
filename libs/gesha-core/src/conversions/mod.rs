@@ -13,7 +13,7 @@ pub trait ToOpenApi: Sized {
     fn apply(map: YamlMap) -> Result<Self>;
 }
 
-/// convert A to a type defined in crate::targets::rust_type module.
+/// convert A to a type defined in gesha_rust_types module.
 pub trait ToRustType<A>: Sized {
     fn apply(this: A) -> Result<Self>;
 }

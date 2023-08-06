@@ -1,4 +1,4 @@
-use crate::targets::rust_type::Definition;
+use crate::Definition;
 
 #[derive(Clone, Debug, PartialEq, Default)]
 pub struct Definitions(Vec<Definition>);

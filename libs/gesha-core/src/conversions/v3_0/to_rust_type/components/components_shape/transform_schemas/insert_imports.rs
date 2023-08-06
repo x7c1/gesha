@@ -4,7 +4,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Result;
 use crate::misc::TryMap;
-use crate::targets::rust_type::Package;
+use gesha_rust_types::Package;
 use DefinitionShape::Mod;
 
 pub fn insert_imports(mut shape: ComponentsShape) -> Result<ComponentsShape> {
