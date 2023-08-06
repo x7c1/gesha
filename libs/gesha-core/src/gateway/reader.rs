@@ -14,7 +14,7 @@ pub struct Reader<A>(PhantomData<A>);
 
 impl Reader<()> {
     pub fn new<A>() -> Reader<A> {
-        Reader(PhantomData::default())
+        Reader(PhantomData)
     }
 }
 

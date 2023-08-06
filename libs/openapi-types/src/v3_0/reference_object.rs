@@ -6,7 +6,7 @@ pub struct ReferenceObject<T>(String, PhantomData<T>);
 
 impl<T> ReferenceObject<T> {
     pub fn new<A: Into<String>>(a: A) -> Self {
-        ReferenceObject(a.into(), PhantomData::default())
+        ReferenceObject(a.into(), PhantomData)
     }
 }
 
