@@ -118,14 +118,9 @@ impl TypeShape {
             Self::Proper { data_type, .. } => data_type,
             Self::Array { type_shape, .. } => DataType::Vec(Box::new((*type_shape).define()?)),
             Self::Expanded { type_path, .. } => type_path.into(),
-            Self::Option(type_shape) => DataType::Option {
-                data_type: Box::new((*type_shape).define()?),
-                nullable: false,
-            },
-            TypeShape::Maybe(type_shape) => DataType::Option {
-                data_type: Box::new((*type_shape).define()?),
-                nullable: true,
-            },
+            Self::Option(type_shape) | Self::Maybe(type_shape) => {
+                DataType::Option(Box::new((*type_shape).define()?))
+            }
             Self::Patch(type_shape) => DataType::Patch(Box::new((*type_shape).define()?)),
             Self::Ref { .. } => Err(broken!(self))?,
             Self::Inline { .. } => Err(broken!(self))?,

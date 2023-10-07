@@ -1,6 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape;
 use crate::conversions::Result;
-use gesha_rust_types::{DataType, StructField, StructFieldAttribute, StructFieldName};
+use gesha_rust_types::{StructField, StructFieldAttribute, StructFieldName};
 use openapi_types::v3_0::{
     ComponentName, RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
 };
@@ -25,9 +25,9 @@ impl FieldShape {
     }
 
     pub fn define(self) -> Result<StructField> {
-        let data_type = self.type_shape.define()?;
         let name = StructFieldName::new(self.name.as_ref());
-        let attrs = to_field_attrs(&self.name, &name, &data_type);
+        let attrs = self.define_field_attrs(&name);
+        let data_type = self.type_shape.define()?;
         let field = StructField::new(name, data_type, attrs);
         Ok(field)
     }
@@ -38,6 +38,28 @@ impl FieldShape {
     ) -> Result<Vec<Self>> {
         let to_field_shapes = |props| ToFieldShapes { required }.apply(props);
         properties.map(to_field_shapes).unwrap_or(Ok(vec![]))
+    }
+
+    fn define_field_attrs(&self, name: &StructFieldName) -> Vec<StructFieldAttribute> {
+        let mut attrs = vec![];
+
+        let original = &self.name;
+        if original.as_ref() != name.as_str() {
+            attrs.push(StructFieldAttribute::new(format!(
+                r#"serde(rename="{original}")"#
+            )));
+        }
+        if matches!(self.type_shape, TypeShape::Option(..)) {
+            attrs.push(StructFieldAttribute::new(
+                r#"serde(default, skip_serializing_if = "Option::is_none")"#,
+            ))
+        }
+        if matches!(self.type_shape, TypeShape::Patch(..)) {
+            attrs.push(StructFieldAttribute::new(
+                r#"serde(default, skip_serializing_if = "Patch::is_absent")"#,
+            ));
+        }
+        attrs
     }
 }
 
@@ -68,31 +90,4 @@ impl ToFieldShapes {
             None => false,
         }
     }
-}
-
-fn to_field_attrs(
-    original: &ComponentName,
-    name: &StructFieldName,
-    tpe: &DataType,
-) -> Vec<StructFieldAttribute> {
-    let mut attrs = vec![];
-    if original.as_ref() != name.as_str() {
-        attrs.push(StructFieldAttribute::new(format!(
-            r#"serde(rename="{original}")"#
-        )));
-    }
-
-    if tpe.is_non_nullable_option() {
-        attrs.push(StructFieldAttribute::new(
-            r#"serde(default, skip_serializing_if = "Option::is_none")"#,
-        ))
-    }
-
-    if tpe.is_patch() {
-        attrs.push(StructFieldAttribute::new(
-            r#"serde(default, skip_serializing_if = "Patch::is_absent")"#,
-        ));
-    }
-
-    attrs
 }
