@@ -36,12 +36,14 @@ pub mod schemas {
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Foo {
         pub foo1: String,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub foo2: Option<f64>,
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Bar {
         pub bar1: String,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub bar2: Option<f64>,
     }
 }

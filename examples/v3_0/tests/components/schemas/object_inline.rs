@@ -18,8 +18,7 @@ mod to_json {
             r#"{
                 "id":123,
                 "registered_profile": {
-                    "name": "foo",
-                    "int1": null
+                    "name": "foo"
                 }
             }"#,
         );

@@ -1,4 +1,4 @@
-mod deserialize {
+mod from_json {
     use examples_v3_0::components::schemas::nullable_field::core::Patch;
     use examples_v3_0::components::schemas::nullable_field::schemas::{Sample1, Sample2, Sample5};
 
@@ -60,7 +60,7 @@ mod deserialize {
     }
 }
 
-mod serialize {
+mod to_json {
     use crate::components::flatten;
     use examples_v3_0::components::schemas::nullable_field::core::Patch;
     use examples_v3_0::components::schemas::nullable_field::schemas::{Sample1, Sample2, Sample5};

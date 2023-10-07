@@ -17,6 +17,7 @@ pub mod schemas {
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Dog {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub bark: Option<bool>,
         pub breed: dog::Breed,
     }
@@ -36,6 +37,7 @@ pub mod schemas {
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Cat {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub hunts: Option<bool>,
         pub age: i64,
     }
