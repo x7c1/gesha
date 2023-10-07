@@ -1,7 +1,7 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape;
 use crate::conversions::v3_0::to_rust_type::is_patch;
 use crate::conversions::Result;
-use crate::targets::rust_type::{DataType, StructField, StructFieldAttribute, StructFieldName};
+use gesha_rust_types::{DataType, StructField, StructFieldAttribute, StructFieldName};
 use openapi_types::v3_0::{
     ComponentName, RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
 };

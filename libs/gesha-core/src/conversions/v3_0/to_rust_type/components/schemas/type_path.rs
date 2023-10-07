@@ -1,4 +1,4 @@
-use crate::targets::rust_type::DataType;
+use gesha_rust_types::DataType;
 use std::fmt::{Display, Formatter};
 
 #[derive(Debug, Clone)]
@@ -37,10 +37,7 @@ impl TypePath {
     }
 
     fn to_supers(&self) -> impl Iterator<Item = String> {
-        vec!["super"]
-            .repeat(self.depth())
-            .into_iter()
-            .map(String::from)
+        ["super"].repeat(self.depth()).into_iter().map(String::from)
     }
 }
 

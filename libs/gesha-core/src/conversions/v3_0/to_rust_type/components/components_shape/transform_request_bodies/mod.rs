@@ -5,7 +5,7 @@ use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::Error::ReferenceObjectNotFound;
 use crate::conversions::Result;
 use crate::misc::TryMap;
-use crate::targets::rust_type::{DataType, EnumVariant, EnumVariantName, MediaTypeVariant};
+use gesha_rust_types::{DataType, EnumVariant, EnumVariantName, MediaTypeVariant};
 use openapi_types::v3_0::SchemaCase;
 
 pub fn transform_request_bodies(mut shape: ComponentsShape) -> Result<ComponentsShape> {

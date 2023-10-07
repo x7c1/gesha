@@ -1,4 +1,4 @@
-use crate::targets::rust_type::{DataType, EnumVariantName};
+use crate::{DataType, EnumVariantName};
 use std::fmt::{Display, Formatter};
 
 /// rf. https://doc.rust-lang.org/reference/items/enumerations.html

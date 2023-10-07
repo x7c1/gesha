@@ -11,6 +11,7 @@ path = "src/gesha_test.rs"
 
 [dependencies]
 gesha-core = { path = "../../libs/gesha-core" }
+gesha-rust-types = { path = "../../libs/targets/gesha-rust-types" }
 openapi-types = { path = "../../libs/openapi-types" }
 
 clap = { version = "4.3.11", features = ["derive"] }

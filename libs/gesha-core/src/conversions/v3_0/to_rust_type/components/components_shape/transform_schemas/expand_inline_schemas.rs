@@ -89,11 +89,16 @@ fn expand_field(
     mod_path: TypePath,
     field: FieldShape,
 ) -> Result<(FieldShape, Vec<DefinitionShape>)> {
-    let Inline { object, optionality } = field.type_shape else {
+    let Inline {
+        object,
+        optionality,
+    } = field.type_shape
+    else {
         return Ok((field, vec![]));
     };
-    let type_name = field.name.to_upper_camel_case();
-    let header = TypeHeaderShape::new(type_name.clone(), &object, vec![]);
+    let header = TypeHeaderShape::new(field.name.clone(), &object, vec![]);
+    let type_name = header.name.clone();
+
     let defs = if let Some(cases) = object.all_of.as_ref() {
         expand_all_of_fields(
             mod_path.clone(),

@@ -2,7 +2,7 @@ use crate::conversions::v3_0::to_rust_type::components::request_bodies::{
     ContentShape, DefinitionShape, MediaTypeShape, ModShape,
 };
 use crate::conversions::Result;
-use crate::targets::rust_type::{DocComments, EnumVariantName, MediaTypeDef, ModDef};
+use gesha_rust_types::{DocComments, EnumVariantName, MediaTypeDef, ModDef};
 use indexmap::IndexMap;
 use openapi_types::v3_0::{ComponentName, RequestBodiesObject, RequestBodyCase, RequestBodyObject};
 use std::ops::Not;

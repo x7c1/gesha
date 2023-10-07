@@ -1,7 +1,7 @@
 use clap::Parser;
 use gesha_core::gateway;
 use gesha_core::gateway::Reader;
-use gesha_core::targets::rust_type::Modules;
+use gesha_rust_types::Modules;
 use openapi_types::v3_0;
 use tracing::log::info;
 

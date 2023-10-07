@@ -15,7 +15,7 @@ use render_request_body::render_request_body;
 use crate::render;
 use crate::renderer::Renderer;
 use crate::renderer::Result;
-use crate::targets::rust_type::{
+use gesha_rust_types::{
     DataType, Definition, DeriveAttribute, Imports, ModDef, Modules, NewTypeDef, PresetDef,
     SerdeAttribute, StructDef, StructField, StructFieldAttribute, TypeHeader,
 };

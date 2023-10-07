@@ -1,4 +1,4 @@
-use crate::targets::rust_type::ModDef;
+use crate::ModDef;
 use std::vec::IntoIter;
 
 #[derive(Clone, Debug)]

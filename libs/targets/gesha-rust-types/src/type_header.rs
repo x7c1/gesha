@@ -1,4 +1,4 @@
-use crate::targets::rust_type::{DeriveAttribute, DocComments, SerdeAttribute};
+use crate::{DeriveAttribute, DocComments, SerdeAttribute};
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct TypeHeader {

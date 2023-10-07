@@ -1,6 +1,6 @@
 use crate::conversions::v3_0::to_rust_type::components::request_bodies::DefinitionShape;
 use crate::conversions::Result;
-use crate::targets::rust_type::{Definitions, ModDef, ModuleName, Package};
+use gesha_rust_types::{Definitions, ModDef, ModuleName, Package};
 use openapi_types::v3_0::ComponentName;
 
 #[derive(Clone, Debug)]

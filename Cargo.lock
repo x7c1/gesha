@@ -1009,6 +1009,7 @@ dependencies = [
  "chrono",
  "clap",
  "gesha-core",
+ "gesha-rust-types",
  "nu-ansi-term 0.48.0",
  "openapi-types",
  "opentelemetry",
@@ -1026,6 +1027,7 @@ version = "0.0.1"
 dependencies = [
  "console",
  "futures",
+ "gesha-rust-types",
  "heck",
  "indexmap 2.0.0",
  "openapi-types",
@@ -1034,6 +1036,14 @@ dependencies = [
  "tokio",
  "tracing",
  "yaml-rust",
+]
+
+[[package]]
+name = "gesha-rust-types"
+version = "0.1.0"
+dependencies = [
+ "heck",
+ "indexmap 2.0.0",
 ]
 
 [[package]]

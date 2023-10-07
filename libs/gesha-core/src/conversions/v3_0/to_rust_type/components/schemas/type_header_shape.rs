@@ -1,4 +1,5 @@
-use crate::targets::rust_type::{DocComments, SerdeAttribute, TypeHeader};
+use gesha_rust_types::{DocComments, SerdeAttribute, TypeHeader};
+use heck::ToUpperCamelCase;
 use openapi_types::v3_0::{ComponentName, SchemaObject};
 
 #[derive(Clone, Debug)]
@@ -12,10 +13,14 @@ pub struct TypeHeaderShape {
 
 impl TypeHeaderShape {
     pub fn new(
-        name: ComponentName,
+        name: impl Into<String>,
         object: &SchemaObject,
         serde_attrs: Vec<SerdeAttribute>,
     ) -> Self {
+        let name = {
+            let camel_cased = name.into().to_upper_camel_case();
+            ComponentName::new(camel_cased)
+        };
         Self {
             name,
             doc_comments: to_doc_comments(object.title.as_deref(), object.description.as_deref()),

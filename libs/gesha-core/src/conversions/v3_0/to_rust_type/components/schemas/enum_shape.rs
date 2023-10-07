@@ -3,7 +3,7 @@ use crate::conversions::v3_0::to_rust_type::components::schemas::{
 };
 use crate::conversions::Result;
 use crate::misc::TryMap;
-use crate::targets::rust_type::{EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName};
+use gesha_rust_types::{EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName};
 use openapi_types::v3_0::EnumValues;
 
 #[derive(Clone, Debug)]

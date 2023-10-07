@@ -1,5 +1,5 @@
 use crate::conversions::Result;
-use crate::targets::rust_type::{Definitions, Imports, ModDef, ModuleName};
+use gesha_rust_types::{Definitions, Imports, ModDef, ModuleName};
 use std::ops::Not;
 
 #[derive(Clone, Debug, Default)]

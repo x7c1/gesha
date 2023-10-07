@@ -2,7 +2,7 @@ use crate::gateway;
 use crate::gateway::testing::v3_0::ComponentKind;
 use crate::gateway::testing::TestCase;
 use crate::gateway::Error::UnsupportedExampleLocation;
-use crate::targets::rust_type::Modules;
+use gesha_rust_types::Modules;
 use openapi_types::v3_0;
 use std::borrow::Cow;
 

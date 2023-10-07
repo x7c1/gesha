@@ -1,4 +1,4 @@
-use crate::targets::rust_type::{DataType, StructFieldName};
+use crate::{DataType, StructFieldName};
 use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
