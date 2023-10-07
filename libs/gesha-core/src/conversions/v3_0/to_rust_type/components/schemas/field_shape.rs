@@ -26,7 +26,7 @@ impl FieldShape {
 
     pub fn define(self) -> Result<StructField> {
         let name = StructFieldName::new(self.name.as_ref());
-        let attrs = self.define_field_attrs(&name);
+        let attrs = self.create_field_attrs(&name);
         let data_type = self.type_shape.define()?;
         let field = StructField::new(name, data_type, attrs);
         Ok(field)
@@ -40,7 +40,7 @@ impl FieldShape {
         properties.map(to_field_shapes).unwrap_or(Ok(vec![]))
     }
 
-    fn define_field_attrs(&self, name: &StructFieldName) -> Vec<StructFieldAttribute> {
+    fn create_field_attrs(&self, name: &StructFieldName) -> Vec<StructFieldAttribute> {
         let mut attrs = vec![];
 
         let original = &self.name;
@@ -49,7 +49,7 @@ impl FieldShape {
                 r#"serde(rename="{original}")"#
             )));
         }
-        if matches!(self.type_shape, TypeShape::Option(..)) {
+        if matches!(self.type_shape, TypeShape::Maybe(..)) {
             attrs.push(StructFieldAttribute::new(
                 r#"serde(default, skip_serializing_if = "Option::is_none")"#,
             ))

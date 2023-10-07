@@ -78,10 +78,10 @@ impl TypeShape {
             Self::Ref { .. } => Err(broken!(self))?,
         };
         let resolved = match (optionality.is_required, optionality.is_nullable) {
-            (false, false) => TypeShape::Option(Box::new(self)),
-            (true, true) => TypeShape::Maybe(Box::new(self)),
-            (false, true) => TypeShape::Patch(Box::new(self)),
             (true, false) => self,
+            (false, false) => TypeShape::Maybe(Box::new(self)),
+            (true, true) => TypeShape::Option(Box::new(self)),
+            (false, true) => TypeShape::Patch(Box::new(self)),
         };
         Ok(resolved)
     }
