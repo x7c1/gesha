@@ -14,13 +14,13 @@ gesha-core = { path = "../../libs/gesha-core" }
 gesha-rust-types = { path = "../../libs/targets/gesha-rust-types" }
 openapi-types = { path = "../../libs/openapi-types" }
 
-clap = { version = "4.3.11", features = ["derive"] }
+clap = { version = "4.4.6", features = ["derive"] }
 opentelemetry = { workspace = true }
-opentelemetry-otlp = { version = "0.12.0", features = ["metrics"] }
-opentelemetry-semantic-conventions = "0.11.0"
+opentelemetry-otlp = { version = "0.13.0", features = ["metrics"] }
+opentelemetry-semantic-conventions = "0.12.0"
 tokio = { workspace = true }
-tracing-opentelemetry = { version = "0.19", features = ["metrics"] }
+tracing-opentelemetry = { version = "0.21", features = ["metrics"] }
 tracing = { workspace = true }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-chrono = "0.4.26"
-nu-ansi-term = "0.48.0"
+chrono = "0.4.31"
+nu-ansi-term = "0.49.0"
