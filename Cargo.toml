@@ -7,10 +7,10 @@ members = [
 resolver = "2"
 
 [workspace.dependencies]
-async-trait = "0.1.71"
-opentelemetry = { version = "0.19.0", default-features = false, features = ["trace", "rt-tokio", "metrics"] }
+async-trait = "0.1.73"
+opentelemetry = { version = "0.20.0", default-features = false, features = ["trace", "rt-tokio", "metrics"] }
 pretty_assertions = "1.4.0"
-serde = { version = "1.0.169", features = ["derive"] }
-serde_json = "1.0.100"
-tokio = { version = "1.29.1", features = ["full"] }
+serde = { version = "1.0.188", features = ["derive"] }
+serde_json = "1.0.107"
+tokio = { version = "1.32.0", features = ["full"] }
 tracing = "0.1"
