@@ -89,7 +89,11 @@ fn expand_field(
     mod_path: TypePath,
     field: FieldShape,
 ) -> Result<(FieldShape, Vec<DefinitionShape>)> {
-    let Inline { object, optionality } = field.type_shape else {
+    let Inline {
+        object,
+        optionality,
+    } = field.type_shape
+    else {
         return Ok((field, vec![]));
     };
     let header = TypeHeaderShape::new(field.name.clone(), &object, vec![]);
