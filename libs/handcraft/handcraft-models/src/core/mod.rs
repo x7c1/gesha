@@ -14,7 +14,7 @@ pub(crate) fn group_by_query_key(
 
     let mut kvs = HashMap::<String, Vec<String>>::new();
     for (k, v) in pairs {
-        kvs.entry(k).or_insert_with(Vec::new).push(v)
+        kvs.entry(k).or_default().push(v)
     }
 
     Ok(kvs)
