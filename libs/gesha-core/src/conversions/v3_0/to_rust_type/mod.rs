@@ -5,7 +5,7 @@ use crate::conversions::v3_0::to_rust_type::components::request_bodies::RequestB
 use crate::conversions::v3_0::to_rust_type::components::schemas::SchemasShape;
 use crate::conversions::v3_0::to_rust_type::components::ComponentsShape;
 use crate::conversions::{Result, ToRustType};
-use gesha_rust_types::{DataType, Modules};
+use gesha_rust_types::Modules;
 use openapi_types::v3_0::{ComponentsObject, Document};
 
 impl ToRustType<Document> for Modules {
@@ -28,8 +28,4 @@ impl ToRustType<ComponentsObject> for Modules {
         };
         shapes.into_modules()
     }
-}
-
-fn is_patch(x: &DataType) -> bool {
-    matches!(x, DataType::Patch(_))
 }

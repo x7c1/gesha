@@ -1,5 +1,4 @@
 use crate::conversions::v3_0::to_rust_type::components::schemas::TypeShape;
-use crate::conversions::v3_0::to_rust_type::is_patch;
 use crate::conversions::Result;
 use gesha_rust_types::{DataType, StructField, StructFieldAttribute, StructFieldName};
 use openapi_types::v3_0::{
@@ -82,10 +81,18 @@ fn to_field_attrs(
             r#"serde(rename="{original}")"#
         )));
     }
-    if is_patch(tpe) {
+
+    if tpe.is_non_nullable_option() {
+        attrs.push(StructFieldAttribute::new(
+            r#"serde(default, skip_serializing_if = "Option::is_none")"#,
+        ))
+    }
+
+    if tpe.is_patch() {
         attrs.push(StructFieldAttribute::new(
             r#"serde(default, skip_serializing_if = "Patch::is_absent")"#,
         ));
     }
+
     attrs
 }

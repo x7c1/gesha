@@ -30,7 +30,11 @@ pub enum TypeShape {
         object: SchemaObject,
         optionality: Optionality,
     },
+    /// required:true, nullable:true
     Option(Box<TypeShape>),
+    /// required:false, nullable:false
+    Maybe(Box<TypeShape>),
+    /// required:false, nullable:true
     Patch(Box<TypeShape>),
 }
 
@@ -66,7 +70,7 @@ impl TypeShape {
             Self::Proper { optionality, .. }
             | Self::Array { optionality, .. }
             | Self::Expanded { optionality, .. } => optionality,
-            Self::Option(_) | Self::Patch(_) => {
+            Self::Option(_) | Self::Maybe(_) | Self::Patch(_) => {
                 // already resolved
                 return Ok(self);
             }
@@ -103,8 +107,7 @@ impl TypeShape {
                 ref mut optionality,
                 ..
             } => optionality.is_required = true,
-            TypeShape::Option(_) => {}
-            TypeShape::Patch(_) => {}
+            TypeShape::Option(_) | TypeShape::Maybe(_) | TypeShape::Patch(_) => {}
         }
         self
     }
@@ -114,7 +117,14 @@ impl TypeShape {
             Self::Proper { data_type, .. } => data_type,
             Self::Array { type_shape, .. } => DataType::Vec(Box::new((*type_shape).define()?)),
             Self::Expanded { type_path, .. } => type_path.into(),
-            Self::Option(type_shape) => DataType::Option(Box::new((*type_shape).define()?)),
+            Self::Option(type_shape) => DataType::Option {
+                data_type: Box::new((*type_shape).define()?),
+                nullable: false,
+            },
+            TypeShape::Maybe(type_shape) => DataType::Option {
+                data_type: Box::new((*type_shape).define()?),
+                nullable: true,
+            },
             Self::Patch(type_shape) => DataType::Patch(Box::new((*type_shape).define()?)),
             Self::Ref { .. } => Err(broken!(self))?,
             Self::Inline { .. } => Err(broken!(self))?,

@@ -111,6 +111,7 @@ impl Transformer<'_> {
                 optionality,
             },
             TypeShape::Option(x) => TypeShape::Option(Box::new(self.transform_field_type(*x)?)),
+            TypeShape::Maybe(x) => TypeShape::Maybe(Box::new(self.transform_field_type(*x)?)),
             TypeShape::Patch(x) => TypeShape::Patch(Box::new(self.transform_field_type(*x)?)),
             TypeShape::Inline { .. } => Err(broken!(shape))?,
         };

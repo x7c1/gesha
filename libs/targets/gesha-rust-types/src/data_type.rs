@@ -7,11 +7,29 @@ pub enum DataType {
     Int64,
     Float32,
     Float64,
-    Option(Box<DataType>),
+    Option {
+        data_type: Box<DataType>,
+        nullable: bool,
+    },
     Patch(Box<DataType>),
     String,
     Vec(Box<DataType>),
     Custom(String),
+}
+
+impl DataType {
+    pub fn is_non_nullable_option(&self) -> bool {
+        matches!(
+            self,
+            DataType::Option {
+                nullable: false,
+                ..
+            }
+        )
+    }
+    pub fn is_patch(&self) -> bool {
+        matches!(self, DataType::Patch(_))
+    }
 }
 
 impl Display for DataType {
@@ -29,7 +47,7 @@ impl From<DataType> for String {
             DataType::Int64 => "i64".to_string(),
             DataType::Float32 => "f32".to_string(),
             DataType::Float64 => "f64".to_string(),
-            DataType::Option(x) => format!("Option<{}>", String::from(*x)),
+            DataType::Option { data_type, .. } => format!("Option<{}>", String::from(*data_type)),
             DataType::Patch(x) => format!("Patch<{}>", String::from(*x)),
             DataType::String => "String".to_string(),
             DataType::Vec(x) => format!("Vec<{}>", String::from(*x)),
