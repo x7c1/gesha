@@ -88,27 +88,29 @@ impl TypeShape {
 
     pub fn require(mut self) -> Self {
         match self {
-            Proper {
+            Self::Proper {
+                ref mut optionality,
+                ..
+            }
+            | Self::Array {
+                ref mut optionality,
+                ..
+            }
+            | Self::Expanded {
+                ref mut optionality,
+                ..
+            }
+            | Self::Inline {
                 ref mut optionality,
                 ..
             } => optionality.is_required = true,
-            TypeShape::Array {
-                ref mut optionality,
-                ..
-            } => optionality.is_required = true,
-            TypeShape::Ref {
+
+            Self::Ref {
                 ref mut is_required,
                 ..
             } => *is_required = true,
-            TypeShape::Expanded {
-                ref mut optionality,
-                ..
-            } => optionality.is_required = true,
-            Inline {
-                ref mut optionality,
-                ..
-            } => optionality.is_required = true,
-            TypeShape::Option(_) | TypeShape::Maybe(_) | TypeShape::Patch(_) => {}
+
+            Self::Option(_) | Self::Maybe(_) | Self::Patch(_) => { /* nop */ }
         }
         self
     }
