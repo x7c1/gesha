@@ -37,10 +37,7 @@ impl TypePath {
     }
 
     fn to_supers(&self) -> impl Iterator<Item = String> {
-        vec!["super"]
-            .repeat(self.depth())
-            .into_iter()
-            .map(String::from)
+        ["super"].repeat(self.depth()).into_iter().map(String::from)
     }
 }
 
