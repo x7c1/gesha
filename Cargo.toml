@@ -4,6 +4,7 @@ members = [
     "apps/gesha",
     "examples/v3_0",
 ]
+resolver = "2"
 
 [workspace.dependencies]
 async-trait = "0.1.71"
