@@ -1,17 +1,7 @@
 mod error;
 pub use error::{Error, Result};
 
-mod reify;
-use reify::{reify_entry, reify_value};
-
 mod v3_0;
-
-use crate::yaml::YamlMap;
-
-/// convert YamlMap to a type defined in openapi_types crate.
-pub trait ToOpenApi: Sized {
-    fn apply(map: YamlMap) -> Result<Self>;
-}
 
 /// convert A to a type defined in gesha_rust_types module.
 pub trait ToRustType<A>: Sized {

@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 indexmap = "2.0.2"
 heck = "0.4.1"
+yaml-rust = "0.4.5"

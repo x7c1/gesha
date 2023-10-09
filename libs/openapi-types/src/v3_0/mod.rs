@@ -1,11 +1,13 @@
+mod from_yaml;
+
 mod component_name;
 pub use component_name::ComponentName;
 
 mod components_object;
-pub use components_object::{
-    AllOf, ArrayItems, ComponentsObject, EnumValues, OneOf, RequiredSchemaFields, SchemaCase,
-    SchemaObject, SchemaProperties, SchemasObject,
-};
+pub use components_object::{ComponentsObject, SchemasObject};
+
+mod document;
+pub use document::{Document, InfoObject};
 
 mod format_modifier;
 pub use format_modifier::FormatModifier;
@@ -33,18 +35,8 @@ pub use request_body_content::RequestBodyContent;
 mod request_body_object;
 pub use request_body_object::{RequestBodiesObject, RequestBodyCase, RequestBodyObject};
 
-/// OpenAPI Document
-/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schema
-#[derive(Debug)]
-pub struct Document {
-    pub openapi: String,
-    pub info: InfoObject,
-    pub paths: PathsObject,
-    pub components: Option<ComponentsObject>,
-}
-
-/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#infoObject
-#[derive(Debug)]
-pub struct InfoObject {
-    pub title: String,
-}
+mod schema_case;
+pub use schema_case::{
+    AllOf, ArrayItems, EnumValues, OneOf, RequiredSchemaFields, SchemaCase, SchemaObject,
+    SchemaProperties,
+};

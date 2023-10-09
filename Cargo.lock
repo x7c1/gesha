@@ -984,7 +984,6 @@ dependencies = [
  "tracing",
  "tracing-opentelemetry",
  "tracing-subscriber",
- "yaml-rust",
 ]
 
 [[package]]
@@ -1496,6 +1495,7 @@ version = "0.0.1"
 dependencies = [
  "heck",
  "indexmap 2.0.2",
+ "yaml-rust",
 ]
 
 [[package]]

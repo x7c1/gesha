@@ -23,4 +23,3 @@ tokio = { workspace = true }
 tracing = { workspace = true }
 tracing-opentelemetry = { version = "0.21", features = ["metrics"] }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-yaml-rust = "0.4.5"

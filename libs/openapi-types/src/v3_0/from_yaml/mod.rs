@@ -1,8 +1,17 @@
-use crate::conversions::v3_0::to_openapi::to_paths_object::to_paths_object;
-use crate::conversions::Error::IncompatibleVersion;
-use crate::conversions::{Result, ToOpenApi};
-use crate::yaml::YamlMap;
-use openapi_types::v3_0::{Document, InfoObject};
+mod to_components_object;
+mod to_paths_object;
+use to_paths_object::to_paths_object;
+
+mod to_request_body;
+use to_request_body::to_request_body_pair;
+
+mod to_schema_case;
+use to_schema_case::{to_schema_case, to_schema_pair};
+
+use crate::v3_0::{Document, InfoObject};
+use crate::yaml::{ToOpenApi, YamlMap};
+use crate::Error::IncompatibleVersion;
+use crate::Result;
 
 impl ToOpenApi for Document {
     /// return Error::IncompatibleVersion if not supported version.
@@ -22,11 +31,11 @@ impl ToOpenApi for Document {
     }
 }
 
-fn to_openapi_version(s: String) -> Result<String> {
-    if !s.starts_with("3.0.") {
-        return Err(IncompatibleVersion);
+fn to_openapi_version(version: String) -> Result<String> {
+    if !version.starts_with("3.0.") {
+        return Err(IncompatibleVersion { version });
     }
-    Ok(s)
+    Ok(version)
 }
 
 fn to_info(mut map: YamlMap) -> Result<InfoObject> {

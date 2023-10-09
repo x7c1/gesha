@@ -9,6 +9,7 @@ use tracing::{error, info};
 #[tokio::main]
 async fn main() -> ExitCode {
     trace::init();
+
     let args = Args::parse();
     info!("gesha: {:?}", args);
 

@@ -1,5 +1,5 @@
 use crate::yaml::YamlValue;
-use crate::yaml::{Error, Result};
+use crate::{Error, Result};
 use yaml_rust::YamlLoader;
 
 pub fn load_from_str<A>(contents: &str) -> Result<A>

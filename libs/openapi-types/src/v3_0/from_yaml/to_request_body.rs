@@ -1,10 +1,9 @@
-use crate::conversions::reify::collect;
-use crate::conversions::v3_0::to_openapi::to_schema_case::to_schema_case;
-use crate::conversions::Result;
-use crate::yaml::YamlMap;
-use openapi_types::v3_0::{
+use crate::v3_0::from_yaml::to_schema_case;
+use crate::v3_0::{
     ComponentName, MediaTypeKey, MediaTypeObject, RequestBodyCase, RequestBodyObject,
 };
+use crate::yaml::{collect, YamlMap};
+use crate::Result;
 
 pub(super) fn to_request_body_pair(
     kv: (String, YamlMap),
