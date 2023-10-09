@@ -1,8 +1,8 @@
 mod generate;
-mod trace;
 
 use crate::generate::Args;
 use clap::Parser;
+use gesha_core::trace;
 use std::process::ExitCode;
 use tracing::{error, info};
 

@@ -2,12 +2,14 @@
 members = [
     "apps/handcraft",
     "apps/gesha",
+    "apps/gesha-test",
     "examples/v3_0",
 ]
 resolver = "2"
 
 [workspace.dependencies]
 async-trait = "0.1.73"
+clap = { version = "4.4.6", features = ["derive"] }
 opentelemetry = { version = "0.20.0", default-features = false, features = ["trace", "rt-tokio", "metrics"] }
 pretty_assertions = "1.4.0"
 serde = { version = "1.0.188", features = ["derive"] }

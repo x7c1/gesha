@@ -956,35 +956,34 @@ dependencies = [
 name = "gesha"
 version = "0.0.1"
 dependencies = [
- "chrono",
  "clap",
  "gesha-core",
  "gesha-rust-types",
- "nu-ansi-term 0.49.0",
  "openapi-types",
- "opentelemetry",
- "opentelemetry-otlp",
- "opentelemetry-semantic-conventions",
  "tokio",
  "tracing",
- "tracing-opentelemetry",
- "tracing-subscriber",
 ]
 
 [[package]]
 name = "gesha-core"
 version = "0.0.1"
 dependencies = [
+ "chrono",
  "console",
  "futures",
  "gesha-rust-types",
  "heck",
  "indexmap 2.0.2",
+ "nu-ansi-term 0.49.0",
  "openapi-types",
  "opentelemetry",
+ "opentelemetry-otlp",
+ "opentelemetry-semantic-conventions",
  "similar",
  "tokio",
  "tracing",
+ "tracing-opentelemetry",
+ "tracing-subscriber",
  "yaml-rust",
 ]
 
@@ -994,6 +993,18 @@ version = "0.1.0"
 dependencies = [
  "heck",
  "indexmap 2.0.2",
+]
+
+[[package]]
+name = "gesha-test"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "gesha-core",
+ "gesha-rust-types",
+ "openapi-types",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
