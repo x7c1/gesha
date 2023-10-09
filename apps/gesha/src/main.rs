@@ -2,7 +2,7 @@ mod generate;
 
 use crate::generate::Args;
 use clap::Parser;
-use gesha_core::trace;
+use gesha_core::{gateway, trace};
 use std::process::ExitCode;
 use tracing::{error, info};
 
@@ -10,11 +10,17 @@ use tracing::{error, info};
 async fn main() -> ExitCode {
     trace::init();
     let args = Args::parse();
-    info!("main> {:?}", args);
+    info!("gesha: {:?}", args);
 
-    let code = match generate::run(args) {
+    let result = generate::run(args);
+    trace::shutdown();
+    to_code(result)
+}
+
+fn to_code(result: gateway::Result<()>) -> ExitCode {
+    match result {
         Ok(_) => {
-            info!("done");
+            info!("gesha: done");
             ExitCode::SUCCESS
         }
         Err(cause) => {
@@ -22,7 +28,5 @@ async fn main() -> ExitCode {
             error!("{message}");
             ExitCode::FAILURE
         }
-    };
-    trace::shutdown();
-    code
+    }
 }
