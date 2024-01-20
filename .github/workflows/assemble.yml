@@ -32,7 +32,7 @@ jobs:
         uses: arduino/setup-protoc@v1
 
       - name: Cache cargo dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
@@ -63,7 +63,7 @@ jobs:
           make gesha-sample
 
       - name: Cache deno.land dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           key: ${{ runner.os }}-deno-${{ hashFiles('e2e-tests/**/*') }}-${{ env.BRANCH_NAME }}
           restore-keys: |
