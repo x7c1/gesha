@@ -7,14 +7,18 @@ pub mod schemas {
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Base {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub x1: Option<String>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub x2: Option<i64>,
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Extended {
         pub x1: String,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub x2: Option<i64>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub foo: Option<String>,
     }
 
@@ -22,7 +26,9 @@ pub mod schemas {
     pub struct ExtendedMore {
         pub x1: String,
         pub x2: i64,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub foo: Option<String>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub bar: Option<i64>,
     }
 }

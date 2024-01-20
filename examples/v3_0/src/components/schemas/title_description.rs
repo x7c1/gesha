@@ -10,6 +10,7 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct OnlyTitle {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub x1: Option<i64>,
     }
 
@@ -18,6 +19,7 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct OnlyDescription {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub x2: Option<i64>,
     }
 
@@ -28,6 +30,7 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct TitleAndDescription {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub foo: Option<i64>,
     }
 
@@ -38,6 +41,7 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct WithWhiteSpaces {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub foo: Option<i64>,
     }
 
@@ -46,6 +50,7 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct SameText {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub bar: Option<i64>,
     }
 
@@ -54,6 +59,7 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct HasLineBreak {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub foo: Option<i64>,
     }
 
@@ -87,7 +93,9 @@ pub mod schemas {
     */
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct AllOfWithTitle {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub x1: Option<i64>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub x2: Option<i64>,
     }
 }

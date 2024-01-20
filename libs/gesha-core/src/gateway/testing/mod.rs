@@ -3,11 +3,12 @@ pub use generate_module_file::generate_module_file;
 
 pub mod v3_0;
 
-use crate::conversions::{ToOpenApi, ToRustType};
+use crate::conversions::ToRustType;
 use crate::gateway;
 use crate::gateway::{detect_diff, Error, ErrorTheme, Reader, Writer};
 use crate::renderer::Renderer;
 use futures::future::join_all;
+use openapi_types::yaml::ToOpenApi;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::path::PathBuf;

@@ -8,11 +8,13 @@ pub mod schemas {
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Pet {
         pub id: i64,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub tag: Option<String>,
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct OptionalRef {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub pet: Option<Pet>,
     }
 }

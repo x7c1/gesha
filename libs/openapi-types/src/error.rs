@@ -4,5 +4,7 @@ pub type Result<A> = std::result::Result<A, Error>;
 pub enum Error {
     FieldNotExist { field: String },
     CannotScanYaml { detail: String },
+    IncompatibleVersion { version: String },
     TypeMismatch,
+    UnknownDataType(String),
 }

@@ -1,5 +1,5 @@
 use crate::conversions::Error::TransformBroken;
-use crate::{conversions, renderer, yaml};
+use crate::{conversions, renderer};
 use console::{Style, StyledObject};
 use std::path::PathBuf;
 use tokio::task::JoinError;
@@ -13,8 +13,11 @@ pub enum Error {
         path: PathBuf,
         cause: conversions::Error,
     },
+    OpenApiTypes {
+        path: PathBuf,
+        cause: openapi_types::Error,
+    },
     Renderer(renderer::Error),
-    Yaml(yaml::Error),
 
     // thread errors
     JoinError(JoinError),
@@ -102,6 +105,12 @@ impl Error {
             cause,
         }
     }
+    pub fn openapi<A: Into<PathBuf>>(path: A) -> impl FnOnce(openapi_types::Error) -> Self {
+        |cause| Self::OpenApiTypes {
+            path: path.into(),
+            cause,
+        }
+    }
     pub fn dump(&self) -> String {
         self.detail(ErrorTheme::Test)
     }
@@ -110,12 +119,6 @@ impl Error {
 impl From<renderer::Error> for Error {
     fn from(cause: renderer::Error) -> Self {
         Self::Renderer(cause)
-    }
-}
-
-impl From<yaml::Error> for Error {
-    fn from(cause: yaml::Error) -> Self {
-        Self::Yaml(cause)
     }
 }
 

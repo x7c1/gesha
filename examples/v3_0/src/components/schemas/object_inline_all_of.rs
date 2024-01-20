@@ -120,6 +120,7 @@ pub mod schemas {
 
             #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
             pub struct Sample3Nested1 {
+                #[serde(default, skip_serializing_if = "Option::is_none")]
                 pub value1: Option<i64>,
             }
         }

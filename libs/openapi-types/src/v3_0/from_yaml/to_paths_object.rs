@@ -1,9 +1,9 @@
-use crate::conversions::{reify_entry, Result};
-use crate::yaml::YamlMap;
-use openapi_types::v3_0::{
+use crate::v3_0::{
     HttpStatusCode, OperationObject, PathFieldName, PathItemObject, PathsObject, ResponseCase,
     ResponseObject, ResponsesObject,
 };
+use crate::yaml::{reify_entry, YamlMap};
+use crate::Result;
 
 pub(super) fn to_paths_object(map: YamlMap) -> Result<PathsObject> {
     let tuples = map

@@ -23,6 +23,7 @@ pub mod schemas {
         pub message: String,
         pub code: i64,
         pub root_cause: String,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         pub foo: Option<i64>,
     }
 }

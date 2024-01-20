@@ -1,20 +1,27 @@
 mod generate;
-mod trace;
 
 use crate::generate::Args;
 use clap::Parser;
+use gesha_core::{gateway, trace};
 use std::process::ExitCode;
 use tracing::{error, info};
 
 #[tokio::main]
 async fn main() -> ExitCode {
     trace::init();
-    let args = Args::parse();
-    info!("main> {:?}", args);
 
-    let code = match generate::run(args) {
+    let args = Args::parse();
+    info!("gesha: {:?}", args);
+
+    let result = generate::run(args);
+    trace::shutdown();
+    to_code(result)
+}
+
+fn to_code(result: gateway::Result<()>) -> ExitCode {
+    match result {
         Ok(_) => {
-            info!("done");
+            info!("gesha: done");
             ExitCode::SUCCESS
         }
         Err(cause) => {
@@ -22,7 +29,5 @@ async fn main() -> ExitCode {
             error!("{message}");
             ExitCode::FAILURE
         }
-    };
-    trace::shutdown();
-    code
+    }
 }

@@ -1,5 +1,3 @@
-pub mod overwrite;
-
 use clap::Parser;
 use gesha_core::gateway;
 use gesha_core::gateway::testing::v3_0::ComponentKind::{RequestBodies, Schemas};
@@ -74,6 +72,6 @@ fn new_request_bodies_cases() -> ComponentCases {
     ComponentCases::from_vec(RequestBodies, vec!["schema_ref.yaml"])
 }
 
-fn all_cases() -> Vec<ComponentCases> {
+pub fn all_cases() -> Vec<ComponentCases> {
     vec![new_schemas_cases(), new_request_bodies_cases()]
 }

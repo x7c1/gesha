@@ -1,11 +1,11 @@
-use crate::conversions::Error::UnknownDataType;
-use crate::conversions::{reify_entry, reify_value, Result};
-use crate::yaml::{YamlArray, YamlMap};
-use indexmap::IndexSet;
-use openapi_types::v3_0::{
+use crate::v3_0::{
     ArrayItems, ComponentName, EnumValues, FormatModifier, OpenApiDataType, ReferenceObject,
     RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
 };
+use crate::yaml::{reify_entry, reify_value, YamlArray, YamlMap};
+use crate::Error::UnknownDataType;
+use crate::Result;
+use indexmap::IndexSet;
 
 pub fn to_schema_pair(kv: (String, YamlMap)) -> Result<(ComponentName, SchemaCase)> {
     let (name, map) = kv;

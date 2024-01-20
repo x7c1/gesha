@@ -1,6 +1,3 @@
-mod error;
-pub use error::{Error, Result};
-
 mod yaml_array;
 pub use yaml_array::YamlArray;
 
@@ -12,3 +9,9 @@ pub use yaml_value::YamlValue;
 
 mod loader;
 pub use loader::load_from_str;
+
+mod to_openapi;
+pub use to_openapi::ToOpenApi;
+
+mod reify;
+pub(crate) use reify::{collect, reify_entry, reify_value};

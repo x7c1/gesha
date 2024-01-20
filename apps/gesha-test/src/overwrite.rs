@@ -1,5 +1,5 @@
-use crate::test;
-use crate::test::Args;
+use crate::process;
+use crate::process::Args;
 use gesha_core::gateway;
 use gesha_core::gateway::testing::v3_0::ComponentCase;
 use gesha_core::gateway::testing::{collect_modified_cases, generate_module_file};
@@ -12,7 +12,10 @@ pub async fn run(args: Args) -> gateway::Result<()> {
         let case = ComponentCase::from_path(schema)?;
         vec![case.into()]
     } else {
-        test::all_cases().into_iter().flat_map(Vec::from).collect()
+        process::all_cases()
+            .into_iter()
+            .flat_map(Vec::from)
+            .collect()
     };
     let cases = collect_modified_cases(test_cases).await?;
     if cases.is_empty() {
@@ -29,7 +32,7 @@ pub async fn run(args: Args) -> gateway::Result<()> {
             writer.copy_file(case.target.output)?;
         }
     }
-    test::all_cases().into_iter().try_for_each(|cases| {
+    process::all_cases().into_iter().try_for_each(|cases| {
         let module_path = cases.module_path.clone();
         generate_module_file(module_path, cases.into())
     })

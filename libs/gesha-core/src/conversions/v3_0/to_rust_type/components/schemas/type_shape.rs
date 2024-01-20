@@ -30,7 +30,11 @@ pub enum TypeShape {
         object: SchemaObject,
         optionality: Optionality,
     },
+    /// required:true, nullable:true
     Option(Box<TypeShape>),
+    /// required:false, nullable:false
+    Maybe(Box<TypeShape>),
+    /// required:false, nullable:true
     Patch(Box<TypeShape>),
 }
 
@@ -66,7 +70,7 @@ impl TypeShape {
             Self::Proper { optionality, .. }
             | Self::Array { optionality, .. }
             | Self::Expanded { optionality, .. } => optionality,
-            Self::Option(_) | Self::Patch(_) => {
+            Self::Option(_) | Self::Maybe(_) | Self::Patch(_) => {
                 // already resolved
                 return Ok(self);
             }
@@ -74,37 +78,39 @@ impl TypeShape {
             Self::Ref { .. } => Err(broken!(self))?,
         };
         let resolved = match (optionality.is_required, optionality.is_nullable) {
-            (true, true) | (false, false) => TypeShape::Option(Box::new(self)),
-            (false, true) => TypeShape::Patch(Box::new(self)),
             (true, false) => self,
+            (false, false) => TypeShape::Maybe(Box::new(self)),
+            (true, true) => TypeShape::Option(Box::new(self)),
+            (false, true) => TypeShape::Patch(Box::new(self)),
         };
         Ok(resolved)
     }
 
     pub fn require(mut self) -> Self {
         match self {
-            Proper {
+            Self::Proper {
+                ref mut optionality,
+                ..
+            }
+            | Self::Array {
+                ref mut optionality,
+                ..
+            }
+            | Self::Expanded {
+                ref mut optionality,
+                ..
+            }
+            | Self::Inline {
                 ref mut optionality,
                 ..
             } => optionality.is_required = true,
-            TypeShape::Array {
-                ref mut optionality,
-                ..
-            } => optionality.is_required = true,
-            TypeShape::Ref {
+
+            Self::Ref {
                 ref mut is_required,
                 ..
             } => *is_required = true,
-            TypeShape::Expanded {
-                ref mut optionality,
-                ..
-            } => optionality.is_required = true,
-            Inline {
-                ref mut optionality,
-                ..
-            } => optionality.is_required = true,
-            TypeShape::Option(_) => {}
-            TypeShape::Patch(_) => {}
+
+            Self::Option(_) | Self::Maybe(_) | Self::Patch(_) => { /* nop */ }
         }
         self
     }
@@ -114,7 +120,9 @@ impl TypeShape {
             Self::Proper { data_type, .. } => data_type,
             Self::Array { type_shape, .. } => DataType::Vec(Box::new((*type_shape).define()?)),
             Self::Expanded { type_path, .. } => type_path.into(),
-            Self::Option(type_shape) => DataType::Option(Box::new((*type_shape).define()?)),
+            Self::Option(type_shape) | Self::Maybe(type_shape) => {
+                DataType::Option(Box::new((*type_shape).define()?))
+            }
             Self::Patch(type_shape) => DataType::Patch(Box::new((*type_shape).define()?)),
             Self::Ref { .. } => Err(broken!(self))?,
             Self::Inline { .. } => Err(broken!(self))?,
