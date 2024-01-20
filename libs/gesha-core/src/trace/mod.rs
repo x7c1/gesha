@@ -3,8 +3,8 @@ use message_layer::MessageLayer;
 
 use opentelemetry::global::set_error_handler;
 use opentelemetry::trace::TraceError::ExportFailed;
-use opentelemetry::{runtime, sdk};
 use opentelemetry_otlp::WithExportConfig;
+use opentelemetry_sdk as sdk;
 use opentelemetry_semantic_conventions::resource::SERVICE_NAME;
 use std::fs::File;
 use std::io;
@@ -55,7 +55,7 @@ where
         .with_trace_config(sdk::trace::config().with_resource(sdk::Resource::new(vec![
             opentelemetry::KeyValue::new(SERVICE_NAME, "gesha-test"),
         ])))
-        .install_batch(runtime::Tokio)
+        .install_batch(sdk::runtime::Tokio)
         .expect("Not running in tokio runtime");
 
     tracing_opentelemetry::layer()
