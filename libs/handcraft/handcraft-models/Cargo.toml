@@ -7,7 +7,7 @@ edition = "2018"
 
 [dependencies]
 actix-web = "4.4.1"
-actix-multipart = "0.6.1"
+actix-multipart = "0.7.0"
 futures-util = "0.3"
 serde = { workspace = true }
 serde_urlencoded = "0.7.1"
