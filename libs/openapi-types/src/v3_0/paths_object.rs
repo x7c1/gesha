@@ -1,5 +1,6 @@
 use crate::v3_0::OperationObject;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#pathsObject
 pub struct PathsObject(Vec<(PathFieldName, PathItemObject)>);
@@ -13,6 +14,7 @@ impl PathsObject {
 }
 
 /// e.g. /pets
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct PathFieldName(String);
 
