@@ -7,6 +7,7 @@ use futures_util::TryStreamExt;
 use serde::de::DeserializeOwned;
 use std::fmt::{Debug, Display, Formatter};
 
+#[allow(dead_code)]
 pub trait Content: Send {}
 
 #[derive(Debug)]
