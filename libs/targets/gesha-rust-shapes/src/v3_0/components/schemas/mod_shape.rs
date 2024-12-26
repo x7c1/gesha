@@ -1,6 +1,6 @@
+use crate::misc::TryMap;
 use crate::v3_0::components::schemas::{DefinitionShape, TypeShape};
 use crate::Result;
-use crate::misc::TryMap;
 use gesha_rust_types::{Definitions, ModDef, ModuleName, Package};
 use openapi_types::v3_0::ComponentName;
 

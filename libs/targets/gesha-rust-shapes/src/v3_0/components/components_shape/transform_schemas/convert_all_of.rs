@@ -1,7 +1,7 @@
+use crate::misc::TryMap;
 use crate::v3_0::components::schemas::{DefinitionShape, StructShape};
 use crate::v3_0::components::ComponentsShape;
 use crate::Result;
-use crate::misc::TryMap;
 use DefinitionShape::{AllOf, Mod};
 
 pub fn convert_all_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {

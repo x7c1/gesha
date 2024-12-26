@@ -1,2 +1,2 @@
-mod to_rust_type;
 mod components;
+mod to_rust_type;

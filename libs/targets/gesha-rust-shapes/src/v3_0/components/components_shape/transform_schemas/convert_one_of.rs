@@ -1,3 +1,4 @@
+use crate::misc::TryMap;
 use crate::v3_0::components::schemas::DefinitionShape::{Mod, OneOf};
 use crate::v3_0::components::schemas::{
     DefinitionShape, EnumShape, EnumVariantShape, OneOfItemShape, OneOfShape,
@@ -5,7 +6,6 @@ use crate::v3_0::components::schemas::{
 use crate::v3_0::components::ComponentsShape;
 use crate::Error::ReferenceObjectNotFound;
 use crate::Result;
-use crate::misc::TryMap;
 use gesha_rust_types::{EnumVariantName, SerdeAttribute};
 use SerdeAttribute::Untagged;
 

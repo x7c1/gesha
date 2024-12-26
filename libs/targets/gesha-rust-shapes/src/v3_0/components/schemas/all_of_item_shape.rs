@@ -1,6 +1,4 @@
-use crate::v3_0::components::schemas::{
-    DefinitionShape, FieldShape, Ref,
-};
+use crate::v3_0::components::schemas::{DefinitionShape, FieldShape, Ref};
 use crate::Result;
 use openapi_types::v3_0::{SchemaCase, SchemaObject};
 

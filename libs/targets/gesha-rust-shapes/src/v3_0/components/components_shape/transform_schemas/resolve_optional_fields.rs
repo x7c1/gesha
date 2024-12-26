@@ -1,8 +1,8 @@
 use crate::broken;
+use crate::misc::TryMap;
 use crate::v3_0::components::schemas::{DefinitionShape, FieldShape};
 use crate::v3_0::components::ComponentsShape;
 use crate::Result;
-use crate::misc::TryMap;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn resolve_optionality(mut shapes: ComponentsShape) -> Result<ComponentsShape> {

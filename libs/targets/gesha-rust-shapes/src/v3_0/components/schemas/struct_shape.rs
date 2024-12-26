@@ -1,6 +1,4 @@
-use crate::v3_0::components::schemas::{
-    DefinitionShape, FieldShape, TypeHeaderShape, TypeShape,
-};
+use crate::v3_0::components::schemas::{DefinitionShape, FieldShape, TypeHeaderShape, TypeShape};
 
 #[derive(Clone, Debug)]
 pub struct StructShape {

@@ -1,10 +1,10 @@
 use crate::broken;
+use crate::misc::TryMap;
 use crate::v3_0::components::schemas::{
     DefinitionShape, FieldShape, Optionality, TypePath, TypeShape,
 };
 use crate::v3_0::components::ComponentsShape;
 use crate::Result;
-use crate::misc::TryMap;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape> {

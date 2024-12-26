@@ -1,8 +1,6 @@
-use crate::v3_0::components::schemas::{
-    DefinitionShape, Ref, TypeHeaderShape, TypeShape,
-};
-use crate::Result;
 use crate::misc::TryMap;
+use crate::v3_0::components::schemas::{DefinitionShape, Ref, TypeHeaderShape, TypeShape};
+use crate::Result;
 use gesha_rust_types::{EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName};
 use openapi_types::v3_0::EnumValues;
 
