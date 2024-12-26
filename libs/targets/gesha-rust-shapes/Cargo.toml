@@ -1,0 +1,11 @@
+[package]
+name = "gesha-rust-shapes"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gesha-rust-types = { path = "../gesha-rust-types" }
+openapi-types = { path = "../../openapi-types" }
+
+heck = "0.4.1"
+indexmap = "2.1.0"

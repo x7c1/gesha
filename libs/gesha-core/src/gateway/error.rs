@@ -1,6 +1,6 @@
-use crate::conversions::Error::TransformBroken;
-use crate::{conversions, renderer};
+use crate::renderer;
 use console::{Style, StyledObject};
+use gesha_rust_shapes::Error::TransformBroken;
 use std::path::PathBuf;
 use tokio::task::JoinError;
 
@@ -9,15 +9,15 @@ pub type Result<A> = std::result::Result<A, Error>;
 #[derive(Debug)]
 pub enum Error {
     // inherited errors
-    Conversions {
-        path: PathBuf,
-        cause: conversions::Error,
-    },
     OpenApiTypes {
         path: PathBuf,
         cause: openapi_types::Error,
     },
     Renderer(renderer::Error),
+    Shapes {
+        path: PathBuf,
+        cause: gesha_rust_shapes::Error,
+    },
 
     // thread errors
     JoinError(JoinError),
@@ -78,7 +78,7 @@ impl Error {
             Error::FormatFailed { detail, .. } => {
                 format!("rustfmt>\n{}", detail)
             }
-            Error::Conversions {
+            Error::Shapes {
                 path,
                 cause: TransformBroken { detail },
             } => {
@@ -99,8 +99,8 @@ impl Error {
             }
         }
     }
-    pub fn conversion<A: Into<PathBuf>>(path: A) -> impl FnOnce(conversions::Error) -> Self {
-        |cause| Self::Conversions {
+    pub fn shapes<A: Into<PathBuf>>(path: A) -> impl FnOnce(gesha_rust_shapes::Error) -> Self {
+        |cause| Self::Shapes {
             path: path.into(),
             cause,
         }

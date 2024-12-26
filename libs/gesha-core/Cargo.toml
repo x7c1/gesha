@@ -6,14 +6,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+gesha-rust-shapes = { path = "../targets/gesha-rust-shapes" }
 gesha-rust-types = { path = "../targets/gesha-rust-types" }
 openapi-types = { path = "../../libs/openapi-types" }
 
 chrono = "0.4.31"
 console = "0.15.8"
 futures = "0.3"
-heck = "0.4.1"
-indexmap = "2.1.0"
 nu-ansi-term = "0.49.0"
 opentelemetry = { workspace = true }
 opentelemetry-otlp = { version = "0.14.0", features = ["metrics"] }
