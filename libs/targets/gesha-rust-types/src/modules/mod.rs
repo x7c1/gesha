@@ -1,3 +1,5 @@
+mod display;
+
 use crate::ModDef;
 use std::vec::IntoIter;
 
