@@ -23,9 +23,7 @@ use std::fmt::{Display, Write};
 
 impl Display for Modules {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.0
-            .iter()
-            .try_for_each(|module| render_module(f, module))
+        self.iter().try_for_each(|module| render_module(f, module))
     }
 }
 

@@ -2,11 +2,14 @@ use crate::ModDef;
 use std::vec::IntoIter;
 
 #[derive(Clone, Debug)]
-pub struct Modules(pub(crate) Vec<ModDef>);
+pub struct Modules(Vec<ModDef>);
 
 impl Modules {
     pub fn empty() -> Self {
         Self(vec![])
+    }
+    pub fn iter(&self) -> impl Iterator<Item = &ModDef> {
+        self.0.iter()
     }
 }
 
