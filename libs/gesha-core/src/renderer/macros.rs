@@ -2,26 +2,26 @@
 macro_rules! render {
     ($write:ident, "{}" > $func:expr => $y:expr) => {
         writeln!($write, "{{")?;
-        $func(&mut $write, $y)?;
+        $func($write, $y)?;
         writeln!($write, "}}")?;
     };
     ($write:ident, "()" > $func:expr => $y:expr) => {
         write!($write, "(")?;
-        $func(&mut $write, $y)?;
+        $func($write, $y)?;
         write!($write, ")")?;
     };
     ($write:ident, "<>" > $func:expr => $y:expr) => {
         write!($write, "<")?;
-        $func(&mut $write, $y)?;
+        $func($write, $y)?;
         write!($write, ">")?;
     };
     ($write:ident, "[]" > $func:expr => $y:expr) => {
         write!($write, "[")?;
-        $func(&mut $write, $y)?;
+        $func($write, $y)?;
         write!($write, "]")?;
     };
     ($write:ident, call > $func:expr => $y:expr) => {
-        $func(&mut $write, $y)?;
+        $func($write, $y)?;
     };
     ($write:ident, echo > $x:expr $(, $i:ident = $z:expr)*) => {
         write!($write, $x $(, $i = $z)*)?;

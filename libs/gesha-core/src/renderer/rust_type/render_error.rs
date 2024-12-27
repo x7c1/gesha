@@ -3,7 +3,7 @@ use crate::renderer::Result;
 use gesha_rust_types::{ErrorDef, ErrorVariant};
 use std::io::Write;
 
-pub fn render_error<W: Write>(mut write: W, x: ErrorDef) -> Result<()> {
+pub fn render_error(write: &mut impl Write, x: ErrorDef) -> Result<()> {
     let variants = x
         .into_iter()
         .map(format_variant)

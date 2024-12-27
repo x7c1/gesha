@@ -3,7 +3,7 @@ use crate::renderer::Result;
 use gesha_rust_types::MediaTypeDef;
 use std::io::Write;
 
-pub fn render_media_type<W: Write>(mut write: W, x: MediaTypeDef) -> Result<()> {
+pub fn render_media_type(mut write: impl Write, x: MediaTypeDef) -> Result<()> {
     let variants = x
         .translator
         .iter()

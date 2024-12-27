@@ -4,7 +4,7 @@ use crate::renderer::Result;
 use gesha_rust_types::{MediaTypeVariant, MediaTypeVariants, RequestBodyDef};
 use std::io::Write;
 
-pub fn render_request_body<W: Write>(mut write: W, x: RequestBodyDef) -> Result<()> {
+pub fn render_request_body(write: &mut impl Write, x: RequestBodyDef) -> Result<()> {
     render! { write =>
         call > render_header => &x.header;
         echo > "pub enum {name}", name = x.header.name;
@@ -16,7 +16,7 @@ pub fn render_request_body<W: Write>(mut write: W, x: RequestBodyDef) -> Result<
     Ok(())
 }
 
-fn render_impl_body<W: Write>(mut write: W, x: MediaTypeVariants) -> Result<()> {
+fn render_impl_body(write: &mut impl Write, x: MediaTypeVariants) -> Result<()> {
     render! { write =>
         echo >
             "pub fn media_type(&self) -> super::core::MediaType {{
