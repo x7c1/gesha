@@ -14,20 +14,14 @@ mod render_request_body;
 use render_request_body::render_request_body;
 
 use crate::{
-    DataType, Definition, DeriveAttribute, Imports, ModDef, Modules, NewTypeDef, PresetDef,
-    SerdeAttribute, StructDef, StructField, StructFieldAttribute, TypeHeader,
+    DataType, Definition, DeriveAttribute, Imports, ModDef, NewTypeDef, PresetDef, SerdeAttribute,
+    StructDef, StructField, StructFieldAttribute, TypeHeader,
 };
 
 use std::fmt;
-use std::fmt::{Display, Write};
+use std::fmt::Write;
 
-impl Display for Modules {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.iter().try_for_each(|module| render_module(f, module))
-    }
-}
-
-fn render_module(write: &mut impl Write, module: &ModDef) -> fmt::Result {
+pub fn render_module(write: &mut impl Write, module: &ModDef) -> fmt::Result {
     render! { write =>
         echo > "pub mod {name}", name = module.name;
         "{}" > render_mod_body => module;

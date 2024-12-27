@@ -1,6 +1,9 @@
-mod display;
+mod render_module;
+use render_module::render_module;
 
 use crate::ModDef;
+use std::fmt;
+use std::fmt::Display;
 use std::vec::IntoIter;
 
 #[derive(Clone, Debug)]
@@ -12,6 +15,12 @@ impl Modules {
     }
     pub fn iter(&self) -> impl Iterator<Item = &ModDef> {
         self.0.iter()
+    }
+}
+
+impl Display for Modules {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.iter().try_for_each(|module| render_module(f, module))
     }
 }
 
