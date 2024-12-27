@@ -2,8 +2,7 @@ use crate::gateway::Error::{
     CannotCopyFile, CannotCreateFile, CannotRender, CannotWriteFile, FormatFailed,
 };
 use crate::gateway::Result;
-use crate::renderer::Renderer;
-use std::fmt::Debug;
+use std::fmt::{Debug, Display};
 use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -25,7 +24,7 @@ impl Writer {
     }
 
     #[instrument(skip_all)]
-    pub fn create_file<A: Renderer + Debug>(self, a: A) -> Result<()> {
+    pub fn create_file<A: Display + Debug>(self, a: A) -> Result<()> {
         let mut file = self.touch()?;
         if let Some(preamble) = self.preamble {
             let bytes = preamble.as_bytes();
@@ -35,7 +34,7 @@ impl Writer {
             })?;
         }
 
-        a.render(file).map_err(|cause| CannotRender {
+        write!(file, "{}", a).map_err(|cause| CannotRender {
             path: self.path.clone(),
             detail: format!("{:?}", cause),
         })?;

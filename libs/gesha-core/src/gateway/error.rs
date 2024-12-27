@@ -1,4 +1,3 @@
-use crate::renderer;
 use console::{Style, StyledObject};
 use gesha_rust_shapes::Error::TransformBroken;
 use std::path::PathBuf;
@@ -13,7 +12,6 @@ pub enum Error {
         path: PathBuf,
         cause: openapi_types::Error,
     },
-    Renderer(renderer::Error),
     Shapes {
         path: PathBuf,
         cause: gesha_rust_shapes::Error,

@@ -31,6 +31,9 @@ pub use media_type_def::MediaTypeDef;
 mod modules;
 pub use modules::Modules;
 
+mod module_declarations;
+pub use module_declarations::ModuleDeclarations;
+
 mod module_name;
 pub use module_name::ModuleName;
 

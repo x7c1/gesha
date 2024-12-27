@@ -5,11 +5,10 @@ pub mod v3_0;
 
 use crate::gateway;
 use crate::gateway::{detect_diff, Error, ErrorTheme, Reader, Writer};
-use crate::renderer::Renderer;
 use futures::future::join_all;
 use gesha_rust_shapes::ToRustType;
 use openapi_types::yaml::ToOpenApi;
-use std::fmt::Debug;
+use std::fmt::{Debug, Display};
 use std::marker::PhantomData;
 use std::path::PathBuf;
 use tracing::{debug, info, instrument, Instrument};
@@ -38,7 +37,7 @@ impl<A> Clone for TestCase<A> {
 fn generate_rust_type<A, B>(target: TestCase<(A, B)>) -> gateway::Result<()>
 where
     A: Debug + ToOpenApi,
-    B: Debug + ToRustType<A> + Renderer,
+    B: Debug + ToRustType<A> + Display,
 {
     debug!("target> {:#?}", target);
 
@@ -55,7 +54,7 @@ pub async fn test_rust_types<X, A, B>(targets: X) -> gateway::Result<()>
 where
     X: Into<Vec<TestCase<(A, B)>>> + Debug,
     A: ToOpenApi + Debug + Send + 'static,
-    B: ToRustType<A> + Debug + Renderer + Send + 'static,
+    B: ToRustType<A> + Debug + Display + Send + 'static,
 {
     let run_tests = targets
         .into()
@@ -81,7 +80,7 @@ pub async fn test_rust_type<X, A, B>(target: X) -> gateway::Result<()>
 where
     X: Into<TestCase<(A, B)>> + Debug,
     A: Debug + ToOpenApi,
-    B: Debug + ToRustType<A> + Renderer,
+    B: Debug + ToRustType<A> + Display,
 {
     let target = target.into();
     generate_rust_type(target.clone())?;
@@ -97,7 +96,7 @@ pub async fn collect_modified_cases<A, B>(
 ) -> gateway::Result<Vec<ModifiedTestCase<(A, B)>>>
 where
     A: Debug + ToOpenApi + Send + 'static,
-    B: Debug + ToRustType<A> + Renderer + Send + 'static,
+    B: Debug + ToRustType<A> + Display + Send + 'static,
 {
     let run_tests = cases
         .into_iter()
@@ -131,7 +130,7 @@ pub async fn detect_modified_case<A, B>(
 ) -> gateway::Result<Option<ModifiedTestCase<(A, B)>>>
 where
     A: Debug + ToOpenApi,
-    B: Debug + ToRustType<A> + Renderer,
+    B: Debug + ToRustType<A> + Display,
 {
     let run = |target: TestCase<(A, B)>| {
         generate_rust_type(target.clone())?;
