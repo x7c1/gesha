@@ -15,7 +15,7 @@ impl Imports {
             let _ = self.0.insert(x);
         })
     }
-    pub(crate) fn iter(&self) -> impl Iterator<Item = &Package> {
+    pub fn iter(&self) -> impl Iterator<Item = &Package> {
         self.0.iter()
     }
 }
