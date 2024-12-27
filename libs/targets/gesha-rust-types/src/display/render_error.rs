@@ -1,11 +1,10 @@
-use crate::render;
-use crate::renderer::Result;
-use gesha_rust_types::{ErrorDef, ErrorVariant};
-use std::io::Write;
+use crate::{render, ErrorDef, ErrorVariant};
+use std::fmt;
+use std::fmt::Write;
 
-pub fn render_error(write: &mut impl Write, x: ErrorDef) -> Result<()> {
+pub fn render_error(write: &mut impl Write, x: &ErrorDef) -> fmt::Result {
     let variants = x
-        .into_iter()
+        .iter()
         .map(format_variant)
         .collect::<Vec<&str>>()
         .join(",");
@@ -23,7 +22,7 @@ pub fn render_error(write: &mut impl Write, x: ErrorDef) -> Result<()> {
     Ok(())
 }
 
-fn format_variant(x: ErrorVariant) -> &'static str {
+fn format_variant(x: &ErrorVariant) -> &'static str {
     match x {
         ErrorVariant::InvalidJson => "InvalidJson(serde_json::Error)",
         ErrorVariant::UnsupportedMediaType => "UnsupportedMediaType { given: String }",

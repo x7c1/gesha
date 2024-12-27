@@ -1,3 +1,6 @@
+mod macros;
+use crate::render;
+
 mod render_enum;
 use render_enum::{render_enum, render_enum_variants};
 
@@ -10,23 +13,23 @@ use render_media_type::render_media_type;
 mod render_request_body;
 use render_request_body::render_request_body;
 
-use crate::render;
-use crate::renderer::Renderer;
-use crate::renderer::Result;
-use gesha_rust_types::{
+use crate::{
     DataType, Definition, DeriveAttribute, Imports, ModDef, Modules, NewTypeDef, PresetDef,
     SerdeAttribute, StructDef, StructField, StructFieldAttribute, TypeHeader,
 };
-use std::io::Write;
 
-impl Renderer for Modules {
-    fn render(self, mut write: impl Write) -> Result<()> {
-        self.into_iter()
-            .try_for_each(|module| render_module(&mut write, module))
+use std::fmt;
+use std::fmt::{Display, Write};
+
+impl Display for Modules {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.0
+            .iter()
+            .try_for_each(|module| render_module(f, module))
     }
 }
 
-fn render_module(write: &mut impl Write, module: ModDef) -> Result<()> {
+fn render_module(write: &mut impl Write, module: &ModDef) -> fmt::Result {
     render! { write =>
         echo > "pub mod {name}", name = module.name;
         "{}" > render_mod_body => module;
@@ -35,19 +38,19 @@ fn render_module(write: &mut impl Write, module: ModDef) -> Result<()> {
     Ok(())
 }
 
-fn render_mod_body(write: &mut impl Write, module: ModDef) -> Result<()> {
+fn render_mod_body(write: &mut impl Write, module: &ModDef) -> fmt::Result {
     render! { write =>
-        call > render_use_statements => module.imports;
+        call > render_use_statements => &module.imports;
         echo > "\n";
     }
     module
         .defs
-        .into_iter()
+        .iter()
         .try_for_each(|def| render_definition(write, def))
 }
 
-fn render_use_statements(write: &mut impl Write, xs: Imports) -> Result<()> {
-    for x in xs {
+fn render_use_statements(write: &mut impl Write, xs: &Imports) -> fmt::Result {
+    for x in xs.iter() {
         render! { write =>
             echo > "use {x};\n";
         }
@@ -55,7 +58,7 @@ fn render_use_statements(write: &mut impl Write, xs: Imports) -> Result<()> {
     Ok(())
 }
 
-fn render_definition(write: &mut impl Write, x: Definition) -> Result<()> {
+fn render_definition(write: &mut impl Write, x: &Definition) -> fmt::Result {
     match x {
         Definition::StructDef(x) => render_struct(write, x)?,
         Definition::NewTypeDef(x) => render_newtype(write, x)?,
@@ -67,7 +70,7 @@ fn render_definition(write: &mut impl Write, x: Definition) -> Result<()> {
     Ok(())
 }
 
-fn render_header(write: &mut impl Write, x: &TypeHeader) -> Result<()> {
+fn render_header(write: &mut impl Write, x: &TypeHeader) -> fmt::Result {
     render! { write =>
         echo > "{comments}", comments = x.doc_comments;
         call > render_derive_attrs => &x.derive_attrs;
@@ -76,17 +79,17 @@ fn render_header(write: &mut impl Write, x: &TypeHeader) -> Result<()> {
     Ok(())
 }
 
-fn render_struct(write: &mut impl Write, x: StructDef) -> Result<()> {
+fn render_struct(write: &mut impl Write, x: &StructDef) -> fmt::Result {
     render! { write =>
         call > render_header => &x.header;
         echo > "pub struct {name}", name = x.header.name;
-        "{}" > render_fields => x.fields;
+        "{}" > render_fields => &x.fields;
         echo > "\n";
     };
     Ok(())
 }
 
-fn render_derive_attrs(write: &mut impl Write, attrs: &[DeriveAttribute]) -> Result<()> {
+fn render_derive_attrs(write: &mut impl Write, attrs: &[DeriveAttribute]) -> fmt::Result {
     render! { write =>
         echo > "#[derive({items})]", items = attrs.join(",");
         echo > "\n";
@@ -94,7 +97,7 @@ fn render_derive_attrs(write: &mut impl Write, attrs: &[DeriveAttribute]) -> Res
     Ok(())
 }
 
-fn render_serde_attrs(write: &mut impl Write, attrs: &[SerdeAttribute]) -> Result<()> {
+fn render_serde_attrs(write: &mut impl Write, attrs: &[SerdeAttribute]) -> fmt::Result {
     if attrs.is_empty() {
         return Ok(());
     }
@@ -105,8 +108,8 @@ fn render_serde_attrs(write: &mut impl Write, attrs: &[SerdeAttribute]) -> Resul
     Ok(())
 }
 
-fn render_fields(write: &mut impl Write, fields: Vec<StructField>) -> Result<()> {
-    for field in fields.into_iter() {
+fn render_fields(write: &mut impl Write, fields: &[StructField]) -> fmt::Result {
+    for field in fields {
         render! { write =>
             call > render_field => field;
             echo > ",\n";
@@ -115,23 +118,23 @@ fn render_fields(write: &mut impl Write, fields: Vec<StructField>) -> Result<()>
     Ok(())
 }
 
-fn render_field(write: &mut impl Write, field: StructField) -> Result<()> {
+fn render_field(write: &mut impl Write, field: &StructField) -> fmt::Result {
     render! { write =>
-        call > render_field_attrs => field.attributes;
+        call > render_field_attrs => &field.attributes;
         echo > "pub {name}: ", name = field.name;
         call > render_data_type => &field.data_type;
     };
     Ok(())
 }
 
-fn render_field_attrs(write: &mut impl Write, attrs: Vec<StructFieldAttribute>) -> Result<()> {
-    for attr in attrs.into_iter() {
+fn render_field_attrs(write: &mut impl Write, attrs: &[StructFieldAttribute]) -> fmt::Result {
+    for attr in attrs.iter() {
         render! { write => echo > "#[{attr}]"; }
     }
     Ok(())
 }
 
-fn render_data_types(write: &mut impl Write, types: &[DataType]) -> Result<()> {
+fn render_data_types(write: &mut impl Write, types: &[DataType]) -> fmt::Result {
     let items = types
         .iter()
         .map(|x| x.to_string())
@@ -142,14 +145,14 @@ fn render_data_types(write: &mut impl Write, types: &[DataType]) -> Result<()> {
     Ok(())
 }
 
-fn render_data_type(write: &mut impl Write, data_type: &DataType) -> Result<()> {
+fn render_data_type(write: &mut impl Write, data_type: &DataType) -> fmt::Result {
     render! { write =>
         echo > "{type_name}", type_name = data_type;
     }
     Ok(())
 }
 
-fn render_newtype(write: &mut impl Write, x: NewTypeDef) -> Result<()> {
+fn render_newtype(write: &mut impl Write, x: &NewTypeDef) -> fmt::Result {
     render! { write =>
         call > render_header => &x.header;
         echo > "pub struct {name}", name = x.header.name;
@@ -175,7 +178,7 @@ fn render_newtype(write: &mut impl Write, x: NewTypeDef) -> Result<()> {
     Ok(())
 }
 
-fn render_preset(write: &mut impl Write, x: PresetDef) -> Result<()> {
+fn render_preset(write: &mut impl Write, x: &PresetDef) -> fmt::Result {
     match x {
         PresetDef::Patch => {
             let source = include_str!("patch.rs.tpl");

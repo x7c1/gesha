@@ -2,7 +2,7 @@ use crate::ModDef;
 use std::vec::IntoIter;
 
 #[derive(Clone, Debug)]
-pub struct Modules(Vec<ModDef>);
+pub struct Modules(pub(crate) Vec<ModDef>);
 
 impl Modules {
     pub fn empty() -> Self {

@@ -1,9 +1,9 @@
 use crate::render;
-use crate::renderer::Result;
-use gesha_rust_types::MediaTypeDef;
-use std::io::Write;
+use crate::MediaTypeDef;
+use std::fmt;
+use std::fmt::Write;
 
-pub fn render_media_type(mut write: impl Write, x: MediaTypeDef) -> Result<()> {
+pub fn render_media_type(mut write: impl Write, x: &MediaTypeDef) -> fmt::Result {
     let variants = x
         .translator
         .iter()

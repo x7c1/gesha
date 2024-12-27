@@ -1,22 +1,21 @@
-use crate::render;
-use crate::renderer::rust_type::{render_enum_variants, render_header};
-use crate::renderer::Result;
-use gesha_rust_types::{MediaTypeVariant, MediaTypeVariants, RequestBodyDef};
-use std::io::Write;
+use super::{render_enum_variants, render_header};
+use crate::{render, MediaTypeVariant, MediaTypeVariants, RequestBodyDef};
+use std::fmt;
+use std::fmt::Write;
 
-pub fn render_request_body(write: &mut impl Write, x: RequestBodyDef) -> Result<()> {
+pub fn render_request_body(write: &mut impl Write, x: &RequestBodyDef) -> fmt::Result {
     render! { write =>
         call > render_header => &x.header;
         echo > "pub enum {name}", name = x.header.name;
-        "{}" > render_enum_variants => x.variants.clone();
+        "{}" > render_enum_variants => x.variants.iter().map(|x| &x.variant);
         echo > "\n\n";
         echo > "impl {name}", name = x.header.name;
-        "{}" > render_impl_body => x.variants;
+        "{}" > render_impl_body => &x.variants;
     }
     Ok(())
 }
 
-fn render_impl_body(write: &mut impl Write, x: MediaTypeVariants) -> Result<()> {
+fn render_impl_body(write: &mut impl Write, x: &MediaTypeVariants) -> fmt::Result {
     render! { write =>
         echo >
             "pub fn media_type(&self) -> super::core::MediaType {{
@@ -24,7 +23,7 @@ fn render_impl_body(write: &mut impl Write, x: MediaTypeVariants) -> Result<()> 
                     {arms}
                 }}
             }}",
-            arms = to_arms_media_type(x.clone());
+            arms = to_arms_media_type(x);
         echo >
             "pub fn new(value: &str, media_type: &str) -> super::core::Result<Self> {{
                 match media_type {{
@@ -36,8 +35,8 @@ fn render_impl_body(write: &mut impl Write, x: MediaTypeVariants) -> Result<()> 
     Ok(())
 }
 
-fn to_arms_media_type(xs: MediaTypeVariants) -> String {
-    xs.into_iter()
+fn to_arms_media_type(xs: &MediaTypeVariants) -> String {
+    xs.iter()
         .map(|x| {
             format!(
                 "Self::{name}(_) => super::core::MediaType::{name}",
@@ -48,11 +47,8 @@ fn to_arms_media_type(xs: MediaTypeVariants) -> String {
         .join(",")
 }
 
-fn to_arms_new(xs: MediaTypeVariants) -> String {
-    let mut arms = xs
-        .into_iter()
-        .flat_map(create_new_arm)
-        .collect::<Vec<String>>();
+fn to_arms_new(xs: &MediaTypeVariants) -> String {
+    let mut arms = xs.iter().flat_map(create_new_arm).collect::<Vec<String>>();
 
     arms.push(
         r#"
@@ -65,7 +61,7 @@ fn to_arms_new(xs: MediaTypeVariants) -> String {
     arms.join(",")
 }
 
-fn create_new_arm(x: MediaTypeVariant) -> Option<String> {
+fn create_new_arm(x: &MediaTypeVariant) -> Option<String> {
     match x.header_value.as_str() {
         "application/json" => Some(
             r#"

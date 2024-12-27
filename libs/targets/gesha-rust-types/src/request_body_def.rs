@@ -33,17 +33,8 @@ pub struct MediaTypeVariant {
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct MediaTypeVariants(Vec<MediaTypeVariant>);
 
-impl From<MediaTypeVariants> for Vec<EnumVariant> {
-    fn from(this: MediaTypeVariants) -> Self {
-        this.0.into_iter().map(|x| x.variant).collect()
-    }
-}
-
-impl IntoIterator for MediaTypeVariants {
-    type Item = <Vec<MediaTypeVariant> as IntoIterator>::Item;
-    type IntoIter = <Vec<MediaTypeVariant> as IntoIterator>::IntoIter;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.into_iter()
+impl MediaTypeVariants {
+    pub fn iter(&self) -> impl Iterator<Item = &MediaTypeVariant> {
+        self.0.iter()
     }
 }

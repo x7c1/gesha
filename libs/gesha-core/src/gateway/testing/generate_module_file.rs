@@ -1,6 +1,6 @@
+use crate::gateway;
 use crate::gateway::testing::{new_writer, TestCase};
 use crate::renderer::Renderer;
-use crate::{gateway, render};
 use std::fmt::Debug;
 use std::io::Write;
 use std::path::PathBuf;
@@ -22,9 +22,7 @@ struct ModuleFile<A> {
 impl<A> Renderer for ModuleFile<A> {
     fn render(self, mut write: impl Write) -> crate::renderer::Result<()> {
         for case in self.cases.into_iter() {
-            render! { write =>
-                echo > "pub mod {name};", name = case.module_name;
-            }
+            write!(write, "pub mod {name};", name = case.module_name)?;
         }
         Ok(())
     }

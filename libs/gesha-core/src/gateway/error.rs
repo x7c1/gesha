@@ -116,12 +116,6 @@ impl Error {
     }
 }
 
-impl From<renderer::Error> for Error {
-    fn from(cause: renderer::Error) -> Self {
-        Self::Renderer(cause)
-    }
-}
-
 #[derive(Copy, Clone)]
 pub enum ErrorTheme {
     Test,

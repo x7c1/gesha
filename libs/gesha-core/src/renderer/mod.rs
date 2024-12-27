@@ -1,11 +1,16 @@
 mod error;
-
 pub use error::{Error, Result};
-use std::io::Write;
 
-mod macros;
-mod rust_type;
+use gesha_rust_types::Modules;
+use std::io::Write;
 
 pub trait Renderer {
     fn render(self, write: impl Write) -> Result<()>;
+}
+
+impl Renderer for Modules {
+    fn render(self, mut write: impl Write) -> Result<()> {
+        write!(write, "{}", &self)?;
+        Ok(())
+    }
 }
