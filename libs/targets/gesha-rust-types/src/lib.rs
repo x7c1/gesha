@@ -37,6 +37,9 @@ pub use module_declarations::ModuleDeclarations;
 mod module_name;
 pub use module_name::ModuleName;
 
+mod non_doc_comments;
+pub use non_doc_comments::NonDocComments;
+
 mod request_body_def;
 pub use request_body_def::{MediaTypeVariant, MediaTypeVariants, RequestBodyDef};
 

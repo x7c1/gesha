@@ -23,7 +23,7 @@ pub struct ComponentsShape {
 impl ComponentsShape {
     pub fn into_modules(self) -> Result<Modules> {
         let this = transform(self)?;
-        let modules = vec![
+        let mod_defs = vec![
             this.request_bodies.define()?,
             this.schemas.define()?,
             this.core.define()?,
@@ -32,6 +32,9 @@ impl ComponentsShape {
         .flatten()
         .collect();
 
+        // TODO: add preamble
+        let comments = None;
+        let modules = Modules::new(comments, mod_defs);
         Ok(modules)
     }
 

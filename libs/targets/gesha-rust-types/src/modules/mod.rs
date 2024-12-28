@@ -1,41 +1,35 @@
 mod render_module;
 use render_module::render_module;
 
-use crate::ModDef;
+use crate::{ModDef, NonDocComments};
 use std::fmt;
 use std::fmt::Display;
-use std::vec::IntoIter;
 
 #[derive(Clone, Debug)]
-pub struct Modules(Vec<ModDef>);
+pub struct Modules {
+    comments: Option<NonDocComments>,
+    mod_defs: Vec<ModDef>,
+}
 
 impl Modules {
     pub fn empty() -> Self {
-        Self(vec![])
+        Self {
+            mod_defs: vec![],
+            comments: None,
+        }
     }
-    pub fn iter(&self) -> impl Iterator<Item = &ModDef> {
-        self.0.iter()
+    pub fn new(comments: Option<NonDocComments>, mod_defs: Vec<ModDef>) -> Self {
+        Self { comments, mod_defs }
     }
 }
 
 impl Display for Modules {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.iter().try_for_each(|module| render_module(f, module))
-    }
-}
-
-impl IntoIterator for Modules {
-    type Item = ModDef;
-    type IntoIter = IntoIter<ModDef>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.into_iter()
-    }
-}
-
-impl FromIterator<ModDef> for Modules {
-    fn from_iter<T: IntoIterator<Item = ModDef>>(iter: T) -> Self {
-        let xs = iter.into_iter().collect();
-        Self(xs)
+        if let Some(comments) = &self.comments {
+            write!(f, "{}", comments)?;
+        }
+        self.mod_defs
+            .iter()
+            .try_for_each(|module| render_module(f, module))
     }
 }

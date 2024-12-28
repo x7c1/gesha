@@ -1,5 +1,7 @@
 use std::fmt::{Display, Formatter};
 
+// TODO: unwrap option
+/// https://doc.rust-lang.org/reference/comments.html#doc-comments
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct DocComments(Option<String>);
 
