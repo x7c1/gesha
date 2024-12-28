@@ -1,7 +1,7 @@
 use std::fmt::{Display, Formatter};
 
 /// https://doc.rust-lang.org/reference/comments.html#non-doc-comments
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct NonDocComments(String);
 
 impl NonDocComments {

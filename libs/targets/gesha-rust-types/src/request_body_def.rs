@@ -1,6 +1,6 @@
 use crate::{Definition, EnumVariant, TypeHeader};
 
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct RequestBodyDef {
     pub header: TypeHeader,
     pub variants: MediaTypeVariants,
