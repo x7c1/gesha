@@ -32,9 +32,7 @@ impl ComponentsShape {
         .flatten()
         .collect();
 
-        // TODO: add preamble
-        let comments = None;
-        let modules = Modules::new(comments, mod_defs);
+        let modules = Modules::new(mod_defs);
         Ok(modules)
     }
 

@@ -1,34 +1,26 @@
+use crate::ModDef;
+
 mod render_module;
 use render_module::render_module;
 
-use crate::{ModDef, NonDocComments};
 use std::fmt;
 use std::fmt::Display;
 
 #[derive(Clone, Debug)]
-pub struct Modules {
-    comments: Option<NonDocComments>,
-    mod_defs: Vec<ModDef>,
-}
+pub struct Modules(Vec<ModDef>);
 
 impl Modules {
     pub fn empty() -> Self {
-        Self {
-            mod_defs: vec![],
-            comments: None,
-        }
+        Self(vec![])
     }
-    pub fn new(comments: Option<NonDocComments>, mod_defs: Vec<ModDef>) -> Self {
-        Self { comments, mod_defs }
+    pub fn new(mod_defs: Vec<ModDef>) -> Self {
+        Self(mod_defs)
     }
 }
 
 impl Display for Modules {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if let Some(comments) = &self.comments {
-            write!(f, "{}", comments)?;
-        }
-        self.mod_defs
+        self.0
             .iter()
             .try_for_each(|module| render_module(f, module))
     }
