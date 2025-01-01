@@ -3,21 +3,21 @@ use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::SchemasShape;
 use crate::v3_0::components::ComponentsShape;
 use crate::{Result, ToRustType};
-use gesha_rust_types::Modules;
+use gesha_rust_types::SourceFile;
 use openapi_types::v3_0::{ComponentsObject, Document};
 
-impl ToRustType<Document> for Modules {
+impl ToRustType<Document> for SourceFile {
     fn apply(this: Document) -> Result<Self> {
         let module = this
             .components
             .map(ToRustType::apply)
-            .unwrap_or_else(|| Ok(Modules::empty()))?;
+            .unwrap_or_else(|| Ok(SourceFile::empty()))?;
 
         Ok(module)
     }
 }
 
-impl ToRustType<ComponentsObject> for Modules {
+impl ToRustType<ComponentsObject> for SourceFile {
     fn apply(this: ComponentsObject) -> Result<Self> {
         let shapes = ComponentsShape {
             schemas: SchemasShape::shape(this.schemas)?,

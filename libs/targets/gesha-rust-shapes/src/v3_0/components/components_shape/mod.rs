@@ -11,7 +11,7 @@ use crate::v3_0::components::core::CoreShape;
 use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::{SchemasShape, TypeShape};
 use crate::Result;
-use gesha_rust_types::Modules;
+use gesha_rust_types::SourceFile;
 
 #[derive(Clone, Debug)]
 pub struct ComponentsShape {
@@ -21,7 +21,7 @@ pub struct ComponentsShape {
 }
 
 impl ComponentsShape {
-    pub fn into_modules(self) -> Result<Modules> {
+    pub fn into_modules(self) -> Result<SourceFile> {
         let this = transform(self)?;
         let mod_defs = vec![
             this.request_bodies.define()?,
@@ -32,7 +32,8 @@ impl ComponentsShape {
         .flatten()
         .collect();
 
-        let modules = Modules::new(mod_defs);
+        // TODO: add preamble
+        let modules = SourceFile::new(mod_defs);
         Ok(modules)
     }
 

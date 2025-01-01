@@ -28,9 +28,6 @@ pub use imports::{Imports, Package};
 mod media_type_def;
 pub use media_type_def::MediaTypeDef;
 
-mod modules;
-pub use modules::Modules;
-
 mod module_declarations;
 pub use module_declarations::ModuleDeclarations;
 
@@ -45,6 +42,9 @@ pub use request_body_def::{MediaTypeVariant, MediaTypeVariants, RequestBodyDef};
 
 mod serde_attribute;
 pub use serde_attribute::SerdeAttribute;
+
+mod source_file;
+pub use source_file::SourceFile;
 
 mod struct_field;
 pub use struct_field::{StructField, StructFieldAttribute};
