@@ -43,8 +43,8 @@ pub use request_body_def::{MediaTypeVariant, MediaTypeVariants, RequestBodyDef};
 mod serde_attribute;
 pub use serde_attribute::SerdeAttribute;
 
-mod source_file;
-pub use source_file::SourceFile;
+mod source_code;
+pub use source_code::SourceCode;
 
 mod struct_field;
 pub use struct_field::{StructField, StructFieldAttribute};

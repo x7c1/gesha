@@ -2,7 +2,7 @@ use crate::gateway;
 use crate::gateway::testing::v3_0::ComponentKind;
 use crate::gateway::testing::TestCase;
 use crate::gateway::Error::UnsupportedExampleLocation;
-use gesha_rust_types::SourceFile;
+use gesha_rust_types::SourceCode;
 use openapi_types::v3_0;
 use std::borrow::Cow;
 
@@ -10,7 +10,7 @@ const COMPONENTS_PATH: &str = "examples/v3_0/src/components";
 
 #[derive(Debug)]
 pub struct ComponentCase {
-    inner: TestCase<(v3_0::ComponentsObject, SourceFile)>,
+    inner: TestCase<(v3_0::ComponentsObject, SourceCode)>,
 }
 
 impl ComponentCase {
@@ -46,7 +46,7 @@ impl ComponentCase {
     }
 }
 
-impl From<ComponentCase> for TestCase<(v3_0::ComponentsObject, SourceFile)> {
+impl From<ComponentCase> for TestCase<(v3_0::ComponentsObject, SourceCode)> {
     fn from(this: ComponentCase) -> Self {
         this.inner
     }
@@ -75,7 +75,7 @@ impl ComponentCases {
     }
 }
 
-impl From<ComponentCases> for Vec<TestCase<(v3_0::ComponentsObject, SourceFile)>> {
+impl From<ComponentCases> for Vec<TestCase<(v3_0::ComponentsObject, SourceCode)>> {
     fn from(this: ComponentCases) -> Self {
         this.cases.into_iter().map(|x| x.inner).collect()
     }

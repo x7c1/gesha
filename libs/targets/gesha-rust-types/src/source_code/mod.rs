@@ -7,9 +7,9 @@ use std::fmt;
 use std::fmt::Display;
 
 #[derive(Clone, Debug)]
-pub struct SourceFile(Vec<ModDef>);
+pub struct SourceCode(Vec<ModDef>);
 
-impl SourceFile {
+impl SourceCode {
     pub fn empty() -> Self {
         Self(vec![])
     }
@@ -18,7 +18,7 @@ impl SourceFile {
     }
 }
 
-impl Display for SourceFile {
+impl Display for SourceCode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.0
             .iter()

@@ -3,7 +3,7 @@ use gesha_core::gateway;
 use gesha_core::gateway::testing::v3_0::ComponentKind::{RequestBodies, Schemas};
 use gesha_core::gateway::testing::v3_0::{ComponentCase, ComponentCases};
 use gesha_core::gateway::testing::{test_rust_type, test_rust_types, TestCase};
-use gesha_rust_types::SourceFile;
+use gesha_rust_types::SourceCode;
 use openapi_types::v3_0;
 use tracing::instrument;
 
@@ -17,7 +17,7 @@ pub struct Args {
     pub overwrite: bool,
 }
 
-type SupportedTestCase = TestCase<(v3_0::ComponentsObject, SourceFile)>;
+type SupportedTestCase = TestCase<(v3_0::ComponentsObject, SourceCode)>;
 
 #[instrument(name = "test::run")]
 pub async fn run(args: Args) -> gateway::Result<()> {
