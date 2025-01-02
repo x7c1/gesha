@@ -1,4 +1,5 @@
-/// convert A to a type defined in gesha_rust_types.
-pub trait ToRustType<A>: Sized {
-    fn apply(this: A) -> crate::Result<Self>;
+use gesha_rust_types::SourceCode;
+
+pub trait ToRustType: Sized {
+    fn apply(self) -> crate::Result<SourceCode>;
 }

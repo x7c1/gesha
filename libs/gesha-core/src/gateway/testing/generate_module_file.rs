@@ -1,10 +1,10 @@
-use crate::gateway;
 use crate::gateway::testing::{new_writer, TestCase};
+use crate::Result;
 use gesha_rust_types::{ModuleDeclarations, ModuleName};
 use std::fmt::Debug;
 use std::path::PathBuf;
 
-pub fn generate_module_file<A, P>(path: P, cases: Vec<TestCase<A>>) -> gateway::Result<()>
+pub fn generate_module_file<A, P>(path: P, cases: Vec<TestCase<A>>) -> Result<()>
 where
     A: Debug,
     P: Into<PathBuf> + Debug,

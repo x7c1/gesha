@@ -1,6 +1,3 @@
-mod error;
-pub use error::{DiffStyle, Error, ErrorTheme, Result};
-
 mod reader;
 pub use reader::{file_to_string, Reader};
 

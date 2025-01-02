@@ -1,13 +1,13 @@
 use crate::process;
 use crate::process::Args;
-use gesha_core::gateway;
 use gesha_core::gateway::testing::v3_0::ComponentCase;
 use gesha_core::gateway::testing::{collect_modified_cases, generate_module_file};
 use gesha_core::gateway::Writer;
+use gesha_core::Result;
 use tracing::{info, instrument};
 
 #[instrument(name = "overwrite::run")]
-pub async fn run(args: Args) -> gateway::Result<()> {
+pub async fn run(args: Args) -> Result<()> {
     let test_cases = if let Some(schema) = args.schema {
         let case = ComponentCase::from_path(schema)?;
         vec![case.into()]

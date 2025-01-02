@@ -1,6 +1,7 @@
-use crate::gateway::Error::CannotReadFile;
-use crate::gateway::{Error, Result};
+use crate::Error::CannotReadFile;
+use crate::{Error, Result};
 use gesha_rust_shapes::ToRustType;
+use gesha_rust_types::SourceCode;
 use openapi_types::yaml::{load_from_str, ToOpenApi, YamlMap};
 use std::fmt::Debug;
 use std::fs;
@@ -22,16 +23,16 @@ where
     A: ToOpenApi + Debug,
 {
     #[instrument]
-    pub fn open_rust_type<P, B>(&self, path: P) -> Result<B>
+    pub fn open_rust_type<P>(&self, path: P) -> Result<SourceCode>
     where
         P: AsRef<Path> + Debug,
-        B: ToRustType<A>,
+        A: ToRustType,
     {
         let path = path.as_ref();
         let map = open_yaml_map(path)?;
-        let openapi_value = ToOpenApi::apply(map).map_err(Error::openapi(path))?;
-        let rust_type = ToRustType::apply(openapi_value).map_err(Error::shapes(path))?;
-        Ok(rust_type)
+        let openapi_value: A = ToOpenApi::apply(map).map_err(Error::openapi(path))?;
+        let code = ToRustType::apply(openapi_value).map_err(Error::shapes(path))?;
+        Ok(code)
     }
 }
 

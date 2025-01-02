@@ -3,12 +3,12 @@ pub use generate_module_file::generate_module_file;
 
 pub mod v3_0;
 
-use crate::gateway;
-use crate::gateway::{detect_diff, Error, ErrorTheme, Reader, Writer};
+use crate::gateway::{detect_diff, Reader, Writer};
+use crate::{Error, ErrorTheme, Result};
 use futures::future::join_all;
 use gesha_rust_shapes::ToRustType;
 use openapi_types::yaml::ToOpenApi;
-use std::fmt::{Debug, Display};
+use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::path::PathBuf;
 use tracing::{debug, info, instrument, Instrument};
@@ -34,27 +34,27 @@ impl<A> Clone for TestCase<A> {
     }
 }
 
-fn generate_rust_type<A, B>(target: TestCase<(A, B)>) -> gateway::Result<()>
+fn generate_rust_type<A>(target: TestCase<A>) -> Result<()>
 where
     A: Debug + ToOpenApi,
-    B: Debug + ToRustType<A> + Display,
+    A: Debug + ToRustType,
 {
     debug!("target> {:#?}", target);
 
     let reader = Reader::new::<A>();
-    let rust_types: B = reader.open_rust_type(target.schema)?;
-    debug!("rust_types> {:#?}", rust_types);
+    let code = reader.open_rust_type(target.schema)?;
+    debug!("rust_types> {:#?}", code);
 
     let writer = new_writer(target.output);
-    writer.create_file(rust_types)
+    writer.create_file(code)
 }
 
 #[instrument(skip_all)]
-pub async fn test_rust_types<X, A, B>(targets: X) -> gateway::Result<()>
+pub async fn test_rust_types<X, A>(targets: X) -> Result<()>
 where
-    X: Into<Vec<TestCase<(A, B)>>> + Debug,
+    X: Into<Vec<TestCase<A>>> + Debug,
     A: ToOpenApi + Debug + Send + 'static,
-    B: ToRustType<A> + Debug + Display + Send + 'static,
+    A: ToRustType + Debug + Send + 'static,
 {
     let run_tests = targets
         .into()
@@ -76,11 +76,11 @@ where
 }
 
 #[instrument]
-pub async fn test_rust_type<X, A, B>(target: X) -> gateway::Result<()>
+pub async fn test_rust_type<X, A>(target: X) -> Result<()>
 where
-    X: Into<TestCase<(A, B)>> + Debug,
+    X: Into<TestCase<A>> + Debug,
     A: Debug + ToOpenApi,
-    B: Debug + ToRustType<A> + Display,
+    A: Debug + ToRustType,
 {
     let target = target.into();
     generate_rust_type(target.clone())?;
@@ -91,12 +91,10 @@ where
 }
 
 #[instrument(skip_all)]
-pub async fn collect_modified_cases<A, B>(
-    cases: Vec<TestCase<(A, B)>>,
-) -> gateway::Result<Vec<ModifiedTestCase<(A, B)>>>
+pub async fn collect_modified_cases<A>(cases: Vec<TestCase<A>>) -> Result<Vec<ModifiedTestCase<A>>>
 where
     A: Debug + ToOpenApi + Send + 'static,
-    B: Debug + ToRustType<A> + Display + Send + 'static,
+    A: Debug + ToRustType + Send + 'static,
 {
     let run_tests = cases
         .into_iter()
@@ -125,14 +123,12 @@ where
 }
 
 #[instrument]
-pub async fn detect_modified_case<A, B>(
-    case: TestCase<(A, B)>,
-) -> gateway::Result<Option<ModifiedTestCase<(A, B)>>>
+pub async fn detect_modified_case<A>(case: TestCase<A>) -> Result<Option<ModifiedTestCase<A>>>
 where
     A: Debug + ToOpenApi,
-    B: Debug + ToRustType<A> + Display,
+    A: Debug + ToRustType,
 {
-    let run = |target: TestCase<(A, B)>| {
+    let run = |target: TestCase<A>| {
         generate_rust_type(target.clone())?;
 
         // example doesn't exist at first attempt.

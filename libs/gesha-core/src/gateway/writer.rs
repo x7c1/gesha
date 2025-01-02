@@ -1,7 +1,5 @@
-use crate::gateway::Error::{
-    CannotCopyFile, CannotCreateFile, CannotRender, CannotWriteFile, FormatFailed,
-};
-use crate::gateway::Result;
+use crate::Error::{CannotCopyFile, CannotCreateFile, CannotRender, CannotWriteFile, FormatFailed};
+use crate::Result;
 use std::fmt::{Debug, Display};
 use std::fs::File;
 use std::io::Write;

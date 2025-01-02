@@ -1,10 +1,9 @@
 use clap::Parser;
-use gesha_core::gateway;
+use gesha_core::gateway::testing::v3_0::ComponentCases;
 use gesha_core::gateway::testing::v3_0::ComponentKind::{RequestBodies, Schemas};
-use gesha_core::gateway::testing::v3_0::{ComponentCase, ComponentCases};
-use gesha_core::gateway::testing::{test_rust_type, test_rust_types, TestCase};
-use gesha_rust_types::SourceCode;
-use openapi_types::v3_0;
+use gesha_core::testing::{TestCase, TestRunner};
+use gesha_core::Result;
+use std::vec;
 use tracing::instrument;
 
 #[derive(Parser, Debug)]
@@ -17,21 +16,32 @@ pub struct Args {
     pub overwrite: bool,
 }
 
-type SupportedTestCase = TestCase<(v3_0::ComponentsObject, SourceCode)>;
+// type SupportedTestCase = TestCase<v3_0::ComponentsObject>;
+
+// #[instrument(name = "test::run")]
+// pub async fn run(args: Args) -> Result<()> {
+//     if let Some(schema) = args.schema {
+//         let case = ComponentCase::from_path(schema)?;
+//         test_rust_type(case).await?;
+//         return Ok(());
+//     }
+//     let cases = all_cases()
+//         .into_iter()
+//         .flat_map(Vec::<SupportedTestCase>::from)
+//         .collect::<Vec<_>>();
+//
+//     test_rust_types(cases).await
+// }
 
 #[instrument(name = "test::run")]
-pub async fn run(args: Args) -> gateway::Result<()> {
-    if let Some(schema) = args.schema {
-        let case = ComponentCase::from_path(schema)?;
-        test_rust_type(case).await?;
-        return Ok(());
-    }
-    let cases = all_cases()
-        .into_iter()
-        .flat_map(Vec::<SupportedTestCase>::from)
-        .collect::<Vec<_>>();
-
-    test_rust_types(cases).await
+pub async fn run(args: Args) -> Result<()> {
+    let cases = if let Some(schema) = args.schema {
+        vec![TestCase::require(&schema)?]
+    } else {
+        TestCase::all()
+    };
+    let runner = TestRunner::new();
+    runner.run(cases).await
 }
 
 fn new_schemas_cases() -> ComponentCases {

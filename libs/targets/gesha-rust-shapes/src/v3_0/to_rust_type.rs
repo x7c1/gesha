@@ -6,9 +6,9 @@ use crate::{Result, ToRustType};
 use gesha_rust_types::SourceCode;
 use openapi_types::v3_0::{ComponentsObject, Document};
 
-impl ToRustType<Document> for SourceCode {
-    fn apply(this: Document) -> Result<Self> {
-        let module = this
+impl ToRustType for Document {
+    fn apply(self) -> Result<SourceCode> {
+        let module = self
             .components
             .map(ToRustType::apply)
             .unwrap_or_else(|| Ok(SourceCode::empty()))?;
@@ -17,11 +17,11 @@ impl ToRustType<Document> for SourceCode {
     }
 }
 
-impl ToRustType<ComponentsObject> for SourceCode {
-    fn apply(this: ComponentsObject) -> Result<Self> {
+impl ToRustType for ComponentsObject {
+    fn apply(self) -> Result<SourceCode> {
         let shapes = ComponentsShape {
-            schemas: SchemasShape::shape(this.schemas)?,
-            request_bodies: RequestBodiesShape::shape(this.request_bodies)?,
+            schemas: SchemasShape::shape(self.schemas)?,
+            request_bodies: RequestBodiesShape::shape(self.request_bodies)?,
             core: CoreShape::default(),
         };
         shapes.into_source_code()

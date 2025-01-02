@@ -1,8 +1,7 @@
-use crate::gateway;
 use crate::gateway::testing::v3_0::ComponentKind;
 use crate::gateway::testing::TestCase;
-use crate::gateway::Error::UnsupportedExampleLocation;
-use gesha_rust_types::SourceCode;
+use crate::Error::UnsupportedExampleLocation;
+use crate::Result;
 use openapi_types::v3_0;
 use std::borrow::Cow;
 
@@ -10,7 +9,7 @@ const COMPONENTS_PATH: &str = "examples/v3_0/src/components";
 
 #[derive(Debug)]
 pub struct ComponentCase {
-    inner: TestCase<(v3_0::ComponentsObject, SourceCode)>,
+    inner: TestCase<v3_0::ComponentsObject>,
 }
 
 impl ComponentCase {
@@ -31,7 +30,7 @@ impl ComponentCase {
         Self { inner }
     }
 
-    pub fn from_path(path: String) -> gateway::Result<Self> {
+    pub fn from_path(path: String) -> Result<Self> {
         let to_case = |kind: ComponentKind| {
             let dir_path = format!("{COMPONENTS_PATH}/{dir}/", dir = kind.name());
             path.starts_with(&dir_path).then(|| {
@@ -46,7 +45,7 @@ impl ComponentCase {
     }
 }
 
-impl From<ComponentCase> for TestCase<(v3_0::ComponentsObject, SourceCode)> {
+impl From<ComponentCase> for TestCase<v3_0::ComponentsObject> {
     fn from(this: ComponentCase) -> Self {
         this.inner
     }
@@ -75,7 +74,7 @@ impl ComponentCases {
     }
 }
 
-impl From<ComponentCases> for Vec<TestCase<(v3_0::ComponentsObject, SourceCode)>> {
+impl From<ComponentCases> for Vec<TestCase<v3_0::ComponentsObject>> {
     fn from(this: ComponentCases) -> Self {
         this.cases.into_iter().map(|x| x.inner).collect()
     }
