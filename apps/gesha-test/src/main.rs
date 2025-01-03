@@ -12,7 +12,7 @@ async fn main() -> ExitCode {
     trace::init();
 
     let args = Args::parse();
-    info!("gesha-test: {:?}", args);
+    info!("gesha-test: {:#?}", args);
 
     let result = if args.overwrite {
         overwrite::run(args).await

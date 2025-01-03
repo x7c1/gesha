@@ -84,6 +84,18 @@ impl Error {
             Error::FormatFailed { detail, .. } => {
                 format!("rustfmt>\n{}", detail)
             }
+            Error::Conversion {
+                path,
+                cause:
+                    ConversionError::RustShape(gesha_rust_shapes::Error::TransformBroken { detail }),
+            } => {
+                format!(
+                    "internal error: transform broken.\n{}\n{}",
+                    path.display(),
+                    detail,
+                )
+            }
+            // TODO: remove this arm
             Error::Shapes {
                 path,
                 cause: TransformBroken { detail },

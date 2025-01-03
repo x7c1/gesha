@@ -7,6 +7,9 @@ pub use conversion_setting::ConversionSetting;
 mod test_case;
 pub use test_case::TestCase;
 
+mod test_cases_parent;
+pub use test_cases_parent::TestCasesParent;
+
 mod test_runner;
 pub use test_runner::TestRunner;
 

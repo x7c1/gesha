@@ -1,39 +1,23 @@
-use crate::process;
 use crate::process::Args;
-use gesha_core::gateway::testing::v3_0::ComponentCase;
-use gesha_core::gateway::testing::{collect_modified_cases, generate_module_file};
-use gesha_core::gateway::Writer;
+use gesha_core::testing::{TestCase, TestCasesParent, TestRunner};
 use gesha_core::Result;
 use tracing::{info, instrument};
 
 #[instrument(name = "overwrite::run")]
 pub async fn run(args: Args) -> Result<()> {
-    let test_cases = if let Some(schema) = args.schema {
-        let case = ComponentCase::from_path(schema)?;
-        vec![case.into()]
+    let cases = if let Some(schema) = args.schema {
+        vec![TestCase::require(&schema)?]
     } else {
-        process::all_cases()
-            .into_iter()
-            .flat_map(Vec::from)
-            .collect()
+        TestCase::all()
     };
-    let cases = collect_modified_cases(test_cases).await?;
-    if cases.is_empty() {
+    let runner = TestRunner::new();
+    let modified_cases = runner.collect_modified_cases(cases).await?;
+    if modified_cases.is_empty() {
         info!("diff not detected");
     } else {
-        for case in cases.iter() {
-            info!("diff detected: {} {}", case.target.module_name, case.diff);
-        }
-        for case in cases {
-            let writer = Writer {
-                path: case.target.example,
-                preamble: None,
-            };
-            writer.copy_file(case.target.output)?;
-        }
+        runner.copy_modified_files(&modified_cases)?;
     }
-    process::all_cases().into_iter().try_for_each(|cases| {
-        let module_path = cases.module_path.clone();
-        generate_module_file(module_path, cases.into())
-    })
+    TestCasesParent::all()
+        .iter()
+        .try_for_each(|parent| runner.generate_mod_file(parent))
 }
