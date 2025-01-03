@@ -7,6 +7,9 @@ pub type Result<A> = std::result::Result<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {
+    UnknownTestCase {
+        path: String,
+    },
     // inherited errors
     OpenApiTypes {
         path: PathBuf,
