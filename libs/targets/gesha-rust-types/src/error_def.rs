@@ -14,14 +14,8 @@ impl ErrorDef {
     pub fn set(&mut self, variant: ErrorVariant) {
         let _ = self.0.insert(variant);
     }
-}
-
-impl IntoIterator for ErrorDef {
-    type Item = <IndexSet<ErrorVariant> as IntoIterator>::Item;
-    type IntoIter = <IndexSet<ErrorVariant> as IntoIterator>::IntoIter;
-
-    fn into_iter(self) -> Self::IntoIter {
-        IntoIterator::into_iter(self.0)
+    pub fn iter(&self) -> impl Iterator<Item = &ErrorVariant> {
+        self.0.iter()
     }
 }
 

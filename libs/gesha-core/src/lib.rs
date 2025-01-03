@@ -1,6 +1,6 @@
-pub mod gateway;
-pub mod trace;
+mod error;
+pub use crate::error::{DiffStyle, Error, ErrorTheme, Result};
 
-mod conversions;
-mod misc;
-mod renderer;
+pub mod gateway;
+pub mod testing;
+pub mod trace;

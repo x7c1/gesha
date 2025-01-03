@@ -1,6 +1,6 @@
 use crate::{DeriveAttribute, DocComments, SerdeAttribute};
 
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct TypeHeader {
     pub name: String,
     pub derive_attrs: Vec<DeriveAttribute>,
