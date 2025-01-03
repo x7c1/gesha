@@ -1,3 +1,4 @@
+use crate::testing::ConversionError;
 use console::{Style, StyledObject};
 use gesha_rust_shapes::Error::TransformBroken;
 use std::path::PathBuf;
@@ -14,6 +15,10 @@ pub enum Error {
     OpenApiTypes {
         path: PathBuf,
         cause: openapi_types::Error,
+    },
+    Conversion {
+        path: PathBuf,
+        cause: ConversionError,
     },
     Shapes {
         path: PathBuf,
@@ -98,6 +103,12 @@ impl Error {
             _ => {
                 format!("{:#?}", self)
             }
+        }
+    }
+    pub fn conversion<A: Into<PathBuf>>(path: A) -> impl FnOnce(ConversionError) -> Self {
+        |cause| Self::Conversion {
+            path: path.into(),
+            cause,
         }
     }
     pub fn shapes<A: Into<PathBuf>>(path: A) -> impl FnOnce(gesha_rust_shapes::Error) -> Self {

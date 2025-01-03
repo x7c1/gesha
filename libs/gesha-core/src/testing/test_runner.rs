@@ -44,7 +44,7 @@ async fn run_single(case: TestCase) -> Result<()> {
         TestCase::V3_0_Rust(rule) => {
             let writer = new_writer(&rule.output);
             let yaml = open_yaml_map(&rule.schema)?;
-            let target = generate(yaml, &rule)?;
+            let target = convert(yaml, &rule)?;
             writer.create_file(target)?;
             detect_diff(&rule.output, &rule.example)?;
             info!("passed: {path}", path = rule.schema.to_string_lossy());
@@ -53,14 +53,13 @@ async fn run_single(case: TestCase) -> Result<()> {
     Ok(())
 }
 
-fn generate<From, To>(yaml: YamlMap, _: &ConversionSetting<From, To>) -> Result<To>
+fn convert<From, To>(yaml: YamlMap, rule: &ConversionSetting<From, To>) -> Result<To>
 where
     To: CanConvert<From>,
     From: ToOpenApi,
 {
-    // TODO: remove unwrap
-    let x: From = ToOpenApi::apply(yaml).unwrap();
-    let y: To = CanConvert::convert(x)?;
+    let x: From = ToOpenApi::apply(yaml).map_err(Error::openapi(&rule.schema))?;
+    let y: To = CanConvert::convert(x).map_err(Error::conversion(&rule.schema))?;
     Ok(y)
 }
 

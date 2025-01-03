@@ -1,13 +1,11 @@
 use crate::testing::v3_0::COMPONENTS_PATH;
-use crate::testing::{CanConvert, ConversionSetting};
+use crate::testing::{CanConvert, ConversionError, ConversionSetting};
 use gesha_rust_shapes::ToRustType;
 use openapi_types::v3_0;
 
 impl CanConvert<v3_0::ComponentsObject> for gesha_rust_types::SourceCode {
-    fn convert(x: v3_0::ComponentsObject) -> crate::Result<Self> {
-        // TODO: remove unwrap
-        let y = ToRustType::apply(x).unwrap();
-        Ok(y)
+    fn convert(x: v3_0::ComponentsObject) -> Result<Self, ConversionError> {
+        ToRustType::apply(x).map_err(ConversionError::RustShape)
     }
 }
 

@@ -1,5 +1,5 @@
 mod can_convert;
-pub use can_convert::CanConvert;
+pub use can_convert::{CanConvert, ConversionError};
 
 mod conversion_setting;
 pub use conversion_setting::ConversionSetting;
