@@ -1,7 +1,6 @@
 use crate::gateway::testing::new_writer;
 use crate::gateway::{detect_diff, file_to_string};
-use crate::testing::test_case::{CanConvert, ConversionSetting};
-use crate::testing::TestCase;
+use crate::testing::{CanConvert, ConversionSetting, TestCase};
 use crate::{Error, Result};
 use futures::future::join_all;
 use openapi_types::yaml::{load_from_str, ToOpenApi, YamlMap};
