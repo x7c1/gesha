@@ -1,5 +1,3 @@
-pub mod v3_0;
-
 use crate::gateway::{detect_diff, Reader, Writer};
 use crate::{Error, ErrorTheme, Result};
 use futures::future::join_all;
