@@ -63,8 +63,12 @@ fn render_definition(write: &mut impl Write, x: &Definition) -> fmt::Result {
 }
 
 fn render_header(write: &mut impl Write, x: &TypeHeader) -> fmt::Result {
+    if let Some(doc_comments) = &x.doc_comments {
+        render! { write =>
+            echo > "{comments}", comments = doc_comments;
+        }
+    };
     render! { write =>
-        echo > "{comments}", comments = x.doc_comments;
         call > render_derive_attrs => &x.derive_attrs;
         call > render_serde_attrs => &x.serde_attrs;
     }

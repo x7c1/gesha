@@ -5,7 +5,7 @@ use openapi_types::v3_0::{ComponentName, SchemaObject};
 #[derive(Clone, Debug)]
 pub struct TypeHeaderShape {
     pub name: ComponentName,
-    pub doc_comments: DocComments,
+    pub doc_comments: Option<DocComments>,
     pub is_nullable: bool,
     pub serde_attrs: Vec<SerdeAttribute>,
     _hide_default_constructor: bool,
@@ -35,7 +35,7 @@ impl TypeHeaderShape {
     }
 }
 
-fn to_doc_comments(title: Option<&str>, description: Option<&str>) -> DocComments {
+fn to_doc_comments(title: Option<&str>, description: Option<&str>) -> Option<DocComments> {
     let trim = |x: &str| x.trim().to_string();
     let maybe = match (title.map(trim), description.map(trim)) {
         (t, None) => t,

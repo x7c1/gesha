@@ -18,7 +18,7 @@ use openapi_types::v3_0::{ComponentName, SchemaCase};
 #[derive(Clone, Debug)]
 pub struct DefinitionShape {
     pub name: ComponentName,
-    pub doc_comments: DocComments,
+    pub doc_comments: Option<DocComments>,
     pub is_required: bool,
     pub contents: Vec<ContentShape>,
 }
