@@ -1,11 +1,11 @@
-use crate::process::Args;
+use crate::test::Args;
 use clap::Parser;
 use gesha_core::{trace, Result};
 use std::process::ExitCode;
 use tracing::{error, info};
 
 mod overwrite;
-mod process;
+mod test;
 
 #[tokio::main]
 async fn main() -> ExitCode {
@@ -17,7 +17,7 @@ async fn main() -> ExitCode {
     let result = if args.overwrite {
         overwrite::run(args).await
     } else {
-        process::run(args).await
+        test::run(args).await
     };
     trace::shutdown();
     to_code(result)
