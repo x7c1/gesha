@@ -1,6 +1,5 @@
 use crate::testing::ConversionError;
 use console::{Style, StyledObject};
-use gesha_rust_shapes::Error::TransformBroken;
 use std::path::PathBuf;
 use tokio::task::JoinError;
 
@@ -11,6 +10,7 @@ pub enum Error {
     UnknownTestCase {
         path: String,
     },
+
     // inherited errors
     OpenApiTypes {
         path: PathBuf,
@@ -19,10 +19,6 @@ pub enum Error {
     Conversion {
         path: PathBuf,
         cause: ConversionError,
-    },
-    Shapes {
-        path: PathBuf,
-        cause: gesha_rust_shapes::Error,
     },
 
     // thread errors
@@ -95,17 +91,6 @@ impl Error {
                     detail,
                 )
             }
-            // TODO: remove this arm
-            Error::Shapes {
-                path,
-                cause: TransformBroken { detail },
-            } => {
-                format!(
-                    "internal error: transform broken.\n{}\n{}",
-                    path.display(),
-                    detail,
-                )
-            }
             Error::Errors(errors) => errors
                 .iter()
                 .map(|e| e.detail(theme))
@@ -119,12 +104,6 @@ impl Error {
     }
     pub fn conversion<A: Into<PathBuf>>(path: A) -> impl FnOnce(ConversionError) -> Self {
         |cause| Self::Conversion {
-            path: path.into(),
-            cause,
-        }
-    }
-    pub fn shapes<A: Into<PathBuf>>(path: A) -> impl FnOnce(gesha_rust_shapes::Error) -> Self {
-        |cause| Self::Shapes {
             path: path.into(),
             cause,
         }
