@@ -1,6 +1,3 @@
-mod generate_module_file;
-pub use generate_module_file::generate_module_file;
-
 pub mod v3_0;
 
 use crate::gateway::{detect_diff, Reader, Writer};
