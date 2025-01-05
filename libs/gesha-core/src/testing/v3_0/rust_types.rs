@@ -9,20 +9,17 @@ impl CanConvert<v3_0::ComponentsObject> for gesha_rust_types::SourceCode {
     }
 
     fn test_case_parents() -> Vec<TestCasesParent> {
-        // TODO: add request_bodies
-        vec![schemas()]
+        vec![schemas(), request_bodies()]
     }
 }
 
 impl ConversionSetting<v3_0::ComponentsObject, gesha_rust_types::SourceCode> {
-    pub fn v3_0_rust(yaml_name: &str) -> Self {
+    fn v3_0_rust(parent_name: &str, yaml_name: &str) -> Self {
         let rs_name = yaml_name.replace(".yaml", ".rs");
-        // TODO: support request_bodies
-        let dir = "schemas";
         Self {
-            output: format!("output/v3.0/components/{dir}/{rs_name}").into(),
-            schema: format!("{COMPONENTS_PATH}/{dir}/{yaml_name}").into(),
-            example: format!("{COMPONENTS_PATH}/{dir}/{rs_name}").into(),
+            output: format!("output/v3.0/components/{parent_name}/{rs_name}").into(),
+            schema: format!("{COMPONENTS_PATH}/{parent_name}/{yaml_name}").into(),
+            example: format!("{COMPONENTS_PATH}/{parent_name}/{rs_name}").into(),
             module_name: yaml_name.replace(".yaml", ""),
             phantom: Default::default(),
         }
@@ -58,23 +55,24 @@ fn schemas() -> TestCasesParent {
         "one_of.yaml",
         "object_inline_one_of.yaml",
     ];
+    let parent_name = "schemas";
+    create_parent(filenames, parent_name)
+}
+
+fn request_bodies() -> TestCasesParent {
+    let filenames = vec!["schema_ref.yaml"];
+    let parent_name = "request_bodies";
+    create_parent(filenames, parent_name)
+}
+
+fn create_parent(filenames: Vec<&str>, parent_name: &str) -> TestCasesParent {
     let enclosed_cases = filenames
         .iter()
-        .map(|filename| TestCase::V3_0_Rust(ConversionSetting::v3_0_rust(filename)))
+        .map(|filename| TestCase::V3_0_Rust(ConversionSetting::v3_0_rust(parent_name, filename)))
         .collect();
 
-    let path = format!(
-        "examples/v3_0/src/components/{module}.rs",
-        module = "schemas"
-    );
     TestCasesParent {
-        file_path: path.into(),
+        file_path: format!("examples/v3_0/src/components/{parent_name}.rs").into(),
         enclosed_cases,
     }
 }
-
-/*
-fn new_request_bodies_cases() -> ComponentCases {
-    ComponentCases::from_vec(RequestBodies, vec!["schema_ref.yaml"])
-}
-*/
