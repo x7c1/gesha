@@ -11,10 +11,6 @@ pub struct Args {
 
 pub fn run(args: Args) -> Result<()> {
     info!("generate> {:?}", args);
-
-    // let reader = Reader::new::<v3_0::Document>();
-    // let code: SourceCode = reader.open_rust_type(args.schema)?;
-    // info!("components: {:#?}", code);
     info!("(UNIMPLEMENTED)");
     Ok(())
 }
