@@ -1,6 +1,6 @@
 mod error;
 pub use crate::error::{DiffStyle, Error, ErrorTheme, Result};
 
-mod gateway;
+mod io;
 pub mod testing;
 pub mod trace;

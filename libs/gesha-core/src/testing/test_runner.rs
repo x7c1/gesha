@@ -1,4 +1,4 @@
-use crate::gateway::{detect_diff, Reader, Writer};
+use crate::io::{detect_diff, Reader, Writer};
 use crate::testing::{CanConvert, ConversionSetting, TestCase, TestCasesParent};
 use crate::{Error, ErrorTheme, Result};
 use futures::future::join_all;

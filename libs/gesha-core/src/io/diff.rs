@@ -1,4 +1,4 @@
-use crate::gateway::Reader;
+use crate::io::Reader;
 use crate::Error::DiffDetected;
 use crate::Result;
 use console::Style;
