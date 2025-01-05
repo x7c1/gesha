@@ -5,8 +5,9 @@ use std::fmt::{Display, Formatter};
 pub struct NonDocComments(String);
 
 impl NonDocComments {
-    pub fn wrap(this: Option<String>) -> Option<Self> {
-        this.map(|text| format!("/*\n{text}\n*/\n")).map(Self)
+    pub fn block(text: impl Into<String>) -> Self {
+        let text = text.into();
+        NonDocComments(format!("/*\n{text}\n*/\n"))
     }
 }
 

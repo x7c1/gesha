@@ -11,7 +11,7 @@ use crate::v3_0::components::core::CoreShape;
 use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::{SchemasShape, TypeShape};
 use crate::Result;
-use gesha_rust_types::SourceCode;
+use gesha_rust_types::ModDef;
 
 #[derive(Clone, Debug)]
 pub struct ComponentsShape {
@@ -21,7 +21,7 @@ pub struct ComponentsShape {
 }
 
 impl ComponentsShape {
-    pub fn into_source_code(self) -> Result<SourceCode> {
+    pub fn into_mod_defs(self) -> Result<Vec<ModDef>> {
         let this = transform(self)?;
         let mod_defs = vec![
             this.request_bodies.define()?,
@@ -32,9 +32,7 @@ impl ComponentsShape {
         .flatten()
         .collect();
 
-        // TODO: add preamble
-        let code = SourceCode::new(mod_defs);
-        Ok(code)
+        Ok(mod_defs)
     }
 
     pub fn any_type(&self, f: impl Fn(&TypeShape) -> bool) -> bool {

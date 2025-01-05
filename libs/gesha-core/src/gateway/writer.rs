@@ -14,6 +14,12 @@ pub struct Writer {
 }
 
 impl Writer {
+    pub fn new(path: impl Into<PathBuf>) -> Self {
+        Self {
+            path: path.into(),
+            preamble: None,
+        }
+    }
     pub fn touch(&self) -> Result<File> {
         File::create(&self.path).map_err(|cause| CannotCreateFile {
             path: self.path.clone(),

@@ -1,4 +1,3 @@
-use crate::gateway::testing::new_writer;
 use crate::gateway::{detect_diff, file_to_string, Writer};
 use crate::testing::{CanConvert, ConversionSetting, TestCase, TestCasesParent};
 use crate::{Error, ErrorTheme, Result};
@@ -93,7 +92,7 @@ impl TestRunner {
 
     #[instrument(skip_all)]
     pub fn generate_mod_file(&self, parent: &TestCasesParent) -> Result<()> {
-        let writer = new_writer(&parent.file_path);
+        let writer = Writer::new(&parent.file_path);
         let decls = parent
             .enclosed_cases
             .iter()
@@ -126,7 +125,7 @@ async fn detect_modified_case(case: TestCase) -> Result<Option<ModifiedTestCase>
             // example doesn't exist at first attempt.
             let not_exist = !rule.example.exists();
             if not_exist {
-                new_writer(&rule.example).touch()?;
+                Writer::new(&rule.example).touch()?;
             }
 
             // contrary to run_single(),
@@ -149,7 +148,7 @@ where
     A: ToOpenApi,
     B: CanConvert<A> + Display + Debug,
 {
-    let writer = new_writer(&rule.output);
+    let writer = Writer::new(&rule.output);
     let yaml = open_yaml_map(&rule.schema)?;
     let target = convert(yaml, rule)?;
     writer.create_file(target)?;
