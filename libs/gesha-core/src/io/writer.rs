@@ -1,4 +1,4 @@
-use crate::Error::{CannotCopyFile, CannotCreateFile, CannotRender, CannotWriteFile, FormatFailed};
+use crate::Error::{CannotCopyFile, CannotCreateFile, CannotRender, FormatFailed};
 use crate::Result;
 use std::fmt::{Debug, Display};
 use std::fs::File;
@@ -9,16 +9,12 @@ use tracing::{debug, instrument};
 
 #[derive(Debug)]
 pub struct Writer {
-    pub path: PathBuf,
-    pub preamble: Option<String>,
+    path: PathBuf,
 }
 
 impl Writer {
     pub fn new(path: impl Into<PathBuf>) -> Self {
-        Self {
-            path: path.into(),
-            preamble: None,
-        }
+        Self { path: path.into() }
     }
     pub fn touch(&self) -> Result<File> {
         File::create(&self.path).map_err(|cause| CannotCreateFile {
@@ -28,16 +24,8 @@ impl Writer {
     }
 
     #[instrument(skip_all)]
-    pub fn create_file<A: Display + Debug>(self, a: A) -> Result<()> {
+    pub fn create_file<A: Display>(self, a: A) -> Result<()> {
         let mut file = self.touch()?;
-        if let Some(preamble) = self.preamble {
-            let bytes = preamble.as_bytes();
-            file.write(bytes).map_err(|cause| CannotWriteFile {
-                path: self.path.clone(),
-                detail: format!("{:?}", cause),
-            })?;
-        }
-
         write!(file, "{}", a).map_err(|cause| CannotRender {
             path: self.path.clone(),
             detail: format!("{:?}", cause),

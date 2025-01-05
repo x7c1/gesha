@@ -6,8 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-gesha-rust-shapes = { path = "../targets/gesha-rust-shapes" }
-gesha-rust-types = { path = "../targets/gesha-rust-types" }
 openapi-types = { path = "../../libs/openapi-types" }
 
 chrono = "0.4.31"

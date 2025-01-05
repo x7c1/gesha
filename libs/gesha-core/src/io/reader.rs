@@ -1,4 +1,4 @@
-use crate::testing::CanConvert;
+use crate::conversion::Definition;
 use crate::Error::CannotReadFile;
 use crate::{Error, Result};
 use openapi_types::yaml::{load_from_str, ToOpenApi, YamlMap};
@@ -18,14 +18,17 @@ impl Reader {
         Self::new(path.as_ref()).as_string()
     }
 
-    pub fn open_target_type<From, To>(&self) -> Result<To>
+    pub fn open_target_type<A>(&self) -> Result<A::TargetType>
     where
-        To: CanConvert<From>,
-        From: ToOpenApi,
+        A: Definition,
+        A::OpenApiType: ToOpenApi,
     {
         let yaml = self.as_yaml_map()?;
-        let from: From = ToOpenApi::apply(yaml).map_err(Error::openapi(&self.path))?;
-        let to: To = CanConvert::convert(from).map_err(Error::conversion(&self.path))?;
+        let from: <A as Definition>::OpenApiType =
+            ToOpenApi::apply(yaml).map_err(Error::openapi(&self.path))?;
+
+        let to = A::convert(from).map_err(Error::conversion(&self.path))?;
+
         Ok(to)
     }
 

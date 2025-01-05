@@ -1,3 +1,4 @@
+use gesha_core::conversion::ConversionError;
 use openapi_types::v3_0::OpenApiDataType;
 
 pub type Result<A> = std::result::Result<A, Error>;
@@ -15,6 +16,12 @@ pub enum Error {
         data_type: OpenApiDataType,
         format: String,
     },
+}
+
+impl From<Error> for ConversionError {
+    fn from(_value: Error) -> Self {
+        todo!()
+    }
 }
 
 #[macro_export]

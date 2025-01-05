@@ -939,8 +939,6 @@ dependencies = [
  "chrono",
  "console",
  "futures",
- "gesha-rust-shapes",
- "gesha-rust-types",
  "nu-ansi-term 0.49.0",
  "openapi-types",
  "opentelemetry",
@@ -958,6 +956,7 @@ dependencies = [
 name = "gesha-rust-shapes"
 version = "0.1.0"
 dependencies = [
+ "gesha-core",
  "gesha-rust-types",
  "heck 0.4.1",
  "indexmap 2.7.0",
@@ -978,6 +977,7 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "gesha-core",
+ "gesha-rust-shapes",
  "gesha-rust-types",
  "openapi-types",
  "tokio",

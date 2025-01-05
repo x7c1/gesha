@@ -1,4 +1,4 @@
-use crate::testing::ConversionError;
+use crate::conversion::ConversionError;
 use console::{Style, StyledObject};
 use std::path::PathBuf;
 use tokio::task::JoinError;
@@ -35,10 +35,6 @@ pub enum Error {
         detail: String,
     },
     CannotCreateFile {
-        path: PathBuf,
-        detail: String,
-    },
-    CannotWriteFile {
         path: PathBuf,
         detail: String,
     },
@@ -80,17 +76,18 @@ impl Error {
             Error::FormatFailed { detail, .. } => {
                 format!("rustfmt>\n{}", detail)
             }
-            Error::Conversion {
-                path,
-                cause:
-                    ConversionError::RustShape(gesha_rust_shapes::Error::TransformBroken { detail }),
-            } => {
-                format!(
-                    "internal error: transform broken.\n{}\n{}",
-                    path.display(),
-                    detail,
-                )
-            }
+            // TODO:
+            // Error::Conversion {
+            //     path,
+            //     cause:
+            //         ConversionError::RustShape(gesha_rust_shapes::Error::TransformBroken { detail }),
+            // } => {
+            //     format!(
+            //         "internal error: transform broken.\n{}\n{}",
+            //         path.display(),
+            //         detail,
+            //     )
+            // }
             Error::Errors(errors) => errors
                 .iter()
                 .map(|e| e.detail(theme))

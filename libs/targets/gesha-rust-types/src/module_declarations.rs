@@ -2,8 +2,14 @@ use crate::ModuleName;
 use std::fmt;
 use std::fmt::Display;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ModuleDeclarations(Vec<ModuleName>);
+
+impl ModuleDeclarations {
+    pub fn empty() -> Self {
+        Self(vec![])
+    }
+}
 
 impl Display for ModuleDeclarations {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

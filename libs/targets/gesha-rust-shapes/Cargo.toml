@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+gesha-core = { path = "../../gesha-core" }
 gesha-rust-types = { path = "../gesha-rust-types" }
 openapi-types = { path = "../../openapi-types" }
 
