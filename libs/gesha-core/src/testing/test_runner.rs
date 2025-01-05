@@ -1,11 +1,10 @@
-use crate::gateway::{detect_diff, file_to_string, Writer};
+use crate::gateway::{detect_diff, Reader, Writer};
 use crate::testing::{CanConvert, ConversionSetting, TestCase, TestCasesParent};
 use crate::{Error, ErrorTheme, Result};
 use futures::future::join_all;
 use gesha_rust_types::{ModuleDeclarations, ModuleName};
-use openapi_types::yaml::{load_from_str, ToOpenApi, YamlMap};
+use openapi_types::yaml::ToOpenApi;
 use std::fmt::{Debug, Display};
-use std::path::Path;
 use tracing::Instrument;
 use tracing::{info, instrument};
 
@@ -143,32 +142,16 @@ async fn detect_modified_case(case: TestCase) -> Result<Option<ModifiedTestCase>
     }
 }
 
-fn write_file<A, B>(rule: &ConversionSetting<A, B>) -> Result<()>
+fn write_file<From, To>(rule: &ConversionSetting<From, To>) -> Result<()>
 where
-    A: ToOpenApi,
-    B: CanConvert<A> + Display + Debug,
+    From: ToOpenApi,
+    To: CanConvert<From> + Display + Debug,
 {
     let writer = Writer::new(&rule.output);
-    let yaml = open_yaml_map(&rule.schema)?;
-    let target = convert(yaml, rule)?;
+    let reader = Reader::new(&rule.schema);
+    let target = reader.open_target_type::<From, To>()?;
     writer.create_file(target)?;
     Ok(())
-}
-
-fn convert<From, To>(yaml: YamlMap, rule: &ConversionSetting<From, To>) -> Result<To>
-where
-    To: CanConvert<From>,
-    From: ToOpenApi,
-{
-    let x: From = ToOpenApi::apply(yaml).map_err(Error::openapi(&rule.schema))?;
-    let y: To = CanConvert::convert(x).map_err(Error::conversion(&rule.schema))?;
-    Ok(y)
-}
-
-fn open_yaml_map<A: AsRef<Path>>(path: A) -> Result<YamlMap> {
-    let content = file_to_string(path.as_ref())?;
-    let map = load_from_str(&content).map_err(Error::openapi(path.as_ref()))?;
-    Ok(map)
 }
 
 #[derive(Debug)]
