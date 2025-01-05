@@ -84,7 +84,7 @@ impl TestRunner {
                     path: setting.example.clone(),
                     preamble: None,
                 };
-                writer.copy_file(&setting.output)?;
+                writer.copy_from(&setting.output)?;
             }
         }
         Ok(())

@@ -48,7 +48,7 @@ impl Writer {
         Ok(())
     }
 
-    pub fn copy_file<A: AsRef<Path>>(self, from: A) -> Result<()> {
+    pub fn copy_from<A: AsRef<Path>>(self, from: A) -> Result<()> {
         std::fs::copy(&from, &self.path).map_err(|cause| CannotCopyFile {
             from: from.as_ref().into(),
             to: self.path,
