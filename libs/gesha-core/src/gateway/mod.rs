@@ -1,5 +1,5 @@
 mod reader;
-pub use reader::{file_to_string, Reader};
+pub use reader::Reader;
 
 mod writer;
 pub use writer::Writer;

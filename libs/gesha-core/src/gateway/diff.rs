@@ -1,4 +1,4 @@
-use crate::gateway::file_to_string;
+use crate::gateway::Reader;
 use crate::Error::DiffDetected;
 use crate::Result;
 use console::Style;
@@ -37,8 +37,8 @@ impl Diff {
         A: AsRef<Path>,
         B: AsRef<Path>,
     {
-        let src_lines = file_to_string(src)?;
-        let dst_lines = file_to_string(dst)?;
+        let src_lines = Reader::file_to_string(src)?;
+        let dst_lines = Reader::file_to_string(dst)?;
         let raw = TextDiff::from_lines(src_lines.as_str(), dst_lines.as_str());
         let diff = Diff {
             has_change: raw.iter_all_changes().any(is_changed),
