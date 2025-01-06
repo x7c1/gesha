@@ -1,4 +1,4 @@
-use crate::conversion::{Definition, TestCase, TestSuite};
+use crate::conversion::{Definition, TestCase, TestCaseMap, TestSuite};
 use crate::io::{detect_diff, Reader, Writer};
 use crate::{Error, ErrorTheme, Result};
 use futures::future::join_all;
@@ -19,16 +19,30 @@ where
 {
     #[instrument(skip_all)]
     pub async fn run_tests(cases: Vec<TestCase<A::OpenApiType, A::TargetType>>) -> Result<()> {
-        let run_tests = cases
+        let (run_tests, mut map) = cases
             .into_iter()
-            .map(|case| tokio::spawn(Self::run_single(case).in_current_span()));
+            .map(|case| {
+                let cloned_case = case.clone();
+                let handle = tokio::spawn(Self::run_single(case).in_current_span());
+                (handle.id(), cloned_case, handle)
+            })
+            .fold((vec![], TestCaseMap::new()), TestCaseMap::accumulate);
 
-        let errors = join_all(run_tests)
-            .await
-            .into_iter()
-            .flatten()
-            .filter_map(|result| result.err())
-            .collect::<Vec<_>>();
+        let errors =
+            join_all(run_tests)
+                .await
+                .into_iter()
+                .try_fold(vec![], |mut errors, result| {
+                    match result {
+                        Ok(Ok(_)) => { /* nop */ }
+                        Ok(Err(e)) => errors.push(e),
+                        Err(cause) => errors.push(Error::JoinError {
+                            schema_path: map.extract(cause.id())?.schema,
+                            cause,
+                        }),
+                    }
+                    Ok(errors)
+                })?;
 
         if errors.is_empty() {
             Ok(())
@@ -41,23 +55,31 @@ where
     pub async fn collect_modified_cases(
         cases: Vec<TestCase<A::OpenApiType, A::TargetType>>,
     ) -> Result<Vec<ModifiedTestCase<A::OpenApiType, A::TargetType>>> {
-        let run_tests = cases
+        let (run_tests, mut map) = cases
             .into_iter()
-            .map(|x| tokio::spawn(Self::detect_modified_case(x).in_current_span()));
+            .map(|case| {
+                let cloned_case = case.clone();
+                let handle = tokio::spawn(Self::detect_modified_case(case).in_current_span());
+                (handle.id(), cloned_case, handle)
+            })
+            .fold((vec![], TestCaseMap::new()), TestCaseMap::accumulate);
 
-        let init = (vec![], vec![]);
-        let (modified, errors) = join_all(run_tests).await.into_iter().fold(
-            init,
+        let (modified, errors) = join_all(run_tests).await.into_iter().try_fold(
+            (vec![], vec![]),
             |(mut modified, mut errors), result| {
                 match result {
-                    Ok(Ok(Some(x))) => modified.push(x),
+                    Ok(Ok(Some(case))) => modified.push(case),
                     Ok(Ok(None)) => { /* nop */ }
                     Ok(Err(e)) => errors.push(e),
-                    Err(e) => errors.push(Error::JoinError(e)),
+                    Err(cause) => errors.push(Error::JoinError {
+                        schema_path: map.extract(cause.id())?.schema,
+                        cause,
+                    }),
                 }
-                (modified, errors)
+                Ok((modified, errors))
             },
-        );
+        )?;
+
         if errors.is_empty() {
             Ok(modified)
         } else {

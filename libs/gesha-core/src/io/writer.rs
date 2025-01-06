@@ -31,6 +31,7 @@ impl Writer {
             detail: format!("{:?}", cause),
         })?;
 
+        //TODO: move this formatter to conversion::Definition
         let output = format(self.path)?;
         debug!("rustfmt>\n{}", output);
         Ok(())

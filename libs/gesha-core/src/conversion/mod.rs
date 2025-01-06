@@ -4,6 +4,9 @@ pub use definition::{ConversionError, Definition};
 mod test_case;
 pub use test_case::TestCase;
 
+mod test_case_map;
+pub use test_case_map::TestCaseMap;
+
 mod test_suite;
 pub use test_suite::TestSuite;
 

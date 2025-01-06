@@ -22,7 +22,10 @@ pub enum Error {
     },
 
     // thread errors
-    JoinError(JoinError),
+    JoinError {
+        schema_path: PathBuf,
+        cause: JoinError,
+    },
 
     // module errors
     DiffDetected {
@@ -52,6 +55,7 @@ pub enum Error {
         detail: String,
     },
     Errors(Vec<Self>),
+    ThreadNotFound(String),
     UnsupportedExampleLocation(String),
 }
 

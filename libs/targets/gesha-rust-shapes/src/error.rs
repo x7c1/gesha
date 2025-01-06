@@ -20,7 +20,7 @@ pub enum Error {
 
 impl From<Error> for ConversionError {
     fn from(_value: Error) -> Self {
-        todo!()
+        todo!("{:#?}", _value)
     }
 }
 
