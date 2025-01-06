@@ -25,14 +25,14 @@ impl Definition for RustTypes {
         Ok(new_code().set_mod_defs(mod_defs))
     }
 
-    fn test_suites() -> Vec<TestSuite<Self::OpenApiType, Self::TargetType>> {
+    fn test_suites() -> Vec<TestSuite<Self>> {
         vec![
             create_suite(schemas_files(), "schemas"),
             create_suite(request_bodies_files(), "request_bodies"),
         ]
     }
 
-    fn test_suites_content(suite: &TestSuite<Self::OpenApiType, Self::TargetType>) -> impl Display {
+    fn test_suites_content(suite: &TestSuite<Self>) -> impl Display {
         let decls = suite
             .test_cases
             .iter()
@@ -50,10 +50,7 @@ fn new_code() -> gesha_rust_types::SourceCode {
     ))
 }
 
-fn create_suite(
-    filenames: Vec<&str>,
-    parent_name: &str,
-) -> TestSuite<v3_0::ComponentsObject, gesha_rust_types::SourceCode> {
+fn create_suite(filenames: Vec<&str>, parent_name: &str) -> TestSuite<RustTypes> {
     let enclosed_cases = filenames
         .iter()
         .map(|filename| to_test_case(parent_name, filename))
@@ -65,10 +62,7 @@ fn create_suite(
     }
 }
 
-fn to_test_case(
-    parent_name: &str,
-    yaml_name: &str,
-) -> TestCase<v3_0::ComponentsObject, gesha_rust_types::SourceCode> {
+fn to_test_case(parent_name: &str, yaml_name: &str) -> TestCase<RustTypes> {
     let rs_name = yaml_name.replace(".yaml", ".rs");
     TestCase {
         output: format!("output/v3.0/components/{parent_name}/{rs_name}").into(),

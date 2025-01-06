@@ -2,15 +2,15 @@ use std::marker::PhantomData;
 use std::path::PathBuf;
 
 #[derive(Debug)]
-pub struct TestCase<From, To> {
+pub struct TestCase<A> {
     pub output: PathBuf,
     pub schema: PathBuf,
     pub example: PathBuf,
     pub module_name: String,
-    pub phantom: PhantomData<(From, To)>,
+    pub phantom: PhantomData<A>,
 }
 
-impl<A, B> Clone for TestCase<A, B> {
+impl<A> Clone for TestCase<A> {
     fn clone(&self) -> Self {
         Self {
             output: self.output.clone(),

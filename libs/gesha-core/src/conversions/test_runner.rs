@@ -18,7 +18,7 @@ where
     A::TargetType: Display + Send + Sync + 'static,
 {
     #[instrument(skip_all)]
-    pub async fn run_tests(cases: Vec<TestCase<A::OpenApiType, A::TargetType>>) -> Result<()> {
+    pub async fn run_tests(cases: Vec<TestCase<A>>) -> Result<()> {
         let (run, mut map) = cases
             .into_iter()
             .map(|case| {
@@ -49,8 +49,8 @@ where
 
     #[instrument(skip_all)]
     pub async fn collect_modified_cases(
-        cases: Vec<TestCase<A::OpenApiType, A::TargetType>>,
-    ) -> Result<Vec<ModifiedTestCase<A::OpenApiType, A::TargetType>>> {
+        cases: Vec<TestCase<A>>,
+    ) -> Result<Vec<ModifiedTestCase<A>>> {
         let (run, mut map) = cases
             .into_iter()
             .map(|case| {
@@ -81,23 +81,19 @@ where
     }
 
     #[instrument(skip_all)]
-    pub fn copy_modified_files(
-        cases: &[ModifiedTestCase<A::OpenApiType, A::TargetType>],
-    ) -> Result<()> {
+    pub fn copy_modified_files(cases: &[ModifiedTestCase<A>]) -> Result<()> {
         cases
             .iter()
             .try_for_each(|case| Self::copy_modified_file(case))
     }
 
-    pub fn generate_test_suite_file(
-        suite: &TestSuite<A::OpenApiType, A::TargetType>,
-    ) -> Result<()> {
+    pub fn generate_test_suite_file(suite: &TestSuite<A>) -> Result<()> {
         let writer = Writer::new(&suite.mod_path);
         let content = A::test_suites_content(suite);
         writer.create_file(content)
     }
 
-    async fn run_single_test(case: TestCase<A::OpenApiType, A::TargetType>) -> Result<()> {
+    async fn run_single_test(case: TestCase<A>) -> Result<()> {
         let writer = Writer::new(&case.output);
         let reader = Reader::new(&case.schema);
         let target = reader.open_target_type::<A>()?;
@@ -108,15 +104,13 @@ where
         Ok(())
     }
 
-    fn copy_modified_file(case: &ModifiedTestCase<A::OpenApiType, A::TargetType>) -> Result<()> {
+    fn copy_modified_file(case: &ModifiedTestCase<A>) -> Result<()> {
         info!("diff detected: {} {}", case.target.module_name, case.diff);
         let writer = Writer::new(&case.target.example);
         writer.copy_from(&case.target.output)
     }
 
-    async fn detect_modified_case(
-        case: TestCase<A::OpenApiType, A::TargetType>,
-    ) -> Result<Option<ModifiedTestCase<A::OpenApiType, A::TargetType>>> {
+    async fn detect_modified_case(case: TestCase<A>) -> Result<Option<ModifiedTestCase<A>>> {
         let writer = Writer::new(&case.output);
         let reader = Reader::new(&case.schema);
         let target = reader.open_target_type::<A>()?;
@@ -143,7 +137,7 @@ where
 }
 
 #[derive(Debug)]
-pub struct ModifiedTestCase<From, To> {
-    pub target: TestCase<From, To>,
+pub struct ModifiedTestCase<A> {
+    pub target: TestCase<A>,
     pub diff: String,
 }

@@ -4,31 +4,31 @@ use std::collections::HashMap;
 use tokio::task::{Id, JoinError};
 
 #[derive(Default)]
-pub struct TestCaseMap<From, To>(HashMap<Id, TestCase<From, To>>);
+pub struct TestCaseMap<A>(HashMap<Id, TestCase<A>>);
 
-impl<From, To> TestCaseMap<From, To> {
+impl<A> TestCaseMap<A> {
     pub fn new() -> Self {
         Self(HashMap::new())
     }
-    pub fn push(mut self, id: Id, case: TestCase<From, To>) -> Self {
+    pub fn push(mut self, id: Id, case: TestCase<A>) -> Self {
         self.0.insert(id, case);
         self
     }
-    pub fn extract(&mut self, id: Id) -> crate::Result<TestCase<From, To>> {
+    pub fn extract(&mut self, id: Id) -> crate::Result<TestCase<A>> {
         self.0
             .remove(&id)
             .ok_or_else(|| Error::ThreadNotFound(id.to_string()))
     }
 
-    pub fn accumulate<A>(
-        (mut handles, map): (Vec<A>, Self),
-        (id, case, handle): (Id, TestCase<From, To>, A),
-    ) -> (Vec<A>, Self) {
+    pub fn accumulate<B>(
+        (mut handles, map): (Vec<B>, Self),
+        (id, case, handle): (Id, TestCase<A>, B),
+    ) -> (Vec<B>, Self) {
         handles.push(handle);
         (handles, map.push(id, case))
     }
 
-    pub fn flatten<A>(&mut self, result: Result<crate::Result<A>, JoinError>) -> crate::Result<A> {
+    pub fn flatten<B>(&mut self, result: Result<crate::Result<B>, JoinError>) -> crate::Result<B> {
         match result {
             Ok(x) => x,
             Err(cause) => Err(Error::JoinError {
