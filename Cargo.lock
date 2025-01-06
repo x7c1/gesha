@@ -978,8 +978,6 @@ dependencies = [
  "clap",
  "gesha-core",
  "gesha-rust-shapes",
- "gesha-rust-types",
- "openapi-types",
  "tokio",
  "tracing",
 ]

@@ -1,4 +1,4 @@
-use crate::conversion::Definition;
+use crate::conversions::Definition;
 use crate::Error::CannotReadFile;
 use crate::{Error, Result};
 use openapi_types::yaml::{load_from_str, ToOpenApi, YamlMap};

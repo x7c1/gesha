@@ -2,7 +2,7 @@ use crate::misc::TryMap;
 use crate::v3_0::components::schemas::{DefinitionShape, FieldShape};
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::broken;
-use gesha_core::conversion::Result;
+use gesha_core::conversions::Result;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn resolve_optionality(mut shapes: ComponentsShape) -> Result<ComponentsShape> {

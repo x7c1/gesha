@@ -1,4 +1,4 @@
-use crate::conversion;
+use crate::conversions;
 use console::{Style, StyledObject};
 use std::path::PathBuf;
 use tokio::task::JoinError;
@@ -18,7 +18,7 @@ pub enum Error {
     },
     Conversion {
         path: PathBuf,
-        cause: conversion::Error,
+        cause: conversions::Error,
     },
 
     // thread errors
@@ -82,7 +82,7 @@ impl Error {
             }
             Error::Conversion {
                 path,
-                cause: conversion::Error::TransformBroken { detail },
+                cause: conversions::Error::TransformBroken { detail },
             } => {
                 format!(
                     "internal error: transform broken.\n{}\n{}",
@@ -101,7 +101,7 @@ impl Error {
             }
         }
     }
-    pub fn conversion<A: Into<PathBuf>>(path: A) -> impl FnOnce(conversion::Error) -> Self {
+    pub fn conversion<A: Into<PathBuf>>(path: A) -> impl FnOnce(conversions::Error) -> Self {
         |cause| Self::Conversion {
             path: path.into(),
             cause,

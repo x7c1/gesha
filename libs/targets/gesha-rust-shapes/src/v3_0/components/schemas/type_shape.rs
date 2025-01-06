@@ -1,8 +1,8 @@
 use crate::v3_0::components::schemas::TypeShape::{Inline, Proper};
 use crate::v3_0::components::schemas::{Optionality, Ref, TypePath};
 use gesha_core::broken;
-use gesha_core::conversion::Error::UnknownFormat;
-use gesha_core::conversion::Result;
+use gesha_core::conversions::Error::UnknownFormat;
+use gesha_core::conversions::Result;
 use gesha_rust_types::DataType;
 use openapi_types::v3_0::SchemaCase;
 use openapi_types::v3_0::SchemaCase::{Reference, Schema};

@@ -4,7 +4,7 @@ use crate::v3_0::components::schemas::{
 };
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::broken;
-use gesha_core::conversion::Result;
+use gesha_core::conversions::Result;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape> {

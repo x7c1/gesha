@@ -1,7 +1,7 @@
 use crate::v3_0::components::request_bodies::{
     ContentShape, DefinitionShape, MediaTypeShape, ModShape,
 };
-use gesha_core::conversion::Result;
+use gesha_core::conversions::Result;
 use gesha_rust_types::{DocComments, EnumVariantName, MediaTypeDef, ModDef};
 use indexmap::IndexMap;
 use openapi_types::v3_0::{ComponentName, RequestBodiesObject, RequestBodyCase, RequestBodyObject};

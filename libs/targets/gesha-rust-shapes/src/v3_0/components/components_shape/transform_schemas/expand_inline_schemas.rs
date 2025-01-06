@@ -5,7 +5,7 @@ use crate::v3_0::components::schemas::{
     OneOfShape, StructShape, TypeHeaderShape, TypePath,
 };
 use crate::v3_0::components::ComponentsShape;
-use gesha_core::conversion::Result;
+use gesha_core::conversions::Result;
 use std::ops::Not;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 

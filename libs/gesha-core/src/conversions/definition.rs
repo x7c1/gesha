@@ -1,5 +1,5 @@
-use crate::conversion;
-use crate::conversion::{TestCase, TestSuite};
+use crate::conversions;
+use crate::conversions::{TestCase, TestSuite};
 use crate::Error::UnknownTestCase;
 use std::fmt::Display;
 
@@ -7,7 +7,7 @@ pub trait Definition {
     type OpenApiType;
     type TargetType;
 
-    fn convert(x: Self::OpenApiType) -> Result<Self::TargetType, conversion::Error>;
+    fn convert(x: Self::OpenApiType) -> Result<Self::TargetType, conversions::Error>;
 
     fn test_suites() -> Vec<TestSuite<Self::OpenApiType, Self::TargetType>>;
 

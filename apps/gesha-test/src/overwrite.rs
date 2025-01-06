@@ -1,5 +1,5 @@
 use crate::test::Args;
-use gesha_core::conversion::{Definition, TestRunner};
+use gesha_core::conversions::{Definition, TestRunner};
 use gesha_core::Result;
 use gesha_rust_shapes::v3_0::RustTypes;
 use tracing::{info, instrument};

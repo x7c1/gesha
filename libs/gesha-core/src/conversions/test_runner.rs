@@ -1,4 +1,4 @@
-use crate::conversion::{Definition, TestCase, TestCaseMap, TestSuite};
+use crate::conversions::{Definition, TestCase, TestCaseMap, TestSuite};
 use crate::io::{detect_diff, Reader, Writer};
 use crate::{Error, ErrorTheme, Result};
 use futures::future::join_all;

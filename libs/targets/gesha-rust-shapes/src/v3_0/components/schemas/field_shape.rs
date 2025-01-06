@@ -1,5 +1,5 @@
 use crate::v3_0::components::schemas::TypeShape;
-use gesha_core::conversion::Result;
+use gesha_core::conversions::Result;
 use gesha_rust_types::{StructField, StructFieldAttribute, StructFieldName};
 use openapi_types::v3_0::{
     ComponentName, RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,

@@ -2,9 +2,9 @@ use crate::v3_0::components::core::CoreShape;
 use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::SchemasShape;
 use crate::v3_0::components::ComponentsShape;
-use gesha_core::conversion;
-use gesha_core::conversion::v3_0::COMPONENTS_PATH;
-use gesha_core::conversion::{Definition, TestCase, TestSuite};
+use gesha_core::conversions;
+use gesha_core::conversions::v3_0::COMPONENTS_PATH;
+use gesha_core::conversions::{Definition, TestCase, TestSuite};
 use gesha_rust_types::{ModuleDeclarations, ModuleName, NonDocComments};
 use openapi_types::v3_0;
 use std::fmt::Display;
@@ -15,7 +15,7 @@ impl Definition for RustTypes {
     type OpenApiType = v3_0::ComponentsObject;
     type TargetType = gesha_rust_types::SourceCode;
 
-    fn convert(this: Self::OpenApiType) -> Result<Self::TargetType, conversion::Error> {
+    fn convert(this: Self::OpenApiType) -> Result<Self::TargetType, conversions::Error> {
         let shapes = ComponentsShape {
             schemas: SchemasShape::shape(this.schemas)?,
             request_bodies: RequestBodiesShape::shape(this.request_bodies)?,

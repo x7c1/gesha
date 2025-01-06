@@ -17,7 +17,7 @@ mod resolve_type_path;
 use resolve_type_path::resolve_type_path;
 
 use crate::v3_0::components::ComponentsShape;
-use gesha_core::conversion::Result;
+use gesha_core::conversions::Result;
 
 pub fn transform_schemas(mut shape: ComponentsShape) -> Result<ComponentsShape> {
     shape = expand_inline_schemas(shape)?;

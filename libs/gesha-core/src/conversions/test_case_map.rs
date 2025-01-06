@@ -1,4 +1,4 @@
-use crate::conversion::TestCase;
+use crate::conversions::TestCase;
 use crate::Error;
 use std::collections::HashMap;
 use tokio::task::Id;

@@ -23,7 +23,7 @@ pub enum Error {
 #[macro_export]
 macro_rules! broken {
     ($shape: expr) => {
-        $crate::conversion::Error::TransformBroken {
+        $crate::conversions::Error::TransformBroken {
             detail: format!(
                 "unprocessed shape found:\n  at {file}:{line}\n{shape:#?}",
                 file = file!(),

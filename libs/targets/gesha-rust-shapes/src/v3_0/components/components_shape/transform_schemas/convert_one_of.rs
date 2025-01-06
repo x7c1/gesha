@@ -4,8 +4,8 @@ use crate::v3_0::components::schemas::{
     DefinitionShape, EnumShape, EnumVariantShape, OneOfItemShape, OneOfShape,
 };
 use crate::v3_0::components::ComponentsShape;
-use gesha_core::conversion::Error::ReferenceObjectNotFound;
-use gesha_core::conversion::Result;
+use gesha_core::conversions::Error::ReferenceObjectNotFound;
+use gesha_core::conversions::Result;
 use gesha_rust_types::{EnumVariantName, SerdeAttribute};
 use SerdeAttribute::Untagged;
 
