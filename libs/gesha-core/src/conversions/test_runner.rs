@@ -19,7 +19,7 @@ where
 {
     #[instrument(skip_all)]
     pub async fn run_tests(cases: Vec<TestCase<A::OpenApiType, A::TargetType>>) -> Result<()> {
-        let (run_tests, mut map) = cases
+        let (run, mut map) = cases
             .into_iter()
             .map(|case| {
                 let cloned_case = case.clone();
@@ -28,21 +28,17 @@ where
             })
             .fold((vec![], TestCaseMap::new()), TestCaseMap::accumulate);
 
-        let errors =
-            join_all(run_tests)
-                .await
-                .into_iter()
-                .try_fold(vec![], |mut errors, result| {
-                    match result {
-                        Ok(Ok(_)) => { /* nop */ }
-                        Ok(Err(e)) => errors.push(e),
-                        Err(cause) => errors.push(Error::JoinError {
-                            schema_path: map.extract(cause.id())?.schema,
-                            cause,
-                        }),
-                    }
-                    Ok(errors)
-                })?;
+        let errors = join_all(run)
+            .await
+            .into_iter()
+            .map(|result| map.flatten(result))
+            .fold(vec![], |mut errors, result| {
+                match result {
+                    Ok(_) => { /* nop */ }
+                    Err(e) => errors.push(e),
+                }
+                errors
+            });
 
         if errors.is_empty() {
             Ok(())
@@ -55,7 +51,7 @@ where
     pub async fn collect_modified_cases(
         cases: Vec<TestCase<A::OpenApiType, A::TargetType>>,
     ) -> Result<Vec<ModifiedTestCase<A::OpenApiType, A::TargetType>>> {
-        let (run_tests, mut map) = cases
+        let (run, mut map) = cases
             .into_iter()
             .map(|case| {
                 let cloned_case = case.clone();
@@ -64,21 +60,18 @@ where
             })
             .fold((vec![], TestCaseMap::new()), TestCaseMap::accumulate);
 
-        let (modified, errors) = join_all(run_tests).await.into_iter().try_fold(
-            (vec![], vec![]),
-            |(mut modified, mut errors), result| {
+        let (modified, errors) = join_all(run)
+            .await
+            .into_iter()
+            .map(|result| map.flatten(result))
+            .fold((vec![], vec![]), |(mut modified, mut errors), result| {
                 match result {
-                    Ok(Ok(Some(case))) => modified.push(case),
-                    Ok(Ok(None)) => { /* nop */ }
-                    Ok(Err(e)) => errors.push(e),
-                    Err(cause) => errors.push(Error::JoinError {
-                        schema_path: map.extract(cause.id())?.schema,
-                        cause,
-                    }),
+                    Ok(Some(case)) => modified.push(case),
+                    Ok(None) => { /* nop */ }
+                    Err(e) => errors.push(e),
                 }
-                Ok((modified, errors))
-            },
-        )?;
+                (modified, errors)
+            });
 
         if errors.is_empty() {
             Ok(modified)

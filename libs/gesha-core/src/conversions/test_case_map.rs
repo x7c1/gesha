@@ -1,7 +1,7 @@
 use crate::conversions::TestCase;
 use crate::Error;
 use std::collections::HashMap;
-use tokio::task::Id;
+use tokio::task::{Id, JoinError};
 
 #[derive(Default)]
 pub struct TestCaseMap<From, To>(HashMap<Id, TestCase<From, To>>);
@@ -26,5 +26,15 @@ impl<From, To> TestCaseMap<From, To> {
     ) -> (Vec<A>, Self) {
         handles.push(handle);
         (handles, map.push(id, case))
+    }
+
+    pub fn flatten<A>(&mut self, result: Result<crate::Result<A>, JoinError>) -> crate::Result<A> {
+        match result {
+            Ok(x) => x,
+            Err(cause) => Err(Error::JoinError {
+                schema_path: self.extract(cause.id())?.schema,
+                cause,
+            }),
+        }
     }
 }
