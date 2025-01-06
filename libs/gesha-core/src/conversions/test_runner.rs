@@ -23,7 +23,7 @@ where
             .into_iter()
             .map(|case| {
                 let cloned_case = case.clone();
-                let handle = tokio::spawn(Self::run_single(case).in_current_span());
+                let handle = tokio::spawn(Self::run_single_test(case).in_current_span());
                 (handle.id(), cloned_case, handle)
             })
             .fold((vec![], TestCaseMap::new()), TestCaseMap::accumulate);
@@ -97,7 +97,7 @@ where
         writer.create_file(content)
     }
 
-    async fn run_single(case: TestCase<A::OpenApiType, A::TargetType>) -> Result<()> {
+    async fn run_single_test(case: TestCase<A::OpenApiType, A::TargetType>) -> Result<()> {
         let writer = Writer::new(&case.output);
         let reader = Reader::new(&case.schema);
         let target = reader.open_target_type::<A>()?;
