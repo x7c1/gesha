@@ -3,7 +3,7 @@ use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::SchemasShape;
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions;
-use gesha_core::conversions::v3_0::COMPONENTS_PATH;
+use gesha_core::conversions::v3_0::{request_bodies_files, schemas_files, COMPONENTS_PATH};
 use gesha_core::conversions::{Definition, TestCase, TestSuite};
 use gesha_rust_types::{ModuleDeclarations, ModuleName, NonDocComments};
 use openapi_types::v3_0;
@@ -26,7 +26,10 @@ impl Definition for RustTypes {
     }
 
     fn test_suites() -> Vec<TestSuite<Self::OpenApiType, Self::TargetType>> {
-        vec![schemas(), request_bodies()]
+        vec![
+            create_suite(schemas_files(), "schemas"),
+            create_suite(request_bodies_files(), "request_bodies"),
+        ]
     }
 
     fn test_suites_content(suite: &TestSuite<Self::OpenApiType, Self::TargetType>) -> impl Display {
@@ -47,45 +50,6 @@ fn new_code() -> gesha_rust_types::SourceCode {
     ))
 }
 
-fn schemas() -> TestSuite<v3_0::ComponentsObject, gesha_rust_types::SourceCode> {
-    let filenames = vec![
-        "object_simple.yaml",
-        "numeric_fields.yaml",
-        "boolean_field.yaml",
-        "array.yaml",
-        "ref_property.yaml",
-        "ref_items.yaml",
-        "optional_field.yaml",
-        "newtype.yaml",
-        "newtype_numeric.yaml",
-        "reserved_keywords.yaml",
-        "enums.yaml",
-        "all_of.yaml",
-        "all_of_ref.yaml",
-        "camel_case_fields.yaml",
-        "title_description.yaml",
-        "nullable_field.yaml",
-        "object_inline.yaml",
-        "object_inline_nested.yaml",
-        "object_inline_ref.yaml",
-        "object_inline_all_of.yaml",
-        "object_inline_nullable.yaml",
-        "all_of_inline_all_of.yaml",
-        "all_of_override_optional.yaml",
-        "object_inline_enum.yaml",
-        "one_of.yaml",
-        "object_inline_one_of.yaml",
-    ];
-    let parent_name = "schemas";
-    create_suite(filenames, parent_name)
-}
-
-fn request_bodies() -> TestSuite<v3_0::ComponentsObject, gesha_rust_types::SourceCode> {
-    let filenames = vec!["schema_ref.yaml"];
-    let parent_name = "request_bodies";
-    create_suite(filenames, parent_name)
-}
-
 fn create_suite(
     filenames: Vec<&str>,
     parent_name: &str,
@@ -96,7 +60,7 @@ fn create_suite(
         .collect();
 
     TestSuite {
-        mod_path: format!("examples/v3_0/src/components/{parent_name}.rs").into(),
+        mod_path: format!("{COMPONENTS_PATH}/{parent_name}.rs").into(),
         test_cases: enclosed_cases,
     }
 }
