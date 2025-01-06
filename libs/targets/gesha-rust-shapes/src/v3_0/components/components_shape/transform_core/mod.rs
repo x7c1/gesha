@@ -1,6 +1,6 @@
 use crate::v3_0::components::schemas::TypeShape;
 use crate::v3_0::components::ComponentsShape;
-use crate::Result;
+use gesha_core::conversion::Result;
 use gesha_rust_types::{ErrorDef, ErrorVariant, Package, PresetDef};
 
 pub fn transform_core(mut shapes: ComponentsShape) -> Result<ComponentsShape> {

@@ -1,5 +1,8 @@
+mod error;
+pub use error::{Error, Result};
+
 mod definition;
-pub use definition::{ConversionError, Definition};
+pub use definition::Definition;
 
 mod test_case;
 pub use test_case::TestCase;

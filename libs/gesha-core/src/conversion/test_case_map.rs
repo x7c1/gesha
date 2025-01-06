@@ -1,8 +1,9 @@
 use crate::conversion::TestCase;
 use crate::Error;
 use std::collections::HashMap;
-use tokio::task::{Id, JoinError};
+use tokio::task::Id;
 
+#[derive(Default)]
 pub struct TestCaseMap<From, To>(HashMap<Id, TestCase<From, To>>);
 
 impl<From, To> TestCaseMap<From, To> {

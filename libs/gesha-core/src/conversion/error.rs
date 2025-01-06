@@ -1,33 +1,29 @@
-use gesha_core::conversion::ConversionError;
 use openapi_types::v3_0::OpenApiDataType;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {
-    // client errors
+    /// ## Client Error
+    /// e.g. a reference to a schema that does not exist.
     ReferenceObjectNotFound(String),
 
-    // module errors
-    TransformBroken {
-        detail: String,
-    },
+    /// ## Client Error
+    /// e.g. a schema with an unknown format.
     UnknownFormat {
         data_type: OpenApiDataType,
         format: String,
     },
-}
 
-impl From<Error> for ConversionError {
-    fn from(_value: Error) -> Self {
-        todo!("{:#?}", _value)
-    }
+    /// ## Internal Error
+    /// e.g. a shape that has not been processed.
+    TransformBroken { detail: String },
 }
 
 #[macro_export]
 macro_rules! broken {
     ($shape: expr) => {
-        $crate::Error::TransformBroken {
+        $crate::conversion::Error::TransformBroken {
             detail: format!(
                 "unprocessed shape found:\n  at {file}:{line}\n{shape:#?}",
                 file = file!(),

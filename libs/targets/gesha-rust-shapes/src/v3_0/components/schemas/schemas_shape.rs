@@ -2,7 +2,7 @@ use crate::v3_0::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, OneOfItemShape,
     OneOfShape, Ref, StructShape, TypeHeaderShape, TypeShape,
 };
-use crate::Result;
+use gesha_core::conversion::Result;
 use gesha_rust_types::ModDef;
 use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject, SchemasObject};
 use std::ops::Not;

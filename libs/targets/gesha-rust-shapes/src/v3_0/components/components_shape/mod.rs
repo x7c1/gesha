@@ -10,7 +10,7 @@ use transform_schemas::transform_schemas;
 use crate::v3_0::components::core::CoreShape;
 use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::{SchemasShape, TypeShape};
-use crate::Result;
+use gesha_core::conversion::Result;
 use gesha_rust_types::ModDef;
 
 #[derive(Clone, Debug)]

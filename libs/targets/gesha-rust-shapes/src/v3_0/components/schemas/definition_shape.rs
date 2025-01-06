@@ -1,9 +1,9 @@
-use crate::broken;
 use crate::v3_0::components::schemas::{
     AllOfShape, EnumShape, FieldShape, ModShape, OneOfShape, Ref, StructShape, TypeHeaderShape,
     TypeShape,
 };
-use crate::Result;
+use gesha_core::broken;
+use gesha_core::conversion::Result;
 use gesha_rust_types::{Definition, NewTypeDef, StructDef, StructField};
 
 #[derive(Clone, Debug)]
@@ -80,7 +80,7 @@ impl DefinitionShape {
 }
 
 impl TryFrom<DefinitionShape> for Definition {
-    type Error = crate::Error;
+    type Error = gesha_core::conversion::Error;
 
     fn try_from(this: DefinitionShape) -> Result<Self> {
         this.define()

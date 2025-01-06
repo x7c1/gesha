@@ -1,18 +1,13 @@
+use crate::conversion;
 use crate::conversion::{TestCase, TestSuite};
 use crate::Error::UnknownTestCase;
 use std::fmt::Display;
-
-#[derive(Debug)]
-pub enum ConversionError {
-    // TODO: Implement this
-    // RustShape(gesha_rust_shapes::Error),
-}
 
 pub trait Definition {
     type OpenApiType;
     type TargetType;
 
-    fn convert(x: Self::OpenApiType) -> Result<Self::TargetType, ConversionError>;
+    fn convert(x: Self::OpenApiType) -> Result<Self::TargetType, conversion::Error>;
 
     fn test_suites() -> Vec<TestSuite<Self::OpenApiType, Self::TargetType>>;
 

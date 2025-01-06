@@ -1,7 +1,7 @@
 use crate::misc::TryMap;
 use crate::v3_0::components::schemas::{DefinitionShape, ModShape, TypeShape};
 use crate::v3_0::components::ComponentsShape;
-use crate::Result;
+use gesha_core::conversion::Result;
 use gesha_rust_types::Package;
 use DefinitionShape::Mod;
 

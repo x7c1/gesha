@@ -1,5 +1,5 @@
 use crate::v3_0::components::schemas::Ref;
-use crate::Result;
+use gesha_core::conversion::Result;
 use openapi_types::v3_0::SchemaCase;
 
 #[derive(Clone, Debug)]

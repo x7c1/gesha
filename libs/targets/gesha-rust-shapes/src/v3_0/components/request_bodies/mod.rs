@@ -7,8 +7,8 @@ pub use mod_shape::ModShape;
 mod request_bodies_shape;
 pub use request_bodies_shape::RequestBodiesShape;
 
-use crate::broken;
-use crate::Result;
+use gesha_core::broken;
+use gesha_core::conversion::Result;
 use gesha_rust_types::{
     Definition, DocComments, EnumVariantName, MediaTypeVariant, RequestBodyDef, SerdeAttribute,
     TypeHeader,
@@ -51,7 +51,7 @@ impl DefinitionShape {
 }
 
 impl TryFrom<DefinitionShape> for Definition {
-    type Error = crate::Error;
+    type Error = gesha_core::conversion::Error;
 
     fn try_from(this: DefinitionShape) -> Result<Self> {
         this.define()

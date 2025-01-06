@@ -1,8 +1,8 @@
 use crate::misc::TryMap;
 use crate::v3_0::components::request_bodies::{ContentShape, DefinitionShape, MediaTypeShape};
 use crate::v3_0::components::ComponentsShape;
-use crate::Error::ReferenceObjectNotFound;
-use crate::Result;
+use gesha_core::conversion::Error::ReferenceObjectNotFound;
+use gesha_core::conversion::Result;
 use gesha_rust_types::{DataType, EnumVariant, EnumVariantName, MediaTypeVariant};
 use openapi_types::v3_0::SchemaCase;
 

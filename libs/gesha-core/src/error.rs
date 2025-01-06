@@ -1,4 +1,4 @@
-use crate::conversion::ConversionError;
+use crate::conversion;
 use console::{Style, StyledObject};
 use std::path::PathBuf;
 use tokio::task::JoinError;
@@ -18,7 +18,7 @@ pub enum Error {
     },
     Conversion {
         path: PathBuf,
-        cause: ConversionError,
+        cause: conversion::Error,
     },
 
     // thread errors
@@ -80,18 +80,16 @@ impl Error {
             Error::FormatFailed { detail, .. } => {
                 format!("rustfmt>\n{}", detail)
             }
-            // TODO:
-            // Error::Conversion {
-            //     path,
-            //     cause:
-            //         ConversionError::RustShape(gesha_rust_shapes::Error::TransformBroken { detail }),
-            // } => {
-            //     format!(
-            //         "internal error: transform broken.\n{}\n{}",
-            //         path.display(),
-            //         detail,
-            //     )
-            // }
+            Error::Conversion {
+                path,
+                cause: conversion::Error::TransformBroken { detail },
+            } => {
+                format!(
+                    "internal error: transform broken.\n{}\n{}",
+                    path.display(),
+                    detail,
+                )
+            }
             Error::Errors(errors) => errors
                 .iter()
                 .map(|e| e.detail(theme))
@@ -103,7 +101,7 @@ impl Error {
             }
         }
     }
-    pub fn conversion<A: Into<PathBuf>>(path: A) -> impl FnOnce(ConversionError) -> Self {
+    pub fn conversion<A: Into<PathBuf>>(path: A) -> impl FnOnce(conversion::Error) -> Self {
         |cause| Self::Conversion {
             path: path.into(),
             cause,
