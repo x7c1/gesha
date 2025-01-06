@@ -3,6 +3,7 @@ use crate::conversions::{TestCase, TestSuite};
 use crate::Error::UnknownTestCase;
 use openapi_types::yaml::ToOpenApi;
 use std::fmt::Display;
+use std::path::Path;
 
 pub trait Definition: Sized + Send + Sync + 'static {
     type OpenApiType: ToOpenApi + Send + Sync;
@@ -10,9 +11,12 @@ pub trait Definition: Sized + Send + Sync + 'static {
 
     fn convert(x: Self::OpenApiType) -> Result<Self::TargetType, conversions::Error>;
 
+    /// Format the code in the given path.
+    fn format_code(path: &Path) -> crate::Result<String>;
+
     fn test_suites() -> Vec<TestSuite<Self>>;
 
-    fn test_suites_content(suite: &TestSuite<Self>) -> impl Display;
+    fn test_suites_content(suite: &TestSuite<Self>) -> Self::TargetType;
 
     fn list_test_cases() -> Vec<TestCase<Self>> {
         Self::test_suites()

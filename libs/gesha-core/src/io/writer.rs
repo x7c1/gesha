@@ -1,10 +1,10 @@
-use crate::Error::{CannotCopyFile, CannotCreateFile, CannotRender, FormatFailed};
+use crate::conversions::Definition;
+use crate::Error::{CannotCopyFile, CannotCreateFile, CannotRender};
 use crate::Result;
-use std::fmt::{Debug, Display};
+use std::fmt::Debug;
 use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::process::Command;
 use tracing::{debug, instrument};
 
 #[derive(Debug)]
@@ -24,16 +24,15 @@ impl Writer {
     }
 
     #[instrument(skip_all)]
-    pub fn create_file<A: Display>(self, a: A) -> Result<()> {
+    pub fn write_code<A: Definition>(self, a: A::TargetType) -> Result<()> {
         let mut file = self.touch()?;
         write!(file, "{}", a).map_err(|cause| CannotRender {
             path: self.path.clone(),
             detail: format!("{:?}", cause),
         })?;
 
-        //TODO: move this formatter to conversions::Definition
-        let output = format(self.path)?;
-        debug!("rustfmt>\n{}", output);
+        let output = A::format_code(&self.path)?;
+        debug!("format>\n{}", output);
         Ok(())
     }
 
@@ -44,26 +43,5 @@ impl Writer {
             detail: format!("{:?}", cause),
         })?;
         Ok(())
-    }
-}
-
-#[instrument]
-fn format(path: PathBuf) -> Result<String> {
-    let output = Command::new("rustfmt")
-        .arg("--verbose")
-        .arg(&path)
-        .output()
-        .map_err(|e| FormatFailed {
-            path: path.clone(),
-            detail: format!("{:?}", e),
-        })?;
-
-    if output.status.success() {
-        Ok(String::from_utf8_lossy(&output.stdout).to_string())
-    } else {
-        Err(FormatFailed {
-            path,
-            detail: String::from_utf8_lossy(&output.stderr).to_string(),
-        })
     }
 }

@@ -5,9 +5,11 @@ use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions;
 use gesha_core::conversions::v3_0::{request_bodies_files, schemas_files, COMPONENTS_PATH};
 use gesha_core::conversions::{Definition, TestCase, TestSuite};
+use gesha_core::Error::FormatFailed;
 use gesha_rust_types::{ModuleDeclarations, ModuleName, NonDocComments};
 use openapi_types::v3_0;
-use std::fmt::Display;
+use std::path::Path;
+use std::process::Command;
 
 pub struct RustTypes;
 
@@ -25,6 +27,26 @@ impl Definition for RustTypes {
         Ok(new_code().set_mod_defs(mod_defs))
     }
 
+    fn format_code(path: &Path) -> gesha_core::Result<String> {
+        let output = Command::new("rustfmt")
+            .arg("--verbose")
+            .arg(path)
+            .output()
+            .map_err(|e| FormatFailed {
+                path: path.into(),
+                detail: format!("{:?}", e),
+            })?;
+
+        if output.status.success() {
+            Ok(String::from_utf8_lossy(&output.stdout).to_string())
+        } else {
+            Err(FormatFailed {
+                path: path.into(),
+                detail: String::from_utf8_lossy(&output.stderr).to_string(),
+            })
+        }
+    }
+
     fn test_suites() -> Vec<TestSuite<Self>> {
         vec![
             create_suite(schemas_files(), "schemas"),
@@ -32,7 +54,7 @@ impl Definition for RustTypes {
         ]
     }
 
-    fn test_suites_content(suite: &TestSuite<Self>) -> impl Display {
+    fn test_suites_content(suite: &TestSuite<Self>) -> Self::TargetType {
         let decls = suite
             .test_cases
             .iter()

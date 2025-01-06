@@ -90,14 +90,14 @@ where
     pub fn generate_test_suite_file(suite: &TestSuite<A>) -> Result<()> {
         let writer = Writer::new(&suite.mod_path);
         let content = A::test_suites_content(suite);
-        writer.create_file(content)
+        writer.write_code::<A>(content)
     }
 
     async fn run_single_test(case: TestCase<A>) -> Result<()> {
         let writer = Writer::new(&case.output);
         let reader = Reader::new(&case.schema);
         let target = reader.open_target_type::<A>()?;
-        writer.create_file(target)?;
+        writer.write_code::<A>(target)?;
 
         detect_diff(&case.output, &case.example)?;
         info!("passed: {path}", path = case.schema.to_string_lossy());
@@ -114,7 +114,7 @@ where
         let writer = Writer::new(&case.output);
         let reader = Reader::new(&case.schema);
         let target = reader.open_target_type::<A>()?;
-        writer.create_file(target)?;
+        writer.write_code::<A>(target)?;
 
         // The example is not available on the first attempt.
         let not_exist = !case.example.exists();
