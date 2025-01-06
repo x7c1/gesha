@@ -11,9 +11,9 @@ use openapi_types::v3_0;
 use std::path::Path;
 use std::process::Command;
 
-pub struct RustTypes;
+pub struct ComponentsToRustTypes;
 
-impl Definition for RustTypes {
+impl Definition for ComponentsToRustTypes {
     type OpenApiType = v3_0::ComponentsObject;
     type TargetType = gesha_rust_types::SourceCode;
 
@@ -72,7 +72,7 @@ fn new_code() -> gesha_rust_types::SourceCode {
     ))
 }
 
-fn create_suite(filenames: Vec<&str>, parent_name: &str) -> TestSuite<RustTypes> {
+fn create_suite(filenames: Vec<&str>, parent_name: &str) -> TestSuite<ComponentsToRustTypes> {
     let enclosed_cases = filenames
         .iter()
         .map(|filename| to_test_case(parent_name, filename))
@@ -84,7 +84,7 @@ fn create_suite(filenames: Vec<&str>, parent_name: &str) -> TestSuite<RustTypes>
     }
 }
 
-fn to_test_case(parent_name: &str, yaml_name: &str) -> TestCase<RustTypes> {
+fn to_test_case(parent_name: &str, yaml_name: &str) -> TestCase<ComponentsToRustTypes> {
     let rs_name = yaml_name.replace(".yaml", ".rs");
     TestCase {
         output: format!("output/v3.0/components/{parent_name}/{rs_name}").into(),

@@ -6,7 +6,7 @@ use tracing::{info, instrument};
 
 #[instrument(name = "overwrite::run")]
 pub async fn run(args: Args) -> Result<()> {
-    process::<v3_0::RustTypes>(args).await
+    process::<v3_0::ComponentsToRustTypes>(args).await
 }
 
 async fn process<A: Definition>(args: Args) -> Result<()> {

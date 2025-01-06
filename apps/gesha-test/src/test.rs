@@ -16,7 +16,7 @@ pub struct Args {
 
 #[instrument(name = "test::run")]
 pub async fn run(args: Args) -> Result<()> {
-    process::<v3_0::RustTypes>(args).await
+    process::<v3_0::ComponentsToRustTypes>(args).await
 }
 
 async fn process<A: Definition>(args: Args) -> Result<()> {
