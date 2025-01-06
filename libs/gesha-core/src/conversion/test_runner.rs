@@ -129,14 +129,14 @@ where
         let target = reader.open_target_type::<A>()?;
         writer.create_file(target)?;
 
-        // example doesn't exist at first attempt.
+        // The example is not available on the first attempt.
         let not_exist = !case.example.exists();
         if not_exist {
             Writer::new(&case.example).touch()?;
         }
 
-        // contrary to run_single(),
-        // rule.example is actual file, rule.output modified is expected file.
+        // Unlike run_single(), case.example represents the actual file,
+        // while case.output modified represents the expected file.
         let result = detect_diff(&case.example, &case.output);
         match result {
             Ok(_) => Ok(None),
