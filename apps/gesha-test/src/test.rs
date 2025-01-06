@@ -1,7 +1,7 @@
 use clap::Parser;
 use gesha_core::conversions::{Definition, TestRunner};
 use gesha_core::Result;
-use gesha_rust_shapes::v3_0::RustTypes;
+use gesha_rust_shapes::v3_0;
 use tracing::instrument;
 
 #[derive(Parser, Debug)]
@@ -16,10 +16,14 @@ pub struct Args {
 
 #[instrument(name = "test::run")]
 pub async fn run(args: Args) -> Result<()> {
+    process::<v3_0::RustTypes>(args).await
+}
+
+async fn process<A: Definition>(args: Args) -> Result<()> {
     let cases = if let Some(schema) = args.schema {
-        vec![RustTypes::require_test_case(&schema)?]
+        vec![A::require_test_case(&schema)?]
     } else {
-        RustTypes::list_test_cases()
+        A::list_test_cases()
     };
-    TestRunner::<RustTypes>::run_tests(cases).await
+    TestRunner::<A>::run_tests(cases).await
 }

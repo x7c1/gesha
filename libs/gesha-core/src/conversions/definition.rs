@@ -1,11 +1,12 @@
 use crate::conversions;
 use crate::conversions::{TestCase, TestSuite};
 use crate::Error::UnknownTestCase;
+use openapi_types::yaml::ToOpenApi;
 use std::fmt::Display;
 
-pub trait Definition {
-    type OpenApiType;
-    type TargetType;
+pub trait Definition: Send + Sync + 'static {
+    type OpenApiType: ToOpenApi + Send + Sync;
+    type TargetType: Display + Send + Sync;
 
     fn convert(x: Self::OpenApiType) -> Result<Self::TargetType, conversions::Error>;
 
