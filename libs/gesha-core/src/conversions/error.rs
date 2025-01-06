@@ -4,17 +4,20 @@ pub type Result<A> = std::result::Result<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {
-    // client errors
+    /// ## Client Error
+    /// e.g. a reference to a schema that does not exist.
     ReferenceObjectNotFound(String),
 
-    // module errors
-    TransformBroken {
-        detail: String,
-    },
+    /// ## Client Error
+    /// e.g. a schema with an unknown format.
     UnknownFormat {
         data_type: OpenApiDataType,
         format: String,
     },
+
+    /// ## Internal Error
+    /// e.g. a shape that has not been processed.
+    TransformBroken { detail: String },
 }
 
 #[macro_export]
