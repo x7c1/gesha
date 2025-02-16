@@ -10,8 +10,9 @@ use std::fs::File;
 use std::io;
 use tracing::metadata::LevelFilter;
 use tracing::Subscriber;
+use tracing_subscriber::filter::filter_fn;
 use tracing_subscriber::fmt::layer;
-use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::layer::{Filter, SubscriberExt};
 use tracing_subscriber::registry::LookupSpan;
 use tracing_subscriber::util::SubscriberInitExt;
 use tracing_subscriber::{EnvFilter, Layer, Registry};
@@ -25,6 +26,13 @@ pub fn init() {
         .init();
 }
 
+fn filter_non_otel<S>() -> impl Filter<S>
+where
+    S: Subscriber + for<'a> LookupSpan<'a>,
+{
+    filter_fn(|metadata| !metadata.target().starts_with("opentelemetry"))
+}
+
 fn stdout_layer<S>() -> impl Layer<S>
 where
     S: Subscriber + for<'a> LookupSpan<'a>,
@@ -33,7 +41,9 @@ where
         .with_default_directive(LevelFilter::INFO.into())
         .from_env_lossy();
 
-    MessageLayer::new(io::stdout).with_filter(env_filter)
+    MessageLayer::new(io::stdout)
+        .with_filter(filter_non_otel())
+        .with_filter(env_filter)
 }
 
 fn trace_layer<S>() -> impl Layer<S>
@@ -41,7 +51,7 @@ where
     S: Subscriber + for<'a> LookupSpan<'a>,
 {
     let tracer = SdkTracerProvider::builder()
-        .with_simple_exporter(
+        .with_batch_exporter(
             opentelemetry_otlp::SpanExporter::builder()
                 .with_tonic()
                 .with_endpoint("http://localhost:4317")
@@ -62,6 +72,7 @@ where
     tracing_opentelemetry::layer()
         .with_tracer(tracer)
         .with_filter(LevelFilter::INFO)
+        .with_filter(filter_non_otel())
 }
 
 fn file_log_layer<S>() -> Option<impl Layer<S>>
@@ -74,7 +85,12 @@ where
 
     let file_path = "./logs/gesha-test.log";
     let file = File::create(file_path).expect("unable to create log file");
-    let layer = layer().pretty().with_writer(file).with_filter(env_filter);
+    let layer = layer()
+        .pretty()
+        .with_writer(file)
+        .with_filter(env_filter)
+        .with_filter(filter_non_otel());
+
     Some(layer)
 }
 
@@ -83,10 +99,8 @@ fn otel_layer<S>() -> Option<impl Layer<S>>
 where
     S: Subscriber + for<'a> LookupSpan<'a>,
 {
-    use tracing_subscriber::filter::filter_fn;
-
     let layer = layer()
-        .with_writer(std::io::stderr)
+        .with_writer(io::stderr)
         .with_filter(filter_fn(|metadata| {
             metadata.target().starts_with("opentelemetry")
         }));
