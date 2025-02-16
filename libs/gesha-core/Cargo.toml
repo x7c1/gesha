@@ -13,7 +13,7 @@ console = "0.15.8"
 futures = "0.3"
 nu-ansi-term = "0.50.0"
 opentelemetry = { workspace = true }
-opentelemetry-otlp = { version = "0.28.0", features = ["metrics"] }
+opentelemetry-otlp = { version = "0.28.0", features = ["metrics", "grpc-tonic"] }
 opentelemetry_sdk = { version = "0.28.0", features = ["rt-tokio"] }
 opentelemetry-semantic-conventions = "0.28.0"
 similar = "2.4.0"

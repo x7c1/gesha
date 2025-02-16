@@ -14,7 +14,6 @@ async fn main() -> ExitCode {
     info!("gesha: {:?}", args);
 
     let result = generate::run(args);
-    trace::shutdown();
     to_code(result)
 }
 

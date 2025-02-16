@@ -13,6 +13,7 @@ pub enum RequestError {
     // multipart/form-data
     FormDataFieldRequired { name: String },
     MultipartError { cause: String },
+    ContentDispositionNotFound,
     ContentDispositionNameNotFound,
 }
 

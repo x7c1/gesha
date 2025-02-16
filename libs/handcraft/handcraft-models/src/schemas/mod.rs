@@ -1,6 +1,8 @@
 use crate::core::{BinaryContent, FormDataField, ObjectContent, StringContent};
 use crate::errors::RequestError;
-use crate::errors::RequestError::{ContentDispositionNameNotFound, FormDataFieldRequired};
+use crate::errors::RequestError::{
+    ContentDispositionNameNotFound, ContentDispositionNotFound, FormDataFieldRequired,
+};
 use actix_multipart::Multipart;
 use futures_util::TryStreamExt;
 use serde::{Deserialize, Serialize};
@@ -81,7 +83,10 @@ impl MultipartFormDataParameters {
         let mut optional_object_field = None;
 
         while let Some(field) = multipart.try_next().await? {
-            let content_disposition = field.content_disposition().clone();
+            let content_disposition = field
+                .content_disposition()
+                .ok_or(ContentDispositionNotFound)?
+                .clone();
 
             let name = content_disposition
                 .get_name()
