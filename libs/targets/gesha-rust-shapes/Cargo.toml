@@ -8,5 +8,5 @@ gesha-core = { path = "../../gesha-core" }
 gesha-rust-types = { path = "../gesha-rust-types" }
 openapi-types = { path = "../../openapi-types" }
 
-heck = "0.4.1"
+heck = "0.5.0"
 indexmap = "2.1.0"

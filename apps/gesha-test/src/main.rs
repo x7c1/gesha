@@ -19,7 +19,6 @@ async fn main() -> ExitCode {
     } else {
         test::run(args).await
     };
-    trace::shutdown();
     to_code(result)
 }
 

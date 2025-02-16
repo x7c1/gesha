@@ -19,6 +19,7 @@ impl From<RequestError> for ApiError {
             RequestError::EmptyPathValue { .. } => {}
             RequestError::FormDataFieldRequired { .. } => {}
             RequestError::MultipartError { .. } => {}
+            RequestError::ContentDispositionNotFound => {}
             RequestError::ContentDispositionNameNotFound => {}
             RequestError::JsonFormatError { .. } => {}
         }
