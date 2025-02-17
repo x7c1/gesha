@@ -10,12 +10,12 @@ processors:
 
 # https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/README.md
 exporters:
-  # https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/loggingexporter/README.md
-  logging:
+  # https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/debugexporter/README.md
+  debug:
     verbosity: detailed
     sampling_initial: 5
-  jaeger:
-    endpoint: "jaeger:14250"
+  otlp:
+    endpoint: "jaeger:4317"
     tls:
       insecure: true
 
@@ -24,4 +24,6 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging, jaeger]
+      exporters:
+        - otlp
+        - debug
