@@ -3,9 +3,8 @@ use message_layer::MessageLayer;
 
 use opentelemetry::trace::TracerProvider;
 use opentelemetry_otlp::WithExportConfig;
-use opentelemetry_sdk as sdk;
 use opentelemetry_sdk::trace::SdkTracerProvider;
-use opentelemetry_semantic_conventions::resource::SERVICE_NAME;
+use opentelemetry_sdk::Resource;
 use std::fs::File;
 use std::io;
 use tracing::metadata::LevelFilter;
@@ -50,24 +49,21 @@ fn trace_layer<S>() -> impl Layer<S>
 where
     S: Subscriber + for<'a> LookupSpan<'a>,
 {
-    let tracer = SdkTracerProvider::builder()
-        .with_batch_exporter(
-            opentelemetry_otlp::SpanExporter::builder()
-                .with_tonic()
-                .with_endpoint("http://localhost:4317")
-                .build()
-                .unwrap(),
-        )
-        .with_resource(
-            sdk::Resource::builder()
-                .with_attributes(vec![opentelemetry::KeyValue::new(
-                    SERVICE_NAME,
-                    "gesha-test",
-                )])
-                .build(),
-        )
+    let otel_collector_endpoint = "http://localhost:4317";
+    let exporter = opentelemetry_otlp::SpanExporter::builder()
+        .with_tonic()
+        .with_endpoint(otel_collector_endpoint)
         .build()
-        .tracer("gesha-test");
+        .unwrap();
+
+    let service_name = "gesha-test";
+    let provider = SdkTracerProvider::builder()
+        .with_batch_exporter(exporter)
+        .with_resource(Resource::builder().with_service_name(service_name).build())
+        .build();
+
+    let otel_scope_name = "gesha-test";
+    let tracer = provider.tracer(otel_scope_name);
 
     tracing_opentelemetry::layer()
         .with_tracer(tracer)
