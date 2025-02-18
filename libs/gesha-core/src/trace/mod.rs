@@ -3,10 +3,12 @@ use message_layer::MessageLayer;
 
 use opentelemetry::trace::TracerProvider;
 use opentelemetry_otlp::WithExportConfig;
-use opentelemetry_sdk::trace::SdkTracerProvider;
+use opentelemetry_sdk::trace::{BatchConfigBuilder, BatchSpanProcessor, SdkTracerProvider};
 use opentelemetry_sdk::Resource;
 use std::fs::File;
 use std::io;
+use std::time::Duration;
+use tokio::time::sleep;
 use tracing::metadata::LevelFilter;
 use tracing::Subscriber;
 use tracing_subscriber::filter::filter_fn;
@@ -23,6 +25,15 @@ pub fn init() {
         .with(file_log_layer())
         .with(otel_layer())
         .init();
+}
+
+/// wait for the otel exporter to finish
+pub async fn wait_to_export() {
+    sleep(duration()).await
+}
+
+fn duration() -> Duration {
+    Duration::from_millis(100)
 }
 
 fn filter_non_otel<S>() -> impl Filter<S>
@@ -56,9 +67,17 @@ where
         .build()
         .unwrap();
 
+    let batch_config = BatchConfigBuilder::default()
+        .with_scheduled_delay(duration())
+        .build();
+
+    let batch_processor = BatchSpanProcessor::builder(exporter)
+        .with_batch_config(batch_config)
+        .build();
+
     let service_name = "gesha-test";
     let provider = SdkTracerProvider::builder()
-        .with_batch_exporter(exporter)
+        .with_span_processor(batch_processor)
         .with_resource(Resource::builder().with_service_name(service_name).build())
         .build();
 

@@ -2,8 +2,6 @@ use crate::test::Args;
 use clap::Parser;
 use gesha_core::{trace, Result};
 use std::process::ExitCode;
-use std::time::Duration;
-use tokio::time::sleep;
 use tracing::{error, info};
 
 mod overwrite;
@@ -21,9 +19,7 @@ async fn main() -> ExitCode {
     } else {
         test::run(args).await
     };
-    // wait for the otel exporter to finish
-    sleep(Duration::from_secs(5)).await;
-
+    trace::wait_to_export().await;
     to_code(result)
 }
 
