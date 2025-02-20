@@ -1,4 +1,5 @@
-use crate::conversions::{Definition, TestCase, TestCaseMap, TestSuite};
+use crate::conversions::definition::TestDefinition;
+use crate::conversions::{TestCase, TestCaseMap, TestSuite};
 use crate::io::{detect_diff, Reader, Writer};
 use crate::{Error, ErrorTheme, Result};
 use futures::future::join_all;
@@ -13,7 +14,7 @@ pub struct TestRunner<A>(PhantomData<A>);
 
 impl<A> TestRunner<A>
 where
-    A: Definition + Send + Sync + 'static,
+    A: TestDefinition + Send + Sync + 'static,
     A::OpenApiType: ToOpenApi + Send + Sync + 'static,
     A::TargetType: Display + Send + Sync + 'static,
 {
@@ -89,7 +90,7 @@ where
 
     pub fn generate_test_suite_file(suite: &TestSuite<A>) -> Result<()> {
         let writer = Writer::new(&suite.mod_path);
-        let content = A::test_suites_content(suite);
+        let content = A::test_suite_code(suite);
         writer.write_code::<A>(content)
     }
 

@@ -18,12 +18,14 @@ pub trait Definition: Sized + Send + Sync + 'static {
 
     /// Format the code in the given path.
     fn format_code(path: &Path) -> crate::Result<String>;
+}
 
+pub trait TestDefinition: Definition {
     /// List all test suites for this definition.
     fn test_suites() -> Vec<TestSuite<Self>>;
 
-    /// Get the content of the test suites.
-    fn test_suites_content(suite: &TestSuite<Self>) -> Self::TargetType;
+    /// Get the code of the test suite.
+    fn test_suite_code(suite: &TestSuite<Self>) -> Self::TargetType;
 
     /// List all test cases for this definition.
     fn list_test_cases() -> Vec<TestCase<Self>> {
