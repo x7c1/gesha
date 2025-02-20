@@ -28,6 +28,9 @@ format: ## format
 	make cargo-fmt
 	make deno-fmt
 
+cargo-test-no-run: ## test : Compile tests
+	cargo test --no-run
+
 e2e-test: ## test : Run e2e tests
 	./scripts/e2e-test.sh
 
