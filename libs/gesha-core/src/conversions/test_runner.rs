@@ -7,7 +7,7 @@ use std::fmt::Debug;
 use tracing::Instrument;
 use tracing::{info, instrument};
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct TestRunner<A>(A);
 
 impl<A> TestRunner<A>
@@ -94,6 +94,12 @@ where
         let writer = Writer::new(&self.0, &suite.mod_path);
         let content = self.0.test_suite_code(suite);
         writer.write_code(content)
+    }
+
+    pub fn generate_test_suite_files(&self, suites: &[TestSuite<A>]) -> Result<()> {
+        suites
+            .iter()
+            .try_for_each(|suite| self.generate_test_suite_file(suite))
     }
 
     async fn run_single_test(self, case: TestCase<A>) -> Result<()> {
