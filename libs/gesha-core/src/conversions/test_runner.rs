@@ -1,4 +1,4 @@
-use crate::conversions::definition::TestDefinition;
+use crate::conversions::converter::TestDefinition;
 use crate::conversions::{TestCase, TestCaseMap, TestSuite};
 use crate::io::{detect_diff, Reader, Writer};
 use crate::{Error, ErrorTheme, Result};
