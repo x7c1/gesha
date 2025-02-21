@@ -2,11 +2,11 @@ use crate::conversions;
 use crate::conversions::{TestCase, TestSuite};
 use crate::Error::UnknownTestCase;
 use openapi_types::yaml::ToOpenApi;
-use std::fmt::Display;
+use std::fmt::{Debug, Display};
 use std::path::Path;
 
 /// Convert OpenAPI definitions to target type.
-pub trait Converter: Clone + Sized + Send + Sync + 'static {
+pub trait Converter: Debug + Clone + Sized + Send + Sync + 'static {
     /// The OpenAPI type that this definition converts from.
     type OpenApiType: ToOpenApi + Send + Sync;
 

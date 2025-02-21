@@ -9,7 +9,7 @@ use openapi_types::v3_0;
 use std::path::Path;
 use std::process::Command;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct Converter {}
 
 impl conversions::Converter for Converter {

@@ -2,9 +2,12 @@ use crate::conversions::Converter;
 use crate::Error::CannotReadFile;
 use crate::{Error, Result};
 use openapi_types::yaml::{load_from_str, ToOpenApi, YamlMap};
+use std::fmt::Debug;
 use std::fs;
 use std::path::{Path, PathBuf};
+use tracing::instrument;
 
+#[derive(Debug)]
 pub struct Reader {
     path: PathBuf,
 }
@@ -18,9 +21,10 @@ impl Reader {
         Self::new(path.as_ref()).as_string()
     }
 
+    #[instrument]
     pub fn open_target_type<A>(&self, converter: &A) -> Result<A::TargetType>
     where
-        A: Converter,
+        A: Converter + Debug,
     {
         let yaml = self.as_yaml_map()?;
         let from: <A as Converter>::OpenApiType =

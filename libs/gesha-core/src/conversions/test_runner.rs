@@ -90,18 +90,21 @@ where
             .try_for_each(|case| self.copy_modified_file(case))
     }
 
+    #[instrument]
     pub fn generate_test_suite_file(&self, suite: &TestSuite<A>) -> Result<()> {
         let writer = Writer::new(&self.0, &suite.mod_path);
         let content = self.0.test_suite_code(suite);
         writer.write_code(content)
     }
 
+    #[instrument(skip_all)]
     pub fn generate_test_suite_files(&self, suites: &[TestSuite<A>]) -> Result<()> {
         suites
             .iter()
             .try_for_each(|suite| self.generate_test_suite_file(suite))
     }
 
+    #[instrument]
     async fn run_single_test(self, case: TestCase<A>) -> Result<()> {
         let writer = Writer::new(&self.0, &case.output);
         let reader = Reader::new(&case.schema);
@@ -113,12 +116,14 @@ where
         Ok(())
     }
 
+    #[instrument(skip_all)]
     fn copy_modified_file(&self, case: &ModifiedTestCase<A>) -> Result<()> {
         info!("diff detected: {} {}", case.target.module_name, case.diff);
         let writer = Writer::new(&self.0, &case.target.example);
         writer.copy_from(&case.target.output)
     }
 
+    #[instrument]
     async fn detect_modified_case(self, case: TestCase<A>) -> Result<Option<ModifiedTestCase<A>>> {
         let writer = Writer::new(&self.0, &case.output);
         let reader = Reader::new(&case.schema);
