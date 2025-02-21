@@ -3,28 +3,28 @@ use crate::conversions::{TestCase, TestCaseMap, TestSuite};
 use crate::io::{detect_diff, Reader, Writer};
 use crate::{Error, ErrorTheme, Result};
 use futures::future::join_all;
-use openapi_types::yaml::ToOpenApi;
-use std::fmt::{Debug, Display};
-use std::marker::PhantomData;
+use std::fmt::Debug;
 use tracing::Instrument;
 use tracing::{info, instrument};
 
-#[derive(Debug, Default)]
-pub struct TestRunner<A>(PhantomData<A>);
+#[derive(Clone, Debug, Default)]
+pub struct TestRunner<A>(A);
 
 impl<A> TestRunner<A>
 where
-    A: TestDefinition + Send + Sync + 'static,
-    A::OpenApiType: ToOpenApi + Send + Sync + 'static,
-    A::TargetType: Display + Send + Sync + 'static,
+    A: TestDefinition,
 {
+    pub fn new(definition: A) -> Self {
+        Self(definition)
+    }
+
     #[instrument(skip_all)]
-    pub async fn run_tests(cases: Vec<TestCase<A>>) -> Result<()> {
+    pub async fn run_tests(&self, cases: Vec<TestCase<A>>) -> Result<()> {
         let (run, mut map) = cases
             .into_iter()
             .map(|case| {
                 let cloned_case = case.clone();
-                let handle = tokio::spawn(Self::run_single_test(case).in_current_span());
+                let handle = tokio::spawn(self.clone().run_single_test(case).in_current_span());
                 (handle.id(), cloned_case, handle)
             })
             .fold((vec![], TestCaseMap::new()), TestCaseMap::accumulate);
@@ -50,13 +50,15 @@ where
 
     #[instrument(skip_all)]
     pub async fn collect_modified_cases(
+        &self,
         cases: Vec<TestCase<A>>,
     ) -> Result<Vec<ModifiedTestCase<A>>> {
         let (run, mut map) = cases
             .into_iter()
             .map(|case| {
                 let cloned_case = case.clone();
-                let handle = tokio::spawn(Self::detect_modified_case(case).in_current_span());
+                let handle =
+                    tokio::spawn(self.clone().detect_modified_case(case).in_current_span());
                 (handle.id(), cloned_case, handle)
             })
             .fold((vec![], TestCaseMap::new()), TestCaseMap::accumulate);
@@ -82,45 +84,45 @@ where
     }
 
     #[instrument(skip_all)]
-    pub fn copy_modified_files(cases: &[ModifiedTestCase<A>]) -> Result<()> {
+    pub fn copy_modified_files(&self, cases: &[ModifiedTestCase<A>]) -> Result<()> {
         cases
             .iter()
-            .try_for_each(|case| Self::copy_modified_file(case))
+            .try_for_each(|case| self.copy_modified_file(case))
     }
 
-    pub fn generate_test_suite_file(suite: &TestSuite<A>) -> Result<()> {
-        let writer = Writer::new(&suite.mod_path);
-        let content = A::test_suite_code(suite);
-        writer.write_code::<A>(content)
+    pub fn generate_test_suite_file(&self, suite: &TestSuite<A>) -> Result<()> {
+        let writer = Writer::new(&self.0, &suite.mod_path);
+        let content = self.0.test_suite_code(suite);
+        writer.write_code(content)
     }
 
-    async fn run_single_test(case: TestCase<A>) -> Result<()> {
-        let writer = Writer::new(&case.output);
+    async fn run_single_test(self, case: TestCase<A>) -> Result<()> {
+        let writer = Writer::new(&self.0, &case.output);
         let reader = Reader::new(&case.schema);
-        let target = reader.open_target_type::<A>()?;
-        writer.write_code::<A>(target)?;
+        let target = reader.open_target_type(&self.0)?;
+        writer.write_code(target)?;
 
         detect_diff(&case.output, &case.example)?;
         info!("passed: {path}", path = case.schema.to_string_lossy());
         Ok(())
     }
 
-    fn copy_modified_file(case: &ModifiedTestCase<A>) -> Result<()> {
+    fn copy_modified_file(&self, case: &ModifiedTestCase<A>) -> Result<()> {
         info!("diff detected: {} {}", case.target.module_name, case.diff);
-        let writer = Writer::new(&case.target.example);
+        let writer = Writer::new(&self.0, &case.target.example);
         writer.copy_from(&case.target.output)
     }
 
-    async fn detect_modified_case(case: TestCase<A>) -> Result<Option<ModifiedTestCase<A>>> {
-        let writer = Writer::new(&case.output);
+    async fn detect_modified_case(self, case: TestCase<A>) -> Result<Option<ModifiedTestCase<A>>> {
+        let writer = Writer::new(&self.0, &case.output);
         let reader = Reader::new(&case.schema);
-        let target = reader.open_target_type::<A>()?;
-        writer.write_code::<A>(target)?;
+        let target = reader.open_target_type(&self.0)?;
+        writer.write_code(target)?;
 
         // The example is not available on the first attempt.
         let not_exist = !case.example.exists();
         if not_exist {
-            Writer::new(&case.example).touch()?;
+            Writer::new(&self.0, &case.example).touch()?;
         }
 
         // Unlike run_single(), case.example represents the actual file,

@@ -9,13 +9,14 @@ use openapi_types::v3_0;
 use std::path::Path;
 use std::process::Command;
 
-pub struct Definition;
+#[derive(Clone, Default)]
+pub struct Definition {}
 
 impl conversions::Definition for Definition {
     type OpenApiType = v3_0::ComponentsObject;
     type TargetType = gesha_rust_types::SourceCode;
 
-    fn convert(this: Self::OpenApiType) -> Result<Self::TargetType, conversions::Error> {
+    fn convert(&self, this: Self::OpenApiType) -> Result<Self::TargetType, conversions::Error> {
         let shapes = ComponentsShape {
             schemas: SchemasShape::shape(this.schemas)?,
             request_bodies: RequestBodiesShape::shape(this.request_bodies)?,
@@ -25,7 +26,7 @@ impl conversions::Definition for Definition {
         Ok(new_code().set_mod_defs(mod_defs))
     }
 
-    fn format_code(path: &Path) -> gesha_core::Result<String> {
+    fn format_code(&self, path: &Path) -> gesha_core::Result<String> {
         let output = Command::new("rustfmt")
             .arg("--verbose")
             .arg(path)

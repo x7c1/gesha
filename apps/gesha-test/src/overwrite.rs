@@ -6,22 +6,26 @@ use tracing::{info, instrument};
 
 #[instrument(name = "overwrite::run")]
 pub async fn run(args: Args) -> Result<()> {
-    process::<v3_0::Definition>(args).await
+    let definition = v3_0::Definition::default();
+    process(definition, args).await
 }
 
-async fn process<A: TestDefinition>(args: Args) -> Result<()> {
+async fn process<A: TestDefinition>(definition: A, args: Args) -> Result<()> {
     let cases = if let Some(schema) = args.schema {
-        vec![A::require_test_case(&schema)?]
+        vec![definition.require_test_case(&schema)?]
     } else {
-        A::list_test_cases()
+        definition.list_test_cases()
     };
-    let modified_cases = TestRunner::<A>::collect_modified_cases(cases).await?;
+    let test_suites = definition.test_suites();
+
+    let runner = TestRunner::new(definition);
+    let modified_cases = runner.collect_modified_cases(cases).await?;
     if modified_cases.is_empty() {
         info!("diff not detected");
     } else {
-        TestRunner::<A>::copy_modified_files(&modified_cases)?;
+        runner.copy_modified_files(&modified_cases)?;
     }
-    A::test_suites()
+    test_suites
         .iter()
-        .try_for_each(TestRunner::<A>::generate_test_suite_file)
+        .try_for_each(|suite| runner.generate_test_suite_file(suite))
 }

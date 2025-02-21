@@ -18,16 +18,17 @@ impl Reader {
         Self::new(path.as_ref()).as_string()
     }
 
-    pub fn open_target_type<A>(&self) -> Result<A::TargetType>
+    pub fn open_target_type<A>(&self, definition: &A) -> Result<A::TargetType>
     where
         A: Definition,
-        A::OpenApiType: ToOpenApi,
     {
         let yaml = self.as_yaml_map()?;
         let from: <A as Definition>::OpenApiType =
             ToOpenApi::apply(yaml).map_err(Error::openapi(&self.path))?;
 
-        let to = A::convert(from).map_err(Error::conversion(&self.path))?;
+        let to = definition
+            .convert(from)
+            .map_err(Error::conversion(&self.path))?;
 
         Ok(to)
     }

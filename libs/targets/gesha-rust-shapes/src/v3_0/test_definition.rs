@@ -5,14 +5,14 @@ use gesha_core::conversions::{TestCase, TestSuite};
 use gesha_rust_types::{ModuleDeclarations, ModuleName};
 
 impl conversions::TestDefinition for Definition {
-    fn test_suites() -> Vec<TestSuite<Self>> {
+    fn test_suites(&self) -> Vec<TestSuite<Self>> {
         vec![
             create_suite(schemas_files(), "schemas"),
             create_suite(request_bodies_files(), "request_bodies"),
         ]
     }
 
-    fn test_suite_code(suite: &TestSuite<Self>) -> Self::TargetType {
+    fn test_suite_code(&self, suite: &TestSuite<Self>) -> Self::TargetType {
         let decls = suite
             .test_cases
             .iter()

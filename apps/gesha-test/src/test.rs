@@ -16,14 +16,16 @@ pub struct Args {
 
 #[instrument(name = "test::run")]
 pub async fn run(args: Args) -> Result<()> {
-    process::<v3_0::Definition>(args).await
+    let definition = v3_0::Definition::default();
+    process(definition, args).await
 }
 
-async fn process<A: TestDefinition>(args: Args) -> Result<()> {
+async fn process<A: TestDefinition>(definition: A, args: Args) -> Result<()> {
     let cases = if let Some(schema) = args.schema {
-        vec![A::require_test_case(&schema)?]
+        vec![definition.require_test_case(&schema)?]
     } else {
-        A::list_test_cases()
+        definition.list_test_cases()
     };
-    TestRunner::<A>::run_tests(cases).await
+    let runner = TestRunner::new(definition);
+    runner.run_tests(cases).await
 }
