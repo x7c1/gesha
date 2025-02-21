@@ -1,6 +1,5 @@
-use crate::conversions::converter::TestDefinition;
-use crate::conversions::{TestCase, TestCaseMap, TestSuite};
 use crate::io::{detect_diff, Reader, Writer};
+use crate::testing::{TestCase, TestCaseMap, TestDefinition, TestSuite};
 use crate::{Error, ErrorTheme, Result};
 use futures::future::join_all;
 use std::fmt::Debug;

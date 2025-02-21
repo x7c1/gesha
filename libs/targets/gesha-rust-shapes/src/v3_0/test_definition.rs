@@ -1,10 +1,9 @@
 use crate::v3_0::Converter;
-use gesha_core::conversions;
-use gesha_core::conversions::v3_0::{request_bodies_files, schemas_files, COMPONENTS_PATH};
-use gesha_core::conversions::{TestCase, TestSuite};
+use gesha_core::testing::v3_0::{request_bodies_files, schemas_files, COMPONENTS_PATH};
+use gesha_core::testing::{TestCase, TestDefinition, TestSuite};
 use gesha_rust_types::{ModuleDeclarations, ModuleName};
 
-impl conversions::TestDefinition for Converter {
+impl TestDefinition for Converter {
     fn test_suites(&self) -> Vec<TestSuite<Self>> {
         vec![
             create_suite(schemas_files(), "schemas"),
