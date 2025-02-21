@@ -5,6 +5,9 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+testing = []
+
 [dependencies]
 openapi-types = { path = "../../libs/openapi-types" }
 
@@ -15,7 +18,6 @@ nu-ansi-term = "0.50.0"
 opentelemetry = { workspace = true }
 opentelemetry-otlp = { version = "0.28.0", features = ["metrics", "grpc-tonic"] }
 opentelemetry_sdk = { version = "0.28.0", features = ["rt-tokio"] }
-opentelemetry-semantic-conventions = "0.28.0"
 similar = "2.4.0"
 tokio = { workspace = true }
 tracing = { workspace = true }

@@ -2,7 +2,7 @@
 members = [
     "apps/handcraft",
     "apps/gesha",
-    "apps/gesha-test",
+    "apps/gesha-verify",
     "examples/v3_0",
 ]
 resolver = "2"

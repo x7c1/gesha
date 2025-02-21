@@ -1,4 +1,4 @@
-use crate::conversions::TestCase;
+use crate::testing::TestCase;
 use crate::Error;
 use std::collections::HashMap;
 use tokio::task::{Id, JoinError};
@@ -10,10 +10,12 @@ impl<A> TestCaseMap<A> {
     pub fn new() -> Self {
         Self(HashMap::new())
     }
+
     pub fn push(mut self, id: Id, case: TestCase<A>) -> Self {
         self.0.insert(id, case);
         self
     }
+
     pub fn extract(&mut self, id: Id) -> crate::Result<TestCase<A>> {
         self.0
             .remove(&id)

@@ -59,7 +59,7 @@ jobs:
           cargo test
 
       - run: |
-          make gesha-test
+          make gesha-verify
           make gesha-sample
 
       - name: Cache deno.land dependencies
