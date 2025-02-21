@@ -3,6 +3,9 @@ name = "gesha-rust-shapes"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+testing = ["gesha-core/testing"]
+
 [dependencies]
 gesha-core = { path = "../../gesha-core" }
 gesha-rust-types = { path = "../gesha-rust-types" }

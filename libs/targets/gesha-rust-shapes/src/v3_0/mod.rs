@@ -3,4 +3,5 @@ mod components;
 mod converter;
 pub use converter::Converter;
 
-mod test_definition;
+#[cfg(feature = "testing")]
+pub mod testing;
