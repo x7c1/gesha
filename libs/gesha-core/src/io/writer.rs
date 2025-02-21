@@ -1,4 +1,4 @@
-use crate::conversions::Definition;
+use crate::conversions::Converter;
 use crate::Error::{CannotCopyFile, CannotCreateFile, CannotRender};
 use crate::Result;
 use std::fmt::Debug;
@@ -9,14 +9,14 @@ use tracing::{debug, instrument};
 
 #[derive(Debug)]
 pub struct Writer<'a, A> {
-    definition: &'a A,
+    converter: &'a A,
     path: PathBuf,
 }
 
-impl<'a, A: Definition> Writer<'a, A> {
-    pub fn new(definition: &'a A, path: impl Into<PathBuf>) -> Self {
+impl<'a, A: Converter> Writer<'a, A> {
+    pub fn new(converter: &'a A, path: impl Into<PathBuf>) -> Self {
         Self {
-            definition,
+            converter,
             path: path.into(),
         }
     }
@@ -36,7 +36,7 @@ impl<'a, A: Definition> Writer<'a, A> {
             detail: format!("{:?}", cause),
         })?;
 
-        let output = self.definition.format_code(&self.path)?;
+        let output = self.converter.format_code(&self.path)?;
         debug!("format>\n{}", output);
         Ok(())
     }

@@ -1,6 +1,6 @@
 mod components;
 
-mod definition;
-pub use definition::Definition;
+mod converter;
+pub use converter::Converter;
 
 mod test_definition;

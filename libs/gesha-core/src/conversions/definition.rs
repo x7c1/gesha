@@ -5,8 +5,8 @@ use openapi_types::yaml::ToOpenApi;
 use std::fmt::Display;
 use std::path::Path;
 
-/// A definition of a conversion.
-pub trait Definition: Clone + Sized + Send + Sync + 'static {
+/// Convert OpenAPI definitions to target type.
+pub trait Converter: Clone + Sized + Send + Sync + 'static {
     /// The OpenAPI type that this definition converts from.
     type OpenApiType: ToOpenApi + Send + Sync;
 
@@ -20,7 +20,7 @@ pub trait Definition: Clone + Sized + Send + Sync + 'static {
     fn format_code(&self, path: &Path) -> crate::Result<String>;
 }
 
-pub trait TestDefinition: Definition {
+pub trait TestDefinition: Converter {
     /// List all test suites for this definition.
     fn test_suites(&self) -> Vec<TestSuite<Self>>;
 

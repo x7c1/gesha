@@ -10,9 +10,9 @@ use std::path::Path;
 use std::process::Command;
 
 #[derive(Clone, Default)]
-pub struct Definition {}
+pub struct Converter {}
 
-impl conversions::Definition for Definition {
+impl conversions::Converter for Converter {
     type OpenApiType = v3_0::ComponentsObject;
     type TargetType = gesha_rust_types::SourceCode;
 

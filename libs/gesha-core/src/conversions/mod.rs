@@ -2,7 +2,7 @@ mod error;
 pub use error::{Error, Result};
 
 mod definition;
-pub use definition::{Definition, TestDefinition};
+pub use definition::{Converter, TestDefinition};
 
 mod test_case;
 pub use test_case::TestCase;

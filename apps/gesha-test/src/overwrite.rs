@@ -6,8 +6,8 @@ use tracing::{info, instrument};
 
 #[instrument(name = "overwrite::run")]
 pub async fn run(args: Args) -> Result<()> {
-    let definition = v3_0::Definition::default();
-    process(definition, args).await
+    let converter = v3_0::Converter::default();
+    process(converter, args).await
 }
 
 async fn process<A: TestDefinition>(definition: A, args: Args) -> Result<()> {
