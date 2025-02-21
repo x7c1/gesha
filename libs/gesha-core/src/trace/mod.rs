@@ -75,13 +75,13 @@ where
         .with_batch_config(batch_config)
         .build();
 
-    let service_name = "gesha-test";
+    let service_name = "gesha-verify";
     let provider = SdkTracerProvider::builder()
         .with_span_processor(batch_processor)
         .with_resource(Resource::builder().with_service_name(service_name).build())
         .build();
 
-    let otel_scope_name = "gesha-test";
+    let otel_scope_name = "gesha-verify";
     let tracer = provider.tracer(otel_scope_name);
 
     tracing_opentelemetry::layer()
@@ -98,7 +98,7 @@ where
         .with_default_directive("gesha=debug".parse().unwrap())
         .from_env_lossy();
 
-    let file_path = "./logs/gesha-test.log";
+    let file_path = "./logs/gesha-verify.log";
     let file = File::create(file_path).expect("unable to create log file");
     let layer = layer()
         .pretty()

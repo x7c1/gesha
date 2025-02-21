@@ -1,10 +1,20 @@
-use crate::test::Args;
+use clap::Parser;
 use gesha_core::conversions::{TestDefinition, TestRunner};
 use gesha_core::Result;
 use gesha_rust_shapes::v3_0;
-use tracing::{info, instrument};
+use tracing::instrument;
 
-#[instrument(name = "overwrite::run")]
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+pub struct Args {
+    #[clap(long)]
+    pub schema: Option<String>,
+
+    #[arg(long)]
+    pub overwrite: bool,
+}
+
+#[instrument(name = "verify::run")]
 pub async fn run(args: Args) -> Result<()> {
     let converter = v3_0::Converter::default();
     process(converter, args).await
@@ -16,13 +26,6 @@ async fn process<A: TestDefinition>(definition: A, args: Args) -> Result<()> {
     } else {
         definition.list_test_cases()
     };
-    let test_suites = definition.test_suites();
     let runner = TestRunner::new(definition);
-    let modified_cases = runner.collect_modified_cases(cases).await?;
-    if modified_cases.is_empty() {
-        info!("diff not detected");
-    } else {
-        runner.copy_modified_files(&modified_cases)?;
-    }
-    runner.generate_test_suite_files(&test_suites)
+    runner.run_tests(cases).await
 }

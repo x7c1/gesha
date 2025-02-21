@@ -974,7 +974,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "gesha-test"
+name = "gesha-verify"
 version = "0.1.0"
 dependencies = [
  "clap",

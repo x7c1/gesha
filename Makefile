@@ -38,9 +38,9 @@ gesha-sample: ## debug : Sample command
 	cargo run --bin gesha -- \
 	    --schema schemas/v3.0/petstore.yaml
 
-gesha-test: ## test : Test gesha command
-	cargo run --bin gesha-test
+gesha-verify: ## test : Test gesha command
+	cargo run --bin gesha-verify
 	./scripts/test-examples.sh
 
-gesha-test-overwrite: ## test : Overwrite examples by generated files
-	cargo run --bin gesha-test -- --overwrite
+gesha-verify-overwrite: ## test : Overwrite examples by generated files
+	cargo run --bin gesha-verify -- --overwrite
