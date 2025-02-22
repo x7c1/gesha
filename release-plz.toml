@@ -12,7 +12,6 @@ release = true
 
 [[package]]
 name = "gesha-verify"
-dependencies_update = true
 
 [[package]]
 name = "openapi-types"
