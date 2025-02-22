@@ -1,6 +1,9 @@
 [package]
 name = "gesha-rust-types"
 version = "0.0.1"
+description = "Rust types for Gesha proejct"
+repository = "https://github.com/x7c1/gesha/tree/main/libs/targets/gesha-rust-types"
+license = "MIT"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
