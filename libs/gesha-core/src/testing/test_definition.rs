@@ -1,19 +1,19 @@
 use crate::conversions::Converter;
-use crate::testing::{TestCase, TestSuite};
+use crate::testing::{TestCase, TestCaseIndex};
 use crate::Error::UnknownTestCase;
 
 pub trait TestDefinition: Converter {
-    /// List all test suites for this definition.
-    fn test_suites(&self) -> Vec<TestSuite<Self>>;
+    /// List all test cases for this definition.
+    fn test_indexes(&self) -> Vec<TestCaseIndex<Self>>;
 
-    /// Get the code of the test suite.
-    fn test_suite_code(&self, suite: &TestSuite<Self>) -> Self::TargetType;
+    /// Get the code of the test index.
+    fn test_index_code(&self, index: &TestCaseIndex<Self>) -> Self::TargetType;
 
     /// List all test cases for this definition.
     fn list_test_cases(&self) -> Vec<TestCase<Self>> {
-        self.test_suites()
+        self.test_indexes()
             .into_iter()
-            .flat_map(|suite| suite.test_cases)
+            .flat_map(|index| index.test_cases)
             .collect()
     }
 

@@ -1,5 +1,5 @@
 use crate::io::{detect_diff, Reader, Writer};
-use crate::testing::{run_parallel, TestCase, TestDefinition, TestSuite};
+use crate::testing::{run_parallel, TestCase, TestCaseIndex, TestDefinition};
 use crate::{Error, ErrorTheme, Result};
 use std::fmt::Debug;
 use tracing::{info, instrument};
@@ -62,17 +62,17 @@ where
     }
 
     #[instrument]
-    pub fn generate_test_suite_file(&self, suite: &TestSuite<A>) -> Result<()> {
-        let writer = Writer::new(&self.0, &suite.mod_path);
-        let content = self.0.test_suite_code(suite);
+    pub fn generate_test_index_file(&self, index: &TestCaseIndex<A>) -> Result<()> {
+        let writer = Writer::new(&self.0, &index.mod_path);
+        let content = self.0.test_index_code(index);
         writer.write_code(content)
     }
 
     #[instrument(skip_all)]
-    pub fn generate_test_suite_files(&self, suites: &[TestSuite<A>]) -> Result<()> {
-        suites
+    pub fn generate_test_index_files(&self, indexes: &[TestCaseIndex<A>]) -> Result<()> {
+        indexes
             .iter()
-            .try_for_each(|suite| self.generate_test_suite_file(suite))
+            .try_for_each(|index| self.generate_test_index_file(index))
     }
 
     #[instrument]

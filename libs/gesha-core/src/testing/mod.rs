@@ -6,8 +6,8 @@ pub use test_case::TestCase;
 mod run_parallel;
 pub use run_parallel::{run_parallel, Joiner};
 
-mod test_suite;
-pub use test_suite::TestSuite;
+mod test_case_index;
+pub use test_case_index::TestCaseIndex;
 
 mod test_runner;
 pub use test_runner::TestRunner;

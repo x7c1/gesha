@@ -1,18 +1,18 @@
 use crate::v3_0::Converter;
 use gesha_core::testing::v3_0::{request_bodies_files, schemas_files, COMPONENTS_PATH};
-use gesha_core::testing::{TestCase, TestDefinition, TestSuite};
+use gesha_core::testing::{TestCase, TestDefinition, TestCaseIndex};
 use gesha_rust_types::{ModuleDeclarations, ModuleName};
 
 impl TestDefinition for Converter {
-    fn test_suites(&self) -> Vec<TestSuite<Self>> {
+    fn test_indexes(&self) -> Vec<TestCaseIndex<Self>> {
         vec![
-            create_suite(schemas_files(), "schemas"),
-            create_suite(request_bodies_files(), "request_bodies"),
+            create_index(schemas_files(), "schemas"),
+            create_index(request_bodies_files(), "request_bodies"),
         ]
     }
 
-    fn test_suite_code(&self, suite: &TestSuite<Self>) -> Self::TargetType {
-        let decls = suite
+    fn test_index_code(&self, index: &TestCaseIndex<Self>) -> Self::TargetType {
+        let decls = index
             .test_cases
             .iter()
             .map(|case| case.module_name.clone())
@@ -23,13 +23,13 @@ impl TestDefinition for Converter {
     }
 }
 
-fn create_suite(filenames: Vec<&str>, parent_name: &str) -> TestSuite<Converter> {
+fn create_index(filenames: Vec<&str>, parent_name: &str) -> TestCaseIndex<Converter> {
     let enclosed_cases = filenames
         .iter()
         .map(|filename| to_test_case(parent_name, filename))
         .collect();
 
-    TestSuite {
+    TestCaseIndex {
         mod_path: format!("{COMPONENTS_PATH}/{parent_name}.rs").into(),
         test_cases: enclosed_cases,
     }
