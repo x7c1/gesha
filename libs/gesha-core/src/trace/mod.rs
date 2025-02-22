@@ -114,11 +114,11 @@ fn otel_layer<S>() -> Option<impl Layer<S>>
 where
     S: Subscriber + for<'a> LookupSpan<'a>,
 {
-    let layer = layer()
-        .with_writer(io::stderr)
-        .with_filter(filter_fn(|metadata| {
-            metadata.target().starts_with("opentelemetry")
-        }));
+    let file_path = "./logs/opentelemetry.log";
+    let file = File::create(file_path).expect("unable to create log file");
+    let layer = layer().with_writer(file).with_filter(filter_fn(|metadata| {
+        metadata.target().starts_with("opentelemetry")
+    }));
 
     Some(layer)
 }
