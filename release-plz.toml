@@ -2,6 +2,6 @@
 release = false
 
 [[package]]
-name = "gesha-core"
+name = "openapi-types"
 publish = true
 release = true
