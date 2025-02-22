@@ -55,7 +55,9 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - run: |
-          # release-plz fails due to "uncommitted changes"
+          # why does release-plz fail saying "uncommitted changes"?
+          ls -alh output/v3.0/example
+          git status
           rm output/v3.0/example/.gitkeep
 
       - name: Run release-plz
