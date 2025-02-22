@@ -5,7 +5,7 @@ set -xue
 dirs=(
   "./output/v3.0/components/request_bodies"
   "./output/v3.0/components/schemas"
-  "./output/v3.0/examples"
+  "./output/v3.0/example"
 )
 
 for dir in "${dirs[@]}"; do
