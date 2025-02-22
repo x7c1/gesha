@@ -1,5 +1,6 @@
 [workspace]
 release = false
+publish = false
 
 [[package]]
 name = "openapi-types"
