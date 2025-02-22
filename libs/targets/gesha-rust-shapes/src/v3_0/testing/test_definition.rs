@@ -1,10 +1,10 @@
 use crate::v3_0::converter::new_code;
-use crate::v3_0::testing::Converter;
+use crate::v3_0::testing::ComponentsConverter;
 use gesha_core::testing::v3_0::{request_bodies_files, schemas_files, COMPONENTS_PATH};
 use gesha_core::testing::{TestCase, TestCaseIndex, TestDefinition};
 use gesha_rust_types::{ModuleDeclarations, ModuleName};
 
-impl TestDefinition for Converter {
+impl TestDefinition for ComponentsConverter {
     fn list_indexes(&self) -> Vec<TestCaseIndex<Self>> {
         vec![
             create_index(schemas_files(), "schemas"),
@@ -24,7 +24,7 @@ impl TestDefinition for Converter {
     }
 }
 
-fn create_index(filenames: Vec<&str>, parent_name: &str) -> TestCaseIndex<Converter> {
+fn create_index(filenames: Vec<&str>, parent_name: &str) -> TestCaseIndex<ComponentsConverter> {
     let enclosed_cases = filenames
         .iter()
         .map(|filename| to_test_case(parent_name, filename))
@@ -36,7 +36,7 @@ fn create_index(filenames: Vec<&str>, parent_name: &str) -> TestCaseIndex<Conver
     }
 }
 
-fn to_test_case(parent_name: &str, yaml_name: &str) -> TestCase<Converter> {
+fn to_test_case(parent_name: &str, yaml_name: &str) -> TestCase<ComponentsConverter> {
     let rs_name = yaml_name.replace(".yaml", ".rs");
     TestCase {
         output: format!("output/v3.0/components/{parent_name}/{rs_name}").into(),

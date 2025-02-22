@@ -4,9 +4,9 @@ use openapi_types::v3_0;
 use std::path::Path;
 
 #[derive(Clone, Debug, Default)]
-pub struct Converter {}
+pub struct ComponentsConverter {}
 
-impl conversions::Converter for Converter {
+impl conversions::Converter for ComponentsConverter {
     type OpenApiType = v3_0::ComponentsObject;
     type TargetType = gesha_rust_types::SourceCode;
 
