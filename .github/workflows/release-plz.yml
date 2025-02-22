@@ -54,12 +54,6 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - run: |
-          # why does release-plz fail saying "uncommitted changes"?
-          ls -alh output/v3.0/example
-          git status
-          rm output/v3.0/example/.gitkeep
-
       - name: Run release-plz
         uses: release-plz/action@v0.5
         with:

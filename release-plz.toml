@@ -1,4 +1,5 @@
 [workspace]
+allow_dirty = true
 release = false
 publish = false
 
