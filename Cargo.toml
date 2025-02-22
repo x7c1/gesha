@@ -8,8 +8,15 @@ members = [
 resolver = "2"
 
 [workspace.dependencies]
+openapi-types = { version = "0.0.2", path = "libs/openapi-types" }
+gesha-core = { version = "0.0.1", path = "libs/gesha-core" }
+gesha-rust-shapes = { version = "0.0.1", path = "libs/targets/gesha-rust-shapes" }
+gesha-rust-types = { version = "0.0.1", path = "libs/targets/gesha-rust-types" }
+
 async-trait = "0.1.77"
 clap = { version = "4.5.30", features = ["derive"] }
+heck = "0.5.0"
+indexmap = "2.7.1"
 opentelemetry = { version = "0.28.0", default-features = false, features = ["trace", "metrics"] }
 pretty_assertions = "1.4.0"
 serde = { version = "1.0.218", features = ["derive"] }

@@ -1,0 +1,30 @@
+# https://release-plz.dev/docs/config
+
+[workspace]
+release = false
+publish = false
+
+[[package]]
+name = "gesha"
+publish = true
+release = true
+
+[[package]]
+name = "openapi-types"
+publish = true
+release = true
+
+[[package]]
+name = "gesha-core"
+publish = true
+release = true
+
+[[package]]
+name = "gesha-rust-shapes"
+publish = true
+release = true
+
+[[package]]
+name = "gesha-rust-types"
+publish = true
+release = true

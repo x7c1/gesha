@@ -1,13 +1,13 @@
 [package]
 name = "gesha-verify"
-version = "0.1.0"
+version = "0.0.1"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-gesha-core = { path = "../../libs/gesha-core" }
-gesha-rust-shapes = { path = "../../libs/targets/gesha-rust-shapes", features = ["testing"] }
+gesha-core = { workspace = true }
+gesha-rust-shapes = { workspace = true, features = ["testing"] }
 
 clap = { workspace = true }
 tokio = { workspace = true }

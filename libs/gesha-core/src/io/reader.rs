@@ -4,7 +4,7 @@ use crate::{Error, Result};
 use openapi_types::yaml::{load_from_str, ToOpenApi, YamlMap};
 use std::fmt::Debug;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use tracing::instrument;
 
 #[derive(Debug)]
@@ -15,10 +15,6 @@ pub struct Reader {
 impl Reader {
     pub fn new(path: impl Into<PathBuf>) -> Self {
         Self { path: path.into() }
-    }
-
-    pub fn file_to_string(path: impl AsRef<Path>) -> Result<String> {
-        Self::new(path.as_ref()).as_string()
     }
 
     #[instrument]
@@ -37,7 +33,7 @@ impl Reader {
         Ok(to)
     }
 
-    fn as_string(&self) -> Result<String> {
+    pub(crate) fn as_string(&self) -> Result<String> {
         let content = fs::read_to_string(&self.path).map_err(|cause| CannotReadFile {
             path: PathBuf::from(&self.path),
             detail: format!("{:?}", cause),

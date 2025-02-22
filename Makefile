@@ -40,8 +40,10 @@ gesha-sample: ## debug : Sample command
 	    --output output/v3.0/example/petstore.rs
 
 gesha-verify: ## test : Test gesha command
+	./scripts/setup-test-dirs.sh
 	cargo run --bin gesha-verify
 	./scripts/test-examples.sh
 
 gesha-verify-overwrite: ## test : Overwrite examples by generated files
+	./scripts/setup-test-dirs.sh
 	cargo run --bin gesha-verify -- --overwrite
