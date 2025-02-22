@@ -10,7 +10,6 @@ pub fn run_parallel<A, B, F, Fut>(cases: Vec<TestCase<A>>, f: F) -> Joiner<A, B>
 where
     F: Fn(TestCase<A>) -> Fut,
     Fut: Future<Output = Result<B>> + Send + 'static,
-    A: Clone,
     B: Send + 'static,
 {
     let (handles, map) = cases
