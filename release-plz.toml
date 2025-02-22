@@ -1,3 +1,5 @@
+# https://release-plz.dev/docs/config
+
 [workspace]
 allow_dirty = true
 release = false
@@ -7,6 +9,10 @@ publish = false
 name = "gesha"
 publish = true
 release = true
+
+[[package]]
+name = "gesha-verify"
+dependencies_update = true
 
 [[package]]
 name = "openapi-types"
