@@ -1,5 +1,8 @@
 pub mod v3_0;
 
+mod diff;
+pub use diff::detect_diff;
+
 mod test_case;
 pub use test_case::TestCase;
 
@@ -14,3 +17,6 @@ pub use test_runner::TestRunner;
 
 mod test_definition;
 pub use test_definition::TestDefinition;
+
+mod reader;
+mod writer;

@@ -1,14 +1,14 @@
-use crate::Error::{CannotCopyFile, CannotCreateFile, CannotRender};
+use crate::Error::{CannotCreateFile, CannotRender};
 use crate::Result;
 use std::fmt::{Debug, Display};
 use std::fs::File;
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use tracing::instrument;
 
 #[derive(Debug)]
 pub struct Writer {
-    path: PathBuf,
+    pub(crate) path: PathBuf,
 }
 
 impl Writer {
@@ -29,15 +29,6 @@ impl Writer {
         let mut file = self.touch()?;
         write!(file, "{}", code).map_err(|cause| CannotRender {
             path: self.path.clone(),
-            detail: format!("{:?}", cause),
-        })?;
-        Ok(())
-    }
-
-    pub fn copy_from<B: AsRef<Path>>(self, from: B) -> Result<()> {
-        std::fs::copy(&from, &self.path).map_err(|cause| CannotCopyFile {
-            from: from.as_ref().into(),
-            to: self.path,
             detail: format!("{:?}", cause),
         })?;
         Ok(())
