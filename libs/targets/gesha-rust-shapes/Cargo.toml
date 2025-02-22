@@ -9,7 +9,7 @@ testing = ["gesha-core/testing"]
 [dependencies]
 gesha-core = { path = "../../gesha-core" }
 gesha-rust-types = { path = "../gesha-rust-types" }
-openapi-types = { path = "../../openapi-types" }
+openapi-types = { version = "0.0.1", path = "../../openapi-types" }
 
 heck = { workspace = true }
 indexmap = { workspace = true }

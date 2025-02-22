@@ -9,7 +9,7 @@ edition = "2021"
 testing = []
 
 [dependencies]
-openapi-types = { path = "../../libs/openapi-types" }
+openapi-types = { version = "0.0.1", path = "../../libs/openapi-types" }
 
 chrono = "0.4.31"
 console = "0.15.8"
