@@ -1,31 +1,12 @@
 use crate::io::{detect_diff, Reader, Writer};
-use crate::testing::{TestCase, TestCaseMap, TestDefinition, TestSuite};
+use crate::testing::{run_parallel, TestCase, TestDefinition, TestSuite};
 use crate::{Error, ErrorTheme, Result};
 use futures::future::join_all;
 use std::fmt::Debug;
-use std::future::Future;
-use tokio::task::JoinHandle;
-use tracing::Instrument;
 use tracing::{info, instrument};
 
 #[derive(Clone, Debug)]
 pub struct TestRunner<A>(A);
-
-fn run<X, Y, F, Fut>(xs: Vec<TestCase<X>>, f: F) -> (Vec<JoinHandle<Result<Y>>>, TestCaseMap<X>)
-where
-    F: Fn(TestCase<X>) -> Fut,
-    Fut: Future<Output = Result<Y>> + Send + 'static,
-    X: Clone,
-    Y: Send + 'static,
-{
-    xs.into_iter()
-        .map(|x| {
-            let cloned = x.clone();
-            let handle = tokio::spawn(f(x).in_current_span());
-            (handle.id(), cloned, handle)
-        })
-        .fold((vec![], TestCaseMap::new()), TestCaseMap::accumulate)
-}
 
 impl<A> TestRunner<A>
 where
@@ -37,7 +18,10 @@ where
 
     #[instrument(skip_all)]
     pub async fn run_tests(&self, cases: Vec<TestCase<A>>) -> Result<()> {
-        let (handles, mut map) = run(cases, |case| self.clone().run_single_test(case));
+        let (handles, mut map) = run_parallel(cases, |case| {
+            let this = self.clone();
+            this.run_single_test(case)
+        });
         let errors = join_all(handles)
             .await
             .into_iter()
@@ -62,7 +46,10 @@ where
         &self,
         cases: Vec<TestCase<A>>,
     ) -> Result<Vec<ModifiedTestCase<A>>> {
-        let (handles, mut map) = run(cases, |case| self.clone().detect_modified_case(case));
+        let (handles, mut map) = run_parallel(cases, |case| {
+            let this = self.clone();
+            this.detect_modified_case(case)
+        });
         let (modified, errors) = join_all(handles)
             .await
             .into_iter()
