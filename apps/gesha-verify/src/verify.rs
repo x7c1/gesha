@@ -16,7 +16,7 @@ pub struct Args {
 
 #[instrument(name = "verify::run")]
 pub async fn run(args: Args) -> Result<()> {
-    let converter = v3_0::Converter::default();
+    let converter = v3_0::testing::Converter::default();
     process(converter, args).await
 }
 

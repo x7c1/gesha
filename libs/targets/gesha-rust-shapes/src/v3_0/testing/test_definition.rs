@@ -1,6 +1,6 @@
-use crate::v3_0::Converter;
+use crate::v3_0::testing::Converter;
 use gesha_core::testing::v3_0::{request_bodies_files, schemas_files, COMPONENTS_PATH};
-use gesha_core::testing::{TestCase, TestDefinition, TestCaseIndex};
+use gesha_core::testing::{TestCase, TestCaseIndex, TestDefinition};
 use gesha_rust_types::{ModuleDeclarations, ModuleName};
 
 impl TestDefinition for Converter {
@@ -19,7 +19,7 @@ impl TestDefinition for Converter {
             .map(ModuleName::new)
             .collect::<ModuleDeclarations>();
 
-        crate::v3_0::converter::new_code().set_mod_decls(decls)
+        crate::v3_0::testing::converter::new_code().set_mod_decls(decls)
     }
 }
 
