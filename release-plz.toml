@@ -11,9 +11,6 @@ publish = true
 release = true
 
 [[package]]
-name = "gesha-verify"
-
-[[package]]
 name = "openapi-types"
 publish = true
 release = true
