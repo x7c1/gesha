@@ -1,12 +1,68 @@
 use crate::testing::TestCase;
 use crate::{Error, Result};
+use futures::future::join_all;
 use std::collections::HashMap;
 use std::future::Future;
 use tokio::task::{Id, JoinError, JoinHandle};
 use tracing::Instrument;
 
+pub fn run_parallel<A, B, F, Fut>(cases: Vec<TestCase<A>>, f: F) -> Joiner<A, B>
+where
+    F: Fn(TestCase<A>) -> Fut,
+    Fut: Future<Output = Result<B>> + Send + 'static,
+    A: Clone,
+    B: Send + 'static,
+{
+    let (handles, map) = cases
+        .into_iter()
+        .map(|case| {
+            let cloned = case.clone();
+            let handle = tokio::spawn(f(case).in_current_span());
+            (handle.id(), cloned, handle)
+        })
+        .fold((vec![], TestCaseMap::new()), TestCaseMap::accumulate);
+
+    Joiner { handles, map }
+}
+
+pub struct Joiner<A, B> {
+    map: TestCaseMap<A>,
+    handles: Vec<JoinHandle<Result<B>>>,
+}
+
+impl<A, X> Joiner<A, X> {
+    pub async fn join_all<F, Y>(mut self, f: F) -> Result<Vec<Y>>
+    where
+        F: Fn(&mut Vec<Y>, &mut Vec<Error>, Result<X>),
+    {
+        let (outputs, errors) = join_all(self.handles)
+            .await
+            .into_iter()
+            .map(|result| self.map.flatten(result))
+            .fold((vec![], vec![]), |(mut outputs, mut errors), result| {
+                f(&mut outputs, &mut errors, result);
+                (outputs, errors)
+            });
+
+        if errors.is_empty() {
+            Ok(outputs)
+        } else {
+            Err(Error::Errors(errors))
+        }
+    }
+
+    pub async fn collect_errors(self) -> Result<()> {
+        self.join_all(|_: &mut Vec<()>, errors, result| match result {
+            Ok(_) => {}
+            Err(e) => errors.push(e),
+        })
+        .await
+        .map(|_| ())
+    }
+}
+
 #[derive(Default)]
-pub struct TestCaseMap<A>(HashMap<Id, TestCase<A>>);
+struct TestCaseMap<A>(HashMap<Id, TestCase<A>>);
 
 impl<A> TestCaseMap<A> {
     pub fn new() -> Self {
@@ -41,23 +97,4 @@ impl<A> TestCaseMap<A> {
             }),
         }
     }
-}
-
-pub fn run_parallel<X, Y, F, Fut>(
-    xs: Vec<TestCase<X>>,
-    f: F,
-) -> (Vec<JoinHandle<Result<Y>>>, TestCaseMap<X>)
-where
-    F: Fn(TestCase<X>) -> Fut,
-    Fut: Future<Output = Result<Y>> + Send + 'static,
-    X: Clone,
-    Y: Send + 'static,
-{
-    xs.into_iter()
-        .map(|x| {
-            let cloned = x.clone();
-            let handle = tokio::spawn(f(x).in_current_span());
-            (handle.id(), cloned, handle)
-        })
-        .fold((vec![], TestCaseMap::new()), TestCaseMap::accumulate)
 }

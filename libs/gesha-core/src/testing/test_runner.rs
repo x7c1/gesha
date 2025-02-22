@@ -1,7 +1,6 @@
 use crate::io::{detect_diff, Reader, Writer};
 use crate::testing::{run_parallel, TestCase, TestDefinition, TestSuite};
 use crate::{Error, ErrorTheme, Result};
-use futures::future::join_all;
 use std::fmt::Debug;
 use tracing::{info, instrument};
 
@@ -18,27 +17,12 @@ where
 
     #[instrument(skip_all)]
     pub async fn run_tests(&self, cases: Vec<TestCase<A>>) -> Result<()> {
-        let (handles, mut map) = run_parallel(cases, |case| {
+        run_parallel(cases, |case| {
             let this = self.clone();
             this.run_single_test(case)
-        });
-        let errors = join_all(handles)
-            .await
-            .into_iter()
-            .map(|result| map.flatten(result))
-            .fold(vec![], |mut errors, result| {
-                match result {
-                    Ok(_) => { /* nop */ }
-                    Err(e) => errors.push(e),
-                }
-                errors
-            });
-
-        if errors.is_empty() {
-            Ok(())
-        } else {
-            Err(Error::Errors(errors))
-        }
+        })
+        .collect_errors()
+        .await
     }
 
     #[instrument(skip_all)]
@@ -46,28 +30,16 @@ where
         &self,
         cases: Vec<TestCase<A>>,
     ) -> Result<Vec<ModifiedTestCase<A>>> {
-        let (handles, mut map) = run_parallel(cases, |case| {
+        run_parallel(cases, |case| {
             let this = self.clone();
             this.detect_modified_case(case)
-        });
-        let (modified, errors) = join_all(handles)
-            .await
-            .into_iter()
-            .map(|result| map.flatten(result))
-            .fold((vec![], vec![]), |(mut modified, mut errors), result| {
-                match result {
-                    Ok(Some(case)) => modified.push(case),
-                    Ok(None) => { /* nop */ }
-                    Err(e) => errors.push(e),
-                }
-                (modified, errors)
-            });
-
-        if errors.is_empty() {
-            Ok(modified)
-        } else {
-            Err(Error::Errors(errors))
-        }
+        })
+        .join_all(|modified, errors, result| match result {
+            Ok(Some(case)) => modified.push(case),
+            Ok(None) => { /* nop */ }
+            Err(e) => errors.push(e),
+        })
+        .await
     }
 
     #[instrument(skip_all)]
