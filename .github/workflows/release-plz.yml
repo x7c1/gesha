@@ -55,7 +55,8 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - run: |
-          git status
+          # release-plz fails due to "uncommitted changes"
+          rm output/v3.0/example/.gitkeep
 
       - name: Run release-plz
         uses: release-plz/action@v0.5
