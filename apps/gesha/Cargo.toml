@@ -7,8 +7,7 @@ edition = "2021"
 
 [dependencies]
 gesha-core = { path = "../../libs/gesha-core" }
-gesha-rust-types = { path = "../../libs/targets/gesha-rust-types" }
-openapi-types = { path = "../../libs/openapi-types" }
+gesha-rust-shapes = { path = "../../libs/targets/gesha-rust-shapes"}
 
 clap = { workspace = true }
 tokio = { workspace = true }

@@ -1,36 +1,32 @@
-use crate::test::Args;
+use crate::verify::Args;
 use clap::Parser;
 use gesha_core::{trace, Result};
 use std::process::ExitCode;
-use std::time::Duration;
-use tokio::time::sleep;
 use tracing::{error, info};
 
 mod overwrite;
-mod test;
+mod verify;
 
 #[tokio::main]
 async fn main() -> ExitCode {
     trace::init();
 
     let args = Args::parse();
-    info!("gesha-test: {:#?}", args);
+    info!("gesha-verify: {:#?}", args);
 
     let result = if args.overwrite {
         overwrite::run(args).await
     } else {
-        test::run(args).await
+        verify::run(args).await
     };
-    // wait for the otel exporter to finish
-    sleep(Duration::from_secs(5)).await;
-
+    trace::wait_to_export().await;
     to_code(result)
 }
 
 fn to_code(result: Result<()>) -> ExitCode {
     match result {
         Ok(_) => {
-            info!("gesha-test: done");
+            info!("gesha-verify: done");
             ExitCode::SUCCESS
         }
         Err(cause) => {

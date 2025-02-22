@@ -28,16 +28,20 @@ format: ## format
 	make cargo-fmt
 	make deno-fmt
 
+cargo-test-no-run: ## test : Compile tests
+	cargo test --no-run
+
 e2e-test: ## test : Run e2e tests
 	./scripts/e2e-test.sh
 
 gesha-sample: ## debug : Sample command
 	cargo run --bin gesha -- \
-	    --schema schemas/v3.0/petstore.yaml
+	    --schema schemas/v3.0/petstore.yaml \
+	    --output output/v3.0/example/petstore.rs
 
-gesha-test: ## test : Test gesha command
-	cargo run --bin gesha-test
+gesha-verify: ## test : Test gesha command
+	cargo run --bin gesha-verify
 	./scripts/test-examples.sh
 
-gesha-test-overwrite: ## test : Overwrite examples by generated files
-	cargo run --bin gesha-test -- --overwrite
+gesha-verify-overwrite: ## test : Overwrite examples by generated files
+	cargo run --bin gesha-verify -- --overwrite

@@ -1,5 +1,5 @@
 [package]
-name = "gesha-test"
+name = "gesha-verify"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 gesha-core = { path = "../../libs/gesha-core" }
-gesha-rust-shapes = { path = "../../libs/targets/gesha-rust-shapes" }
+gesha-rust-shapes = { path = "../../libs/targets/gesha-rust-shapes", features = ["testing"] }
 
 clap = { workspace = true }
 tokio = { workspace = true }

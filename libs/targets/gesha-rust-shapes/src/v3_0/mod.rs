@@ -1,4 +1,7 @@
 mod components;
 
-mod definition;
-pub use definition::ComponentsToRustTypes;
+mod converter;
+pub use converter::DocumentConverter;
+
+#[cfg(feature = "testing")]
+pub mod testing;
