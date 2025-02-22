@@ -1,24 +1,20 @@
-use crate::conversions::Converter;
 use crate::Error::{CannotCopyFile, CannotCreateFile, CannotRender};
 use crate::Result;
-use std::fmt::Debug;
+use std::fmt::{Debug, Display};
 use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use tracing::{debug, instrument};
+use tracing::instrument;
 
 #[derive(Debug)]
-pub struct Writer<'a, A> {
-    converter: &'a A,
+pub struct Writer {
     path: PathBuf,
 }
 
-impl<'a, A: Converter> Writer<'a, A> {
-    pub fn new(converter: &'a A, path: impl Into<PathBuf>) -> Self {
-        Self {
-            converter,
-            path: path.into(),
-        }
+impl Writer {
+    /// path: The location where the file will be created.
+    pub fn new(path: impl Into<PathBuf>) -> Self {
+        Self { path: path.into() }
     }
 
     pub fn touch(&self) -> Result<File> {
@@ -29,15 +25,12 @@ impl<'a, A: Converter> Writer<'a, A> {
     }
 
     #[instrument(skip_all)]
-    pub fn write_code(self, a: A::TargetType) -> Result<()> {
+    pub fn write_code(self, code: impl Display) -> Result<()> {
         let mut file = self.touch()?;
-        write!(file, "{}", a).map_err(|cause| CannotRender {
+        write!(file, "{}", code).map_err(|cause| CannotRender {
             path: self.path.clone(),
             detail: format!("{:?}", cause),
         })?;
-
-        let output = self.converter.format_code(&self.path)?;
-        debug!("format>\n{}", output);
         Ok(())
     }
 

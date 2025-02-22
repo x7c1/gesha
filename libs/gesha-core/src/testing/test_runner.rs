@@ -1,4 +1,5 @@
-use crate::io::{detect_diff, Reader, Writer};
+use crate::conversions::Generator;
+use crate::io::{detect_diff, Writer};
 use crate::testing::{run_parallel, TestCase, TestCaseIndex, TestDefinition};
 use crate::{Error, ErrorTheme, Result};
 use std::fmt::Debug;
@@ -63,9 +64,8 @@ where
 
     #[instrument]
     pub fn generate_test_index_file(&self, index: &TestCaseIndex<A>) -> Result<()> {
-        let writer = Writer::new(&self.0, &index.mod_path);
         let content = self.0.generate_index_code(index);
-        writer.write_code(content)
+        Generator::new(&self.0, &index.mod_path).generate_from_type(content)
     }
 
     #[instrument(skip_all)]
@@ -77,10 +77,7 @@ where
 
     #[instrument]
     async fn run_single_test(self, case: TestCase<A>) -> Result<()> {
-        let writer = Writer::new(&self.0, &case.output);
-        let reader = Reader::new(&case.schema);
-        let target = reader.open_target_type(&self.0)?;
-        writer.write_code(target)?;
+        Generator::new(&self.0, &case.output).generate_from_file(&case.schema)?;
 
         detect_diff(&case.output, &case.example)?;
         info!("passed: {path}", path = case.schema.to_string_lossy());
@@ -90,21 +87,18 @@ where
     #[instrument(skip_all)]
     fn copy_modified_file(&self, case: &ModifiedTestCase<A>) -> Result<()> {
         info!("diff detected: {} {}", case.target.module_name, case.diff);
-        let writer = Writer::new(&self.0, &case.target.example);
+        let writer = Writer::new(&case.target.example);
         writer.copy_from(&case.target.output)
     }
 
     #[instrument]
     async fn detect_modified_case(self, case: TestCase<A>) -> Result<Option<ModifiedTestCase<A>>> {
-        let writer = Writer::new(&self.0, &case.output);
-        let reader = Reader::new(&case.schema);
-        let target = reader.open_target_type(&self.0)?;
-        writer.write_code(target)?;
+        Generator::new(&self.0, &case.output).generate_from_file(&case.schema)?;
 
         // The example is not available on the first attempt.
         let not_exist = !case.example.exists();
         if not_exist {
-            Writer::new(&self.0, &case.example).touch()?;
+            Writer::new(&case.example).touch()?;
         }
 
         // Unlike run_single(), case.example represents the actual file,
