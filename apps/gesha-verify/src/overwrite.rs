@@ -16,7 +16,7 @@ async fn process<A: TestDefinition>(definition: A, args: Args) -> Result<()> {
     } else {
         definition.list_test_cases()
     };
-    let indexes = definition.test_indexes();
+    let indexes = definition.list_indexes();
     let runner = TestRunner::new(definition);
     let modified_cases = runner.collect_modified_cases(cases).await?;
     if modified_cases.is_empty() {

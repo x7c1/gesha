@@ -64,7 +64,7 @@ where
     #[instrument]
     pub fn generate_test_index_file(&self, index: &TestCaseIndex<A>) -> Result<()> {
         let writer = Writer::new(&self.0, &index.mod_path);
-        let content = self.0.test_index_code(index);
+        let content = self.0.generate_index_code(index);
         writer.write_code(content)
     }
 

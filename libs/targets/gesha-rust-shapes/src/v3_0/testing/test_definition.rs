@@ -4,14 +4,14 @@ use gesha_core::testing::{TestCase, TestCaseIndex, TestDefinition};
 use gesha_rust_types::{ModuleDeclarations, ModuleName};
 
 impl TestDefinition for Converter {
-    fn test_indexes(&self) -> Vec<TestCaseIndex<Self>> {
+    fn list_indexes(&self) -> Vec<TestCaseIndex<Self>> {
         vec![
             create_index(schemas_files(), "schemas"),
             create_index(request_bodies_files(), "request_bodies"),
         ]
     }
 
-    fn test_index_code(&self, index: &TestCaseIndex<Self>) -> Self::TargetType {
+    fn generate_index_code(&self, index: &TestCaseIndex<Self>) -> Self::TargetType {
         let decls = index
             .test_cases
             .iter()

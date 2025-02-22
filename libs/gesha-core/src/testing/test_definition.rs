@@ -4,14 +4,14 @@ use crate::Error::UnknownTestCase;
 
 pub trait TestDefinition: Converter {
     /// List all test cases for this definition.
-    fn test_indexes(&self) -> Vec<TestCaseIndex<Self>>;
+    fn list_indexes(&self) -> Vec<TestCaseIndex<Self>>;
 
-    /// Get the code of the test index.
-    fn test_index_code(&self, index: &TestCaseIndex<Self>) -> Self::TargetType;
+    /// Generate the code of the test case index.
+    fn generate_index_code(&self, index: &TestCaseIndex<Self>) -> Self::TargetType;
 
     /// List all test cases for this definition.
     fn list_test_cases(&self) -> Vec<TestCase<Self>> {
-        self.test_indexes()
+        self.list_indexes()
             .into_iter()
             .flat_map(|index| index.test_cases)
             .collect()
