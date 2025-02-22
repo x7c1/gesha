@@ -1,6 +1,6 @@
 [package]
 name = "openapi-types"
-version = "0.0.1"
+version = "0.0.2"
 description = "Types for OpenAPI"
 repository = "https://github.com/x7c1/gesha/tree/main/libs/openapi-types"
 license = "MIT"
