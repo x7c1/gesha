@@ -16,10 +16,7 @@ target
 
 # generated files
 output/*/example/*
-!output/*/example/*/.gitkeep
-
-output/v3.0/components/*/*
-!output/v3.0/components/*/.gitkeep
+output/v3.0/components/*
 
 # log files
 logs/*.log

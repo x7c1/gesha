@@ -1,7 +1,6 @@
 # https://release-plz.dev/docs/config
 
 [workspace]
-allow_dirty = true
 release = false
 publish = false
 
