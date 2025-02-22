@@ -954,7 +954,7 @@ dependencies = [
 
 [[package]]
 name = "gesha-rust-shapes"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "gesha-core",
  "gesha-rust-types",
@@ -965,7 +965,7 @@ dependencies = [
 
 [[package]]
 name = "gesha-rust-types"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "heck",
  "indexmap 2.7.1",
@@ -973,7 +973,7 @@ dependencies = [
 
 [[package]]
 name = "gesha-verify"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "clap",
  "gesha-core",
