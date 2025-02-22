@@ -29,10 +29,10 @@ pub struct Joiner<A, B> {
     handles: Vec<JoinHandle<Result<B>>>,
 }
 
-impl<A, X> Joiner<A, X> {
-    pub async fn join_all<F, Y>(mut self, f: F) -> Result<Vec<Y>>
+impl<A, B> Joiner<A, B> {
+    pub async fn join_all<F, Y>(mut self, f: F) -> (Vec<Y>, Vec<Error>)
     where
-        F: Fn(&mut Vec<Y>, &mut Vec<Error>, Result<X>),
+        F: Fn(&mut Vec<Y>, &mut Vec<Error>, Result<B>),
     {
         let (outputs, errors) = join_all(self.handles)
             .await
@@ -43,20 +43,18 @@ impl<A, X> Joiner<A, X> {
                 (outputs, errors)
             });
 
-        if errors.is_empty() {
-            Ok(outputs)
-        } else {
-            Err(Error::Errors(errors))
-        }
+        (outputs, errors)
     }
 
-    pub async fn collect_errors(self) -> Result<()> {
-        self.join_all(|_: &mut Vec<()>, errors, result| match result {
-            Ok(_) => {}
-            Err(e) => errors.push(e),
-        })
-        .await
-        .map(|_| ())
+    pub async fn collect_errors(self) -> Vec<Error> {
+        let (_, errors) = self
+            .join_all(|_: &mut Vec<()>, errors, result| match result {
+                Ok(_) => {}
+                Err(e) => errors.push(e),
+            })
+            .await;
+
+        errors
     }
 }
 

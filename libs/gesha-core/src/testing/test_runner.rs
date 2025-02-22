@@ -17,12 +17,18 @@ where
 
     #[instrument(skip_all)]
     pub async fn run_tests(&self, cases: Vec<TestCase<A>>) -> Result<()> {
-        run_parallel(cases, |case| {
+        let errors = run_parallel(cases, |case| {
             let this = self.clone();
             this.run_single_test(case)
         })
         .collect_errors()
-        .await
+        .await;
+
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(Error::Errors(errors))
+        }
     }
 
     #[instrument(skip_all)]
@@ -30,7 +36,7 @@ where
         &self,
         cases: Vec<TestCase<A>>,
     ) -> Result<Vec<ModifiedTestCase<A>>> {
-        run_parallel(cases, |case| {
+        let (outputs, errors) = run_parallel(cases, |case| {
             let this = self.clone();
             this.detect_modified_case(case)
         })
@@ -39,7 +45,13 @@ where
             Ok(None) => { /* nop */ }
             Err(e) => errors.push(e),
         })
-        .await
+        .await;
+
+        if errors.is_empty() {
+            Ok(outputs)
+        } else {
+            Err(Error::Errors(errors))
+        }
     }
 
     #[instrument(skip_all)]
