@@ -1,2 +1,7 @@
 [workspace]
 release = false
+
+[[package]]
+name = "gesha-core"
+publish = true
+release = true
