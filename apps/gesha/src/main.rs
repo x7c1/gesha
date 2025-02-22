@@ -13,7 +13,8 @@ async fn main() -> ExitCode {
     let args = Args::parse();
     info!("gesha: {:?}", args);
 
-    let result = generate::run(args);
+    let result = generate::run(args).await;
+    trace::wait_to_export().await;
     to_code(result)
 }
 

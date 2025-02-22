@@ -928,8 +928,7 @@ version = "0.0.1"
 dependencies = [
  "clap",
  "gesha-core",
- "gesha-rust-types",
- "openapi-types",
+ "gesha-rust-shapes",
  "tokio",
  "tracing",
 ]
