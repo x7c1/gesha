@@ -17,6 +17,6 @@ pub struct Args {
 #[instrument(name = "generate::run")]
 pub async fn run(args: Args) -> Result<()> {
     let converter = v3_0::DocumentConverter::default();
-    let generator = Generator::new(&converter, args.schema);
-    generator.generate_from_file(args.output)
+    let generator = Generator::new(&converter, args.output);
+    generator.generate_from_file(args.schema)
 }
