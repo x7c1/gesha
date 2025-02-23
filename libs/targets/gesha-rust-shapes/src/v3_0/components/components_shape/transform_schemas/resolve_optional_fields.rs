@@ -1,5 +1,5 @@
 use crate::misc::TryMap;
-use crate::v3_0::components::schemas::{DefinitionShape, FieldShape, NewTypeShape};
+use crate::v3_0::components::schemas::{DefinitionShape, FieldShape};
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::broken;
 use gesha_core::conversions::Result;
