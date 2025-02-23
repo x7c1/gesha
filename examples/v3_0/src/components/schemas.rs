@@ -3,6 +3,7 @@
 */
 pub mod all_of;
 pub mod all_of_inline_all_of;
+pub mod all_of_inline_array;
 pub mod all_of_override_optional;
 pub mod all_of_ref;
 pub mod array;

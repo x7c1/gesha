@@ -1,6 +1,6 @@
 use crate::v3_0::components::schemas::{
-    AllOfShape, EnumShape, FieldShape, ModShape, OneOfShape, Ref, StructShape, TypeHeaderShape,
-    TypeShape,
+    AllOfShape, EnumShape, FieldShape, ModShape, NewTypeShape, OneOfShape, Ref, StructShape,
+    TypeHeaderShape, TypeShape,
 };
 use gesha_core::broken;
 use gesha_core::conversions::Result;
@@ -11,10 +11,7 @@ pub enum DefinitionShape {
     AllOf(AllOfShape),
     Enum(EnumShape),
     Mod(ModShape),
-    NewType {
-        header: TypeHeaderShape,
-        type_shape: TypeShape,
-    },
+    NewType(NewTypeShape),
     OneOf(OneOfShape),
     Struct(StructShape),
 }
@@ -24,7 +21,7 @@ impl DefinitionShape {
         match self {
             Self::AllOf(shape) => Some(&shape.header),
             Self::Struct(shape) => Some(&shape.header),
-            Self::NewType { header, .. } => Some(header),
+            Self::NewType(shape) => Some(&shape.header),
             Self::Enum(shape) => Some(&shape.header),
             Self::OneOf(shape) => Some(&shape.header),
             Self::Mod(_) => None,
@@ -35,7 +32,7 @@ impl DefinitionShape {
         match self {
             Self::AllOf(x) => x.any_type(f),
             Self::Struct(x) => x.any_type(f),
-            Self::NewType { type_shape, .. } => f(type_shape),
+            Self::NewType(x) => f(&x.type_shape),
             Self::Enum { .. } => false,
             Self::Mod(x) => x.any_type(f),
             Self::OneOf(x) => x.any_type(f),
@@ -46,7 +43,7 @@ impl DefinitionShape {
         match self {
             Self::AllOf(x) => x.any_type_directly(f),
             Self::Struct(x) => x.any_type_directly(f),
-            Self::NewType { type_shape, .. } => f(type_shape),
+            Self::NewType(x) => f(&x.type_shape),
             Self::OneOf(x) => x.any_type_directly(f),
             Self::Enum { .. } => false,
             Self::Mod(_) => false,
@@ -68,7 +65,7 @@ impl DefinitionShape {
                 let def = StructDef::new(header.define(), define_fields(fields)?);
                 Ok(def.into())
             }
-            Self::NewType { header, type_shape } => {
+            Self::NewType(NewTypeShape { header, type_shape }) => {
                 let def = NewTypeDef::new(header.define(), type_shape.define()?);
                 Ok(def.into())
             }

@@ -1,6 +1,6 @@
 use crate::v3_0::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, OneOfItemShape,
-    OneOfShape, Ref, StructShape, TypeHeaderShape, TypeShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, NewTypeShape,
+    OneOfItemShape, OneOfShape, Ref, StructShape, TypeHeaderShape, TypeShape,
 };
 use gesha_core::conversions::Result;
 use gesha_rust_types::ModDef;
@@ -144,11 +144,11 @@ impl Shaper {
     }
 
     fn for_newtype(self) -> Result<DefinitionShape> {
-        let shape = DefinitionShape::NewType {
-            header: self.create_type_header(),
-            type_shape: TypeShape::from_object(self.object, /* is_required */ true)?,
-        };
-        Ok(shape)
+        let shape = NewTypeShape::new(
+            self.create_type_header(),
+            TypeShape::from_object(self.object, /* is_required */ true)?,
+        );
+        Ok(shape.into())
     }
 
     fn for_enum(self) -> Result<DefinitionShape> {
