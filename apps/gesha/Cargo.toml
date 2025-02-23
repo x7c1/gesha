@@ -1,6 +1,6 @@
 [package]
 name = "gesha"
-version = "0.0.3"
+version = "0.0.4"
 description = "Generates code based on OpenAPI specs"
 repository = "https://github.com/x7c1/gesha/tree/main/apps/gesha"
 license = "MIT"
