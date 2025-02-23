@@ -1,6 +1,6 @@
 use crate::verify::Args;
 use clap::Parser;
-use gesha_core::{trace, Result};
+use gesha_core::{testing, trace, Result};
 use std::process::ExitCode;
 use tracing::{error, info};
 
@@ -9,7 +9,7 @@ mod verify;
 
 #[tokio::main]
 async fn main() -> ExitCode {
-    trace::init();
+    testing::init();
 
     let args = Args::parse();
     info!("gesha-verify: {:#?}", args);
