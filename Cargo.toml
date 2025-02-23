@@ -9,8 +9,8 @@ resolver = "2"
 
 [workspace.dependencies]
 openapi-types = { version = "0.0.2", path = "libs/openapi-types" }
-gesha-core = { version = "0.0.2", path = "libs/gesha-core" }
-gesha-rust-shapes = { version = "0.0.2", path = "libs/targets/gesha-rust-shapes" }
+gesha-core = { version = "0.0.3", path = "libs/gesha-core" }
+gesha-rust-shapes = { version = "0.0.3", path = "libs/targets/gesha-rust-shapes" }
 gesha-rust-types = { version = "0.0.1", path = "libs/targets/gesha-rust-types" }
 
 async-trait = "0.1.77"

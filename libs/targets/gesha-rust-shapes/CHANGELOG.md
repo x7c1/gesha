@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.3](https://github.com/x7c1/gesha/compare/gesha-rust-shapes-v0.0.2...gesha-rust-shapes-v0.0.3) - 2025-02-23
+
+### Other
+
+- updated the following local packages: gesha-core
+
 ## [0.0.2](https://github.com/x7c1/gesha/compare/gesha-rust-shapes-v0.0.1...gesha-rust-shapes-v0.0.2) - 2025-02-22
 
 ### Other
