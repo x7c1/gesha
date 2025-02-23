@@ -1,6 +1,6 @@
 [package]
 name = "gesha-core"
-version = "0.0.3"
+version = "0.0.4"
 description = "Core functionality for Gesha project"
 repository = "https://github.com/x7c1/gesha/tree/main/libs/gesha-core"
 license = "MIT"
