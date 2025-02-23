@@ -1,0 +1,18 @@
+schemas:
+  SampleList:
+    type: array
+    items:
+      type: object
+      properties:
+        x1:
+          allOf:
+            - $ref: '#/components/schemas/Foo'
+            - $ref: '#/components/schemas/Bar'
+  Foo:
+    properties:
+      foo1:
+        type: string
+  Bar:
+    properties:
+      bar1:
+        type: string
