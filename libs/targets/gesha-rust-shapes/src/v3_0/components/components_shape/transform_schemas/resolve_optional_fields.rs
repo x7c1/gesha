@@ -1,5 +1,5 @@
 use crate::misc::TryMap;
-use crate::v3_0::components::schemas::{DefinitionShape, FieldShape};
+use crate::v3_0::components::schemas::{DefinitionShape, FieldShape, NewTypeShape};
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::broken;
 use gesha_core::conversions::Result;
@@ -18,10 +18,10 @@ fn resolve(def: DefinitionShape) -> Result<DefinitionShape> {
             shape.fields = transform_fields(shape.fields)?;
             shape.into()
         }
-        NewType { header, type_shape } => NewType {
-            header,
-            type_shape: type_shape.resolve_optionality()?,
-        },
+        NewType(mut shape) => {
+            shape.type_shape = shape.type_shape.resolve_optionality()?;
+            shape.into()
+        }
         Enum(_) => {
             // nop
             def

@@ -2,7 +2,7 @@ use crate::yaml::YamlValue;
 use crate::Error::FieldNotExist;
 use crate::{Error, Result};
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct YamlMap(pub(super) yaml_rust::yaml::Hash);
 
 impl YamlMap {

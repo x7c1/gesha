@@ -31,10 +31,10 @@ impl Transformer<'_> {
                 shape.fields = self.transform_fields(shape.fields)?;
                 shape.into()
             }
-            NewType { header, type_shape } => NewType {
-                header,
-                type_shape: self.transform_field_type(type_shape)?,
-            },
+            NewType(mut shape) => {
+                shape.type_shape = self.transform_field_type(shape.type_shape)?;
+                shape.into()
+            }
             Mod(shape) => {
                 let mod_path = self.mod_path.clone().add(shape.name.clone());
                 let next = shape.map_def(|x| self.resolve_in_mod(mod_path.clone(), x))?;

@@ -1,8 +1,8 @@
 use crate::misc::TryMap;
 use crate::v3_0::components::schemas::TypeShape::{Expanded, Inline};
 use crate::v3_0::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, OneOfItemShape,
-    OneOfShape, StructShape, TypeHeaderShape, TypePath,
+    AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, NewTypeShape,
+    OneOfItemShape, OneOfShape, StructShape, TypeHeaderShape, TypePath, TypeShape,
 };
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions::Result;
@@ -31,7 +31,8 @@ fn expand(def: DefinitionShape) -> Result<Vec<DefinitionShape>> {
             // inline definition in oneOf is not supported
             Ok(vec![def])
         }
-        NewType { .. } | Enum(_) | Mod(_) => {
+        NewType(x) => expand_newtype_field(TypePath::new(), x),
+        Enum(_) | Mod(_) => {
             // nop
             Ok(vec![def])
         }
@@ -76,6 +77,45 @@ fn expand_all_of_fields(path: TypePath, mut shape: AllOfShape) -> Result<Vec<Def
     Ok(vec![shape.into()].into_iter().chain(mod_def).collect())
 }
 
+// return (newtype-shape, mod-shape)
+fn expand_newtype_field(path: TypePath, mut shape: NewTypeShape) -> Result<Vec<DefinitionShape>> {
+    let mod_name = shape.header.name.to_snake_case();
+    let path = path.add(mod_name.clone());
+
+    let (type_shape, defs) = match shape.type_shape {
+        TypeShape::Array {
+            type_shape,
+            optionality,
+        } => {
+            let item_name = String::from(mod_name.clone()) + "_item";
+            let (expanded, defs) = expand_type_shape(path, item_name, *type_shape)?;
+            let shape = TypeShape::Array {
+                type_shape: Box::new(expanded),
+                optionality,
+            };
+            (shape, defs)
+        }
+        TypeShape::Inline { .. }
+        | TypeShape::Proper { .. }
+        | TypeShape::Ref { .. }
+        | TypeShape::Expanded { .. }
+        | TypeShape::Option(_)
+        | TypeShape::Maybe(_)
+        | TypeShape::Patch(_) => {
+            // nop
+            (shape.type_shape, vec![])
+        }
+    };
+    shape.type_shape = type_shape;
+
+    let mod_def = defs
+        .is_empty()
+        .not()
+        .then_some(ModShape::new(mod_name, defs).into());
+
+    Ok(vec![shape.into()].into_iter().chain(mod_def).collect())
+}
+
 fn expand_fields_from(
     path: &TypePath,
 ) -> impl Fn(Vec<FieldShape>) -> Result<(Vec<FieldShape>, Vec<DefinitionShape>)> + '_ {
@@ -89,14 +129,27 @@ fn expand_field(
     mod_path: TypePath,
     field: FieldShape,
 ) -> Result<(FieldShape, Vec<DefinitionShape>)> {
+    let (type_shape, defs) = expand_type_shape(mod_path, field.name.clone(), field.type_shape)?;
+    let field_shape = FieldShape {
+        name: field.name,
+        type_shape,
+    };
+    Ok((field_shape, defs))
+}
+
+fn expand_type_shape(
+    mod_path: TypePath,
+    type_name: impl Into<String>,
+    type_shape: TypeShape,
+) -> Result<(TypeShape, Vec<DefinitionShape>)> {
     let Inline {
         object,
         optionality,
-    } = field.type_shape
+    } = type_shape
     else {
-        return Ok((field, vec![]));
+        return Ok((type_shape, vec![]));
     };
-    let header = TypeHeaderShape::new(field.name.clone(), &object, vec![]);
+    let header = TypeHeaderShape::new(type_name, &object, vec![]);
     let type_name = header.name.clone();
 
     let defs = if let Some(cases) = object.all_of.as_ref() {
@@ -124,14 +177,11 @@ fn expand_field(
             },
         )?
     };
-    let field_shape = FieldShape {
-        name: field.name,
-        type_shape: Expanded {
-            type_path: mod_path.add(type_name),
-            optionality,
-        },
+    let type_shape = Expanded {
+        type_path: mod_path.add(type_name),
+        optionality,
     };
-    Ok((field_shape, defs))
+    Ok((type_shape, defs))
 }
 
 fn collect<A, B>(pairs: Vec<(A, Vec<B>)>) -> (Vec<A>, Vec<B>) {

@@ -16,6 +16,9 @@ pub use field_shape::FieldShape;
 mod mod_shape;
 pub use mod_shape::ModShape;
 
+mod newtype_shape;
+pub use newtype_shape::NewTypeShape;
+
 mod one_of_shape;
 pub use one_of_shape::OneOfShape;
 
