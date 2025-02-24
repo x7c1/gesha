@@ -1,0 +1,22 @@
+Err(
+    OpenApiTypes {
+        path: "./examples/v3_0/invalid/multiple-errors.yaml",
+        cause: Multiple(
+            [
+                Enclosed {
+                    key: "NonObject",
+                    cause: TypeMismatch {
+                        expected: "Map",
+                        found: "Array",
+                    },
+                },
+                Enclosed {
+                    key: "Foo",
+                    cause: UnknownDataType {
+                        found: "int",
+                    },
+                },
+            ],
+        ),
+    },
+)

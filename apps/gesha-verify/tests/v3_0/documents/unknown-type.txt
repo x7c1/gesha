@@ -1,0 +1,14 @@
+Err(
+    OpenApiTypes {
+        path: "./examples/v3_0/invalid/unknown-type.yaml",
+        cause: Enclosed {
+            key: "Foo",
+            cause: Enclosed {
+                key: "x1",
+                cause: UnknownDataType {
+                    found: "unknown-type",
+                },
+            },
+        },
+    },
+)

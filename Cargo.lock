@@ -978,7 +978,7 @@ dependencies = [
  "clap",
  "gesha-core",
  "gesha-rust-shapes",
- "openapi-types",
+ "pretty_assertions",
  "tokio",
  "tracing",
 ]
