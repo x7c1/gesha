@@ -102,13 +102,6 @@ pub trait OutputMergeOps<A> {
     fn merge(self) -> Output<Vec<A>>;
 }
 
-impl<A> OutputMergeOps<A> for (Vec<Output<A>>, Vec<Error>) {
-    fn merge(self) -> Output<Vec<A>> {
-        let (pairs, errors) = self;
-        pairs.merge().append(errors)
-    }
-}
-
 impl<A> OutputMergeOps<A> for Vec<Output<A>> {
     fn merge(self) -> Output<Vec<A>> {
         let init = (vec![], vec![]);
