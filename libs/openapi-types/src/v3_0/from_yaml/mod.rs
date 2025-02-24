@@ -11,23 +11,30 @@ use to_schema_case::{to_schema_case, to_schema_pair};
 use crate::v3_0::{Document, InfoObject};
 use crate::yaml::{ToOpenApi, YamlMap};
 use crate::Error::IncompatibleVersion;
-use crate::Result;
+use crate::{OptionOutputOps, Output, Result};
 
 impl ToOpenApi for Document {
     /// return Error::IncompatibleVersion if not supported version.
-    fn apply(mut map: YamlMap) -> Result<Self> {
-        let components = map
+    fn apply(mut map: YamlMap) -> Result<Output<Self>> {
+        let (components, errors1) = map
             .remove_if_exists("components")?
             .map(ToOpenApi::apply)
-            .transpose()?;
+            .transpose()?
+            .maybe()
+            .to_tuple();
+
+        let (paths, errors2) = {
+            let map = map.remove("paths")?;
+            to_paths_object(map)?.to_tuple()
+        };
 
         let document = Document {
             openapi: to_openapi_version(map.remove("openapi")?)?,
             info: to_info(map.remove("info")?)?,
-            paths: to_paths_object(map.remove("paths")?)?,
+            paths,
             components,
         };
-        Ok(document)
+        Ok(Output::new(document, errors1).append(errors2))
     }
 }
 

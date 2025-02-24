@@ -23,8 +23,12 @@ impl Reader {
         A: Converter + Debug,
     {
         let yaml = self.as_yaml_map()?;
-        let from: <A as Converter>::OpenApiType =
-            ToOpenApi::apply(yaml).map_err(Error::openapi(&self.path))?;
+        let (from, errors) = ToOpenApi::apply(yaml)
+            .map_err(Error::openapi(&self.path))?
+            .to_tuple();
+
+        // TODO: return errors
+        println!("-------detected errors: {:#?}", errors);
 
         let to = converter
             .convert(from)
