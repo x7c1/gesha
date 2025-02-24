@@ -1,46 +1,55 @@
+use crate::error::OutputPairOps;
 use crate::v3_0::from_yaml::to_schema_case;
 use crate::v3_0::{
     ComponentName, MediaTypeKey, MediaTypeObject, RequestBodyCase, RequestBodyObject,
 };
 use crate::yaml::{collect, YamlMap};
-use crate::Result;
+use crate::{Output, Result};
 
 pub(super) fn to_request_body_pair(
     kv: (String, YamlMap),
-) -> Result<(ComponentName, RequestBodyCase)> {
+) -> Result<Output<(ComponentName, RequestBodyCase)>> {
     let (name, map) = kv;
-    Ok((ComponentName::new(name), to_request_body_case(map)?))
+    let pair = (ComponentName::new(name), to_request_body_case(map)?);
+    Ok(pair.lift())
 }
 
-fn to_request_body_case(mut map: YamlMap) -> Result<RequestBodyCase> {
+fn to_request_body_case(mut map: YamlMap) -> Result<Output<RequestBodyCase>> {
     let case = match map.remove_if_exists::<String>("$ref")? {
         Some(_reference) => unimplemented!(),
-        None => RequestBodyCase::RequestBody(Box::new(to_request_body_object(map)?)),
+        None => {
+            let output = to_request_body_object(map)?;
+            output.map(|x| RequestBodyCase::RequestBody(Box::new(x)))
+        }
     };
     Ok(case)
 }
 
-fn to_request_body_object(mut map: YamlMap) -> Result<RequestBodyObject> {
+fn to_request_body_object(mut map: YamlMap) -> Result<Output<RequestBodyObject>> {
     let (content, errors) = map
         .remove("content")
-        .map(collect(to_request_body_content_pair))?;
+        .map(collect(to_request_body_content_pair))?
+        .to_tuple();
 
-    // TODO: return error with RequestBodyObject
-    println!("detected errors: {:#?}", errors);
-
-    Ok(RequestBodyObject {
+    let object = RequestBodyObject {
         description: map.remove_if_exists("description")?,
         content,
         required: map.remove_if_exists("required")?.unwrap_or(false),
-    })
+    };
+    Ok(Output::new(object, errors))
 }
 
-fn to_request_body_content_pair(kv: (String, YamlMap)) -> Result<(MediaTypeKey, MediaTypeObject)> {
+fn to_request_body_content_pair(
+    kv: (String, YamlMap),
+) -> Result<Output<(MediaTypeKey, MediaTypeObject)>> {
     let (name, map) = kv;
-    Ok((MediaTypeKey::new(name), to_media_type_object(map)?))
+    let key = MediaTypeKey::new(name);
+    let output = to_media_type_object(map)?.map(|object| (key, object));
+    Ok(output)
 }
 
-fn to_media_type_object(mut map: YamlMap) -> Result<MediaTypeObject> {
+fn to_media_type_object(mut map: YamlMap) -> Result<Output<MediaTypeObject>> {
     let schema = map.remove("schema").map(to_schema_case)??;
-    Ok(MediaTypeObject { schema })
+    let output = schema.map(|schema| MediaTypeObject { schema });
+    Ok(output)
 }

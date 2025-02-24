@@ -55,6 +55,14 @@ impl<A> Output<A> {
     pub fn to_tuple(self) -> (A, Vec<Error>) {
         (self.0, self.1)
     }
+    pub fn map<B, F>(self, f: F) -> Output<B>
+    where
+        F: FnOnce(A) -> B,
+    {
+        let Self(a, errors) = self;
+        let b = f(a);
+        Output(b, errors)
+    }
     pub fn map_errors<F>(self, f: F) -> Self
     where
         F: FnMut(Error) -> Error,

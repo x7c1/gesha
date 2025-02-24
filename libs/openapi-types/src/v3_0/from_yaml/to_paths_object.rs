@@ -1,4 +1,4 @@
-use crate::error::{OutputMergeOps, OutputPairOps};
+use crate::error::OutputPairOps;
 use crate::v3_0::{
     HttpStatusCode, OperationObject, PathFieldName, PathItemObject, PathsObject, ResponseCase,
     ResponseObject, ResponsesObject,
@@ -7,10 +7,8 @@ use crate::yaml::{collect, YamlMap};
 use crate::{Error, OptionOutputOps, Output, Result};
 
 pub(super) fn to_paths_object(map: YamlMap) -> Result<Output<PathsObject>> {
-    let pairs = collect(to_path_pair)(map);
-    let (tuples, errors) = pairs.merge().to_tuple();
-    let object = PathsObject::new(tuples);
-    Ok(Output::new(object, errors))
+    let output = collect(to_path_pair)(map).map(PathsObject::new);
+    Ok(output)
 }
 
 fn to_path_pair(kv: (String, YamlMap)) -> Result<Output<(PathFieldName, PathItemObject)>> {
@@ -54,15 +52,17 @@ fn to_operation_object(mut map: YamlMap) -> Result<Output<OperationObject>> {
 }
 
 fn to_responses_object(map: YamlMap) -> Result<Output<ResponsesObject>> {
-    let (tuples, errors) = collect(to_response_pair)(map);
+    let (tuples, errors) = collect(to_response_pair)(map).to_tuple();
     let default = None;
     let object = ResponsesObject::new(tuples, default);
     Ok(Output::new(object, errors))
 }
 
-fn to_response_pair(kv: (String, YamlMap)) -> Result<(HttpStatusCode, ResponseCase)> {
+fn to_response_pair(kv: (String, YamlMap)) -> Result<Output<(HttpStatusCode, ResponseCase)>> {
     let (field, map) = kv;
-    Ok((to_http_status_code(field)?, to_response_case(map)?))
+    let code = to_http_status_code(field)?;
+    let output = to_response_case(map)?.map(|case| (code, case));
+    Ok(output)
 }
 
 fn to_http_status_code(_v: String) -> Result<HttpStatusCode> {
@@ -70,7 +70,8 @@ fn to_http_status_code(_v: String) -> Result<HttpStatusCode> {
     Ok(HttpStatusCode::OK)
 }
 
-fn to_response_case(_map: YamlMap) -> Result<ResponseCase> {
+fn to_response_case(_map: YamlMap) -> Result<Output<ResponseCase>> {
     // TODO:
-    Ok(ResponseCase::Response(ResponseObject {}))
+    let case = ResponseCase::Response(ResponseObject {});
+    Ok(Output::new(case, vec![]))
 }

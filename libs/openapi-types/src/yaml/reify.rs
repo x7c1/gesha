@@ -1,6 +1,7 @@
+use crate::error::OutputMergeOps;
 use crate::yaml::YamlMap;
 use crate::yaml::YamlValue;
-use crate::{Error, Result};
+use crate::{Error, Output, Result};
 use std::fmt::Display;
 
 pub fn reify_value<A>(v: Result<YamlValue>) -> Result<A>
@@ -23,9 +24,9 @@ where
     Ok((key, value))
 }
 
-pub fn collect<X, Y, F>(f: F) -> impl FnOnce(YamlMap) -> (Y, Vec<Error>)
+pub fn collect<X, Y, F>(f: F) -> impl FnOnce(YamlMap) -> Output<Y>
 where
-    F: Fn((String, YamlMap)) -> Result<X>,
+    F: Fn((String, YamlMap)) -> Result<Output<X>>,
     Y: FromIterator<X>,
 {
     |map| {
@@ -37,8 +38,8 @@ where
             let init = (vec![], errors1);
             fold(init, pairs.into_iter(), f)
         };
-        let y = xs.into_iter().collect();
-        (y, errors2)
+        let z = xs.merge().append(errors2);
+        z.map(|xs| xs.into_iter().collect())
     }
 }
 
