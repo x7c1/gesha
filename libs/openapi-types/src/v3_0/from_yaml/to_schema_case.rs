@@ -4,12 +4,15 @@ use crate::v3_0::{
 };
 use crate::yaml::{reify_entry, reify_value, YamlArray, YamlMap};
 use crate::Error::UnknownDataType;
-use crate::Result;
+use crate::{Error, Result};
 use indexmap::IndexSet;
 
 pub fn to_schema_pair(kv: (String, YamlMap)) -> Result<(ComponentName, SchemaCase)> {
     let (name, map) = kv;
-    Ok((ComponentName::new(name), to_schema_case(map)?))
+    Ok((
+        ComponentName::new(&name),
+        to_schema_case(map).map_err(Error::with_key(name))?,
+    ))
 }
 
 pub fn to_schema_case(mut map: YamlMap) -> Result<SchemaCase> {
