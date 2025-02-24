@@ -16,7 +16,7 @@ use crate::{with_key, OptionOutputOps, Output, Result};
 impl ToOpenApi for Document {
     /// return Error::IncompatibleVersion if not supported version.
     fn apply(mut map: YamlMap) -> Result<Output<Self>> {
-        let (components, errors1) = map
+        let (components, components_errors) = map
             .remove_if_exists("components")?
             .map(ToOpenApi::apply)
             .transpose()?
@@ -24,7 +24,7 @@ impl ToOpenApi for Document {
             .map_errors(with_key("components"))
             .to_tuple();
 
-        let (paths, errors2) = {
+        let (paths, paths_errors) = {
             let map = map.remove("paths")?;
             to_paths_object(map)?
                 .map_errors(with_key("paths"))
@@ -37,7 +37,8 @@ impl ToOpenApi for Document {
             paths,
             components,
         };
-        Ok(Output::new(document, errors1).append(errors2))
+        let output = Output::new(document, components_errors).append(paths_errors);
+        Ok(output)
     }
 }
 

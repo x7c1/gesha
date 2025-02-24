@@ -6,14 +6,14 @@ use crate::{with_key, Error, OptionOutputOps, Output, Result};
 
 impl ToOpenApi for ComponentsObject {
     fn apply(mut map: YamlMap) -> Result<Output<Self>> {
-        let (schemas, errors1): (Option<SchemasObject>, Vec<Error>) = map
+        let (schemas, schemas_errors): (Option<SchemasObject>, Vec<Error>) = map
             .remove_if_exists("schemas")?
             .map(collect(to_schema_pair))
             .maybe()
             .map_errors(with_key("schemas"))
             .to_tuple();
 
-        let (request_bodies, errors2) = map
+        let (request_bodies, request_bodies_errors) = map
             .remove_if_exists("requestBodies")?
             .map(collect(to_request_body_pair))
             .maybe()
@@ -24,6 +24,7 @@ impl ToOpenApi for ComponentsObject {
             request_bodies,
             schemas,
         };
-        Ok(Output::new(object, errors1).append(errors2))
+        let output = Output::new(object, schemas_errors).append(request_bodies_errors);
+        Ok(output)
     }
 }

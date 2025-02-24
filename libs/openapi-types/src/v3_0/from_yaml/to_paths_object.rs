@@ -21,7 +21,7 @@ fn to_path_pair(kv: (String, YamlMap)) -> Result<Output<(PathFieldName, PathItem
 }
 
 fn to_path_item_object(mut map: YamlMap) -> Result<Output<PathItemObject>> {
-    let (get, errors1) = map
+    let (get, get_errors) = map
         .remove_if_exists("get")?
         .map(to_operation_object)
         .transpose()?
@@ -29,7 +29,7 @@ fn to_path_item_object(mut map: YamlMap) -> Result<Output<PathItemObject>> {
         .map_errors(with_key("get"))
         .to_tuple();
 
-    let (post, errors2) = map
+    let (post, post_errors) = map
         .remove_if_exists("post")?
         .map(to_operation_object)
         .transpose()?
@@ -38,7 +38,8 @@ fn to_path_item_object(mut map: YamlMap) -> Result<Output<PathItemObject>> {
         .to_tuple();
 
     let object = PathItemObject { get, post };
-    Ok(Output::new(object, errors1).append(errors2))
+    let output = Output::new(object, get_errors).append(post_errors);
+    Ok(output)
 }
 
 fn to_operation_object(mut map: YamlMap) -> Result<Output<OperationObject>> {
