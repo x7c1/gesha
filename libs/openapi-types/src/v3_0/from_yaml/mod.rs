@@ -11,7 +11,7 @@ use to_schema_case::{to_schema_case, to_schema_pair};
 use crate::v3_0::{Document, InfoObject};
 use crate::yaml::{ToOpenApi, YamlMap};
 use crate::Error::IncompatibleVersion;
-use crate::{Error, OptionOutputOps, Output, Result};
+use crate::{with_key, OptionOutputOps, Output, Result};
 
 impl ToOpenApi for Document {
     /// return Error::IncompatibleVersion if not supported version.
@@ -21,13 +21,13 @@ impl ToOpenApi for Document {
             .map(ToOpenApi::apply)
             .transpose()?
             .maybe()
-            .map_errors(Error::with_key("components"))
+            .map_errors(with_key("components"))
             .to_tuple();
 
         let (paths, errors2) = {
             let map = map.remove("paths")?;
             to_paths_object(map)?
-                .map_errors(Error::with_key("paths"))
+                .map_errors(with_key("paths"))
                 .to_tuple()
         };
 

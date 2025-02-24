@@ -1,7 +1,7 @@
 use crate::error::OutputMergeOps;
 use crate::yaml::YamlMap;
 use crate::yaml::YamlValue;
-use crate::{Error, Output, Result};
+use crate::{with_key, Error, Output, Result};
 use std::fmt::Display;
 
 pub fn reify_value<A>(v: Result<YamlValue>) -> Result<A>
@@ -18,9 +18,9 @@ where
 {
     let (k, v) = kv?;
     let outline = k.outline();
-    let key: A = k.try_into().map_err(Error::with_key(outline))?;
+    let key: A = k.try_into().map_err(with_key(outline))?;
     let cloned = key.to_string();
-    let value = v.try_into().map_err(Error::with_key(cloned))?;
+    let value = v.try_into().map_err(with_key(cloned))?;
     Ok((key, value))
 }
 
@@ -38,8 +38,8 @@ where
             let init = (vec![], errors1);
             fold(init, pairs.into_iter(), f)
         };
-        let z = xs.merge().append(errors2);
-        z.map(|xs| xs.into_iter().collect())
+        let output = xs.merge().append(errors2);
+        output.map(|xs| xs.into_iter().collect())
     }
 }
 

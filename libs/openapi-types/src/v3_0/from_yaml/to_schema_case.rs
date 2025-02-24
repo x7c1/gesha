@@ -5,14 +5,14 @@ use crate::v3_0::{
 };
 use crate::yaml::{collect, reify_value, YamlArray, YamlMap};
 use crate::Error::UnknownDataType;
-use crate::{Error, OptionOutputOps, Output, Result};
+use crate::{with_key, OptionOutputOps, Output, Result};
 use indexmap::IndexSet;
 
 pub fn to_schema_pair(kv: (String, YamlMap)) -> Result<Output<(ComponentName, SchemaCase)>> {
     let (name, map) = kv;
     let pair = (
         ComponentName::new(&name),
-        to_schema_case(map).map_err(Error::with_key(name))?,
+        to_schema_case(map).map_err(with_key(name))?,
     );
     Ok(pair.lift())
 }
@@ -37,7 +37,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<Output<SchemaObject>> {
         .map(to_properties)
         .transpose()?
         .maybe()
-        .map_errors(Error::with_key("properties"))
+        .map_errors(with_key("properties"))
         .to_tuple();
 
     let required = map
@@ -62,7 +62,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<Output<SchemaObject>> {
         .map(to_array_items)
         .transpose()?
         .maybe()
-        .map_errors(Error::with_key("items"))
+        .map_errors(with_key("items"))
         .to_tuple();
 
     let enum_values = map
@@ -75,7 +75,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<Output<SchemaObject>> {
         .map(to_schema_cases)
         .transpose()?
         .maybe()
-        .map_errors(Error::with_key("allOf"))
+        .map_errors(with_key("allOf"))
         .to_tuple();
 
     let (one_of, errors_one_of) = map
@@ -83,7 +83,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<Output<SchemaObject>> {
         .map(to_schema_cases)
         .transpose()?
         .maybe()
-        .map_errors(Error::with_key("oneOf"))
+        .map_errors(with_key("oneOf"))
         .to_tuple();
 
     let object = SchemaObject {

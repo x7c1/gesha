@@ -18,13 +18,6 @@ pub struct TracedError {
 }
 
 impl Error {
-    pub fn with_key(key: impl Into<String>) -> impl Fn(Error) -> Error {
-        let key = key.into();
-        move |cause| Error::Enclosed {
-            key: key.clone(),
-            cause: Box::new(cause),
-        }
-    }
     pub fn trace_error(self) -> Vec<TracedError> {
         match self {
             Error::Enclosed { key, cause } => vec![TracedError {
@@ -39,6 +32,14 @@ impl Error {
 
             _ => vec![],
         }
+    }
+}
+
+pub fn with_key(key: impl Into<String>) -> impl Fn(Error) -> Error {
+    let key = key.into();
+    move |cause| Error::Enclosed {
+        key: key.clone(),
+        cause: Box::new(cause),
     }
 }
 
