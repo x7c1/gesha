@@ -21,9 +21,12 @@ fn to_request_body_case(mut map: YamlMap) -> Result<RequestBodyCase> {
 }
 
 fn to_request_body_object(mut map: YamlMap) -> Result<RequestBodyObject> {
-    let content = map
+    let (content, errors) = map
         .remove("content")
-        .map(collect(to_request_body_content_pair))??;
+        .map(collect(to_request_body_content_pair))?;
+
+    // TODO: return error with RequestBodyObject
+    println!("detected errors: {:#?}", errors);
 
     Ok(RequestBodyObject {
         description: map.remove_if_exists("description")?,

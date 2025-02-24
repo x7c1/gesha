@@ -7,6 +7,7 @@ pub enum YamlValue {
     Array(YamlArray),
     Boolean(bool),
     String(String),
+    Integer(i64),
     Map(YamlMap),
 }
 
@@ -16,7 +17,17 @@ impl YamlValue {
             YamlValue::Array(_) => "Array",
             YamlValue::Boolean(_) => "Boolean",
             YamlValue::String(_) => "String",
+            YamlValue::Integer(_) => "Integer",
             YamlValue::Map(_) => "Map",
+        }
+    }
+    pub fn outline(&self) -> String {
+        match self {
+            YamlValue::Boolean(x) => x.to_string(),
+            YamlValue::String(x) => x.chars().take(50).collect(),
+            YamlValue::Integer(x) => x.to_string(),
+            YamlValue::Array(_) => "<array>".to_string(),
+            YamlValue::Map(_) => "<map>".to_string(),
         }
     }
 }
@@ -30,6 +41,7 @@ impl TryFrom<yaml_rust::Yaml> for YamlValue {
             yaml_rust::Yaml::String(x) => Ok(YamlValue::String(x)),
             yaml_rust::Yaml::Hash(x) => Ok(YamlValue::Map(YamlMap(x))),
             yaml_rust::Yaml::Boolean(x) => Ok(YamlValue::Boolean(x)),
+            yaml_rust::Yaml::Integer(x) => Ok(YamlValue::Integer(x)),
             unknown => Err(Error::UnknownDataType {
                 found: format!("{unknown:?}"),
             }),
