@@ -32,7 +32,7 @@ pub fn to_schema_case(mut map: YamlMap) -> Result<Output<SchemaCase>> {
 }
 
 fn to_schema_object(mut map: YamlMap) -> Result<Output<SchemaObject>> {
-    let (properties, errors_properties) = map
+    let (properties, errors_of_properties) = map
         .remove_if_exists("properties")?
         .map(to_properties)
         .transpose()?
@@ -99,7 +99,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<Output<SchemaObject>> {
         all_of,
         one_of,
     };
-    let output = Output::new(object, errors_properties)
+    let output = Output::new(object, errors_of_properties)
         .append(errors_of_items)
         .append(errors_all_of)
         .append(errors_one_of);

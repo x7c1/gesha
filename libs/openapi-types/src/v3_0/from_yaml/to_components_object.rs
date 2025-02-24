@@ -1,12 +1,12 @@
 use crate::v3_0::from_yaml::to_request_body_pair;
 use crate::v3_0::from_yaml::to_schema_pair;
-use crate::v3_0::{ComponentsObject, SchemasObject};
+use crate::v3_0::ComponentsObject;
 use crate::yaml::{collect, ToOpenApi, YamlMap};
-use crate::{with_key, Error, OptionOutputOps, Output, Result};
+use crate::{with_key, OptionOutputOps, Output, Result};
 
 impl ToOpenApi for ComponentsObject {
     fn apply(mut map: YamlMap) -> Result<Output<Self>> {
-        let (schemas, schemas_errors): (Option<SchemasObject>, Vec<Error>) = map
+        let (schemas, schemas_errors) = map
             .remove_if_exists("schemas")?
             .map(collect(to_schema_pair))
             .maybe()
