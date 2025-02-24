@@ -5,6 +5,6 @@ pub enum Error {
     FieldNotExist { field: String },
     CannotScanYaml { detail: String },
     IncompatibleVersion { version: String },
-    TypeMismatch,
+    TypeMismatch { expected: String, found: String },
     UnknownDataType(String),
 }
