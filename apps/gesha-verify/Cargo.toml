@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 gesha-core = { workspace = true }
 gesha-rust-shapes = { workspace = true, features = ["testing"] }
+openapi-types = { workspace = true }
 
 clap = { workspace = true }
 tokio = { workspace = true }

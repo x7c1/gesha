@@ -33,14 +33,15 @@ where
             let init = (vec![], vec![]);
             fold(init, map.into_iter(), reify_entry)
         };
-        let (xs, errors2) = {
+        let (xs, mut errors2) = {
             let init = (vec![], errors1);
             fold(init, pairs.into_iter(), f)
         };
-        if !errors2.is_empty() {
-            return Err(Multiple(errors2));
+        match errors2.len() {
+            0 => Ok(xs.into_iter().collect()),
+            1 => Err(errors2.remove(0)),
+            _ => Err(Multiple(errors2)),
         }
-        Ok(xs.into_iter().collect())
     }
 }
 
