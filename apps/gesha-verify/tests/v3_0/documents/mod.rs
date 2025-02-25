@@ -12,7 +12,7 @@ mod invalid_specs {
         let schema = "./examples/v3_0/invalid/unknown-type.yaml";
         let output = Reader::new(schema).open_target_type(&converter)?;
 
-        let actual = format_errors(output);
+        let actual = format_errors(output).unwrap();
         let expected = include_str!("unknown-type.txt");
 
         assert_eq!(actual, expected);
@@ -25,7 +25,7 @@ mod invalid_specs {
         let schema = "./examples/v3_0/invalid/multiple-errors.yaml";
         let output = Reader::new(schema).open_target_type(&converter)?;
 
-        let actual = format_errors(output);
+        let actual = format_errors(output).unwrap();
         let expected = include_str!("multiple-errors.txt");
 
         assert_eq!(actual, expected);

@@ -1,14 +1,18 @@
 use crate::{Error, Output};
 use openapi_types as oas;
 
-pub fn format_errors<A>(output: Output<A>) -> String {
+pub fn format_errors<A>(output: Output<A>) -> Option<String> {
     let (_, errors) = output.into_tuple();
+    if errors.is_empty() {
+        return None;
+    }
     let errors = errors
         .into_iter()
         .flat_map(format_core_error)
         .collect::<Vec<_>>();
 
-    errors.join("\n").to_string()
+    let lines = errors.join("\n").to_string();
+    Some(lines)
 }
 
 fn format_core_error(err: Error) -> Vec<String> {
