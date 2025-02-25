@@ -7,14 +7,24 @@ pub enum Error {
     IncompatibleVersion { version: String },
     TypeMismatch { expected: String, found: String },
     UnknownDataType { found: String },
-    Enclosed { key: String, cause: Box<Error> },
+    Enclosed { key: String, causes: Vec<Error> },
+    Multiple { causes: Vec<Error> },
 }
 
-pub fn with_key(key: impl Into<String>) -> impl Fn(Error) -> Error {
-    let key = key.into();
-    move |cause| Error::Enclosed {
-        key: key.clone(),
-        cause: Box::new(cause),
+impl Error {
+    pub fn multiple(mut causes: Vec<Self>) -> Self {
+        if causes.len() == 1 {
+            causes.remove(0)
+        } else {
+            Self::Multiple { causes }
+        }
+    }
+}
+
+pub fn with_key(key: impl Into<String>) -> impl FnOnce(Vec<Error>) -> Error {
+    move |causes| Error::Enclosed {
+        key: key.into(),
+        causes,
     }
 }
 

@@ -4,6 +4,9 @@ impl<A, E> Output<A, E> {
     pub fn new(a: A, errors: Vec<E>) -> Self {
         Output(a, errors)
     }
+    pub fn no_error(a: A) -> Self {
+        Output(a, vec![])
+    }
     pub fn append(mut self, errors: Vec<E>) -> Self {
         self.1.extend(errors);
         self
@@ -19,13 +22,23 @@ impl<A, E> Output<A, E> {
         let b = f(a);
         Output(b, errors)
     }
-    pub fn map_errors<F>(self, f: F) -> Self
+    pub fn bind_errors<F>(mut self, f: F) -> Self
     where
-        F: FnMut(E) -> E,
+        F: FnOnce(Vec<E>) -> E,
     {
-        let Self(a, errors) = self;
-        let errors = errors.into_iter().map(f).collect();
-        Self(a, errors)
+        if self.1.is_empty() {
+            self
+        } else {
+            self.1 = vec![f(self.1)];
+            self
+        }
+    }
+    pub fn to_result(self) -> Result<A, Vec<E>> {
+        if self.1.is_empty() {
+            Ok(self.0)
+        } else {
+            Err(self.1)
+        }
     }
 }
 
@@ -38,6 +51,16 @@ impl<A, E> OutputOptionOps<A, E> for Option<Output<A, E>> {
         match self {
             None => Output(None, vec![]),
             Some(Output(a, errors)) => Output(Some(a), errors),
+        }
+    }
+}
+
+impl<A, E> OutputOptionOps<A, E> for Option<Result<A, E>> {
+    fn maybe(self) -> Output<Option<A>, E> {
+        match self {
+            None => Output(None, vec![]),
+            Some(Ok(a)) => Output(Some(a), vec![]),
+            Some(Err(e)) => Output(None, vec![e]),
         }
     }
 }
@@ -67,5 +90,38 @@ impl<A, E> OutputMergeOps<A, E> for Vec<Output<A, E>> {
             (xs, ys)
         });
         Output(tuples.0, tuples.1)
+    }
+}
+
+impl<A, E> OutputMergeOps<A, E> for Vec<Result<A, E>> {
+    fn merge(self) -> Output<Vec<A>, E> {
+        let init = (vec![], vec![]);
+        let tuples = self.into_iter().fold(init, |(mut xs, mut ys), x| {
+            match x {
+                Ok(a) => xs.push(a),
+                Err(e) => ys.push(e),
+            }
+            (xs, ys)
+        });
+        Output(tuples.0, tuples.1)
+    }
+}
+
+impl<A, E> OutputMergeOps<A, E> for Result<Vec<A>, E> {
+    fn merge(self) -> Output<Vec<A>, E> {
+        match self {
+            Ok(xs) => Output(xs, vec![]),
+            Err(e) => Output(vec![], vec![e]),
+        }
+    }
+}
+
+impl<A, E> OutputMergeOps<A, E> for Output<Output<Vec<A>, E>, E> {
+    fn merge(self) -> Output<Vec<A>, E> {
+        let Output(xs, mut errors1) = self;
+        let Output(ys, errors2) = xs;
+        // let mut errors = errors1;
+        errors1.extend(errors2);
+        Output(ys, errors1)
     }
 }

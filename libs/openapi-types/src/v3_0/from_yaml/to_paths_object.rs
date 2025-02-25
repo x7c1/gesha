@@ -15,7 +15,7 @@ fn to_path_pair(kv: (String, YamlMap)) -> Result<Output<(PathFieldName, PathItem
     let (field, map) = kv;
     let pair = (
         PathFieldName::new(&field),
-        to_path_item_object(map)?.map_errors(with_key(field)),
+        to_path_item_object(map)?.bind_errors(with_key(field)),
     );
     Ok(pair.lift())
 }
@@ -26,7 +26,7 @@ fn to_path_item_object(mut map: YamlMap) -> Result<Output<PathItemObject>> {
         .map(to_operation_object)
         .transpose()?
         .maybe()
-        .map_errors(with_key("get"))
+        .bind_errors(with_key("get"))
         .to_tuple();
 
     let (post, post_errors) = map
@@ -34,7 +34,7 @@ fn to_path_item_object(mut map: YamlMap) -> Result<Output<PathItemObject>> {
         .map(to_operation_object)
         .transpose()?
         .maybe()
-        .map_errors(with_key("post"))
+        .bind_errors(with_key("post"))
         .to_tuple();
 
     let object = PathItemObject { get, post };
@@ -45,7 +45,7 @@ fn to_path_item_object(mut map: YamlMap) -> Result<Output<PathItemObject>> {
 fn to_operation_object(mut map: YamlMap) -> Result<Output<OperationObject>> {
     let responses = map.remove("responses")?;
     let (responses, errors) = to_responses_object(responses)?
-        .map_errors(with_key("responses"))
+        .bind_errors(with_key("responses"))
         .to_tuple();
 
     let object = OperationObject { responses };

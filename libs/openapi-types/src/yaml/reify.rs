@@ -18,9 +18,9 @@ where
 {
     let (k, v) = kv?;
     let outline = k.outline();
-    let key: A = k.try_into().map_err(with_key(outline))?;
+    let key: A = k.try_into().map_err(|e| with_key(outline)(vec![e]))?;
     let cloned = key.to_string();
-    let value = v.try_into().map_err(with_key(cloned))?;
+    let value = v.try_into().map_err(|e| with_key(cloned)(vec![e]))?;
     Ok((key, value))
 }
 

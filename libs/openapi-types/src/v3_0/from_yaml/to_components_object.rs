@@ -9,16 +9,16 @@ impl ToOpenApi for ComponentsObject {
     fn apply(mut map: YamlMap) -> Result<Output<Self>> {
         let (schemas, schemas_errors) = map
             .remove_if_exists("schemas")?
-            .map(collect(to_schema_pair))
+            .map(collect(|x| to_schema_pair(x).map(Output::no_error)))
             .maybe()
-            .map_errors(with_key("schemas"))
+            .bind_errors(with_key("schemas"))
             .to_tuple();
 
         let (request_bodies, request_bodies_errors) = map
             .remove_if_exists("requestBodies")?
             .map(collect(to_request_body_pair))
             .maybe()
-            .map_errors(with_key("requestBodies"))
+            .bind_errors(with_key("requestBodies"))
             .to_tuple();
 
         let object = ComponentsObject {

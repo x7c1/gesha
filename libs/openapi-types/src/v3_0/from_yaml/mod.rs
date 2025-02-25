@@ -22,13 +22,13 @@ impl ToOpenApi for Document {
             .map(ToOpenApi::apply)
             .transpose()?
             .maybe()
-            .map_errors(with_key("components"))
+            .bind_errors(with_key("components"))
             .to_tuple();
 
         let (paths, paths_errors) = {
             let map = map.remove("paths")?;
             to_paths_object(map)?
-                .map_errors(with_key("paths"))
+                .bind_errors(with_key("paths"))
                 .to_tuple()
         };
 

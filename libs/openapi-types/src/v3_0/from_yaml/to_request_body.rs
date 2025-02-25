@@ -4,7 +4,7 @@ use crate::v3_0::{
     ComponentName, MediaTypeKey, MediaTypeObject, RequestBodyCase, RequestBodyObject,
 };
 use crate::yaml::{collect, YamlMap};
-use crate::{Output, Result};
+use crate::{with_key, Output, Result};
 
 pub(super) fn to_request_body_pair(
     kv: (String, YamlMap),
@@ -28,7 +28,10 @@ fn to_request_body_case(mut map: YamlMap) -> Result<Output<RequestBodyCase>> {
 fn to_request_body_object(mut map: YamlMap) -> Result<Output<RequestBodyObject>> {
     let (content, errors) = map
         .remove("content")
-        .map(collect(to_request_body_content_pair))?
+        .map(collect(|x| {
+            to_request_body_content_pair(x).map(Output::no_error)
+        }))?
+        .bind_errors(with_key("content"))
         .to_tuple();
 
     let object = RequestBodyObject {
@@ -39,17 +42,14 @@ fn to_request_body_object(mut map: YamlMap) -> Result<Output<RequestBodyObject>>
     Ok(Output::new(object, errors))
 }
 
-fn to_request_body_content_pair(
-    kv: (String, YamlMap),
-) -> Result<Output<(MediaTypeKey, MediaTypeObject)>> {
+fn to_request_body_content_pair(kv: (String, YamlMap)) -> Result<(MediaTypeKey, MediaTypeObject)> {
     let (name, map) = kv;
     let key = MediaTypeKey::new(name);
-    let output = to_media_type_object(map)?.map(|object| (key, object));
-    Ok(output)
+    let object = to_media_type_object(map).map_err(|e| with_key(key.clone())(vec![e]))?;
+    Ok((key, object))
 }
 
-fn to_media_type_object(mut map: YamlMap) -> Result<Output<MediaTypeObject>> {
-    let schema = map.remove("schema").map(to_schema_case)??;
-    let output = schema.map(|schema| MediaTypeObject { schema });
-    Ok(output)
+fn to_media_type_object(mut map: YamlMap) -> Result<MediaTypeObject> {
+    let schema = map.remove("schema").map(to_schema_case)?;
+    schema.map(|schema| MediaTypeObject { schema })
 }
