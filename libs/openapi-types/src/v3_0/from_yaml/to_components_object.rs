@@ -16,7 +16,7 @@ impl ToOpenApi for ComponentsObject {
 
         let (request_bodies, request_bodies_errors) = map
             .remove_if_exists("requestBodies")?
-            .map(collect(to_request_body_pair))
+            .map(collect(|x| to_request_body_pair(x).map(Output::no_error)))
             .maybe()
             .bind_errors(with_key("requestBodies"))
             .to_tuple();

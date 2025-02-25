@@ -1,31 +1,30 @@
-use crate::core::OutputPairOps;
 use crate::v3_0::from_yaml::to_schema_case;
 use crate::v3_0::{
     ComponentName, MediaTypeKey, MediaTypeObject, RequestBodyCase, RequestBodyObject,
 };
 use crate::yaml::{collect, YamlMap};
-use crate::{by_key, with_key, Output, Result};
+use crate::{by_key, with_key, Error, Output, Result};
 
 pub(super) fn to_request_body_pair(
     kv: (String, YamlMap),
-) -> Result<Output<(ComponentName, RequestBodyCase)>> {
+) -> Result<(ComponentName, RequestBodyCase)> {
     let (name, map) = kv;
     let pair = (ComponentName::new(name), to_request_body_case(map)?);
-    Ok(pair.lift())
+    Ok(pair)
 }
 
-fn to_request_body_case(mut map: YamlMap) -> Result<Output<RequestBodyCase>> {
+fn to_request_body_case(mut map: YamlMap) -> Result<RequestBodyCase> {
     let case = match map.remove_if_exists::<String>("$ref")? {
         Some(_reference) => unimplemented!(),
         None => {
-            let output = to_request_body_object(map)?;
-            output.map(|x| RequestBodyCase::RequestBody(Box::new(x)))
+            let object = to_request_body_object(map)?;
+            RequestBodyCase::RequestBody(Box::new(object))
         }
     };
     Ok(case)
 }
 
-fn to_request_body_object(mut map: YamlMap) -> Result<Output<RequestBodyObject>> {
+fn to_request_body_object(mut map: YamlMap) -> Result<RequestBodyObject> {
     let (content, errors) = map
         .remove("content")
         .map(collect(|x| {
@@ -39,7 +38,8 @@ fn to_request_body_object(mut map: YamlMap) -> Result<Output<RequestBodyObject>>
         content,
         required: map.remove_if_exists("required")?.unwrap_or(false),
     };
-    Ok(Output::new(object, errors))
+    let output = Output::new(object, errors);
+    output.to_result().map_err(Error::multiple)
 }
 
 fn to_request_body_content_pair(kv: (String, YamlMap)) -> Result<(MediaTypeKey, MediaTypeObject)> {
