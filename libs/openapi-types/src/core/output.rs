@@ -4,16 +4,16 @@ impl<A, E> Output<A, E> {
     pub fn new(a: A, errors: Vec<E>) -> Self {
         Output(a, errors)
     }
-    pub fn no_error(a: A) -> Self {
-        Output(a, vec![])
-    }
+
     pub fn append(mut self, errors: Vec<E>) -> Self {
         self.1.extend(errors);
         self
     }
+
     pub fn to_tuple(self) -> (A, Vec<E>) {
         (self.0, self.1)
     }
+
     pub fn map<B, F>(self, f: F) -> Output<B, E>
     where
         F: FnOnce(A) -> B,
@@ -22,6 +22,7 @@ impl<A, E> Output<A, E> {
         let b = f(a);
         Output(b, errors)
     }
+
     pub fn bind_errors<F>(mut self, f: F) -> Self
     where
         F: FnOnce(Vec<E>) -> E,
@@ -33,11 +34,22 @@ impl<A, E> Output<A, E> {
             self
         }
     }
+
     pub fn to_result(self) -> Result<A, Vec<E>> {
         if self.1.is_empty() {
             Ok(self.0)
         } else {
             Err(self.1)
+        }
+    }
+
+    pub fn by<F, X, Y>(f: F) -> impl Fn((X, Y)) -> Result<Output<A, E>, E>
+    where
+        F: Fn((X, Y)) -> Result<A, E>,
+    {
+        move |(x, y)| {
+            let a = f((x, y))?;
+            Ok(Output(a, vec![]))
         }
     }
 }

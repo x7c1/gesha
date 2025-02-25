@@ -27,7 +27,7 @@ impl ToOpenApi for Document {
 
         let (paths, paths_errors) = {
             let map = map.remove("paths")?;
-            to_paths_object(map)?
+            to_paths_object(map)
                 .bind_errors(with_key("paths"))
                 .to_tuple()
         };

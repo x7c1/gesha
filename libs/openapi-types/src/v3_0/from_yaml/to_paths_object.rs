@@ -1,26 +1,26 @@
-use crate::core::{OutputOptionOps, OutputPairOps};
+use crate::core::OutputOptionOps;
+use crate::error::by_key;
 use crate::v3_0::{
     HttpStatusCode, OperationObject, PathFieldName, PathItemObject, PathsObject, ResponseCase,
     ResponseObject, ResponsesObject,
 };
 use crate::yaml::{collect, YamlMap};
-use crate::{with_key, Output, Result};
+use crate::{with_key, Error, Output, Result};
 
-pub(super) fn to_paths_object(map: YamlMap) -> Result<Output<PathsObject>> {
-    let output = collect(to_path_pair)(map).map(PathsObject::new);
-    Ok(output)
+pub(super) fn to_paths_object(map: YamlMap) -> Output<PathsObject> {
+    collect(Output::by(to_path_pair))(map).map(PathsObject::new)
 }
 
-fn to_path_pair(kv: (String, YamlMap)) -> Result<Output<(PathFieldName, PathItemObject)>> {
+fn to_path_pair(kv: (String, YamlMap)) -> Result<(PathFieldName, PathItemObject)> {
     let (field, map) = kv;
     let pair = (
         PathFieldName::new(&field),
-        to_path_item_object(map)?.bind_errors(with_key(field)),
+        to_path_item_object(map).map_err(by_key(field))?,
     );
-    Ok(pair.lift())
+    Ok(pair)
 }
 
-fn to_path_item_object(mut map: YamlMap) -> Result<Output<PathItemObject>> {
+fn to_path_item_object(mut map: YamlMap) -> Result<PathItemObject> {
     let (get, get_errors) = map
         .remove_if_exists("get")?
         .map(to_operation_object)
@@ -39,7 +39,7 @@ fn to_path_item_object(mut map: YamlMap) -> Result<Output<PathItemObject>> {
 
     let object = PathItemObject { get, post };
     let output = Output::new(object, get_errors).append(post_errors);
-    Ok(output)
+    output.to_result().map_err(Error::multiple)
 }
 
 fn to_operation_object(mut map: YamlMap) -> Result<Output<OperationObject>> {

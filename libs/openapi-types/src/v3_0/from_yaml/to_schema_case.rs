@@ -106,7 +106,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
 }
 
 fn to_properties(map: YamlMap) -> Output<SchemaProperties> {
-    collect(|x| to_schema_pair(x).map(Output::no_error))(map)
+    collect(Output::by(to_schema_pair))(map)
 }
 
 fn to_required(array: YamlArray) -> Result<RequiredSchemaFields> {

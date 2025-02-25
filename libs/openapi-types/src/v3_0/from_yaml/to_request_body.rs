@@ -27,9 +27,7 @@ fn to_request_body_case(mut map: YamlMap) -> Result<RequestBodyCase> {
 fn to_request_body_object(mut map: YamlMap) -> Result<RequestBodyObject> {
     let (content, errors) = map
         .remove("content")
-        .map(collect(|x| {
-            to_request_body_content_pair(x).map(Output::no_error)
-        }))?
+        .map(collect(Output::by(to_request_body_content_pair)))?
         .bind_errors(with_key("content"))
         .to_tuple();
 
