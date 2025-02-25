@@ -27,7 +27,7 @@ fn to_path_item_object(mut map: YamlMap) -> Result<PathItemObject> {
         .transpose()?
         .maybe()
         .bind_errors(with_key("get"))
-        .to_tuple();
+        .into_tuple();
 
     let (post, post_errors) = map
         .remove_if_exists("post")?
@@ -35,7 +35,7 @@ fn to_path_item_object(mut map: YamlMap) -> Result<PathItemObject> {
         .transpose()?
         .maybe()
         .bind_errors(with_key("post"))
-        .to_tuple();
+        .into_tuple();
 
     let object = PathItemObject { get, post };
     let output = Output::new(object, get_errors).append(post_errors);
@@ -46,14 +46,14 @@ fn to_operation_object(mut map: YamlMap) -> Result<Output<OperationObject>> {
     let responses = map.remove("responses")?;
     let (responses, errors) = to_responses_object(responses)
         .bind_errors(with_key("responses"))
-        .to_tuple();
+        .into_tuple();
 
     let object = OperationObject { responses };
     Ok(Output::new(object, errors))
 }
 
 fn to_responses_object(map: YamlMap) -> Output<ResponsesObject> {
-    let (tuples, errors) = collect(to_response_pair)(map).to_tuple();
+    let (tuples, errors) = collect(to_response_pair)(map).into_tuple();
     let default = None;
     let object = ResponsesObject::new(tuples, default);
     Output::new(object, errors)

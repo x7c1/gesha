@@ -17,4 +17,6 @@ components:
       type: object
       properties:
         x1:
-          type: "unknown-type"
+          type: "unknown-type1"
+        x2:
+          type: "unknown-type2"

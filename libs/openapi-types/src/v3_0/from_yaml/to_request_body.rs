@@ -29,7 +29,7 @@ fn to_request_body_object(mut map: YamlMap) -> Result<RequestBodyObject> {
         .remove("content")
         .map(collect(Output::by(to_request_body_content_pair)))?
         .bind_errors(with_key("content"))
-        .to_tuple();
+        .into_tuple();
 
     let object = RequestBodyObject {
         description: map.remove_if_exists("description")?,

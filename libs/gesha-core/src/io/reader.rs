@@ -1,6 +1,6 @@
 use crate::conversions::Converter;
 use crate::Error::CannotReadFile;
-use crate::{Error, Result};
+use crate::{Error, Output, Result};
 use openapi_types::yaml::{load_from_str, ToOpenApi, YamlMap};
 use std::fmt::Debug;
 use std::fs;
@@ -18,23 +18,22 @@ impl Reader {
     }
 
     #[instrument]
-    pub fn open_target_type<A>(&self, converter: &A) -> Result<A::TargetType>
+    pub fn open_target_type<A>(&self, converter: &A) -> Result<Output<A::TargetType>>
     where
         A: Converter + Debug,
     {
         let yaml = self.as_yaml_map()?;
         let (from, errors) = ToOpenApi::apply(yaml)
             .map_err(Error::openapi(&self.path))?
-            .to_tuple();
-
-        // TODO: return errors
-        println!("-------detected errors: {:#?}", errors);
+            .into_tuple();
 
         let to = converter
             .convert(from)
             .map_err(Error::conversion(&self.path))?;
 
-        Ok(to)
+        let openapi_error = openapi_types::Error::multiple(errors);
+        let error = Error::openapi(&self.path)(openapi_error);
+        Ok(Output::new(to, vec![error]))
     }
 
     pub(crate) fn as_string(&self) -> Result<String> {

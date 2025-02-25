@@ -23,13 +23,13 @@ impl ToOpenApi for Document {
             .transpose()?
             .maybe()
             .bind_errors(with_key("components"))
-            .to_tuple();
+            .into_tuple();
 
         let (paths, paths_errors) = {
             let map = map.remove("paths")?;
             to_paths_object(map)
                 .bind_errors(with_key("paths"))
-                .to_tuple()
+                .into_tuple()
         };
 
         let document = Document {

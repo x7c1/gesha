@@ -18,5 +18,9 @@ pub struct Args {
 pub async fn run(args: Args) -> Result<()> {
     let converter = v3_0::DocumentConverter::default();
     let generator = Generator::new(&converter, args.output);
-    generator.generate_from_file(args.schema)
+    let (_, errors) = generator.generate_from_file(args.schema)?.into_tuple();
+    if errors.is_empty() {
+        eprintln!("{:#?}", errors);
+    }
+    Ok(())
 }

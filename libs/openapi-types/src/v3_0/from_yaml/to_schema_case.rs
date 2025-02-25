@@ -34,7 +34,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         .map(to_properties)
         .maybe()
         .bind_errors(with_key("properties"))
-        .to_tuple();
+        .into_tuple();
 
     // TODO: use Output
     let required = map
@@ -46,7 +46,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         .remove_if_exists::<String>("type")?
         .map(to_data_type)
         .maybe()
-        .to_tuple();
+        .into_tuple();
 
     // TODO: use Output
     let format = map
@@ -61,7 +61,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         .map(to_array_items)
         .maybe()
         .bind_errors(with_key("items"))
-        .to_tuple();
+        .into_tuple();
 
     // TODO: use Output
     let enum_values = map
@@ -74,14 +74,14 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         .map(to_schema_cases)
         .maybe()
         .bind_errors(with_key("allOf"))
-        .to_tuple();
+        .into_tuple();
 
     let (one_of, errors_one_of) = map
         .remove_if_exists::<YamlArray>("oneOf")?
         .map(to_schema_cases)
         .maybe()
         .bind_errors(with_key("oneOf"))
-        .to_tuple();
+        .into_tuple();
 
     let object = SchemaObject {
         title: map.remove_if_exists::<String>("title")?,

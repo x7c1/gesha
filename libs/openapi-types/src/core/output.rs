@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct Output<A, E>(A, Vec<E>);
 
 impl<A, E> Output<A, E> {
@@ -10,7 +11,7 @@ impl<A, E> Output<A, E> {
         self
     }
 
-    pub fn to_tuple(self) -> (A, Vec<E>) {
+    pub fn into_tuple(self) -> (A, Vec<E>) {
         (self.0, self.1)
     }
 
@@ -96,7 +97,7 @@ impl<A, E> OutputMergeOps<A, E> for Vec<Output<A, E>> {
     fn merge(self) -> Output<Vec<A>, E> {
         let init = (vec![], vec![]);
         let tuples = self.into_iter().fold(init, |(mut xs, mut ys), x| {
-            let (a, mut errors) = x.to_tuple();
+            let (a, mut errors) = x.into_tuple();
             xs.push(a);
             ys.append(&mut errors);
             (xs, ys)

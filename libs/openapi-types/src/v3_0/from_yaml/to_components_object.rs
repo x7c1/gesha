@@ -12,14 +12,14 @@ impl ToOpenApi for ComponentsObject {
             .map(collect(Output::by(to_schema_pair)))
             .maybe()
             .bind_errors(with_key("schemas"))
-            .to_tuple();
+            .into_tuple();
 
         let (request_bodies, request_bodies_errors) = map
             .remove_if_exists("requestBodies")?
             .map(collect(Output::by(to_request_body_pair)))
             .maybe()
             .bind_errors(with_key("requestBodies"))
-            .to_tuple();
+            .into_tuple();
 
         let object = ComponentsObject {
             request_bodies,
