@@ -120,7 +120,6 @@ impl<A, E> OutputMergeOps<A, E> for Output<Output<Vec<A>, E>, E> {
     fn merge(self) -> Output<Vec<A>, E> {
         let Output(xs, mut errors1) = self;
         let Output(ys, errors2) = xs;
-        // let mut errors = errors1;
         errors1.extend(errors2);
         Output(ys, errors1)
     }
