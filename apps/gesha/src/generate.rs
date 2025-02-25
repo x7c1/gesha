@@ -2,7 +2,7 @@ use clap::Parser;
 use gesha_core::conversions::{format_errors, Generator};
 use gesha_core::Result;
 use gesha_rust_shapes::v3_0;
-use tracing::{instrument, warn};
+use tracing::{error, instrument};
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -21,7 +21,7 @@ pub async fn run(args: Args) -> Result<()> {
     let output = generator.generate_from_file(args.schema)?;
 
     if let Some(errors) = format_errors(output) {
-        warn!("{}", errors);
+        error!("{}", errors);
     }
     Ok(())
 }
