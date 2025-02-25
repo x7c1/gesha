@@ -31,9 +31,14 @@ impl Reader {
             .convert(from)
             .map_err(Error::conversion(&self.path))?;
 
-        let openapi_error = openapi_types::Error::multiple(errors);
-        let error = Error::openapi(&self.path)(openapi_error);
-        Ok(Output::new(to, vec![error]))
+        let errors = if errors.is_empty() {
+            vec![]
+        } else {
+            let openapi_error = openapi_types::Error::multiple(errors);
+            let error = Error::openapi(&self.path)(openapi_error);
+            vec![error]
+        };
+        Ok(Output::new(to, errors))
     }
 
     pub(crate) fn as_string(&self) -> Result<String> {
