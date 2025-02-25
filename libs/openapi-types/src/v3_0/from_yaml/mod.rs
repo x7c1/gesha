@@ -8,10 +8,11 @@ use to_request_body::to_request_body_pair;
 mod to_schema_case;
 use to_schema_case::{to_schema_case, to_schema_pair};
 
+use crate::core::OutputOptionOps;
 use crate::v3_0::{Document, InfoObject};
 use crate::yaml::{ToOpenApi, YamlMap};
 use crate::Error::IncompatibleVersion;
-use crate::{with_key, OptionOutputOps, Output, Result};
+use crate::{with_key, Output, Result};
 
 impl ToOpenApi for Document {
     /// return Error::IncompatibleVersion if not supported version.

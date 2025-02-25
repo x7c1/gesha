@@ -1,4 +1,4 @@
-use crate::error::OutputMergeOps;
+use crate::core::OutputMergeOps;
 use crate::yaml::YamlMap;
 use crate::yaml::YamlValue;
 use crate::{with_key, Error, Output, Result};

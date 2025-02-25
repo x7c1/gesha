@@ -1,4 +1,4 @@
-use crate::error::OutputPairOps;
+use crate::core::OutputPairOps;
 use crate::v3_0::from_yaml::to_schema_case;
 use crate::v3_0::{
     ComponentName, MediaTypeKey, MediaTypeObject, RequestBodyCase, RequestBodyObject,

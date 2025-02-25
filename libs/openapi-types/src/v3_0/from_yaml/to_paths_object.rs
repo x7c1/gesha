@@ -1,10 +1,10 @@
-use crate::error::OutputPairOps;
+use crate::core::{OutputOptionOps, OutputPairOps};
 use crate::v3_0::{
     HttpStatusCode, OperationObject, PathFieldName, PathItemObject, PathsObject, ResponseCase,
     ResponseObject, ResponsesObject,
 };
 use crate::yaml::{collect, YamlMap};
-use crate::{with_key, OptionOutputOps, Output, Result};
+use crate::{with_key, Output, Result};
 
 pub(super) fn to_paths_object(map: YamlMap) -> Result<Output<PathsObject>> {
     let output = collect(to_path_pair)(map).map(PathsObject::new);

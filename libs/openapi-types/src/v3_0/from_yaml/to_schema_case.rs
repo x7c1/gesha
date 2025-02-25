@@ -1,11 +1,11 @@
-use crate::error::{OutputMergeOps, OutputPairOps};
+use crate::core::{OutputMergeOps, OutputOptionOps, OutputPairOps};
 use crate::v3_0::{
     ArrayItems, ComponentName, EnumValues, FormatModifier, OpenApiDataType, ReferenceObject,
     RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
 };
 use crate::yaml::{collect, reify_value, YamlArray, YamlMap};
 use crate::Error::UnknownDataType;
-use crate::{with_key, OptionOutputOps, Output, Result};
+use crate::{with_key, Output, Result};
 use indexmap::IndexSet;
 
 pub fn to_schema_pair(kv: (String, YamlMap)) -> Result<Output<(ComponentName, SchemaCase)>> {
