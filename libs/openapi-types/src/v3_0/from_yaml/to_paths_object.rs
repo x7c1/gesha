@@ -44,7 +44,7 @@ fn to_path_item_object(mut map: YamlMap) -> Result<Output<PathItemObject>> {
 
 fn to_operation_object(mut map: YamlMap) -> Result<Output<OperationObject>> {
     let responses = map.remove("responses")?;
-    let (responses, errors) = to_responses_object(responses)?
+    let (responses, errors) = to_responses_object(responses)
         .bind_errors(with_key("responses"))
         .to_tuple();
 
@@ -52,11 +52,11 @@ fn to_operation_object(mut map: YamlMap) -> Result<Output<OperationObject>> {
     Ok(Output::new(object, errors))
 }
 
-fn to_responses_object(map: YamlMap) -> Result<Output<ResponsesObject>> {
+fn to_responses_object(map: YamlMap) -> Output<ResponsesObject> {
     let (tuples, errors) = collect(to_response_pair)(map).to_tuple();
     let default = None;
     let object = ResponsesObject::new(tuples, default);
-    Ok(Output::new(object, errors))
+    Output::new(object, errors)
 }
 
 fn to_response_pair(kv: (String, YamlMap)) -> Result<Output<(HttpStatusCode, ResponseCase)>> {

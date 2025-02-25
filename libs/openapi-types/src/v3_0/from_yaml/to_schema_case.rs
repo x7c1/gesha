@@ -5,14 +5,14 @@ use crate::v3_0::{
 };
 use crate::yaml::{collect, reify_value, YamlArray, YamlMap};
 use crate::Error::UnknownDataType;
-use crate::{with_key, Error, Output, Result};
+use crate::{by_key, with_key, Error, Output, Result};
 use indexmap::IndexSet;
 
 pub fn to_schema_pair(kv: (String, YamlMap)) -> Result<(ComponentName, SchemaCase)> {
     let (name, map) = kv;
     let pair = (
         ComponentName::new(&name),
-        to_schema_case(map).map_err(|e| with_key(name)(vec![e]))?,
+        to_schema_case(map).map_err(by_key(name))?,
     );
     Ok(pair)
 }

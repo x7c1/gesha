@@ -21,6 +21,13 @@ impl Error {
     }
 }
 
+pub fn by_key(key: impl Into<String>) -> impl FnOnce(Error) -> Error {
+    move |cause| Error::Enclosed {
+        key: key.into(),
+        causes: vec![cause],
+    }
+}
+
 pub fn with_key(key: impl Into<String>) -> impl FnOnce(Vec<Error>) -> Error {
     move |causes| Error::Enclosed {
         key: key.into(),

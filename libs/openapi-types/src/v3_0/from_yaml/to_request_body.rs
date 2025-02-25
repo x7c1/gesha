@@ -4,7 +4,7 @@ use crate::v3_0::{
     ComponentName, MediaTypeKey, MediaTypeObject, RequestBodyCase, RequestBodyObject,
 };
 use crate::yaml::{collect, YamlMap};
-use crate::{with_key, Output, Result};
+use crate::{by_key, with_key, Output, Result};
 
 pub(super) fn to_request_body_pair(
     kv: (String, YamlMap),
@@ -45,7 +45,7 @@ fn to_request_body_object(mut map: YamlMap) -> Result<Output<RequestBodyObject>>
 fn to_request_body_content_pair(kv: (String, YamlMap)) -> Result<(MediaTypeKey, MediaTypeObject)> {
     let (name, map) = kv;
     let key = MediaTypeKey::new(name);
-    let object = to_media_type_object(map).map_err(|e| with_key(key.clone())(vec![e]))?;
+    let object = to_media_type_object(map).map_err(by_key(key.clone()))?;
     Ok((key, object))
 }
 

@@ -1,7 +1,7 @@
 use crate::core::OutputMergeOps;
 use crate::yaml::YamlMap;
 use crate::yaml::YamlValue;
-use crate::{with_key, Error, Output, Result};
+use crate::{by_key, Error, Output, Result};
 use std::fmt::Display;
 
 pub fn reify_value<A>(v: Result<YamlValue>) -> Result<A>
@@ -18,9 +18,9 @@ where
 {
     let (k, v) = kv?;
     let outline = k.outline();
-    let key: A = k.try_into().map_err(|e| with_key(outline)(vec![e]))?;
+    let key: A = k.try_into().map_err(by_key(outline))?;
     let cloned = key.to_string();
-    let value = v.try_into().map_err(|e| with_key(cloned)(vec![e]))?;
+    let value = v.try_into().map_err(by_key(cloned))?;
     Ok((key, value))
 }
 
