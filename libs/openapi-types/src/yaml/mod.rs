@@ -14,4 +14,4 @@ mod to_openapi;
 pub use to_openapi::ToOpenApi;
 
 mod reify;
-pub(crate) use reify::{collect, reify_entry, reify_value};
+pub(crate) use reify::{collect, reify_value};

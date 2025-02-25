@@ -6,7 +6,7 @@ use std::path::Path;
 /// Convert OpenAPI definitions to target type.
 pub trait Converter: Debug + Clone + Sized + Send + Sync + 'static {
     /// The OpenAPI type that this definition converts from.
-    type OpenApiType: ToOpenApi + Send + Sync;
+    type OpenApiType: ToOpenApi + Debug + Send + Sync;
 
     /// The target type that this definition converts to.
     type TargetType: Display + Send + Sync;

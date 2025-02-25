@@ -1,14 +1,11 @@
-Err(
-    OpenApiTypes {
-        path: "./examples/v3_0/invalid/unknown-type.yaml",
-        cause: Enclosed {
-            key: "Foo",
-            cause: Enclosed {
-                key: "x1",
-                cause: UnknownDataType {
-                    found: "unknown-type",
-                },
-            },
-        },
-    },
-)
+path: ./examples/v3_0/invalid/unknown-type.yaml
+
+    @ components > schemas > Foo > properties > x1
+    UnknownDataType {
+        found: "unknown-type1",
+    }
+
+    @ components > schemas > Foo > properties > x2
+    UnknownDataType {
+        found: "unknown-type2",
+    }

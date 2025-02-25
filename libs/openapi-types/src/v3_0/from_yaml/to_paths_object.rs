@@ -1,63 +1,69 @@
+use crate::core::OutputOptionOps;
+use crate::error::by_key;
 use crate::v3_0::{
     HttpStatusCode, OperationObject, PathFieldName, PathItemObject, PathsObject, ResponseCase,
     ResponseObject, ResponsesObject,
 };
-use crate::yaml::{reify_entry, YamlMap};
-use crate::Result;
+use crate::yaml::{collect, YamlMap};
+use crate::{with_key, Error, Output, Result};
 
-pub(super) fn to_paths_object(map: YamlMap) -> Result<PathsObject> {
-    let tuples = map
-        .into_iter()
-        .map(reify_entry)
-        .collect::<Result<Vec<(String, YamlMap)>>>()?
-        .into_iter()
-        .map(to_path_pair)
-        .collect::<Result<Vec<(PathFieldName, PathItemObject)>>>()?;
-
-    Ok(PathsObject::new(tuples))
+pub(super) fn to_paths_object(map: YamlMap) -> Output<PathsObject> {
+    collect(Output::by(to_path_pair))(map).map(PathsObject::new)
 }
 
 fn to_path_pair(kv: (String, YamlMap)) -> Result<(PathFieldName, PathItemObject)> {
     let (field, map) = kv;
-    Ok((PathFieldName::new(field), to_path_item_object(map)?))
+    let pair = (
+        PathFieldName::new(&field),
+        to_path_item_object(map).map_err(by_key(field))?,
+    );
+    Ok(pair)
 }
 
 fn to_path_item_object(mut map: YamlMap) -> Result<PathItemObject> {
-    let get = map
+    let (get, get_errors) = map
         .remove_if_exists("get")?
         .map(to_operation_object)
-        .transpose()?;
+        .transpose()?
+        .maybe()
+        .bind_errors(with_key("get"))
+        .into_tuple();
 
-    let post = map
+    let (post, post_errors) = map
         .remove_if_exists("post")?
         .map(to_operation_object)
-        .transpose()?;
+        .transpose()?
+        .maybe()
+        .bind_errors(with_key("post"))
+        .into_tuple();
 
-    let obj = PathItemObject { get, post };
-    Ok(obj)
+    let object = PathItemObject { get, post };
+    let output = Output::new(object, get_errors).append(post_errors);
+    output.to_result().map_err(Error::multiple)
 }
 
-fn to_operation_object(mut map: YamlMap) -> Result<OperationObject> {
-    let responses = to_responses_object(map.remove("responses")?)?;
-    Ok(OperationObject { responses })
+fn to_operation_object(mut map: YamlMap) -> Result<Output<OperationObject>> {
+    let responses = map.remove("responses")?;
+    let (responses, errors) = to_responses_object(responses)
+        .bind_errors(with_key("responses"))
+        .into_tuple();
+
+    let object = OperationObject { responses };
+    Ok(Output::new(object, errors))
 }
 
-fn to_responses_object(map: YamlMap) -> Result<ResponsesObject> {
-    let tuples = map
-        .into_iter()
-        .map(reify_entry)
-        .collect::<Result<Vec<(String, YamlMap)>>>()?
-        .into_iter()
-        .map(to_response_pair)
-        .collect::<Result<Vec<(HttpStatusCode, ResponseCase)>>>()?;
-
+fn to_responses_object(map: YamlMap) -> Output<ResponsesObject> {
+    let (tuples, errors) = collect(to_response_pair)(map).into_tuple();
     let default = None;
-    Ok(ResponsesObject::new(tuples, default))
+    let object = ResponsesObject::new(tuples, default);
+    Output::new(object, errors)
 }
 
-fn to_response_pair(kv: (String, YamlMap)) -> Result<(HttpStatusCode, ResponseCase)> {
+fn to_response_pair(kv: (String, YamlMap)) -> Result<Output<(HttpStatusCode, ResponseCase)>> {
     let (field, map) = kv;
-    Ok((to_http_status_code(field)?, to_response_case(map)?))
+    let code = to_http_status_code(field)?;
+    let output = to_response_case(map)?.map(|case| (code, case));
+    Ok(output)
 }
 
 fn to_http_status_code(_v: String) -> Result<HttpStatusCode> {
@@ -65,7 +71,8 @@ fn to_http_status_code(_v: String) -> Result<HttpStatusCode> {
     Ok(HttpStatusCode::OK)
 }
 
-fn to_response_case(_map: YamlMap) -> Result<ResponseCase> {
+fn to_response_case(_map: YamlMap) -> Result<Output<ResponseCase>> {
     // TODO:
-    Ok(ResponseCase::Response(ResponseObject {}))
+    let case = ResponseCase::Response(ResponseObject {});
+    Ok(Output::new(case, vec![]))
 }

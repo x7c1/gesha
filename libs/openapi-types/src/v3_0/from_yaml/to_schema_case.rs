@@ -1,44 +1,54 @@
+use crate::core::{OutputMergeOps, OutputOptionOps};
 use crate::v3_0::{
     ArrayItems, ComponentName, EnumValues, FormatModifier, OpenApiDataType, ReferenceObject,
     RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
 };
-use crate::yaml::{reify_entry, reify_value, YamlArray, YamlMap};
+use crate::yaml::{collect, reify_value, YamlArray, YamlMap};
 use crate::Error::UnknownDataType;
-use crate::{Error, Result};
+use crate::{by_key, with_key, Error, Output, Result};
 use indexmap::IndexSet;
 
 pub fn to_schema_pair(kv: (String, YamlMap)) -> Result<(ComponentName, SchemaCase)> {
     let (name, map) = kv;
-    Ok((
+    let pair = (
         ComponentName::new(&name),
-        to_schema_case(map).map_err(Error::with_key(name))?,
-    ))
+        to_schema_case(map).map_err(by_key(name))?,
+    );
+    Ok(pair)
 }
 
 pub fn to_schema_case(mut map: YamlMap) -> Result<SchemaCase> {
     let case = match map.remove_if_exists::<String>("$ref")? {
         Some(reference) => SchemaCase::Reference(ReferenceObject::new(reference)),
-        None => SchemaCase::Schema(Box::new(to_schema_object(map)?)),
+        None => {
+            let object = to_schema_object(map)?;
+            SchemaCase::Schema(Box::new(object))
+        }
     };
     Ok(case)
 }
 
 fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
-    let properties = map
+    let (properties, errors_of_properties) = map
         .remove_if_exists("properties")?
         .map(to_properties)
-        .transpose()?;
+        .maybe()
+        .bind_errors(with_key("properties"))
+        .into_tuple();
 
+    // TODO: use Output
     let required = map
         .remove_if_exists::<YamlArray>("required")?
         .map(to_required)
         .transpose()?;
 
-    let data_type = map
+    let (data_type, errors_of_data_type) = map
         .remove_if_exists::<String>("type")?
         .map(to_data_type)
-        .transpose()?;
+        .maybe()
+        .into_tuple();
 
+    // TODO: use Output
     let format = map
         .remove_if_exists::<String>("format")?
         .map(to_format_modifier)
@@ -46,27 +56,34 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
 
     let nullable = map.remove_if_exists::<bool>("nullable")?;
 
-    let items = map
+    let (items, errors_of_items) = map
         .remove_if_exists::<YamlMap>("items")?
         .map(to_array_items)
-        .transpose()?;
+        .maybe()
+        .bind_errors(with_key("items"))
+        .into_tuple();
 
+    // TODO: use Output
     let enum_values = map
         .remove_if_exists::<YamlArray>("enum")?
         .map(to_enum_values)
         .transpose()?;
 
-    let all_of = map
+    let (all_of, errors_all_of) = map
         .remove_if_exists::<YamlArray>("allOf")?
         .map(to_schema_cases)
-        .transpose()?;
+        .maybe()
+        .bind_errors(with_key("allOf"))
+        .into_tuple();
 
-    let one_of = map
+    let (one_of, errors_one_of) = map
         .remove_if_exists::<YamlArray>("oneOf")?
         .map(to_schema_cases)
-        .transpose()?;
+        .maybe()
+        .bind_errors(with_key("oneOf"))
+        .into_tuple();
 
-    Ok(SchemaObject {
+    let object = SchemaObject {
         title: map.remove_if_exists::<String>("title")?,
         description: map.remove_if_exists::<String>("description")?,
         data_type,
@@ -78,16 +95,18 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         enum_values,
         all_of,
         one_of,
-    })
+    };
+    let output = Output::new(object, errors_of_properties)
+        .append(errors_of_data_type)
+        .append(errors_of_items)
+        .append(errors_all_of)
+        .append(errors_one_of);
+
+    output.to_result().map_err(Error::multiple)
 }
 
-fn to_properties(map: YamlMap) -> Result<SchemaProperties> {
-    map.into_iter()
-        .map(reify_entry)
-        .collect::<Result<Vec<(String, YamlMap)>>>()?
-        .into_iter()
-        .map(to_schema_pair)
-        .collect()
+fn to_properties(map: YamlMap) -> Output<SchemaProperties> {
+    collect(Output::by(to_schema_pair))(map)
 }
 
 fn to_required(array: YamlArray) -> Result<RequiredSchemaFields> {
@@ -109,19 +128,25 @@ fn to_format_modifier(x: String) -> Result<FormatModifier> {
 
 fn to_array_items(map: YamlMap) -> Result<ArrayItems> {
     let case = to_schema_case(map)?;
-    Ok(ArrayItems::new(case))
+    let items = ArrayItems::new(case);
+    Ok(items)
 }
 
 fn to_enum_values(array: YamlArray) -> Result<EnumValues> {
     array.into_iter().map(reify_value).collect()
 }
 
-fn to_schema_cases(array: YamlArray) -> Result<Vec<SchemaCase>> {
+fn to_schema_cases(array: YamlArray) -> Output<Vec<SchemaCase>> {
     array
         .into_iter()
         .map(reify_value)
-        .collect::<Result<Vec<YamlMap>>>()?
-        .into_iter()
-        .map(to_schema_case)
-        .collect()
+        .collect::<Vec<Result<YamlMap>>>()
+        .merge()
+        .map(|xs| {
+            xs.into_iter()
+                .map(to_schema_case)
+                .collect::<Result<Vec<SchemaCase>>>()
+                .merge()
+        })
+        .merge()
 }

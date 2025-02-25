@@ -5,6 +5,8 @@ use tokio::task::JoinError;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
+pub type Output<A> = openapi_types::core::Output<A, Error>;
+
 #[derive(Debug)]
 pub enum Error {
     UnknownTestCase {
