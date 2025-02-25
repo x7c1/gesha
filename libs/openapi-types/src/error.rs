@@ -8,31 +8,6 @@ pub enum Error {
     TypeMismatch { expected: String, found: String },
     UnknownDataType { found: String },
     Enclosed { key: String, cause: Box<Error> },
-    Multiple(Vec<Error>),
-}
-
-#[derive(Debug)]
-pub struct TracedError {
-    pub keys: Vec<String>,
-    pub cause: Error,
-}
-
-impl Error {
-    pub fn trace_error(self) -> Vec<TracedError> {
-        match self {
-            Error::Enclosed { key, cause } => vec![TracedError {
-                keys: vec![key],
-                cause: *cause,
-            }],
-
-            Error::Multiple(errors) => errors
-                .into_iter()
-                .flat_map(|error| error.trace_error())
-                .collect(),
-
-            _ => vec![],
-        }
-    }
 }
 
 pub fn with_key(key: impl Into<String>) -> impl Fn(Error) -> Error {
