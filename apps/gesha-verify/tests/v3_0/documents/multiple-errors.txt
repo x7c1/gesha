@@ -1,22 +1,12 @@
-Err(
-    OpenApiTypes {
-        path: "./examples/v3_0/invalid/multiple-errors.yaml",
-        cause: Multiple(
-            [
-                Enclosed {
-                    key: "NonObject",
-                    cause: TypeMismatch {
-                        expected: "Map",
-                        found: "Array",
-                    },
-                },
-                Enclosed {
-                    key: "Foo",
-                    cause: UnknownDataType {
-                        found: "int",
-                    },
-                },
-            ],
-        ),
-    },
-)
+path: ./examples/v3_0/invalid/multiple-errors.yaml
+
+    @ components > schemas > NonObject
+    TypeMismatch {
+        expected: "Map",
+        found: "Array",
+    }
+
+    @ components > schemas > Foo
+    UnknownDataType {
+        found: "int",
+    }
