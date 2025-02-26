@@ -1,0 +1,20 @@
+openapi: "3.0.0"
+
+info:
+  title: "Invalid Specs"
+  version: "1.0.0"
+
+paths:
+  /foo:
+    get:
+      responses:
+        '200':
+          $ref: '#/components/schemas/Foo'
+
+components:
+  schemas:
+    Foo:
+      type: object
+      properties:
+        x1:
+          title: "no-type-schema"

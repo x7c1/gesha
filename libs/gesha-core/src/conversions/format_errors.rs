@@ -1,5 +1,4 @@
 use crate::{Error, Output};
-use openapi_types as oas;
 
 pub fn format_errors<A>(output: Output<A>) -> Option<String> {
     let (_, errors) = output.into_tuple();
@@ -20,7 +19,11 @@ fn format_core_error(err: Error) -> Vec<String> {
     match err {
         Error::OpenApiTypes { path, cause } => {
             lines.push(format!("path: {}", path.to_string_lossy()));
-            lines.append(&mut format_open_api_error(cause, vec![]));
+            lines.append(&mut oas::format_error(cause, vec![]));
+        }
+        Error::Conversion { path, cause } => {
+            lines.push(format!("path: {}", path.to_string_lossy()));
+            lines.append(&mut conv::format_error(cause, vec![]));
         }
         e => lines.push(format!("{:#?}", e)),
     }
@@ -28,39 +31,52 @@ fn format_core_error(err: Error) -> Vec<String> {
     lines
 }
 
-fn format_open_api_error(err: oas::Error, mut keys: Vec<String>) -> Vec<String> {
-    let mut lines = vec![];
-    match err {
-        oas::Error::Multiple { causes } => {
-            let mut next_lines = causes
+macro_rules! generate {
+    () => {
+        pub fn format_error(err: Error, mut keys: Vec<String>) -> Vec<String> {
+            let mut lines = vec![];
+            match err {
+                Error::Multiple { causes } => {
+                    let mut next_lines = causes
+                        .into_iter()
+                        .flat_map(|e| format_error(e, keys.clone()))
+                        .collect();
+
+                    lines.append(&mut next_lines)
+                }
+                Error::Enclosed { key, causes } => {
+                    keys.push(key);
+                    let mut next_lines = format_enclosed_error(causes, keys);
+                    lines.append(&mut next_lines)
+                }
+                _ => {
+                    lines.push(format!("\n    @ {}", keys.join(" > ")));
+
+                    let mut next_lines = format!("{:#?}\n", err)
+                        .lines()
+                        .map(|line| format!("    {}", line))
+                        .collect::<Vec<_>>();
+
+                    lines.append(&mut next_lines);
+                }
+            }
+            lines
+        }
+        fn format_enclosed_error(causes: Vec<Error>, keys: Vec<String>) -> Vec<String> {
+            causes
                 .into_iter()
-                .flat_map(|e| format_open_api_error(e, keys.clone()))
-                .collect();
-
-            lines.append(&mut next_lines)
+                .flat_map(|cause| format_error(cause, keys.clone()))
+                .collect()
         }
-        oas::Error::Enclosed { key, causes } => {
-            keys.push(key);
-            let mut next_lines = format_enclosed_error(causes, keys);
-            lines.append(&mut next_lines)
-        }
-        _ => {
-            lines.push(format!("\n    @ {}", keys.join(" > ")));
-
-            let mut next_lines = format!("{:#?}\n", err)
-                .lines()
-                .map(|line| format!("    {}", line))
-                .collect::<Vec<_>>();
-
-            lines.append(&mut next_lines);
-        }
-    }
-    lines
+    };
 }
 
-fn format_enclosed_error(causes: Vec<oas::Error>, keys: Vec<String>) -> Vec<String> {
-    causes
-        .into_iter()
-        .flat_map(|cause| format_open_api_error(cause, keys.clone()))
-        .collect()
+mod oas {
+    use openapi_types::Error;
+    generate!();
+}
+
+mod conv {
+    use crate::conversions::Error;
+    generate!();
 }
