@@ -6,6 +6,10 @@ impl<A, E> Output<A, E> {
         Output(a, errors)
     }
 
+    pub fn ok(a: A) -> Self {
+        Output(a, vec![])
+    }
+
     pub fn append(mut self, errors: Vec<E>) -> Self {
         self.1.extend(errors);
         self
@@ -135,5 +139,11 @@ impl<A, E> OutputMergeOps<A, E> for Output<Output<Vec<A>, E>, E> {
         let Output(ys, errors2) = xs;
         errors1.extend(errors2);
         Output(ys, errors1)
+    }
+}
+
+impl<A, E> OutputMergeOps<A, E> for Option<Output<Vec<A>, E>> {
+    fn merge(self) -> Output<Vec<A>, E> {
+        self.unwrap_or_else(|| Output(vec![], vec![]))
     }
 }

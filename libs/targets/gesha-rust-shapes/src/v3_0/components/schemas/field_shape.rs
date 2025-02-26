@@ -1,6 +1,7 @@
 use crate::v3_0::components::schemas::TypeShape;
-use gesha_core::conversions::Result;
+use gesha_core::conversions::{Output, Result};
 use gesha_rust_types::{StructField, StructFieldAttribute, StructFieldName};
+use openapi_types::core::OutputMergeOps;
 use openapi_types::v3_0::{
     ComponentName, RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
 };
@@ -12,11 +13,11 @@ pub struct FieldShape {
 }
 
 impl FieldShape {
-    pub fn from_object(object: SchemaObject) -> Result<Vec<Self>> {
+    pub fn from_object(object: SchemaObject) -> Output<Vec<Self>> {
         Self::from_properties(object.properties, object.required)
     }
 
-    pub fn from_object_ref(object: &SchemaObject) -> Result<Vec<Self>> {
+    pub fn from_object_ref(object: &SchemaObject) -> Output<Vec<Self>> {
         Self::from_properties(object.properties.clone(), object.required.clone())
     }
 
@@ -35,9 +36,9 @@ impl FieldShape {
     fn from_properties(
         properties: Option<SchemaProperties>,
         required: Option<RequiredSchemaFields>,
-    ) -> Result<Vec<Self>> {
+    ) -> Output<Vec<Self>> {
         let to_field_shapes = |props| ToFieldShapes { required }.apply(props);
-        properties.map(to_field_shapes).unwrap_or(Ok(vec![]))
+        properties.map(to_field_shapes).merge()
     }
 
     fn create_field_attrs(&self, name: &StructFieldName) -> Vec<StructFieldAttribute> {
@@ -69,17 +70,18 @@ struct ToFieldShapes {
 }
 
 impl ToFieldShapes {
-    fn apply(self, props: SchemaProperties) -> Result<Vec<FieldShape>> {
+    fn apply(self, props: SchemaProperties) -> Output<Vec<FieldShape>> {
         props
             .into_iter()
             .map(|(name, case)| self.to_field(name, case))
-            .collect()
+            .collect::<Vec<Result<_>>>()
+            .merge()
     }
 
     fn to_field(&self, name: ComponentName, case: SchemaCase) -> Result<FieldShape> {
         let is_required = self.is_required(&name);
         Ok(FieldShape {
-            name,
+            name: name.clone(),
             type_shape: TypeShape::from_case(case, is_required)?,
         })
     }

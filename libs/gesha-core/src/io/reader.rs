@@ -22,22 +22,35 @@ impl Reader {
     where
         A: Converter + Debug,
     {
+        let mut errors = vec![];
         let yaml = self.as_yaml_map()?;
-        let (from, errors) = ToOpenApi::apply(yaml)
+        let (from, errors_of_openapi) = ToOpenApi::apply(yaml)
             .map_err(Error::openapi(&self.path))?
             .into_tuple();
 
-        let to = converter
-            .convert(from)
-            .map_err(Error::conversion(&self.path))?;
-
-        let errors = if errors.is_empty() {
-            vec![]
-        } else {
-            let openapi_error = openapi_types::Error::multiple(errors);
-            let error = Error::openapi(&self.path)(openapi_error);
-            vec![error]
+        if !errors_of_openapi.is_empty() {
+            errors.append(
+                &mut errors_of_openapi
+                    .into_iter()
+                    .map(Error::openapi(&self.path))
+                    .collect(),
+            );
         };
+
+        let (to, errors_of_conversion) = converter
+            .convert(from)
+            .map_err(Error::conversion(&self.path))?
+            .into_tuple();
+
+        if !errors_of_conversion.is_empty() {
+            errors.append(
+                &mut errors_of_conversion
+                    .into_iter()
+                    .map(Error::conversion(&self.path))
+                    .collect(),
+            );
+        };
+
         Ok(Output::new(to, errors))
     }
 

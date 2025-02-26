@@ -31,4 +31,17 @@ mod invalid_specs {
         assert_eq!(actual, expected);
         Ok(())
     }
+
+    #[test]
+    fn type_unspecified() -> Result<()> {
+        let converter = v3_0::DocumentConverter::default();
+        let schema = "./examples/v3_0/invalid/type-unspecified.yaml";
+        let output = Reader::new(schema).open_target_type(&converter)?;
+
+        let actual = format_errors(output).unwrap();
+        let expected = include_str!("type-unspecified.txt");
+
+        assert_eq!(actual, expected);
+        Ok(())
+    }
 }
