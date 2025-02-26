@@ -8,6 +8,10 @@ schemas:
         type: string
       x2:
         type: integer
+
+      optional_value:
+        type: integer
+
   Extended:
     allOf:
       - $ref: '#/components/schemas/Base'
@@ -20,4 +24,6 @@ schemas:
               - B
           x2:
             type: integer
-            example: 123
+
+          optional_value:
+            type: integer
