@@ -110,9 +110,10 @@ impl Error {
             cause,
         }
     }
-    pub fn openapi<A: Into<PathBuf>>(path: A) -> impl FnOnce(openapi_types::Error) -> Self {
-        |cause| Self::OpenApiTypes {
-            path: path.into(),
+    pub fn openapi<A: Into<PathBuf>>(path: A) -> impl Fn(openapi_types::Error) -> Self {
+        let path = path.into();
+        move |cause| Self::OpenApiTypes {
+            path: path.clone(),
             cause,
         }
     }

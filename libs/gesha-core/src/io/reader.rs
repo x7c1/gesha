@@ -29,9 +29,12 @@ impl Reader {
             .into_tuple();
 
         if !errors_of_openapi.is_empty() {
-            let openapi_error = openapi_types::Error::multiple(errors_of_openapi);
-            let error = Error::openapi(&self.path)(openapi_error);
-            errors.push(error)
+            errors.append(
+                &mut errors_of_openapi
+                    .into_iter()
+                    .map(Error::openapi(&self.path))
+                    .collect(),
+            );
         };
 
         let (to, errors_of_conversion) = converter
