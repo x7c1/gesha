@@ -1,4 +1,4 @@
-use crate::v3_0::components::schemas::TypeShape;
+use crate::v3_0::components::schemas::{Optionality, TypeShape};
 use gesha_core::conversions::{Output, Result};
 use gesha_rust_types::{StructField, StructFieldAttribute, StructFieldName};
 use openapi_types::core::OutputMergeOps;
@@ -31,6 +31,23 @@ impl FieldShape {
         let data_type = self.type_shape.define()?;
         let field = StructField::new(name, data_type, attrs);
         Ok(field)
+    }
+
+    pub fn override_by(mut self, target: FieldShape) -> Self {
+        let (Some(current), Some(next)) = (
+            self.type_shape.get_optionality(),
+            target.type_shape.get_optionality(),
+        ) else {
+            return self;
+        };
+        let optionality = Optionality {
+            // cannot change 'required' once set to true
+            is_required: current.is_required || next.is_required,
+            // can change 'nullable' at any time
+            is_nullable: next.is_nullable,
+        };
+        self.type_shape = target.type_shape.set_optionality(optionality);
+        self
     }
 
     fn from_properties(
