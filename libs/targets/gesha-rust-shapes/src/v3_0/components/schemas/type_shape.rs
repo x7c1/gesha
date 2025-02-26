@@ -132,6 +132,41 @@ impl TypeShape {
         };
         Ok(data_type)
     }
+
+    pub fn get_optionality(&self) -> Option<Optionality> {
+        match self {
+            Self::Proper { optionality, .. }
+            | Self::Array { optionality, .. }
+            | Self::Expanded { optionality, .. }
+            | Self::Inline { optionality, .. } => Some(optionality.clone()),
+
+            Self::Ref { .. } | Self::Option(_) | Self::Maybe(_) | Self::Patch(_) => None,
+        }
+    }
+
+    pub fn set_optionality(mut self, target: Optionality) -> TypeShape {
+        match self {
+            Self::Proper {
+                ref mut optionality,
+                ..
+            }
+            | Self::Array {
+                ref mut optionality,
+                ..
+            }
+            | Self::Expanded {
+                ref mut optionality,
+                ..
+            }
+            | Self::Inline {
+                ref mut optionality,
+                ..
+            } => *optionality = target,
+
+            Self::Ref { .. } | Self::Option(_) | Self::Maybe(_) | Self::Patch(_) => { /* nop */ }
+        }
+        self
+    }
 }
 
 /// OpenApiDataType -> TypeShape

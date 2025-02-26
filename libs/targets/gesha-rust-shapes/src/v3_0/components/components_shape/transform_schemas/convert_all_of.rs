@@ -1,5 +1,5 @@
 use crate::misc::TryMap;
-use crate::v3_0::components::schemas::{DefinitionShape, StructShape};
+use crate::v3_0::components::schemas::{DefinitionShape, FieldShape, StructShape};
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions::Result;
 use DefinitionShape::{AllOf, Mod};
@@ -25,7 +25,7 @@ impl Transformer {
                 let fields = shape.expand_fields(|x| self.snapshot.schemas.collect_fields(x));
                 let next = StructShape {
                     header: shape.header,
-                    fields,
+                    fields: dedup_fields(fields),
                 };
                 Ok(next.into())
             }
@@ -39,4 +39,30 @@ impl Transformer {
             }
         }
     }
+}
+
+fn dedup_fields(mut fields: Vec<FieldShape>) -> Vec<FieldShape> {
+    let mut xs = vec![];
+    while !fields.is_empty() {
+        let mut x = fields.remove(0);
+        (x, fields) = update_and_remove(x, fields);
+        xs.push(x)
+    }
+    xs
+}
+
+fn update_and_remove(
+    shape: FieldShape,
+    mut shapes: Vec<FieldShape>,
+) -> (FieldShape, Vec<FieldShape>) {
+    let Some((index, _)) = shapes
+        .iter()
+        .enumerate()
+        .find(|(_, x)| shape.name == x.name)
+    else {
+        return (shape, shapes);
+    };
+    let found = shapes.remove(index);
+    let updated = shape.override_by(found);
+    (updated, shapes)
 }
