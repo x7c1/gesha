@@ -2,8 +2,9 @@ use crate::v3_0::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, NewTypeShape,
     OneOfItemShape, OneOfShape, Ref, StructShape, TypeHeaderShape, TypeShape,
 };
-use gesha_core::conversions::Result;
+use gesha_core::conversions::{by_key, with_key, Result};
 use gesha_rust_types::ModDef;
+use openapi_types::core::OutputMergeOps;
 use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject, SchemasObject};
 use std::ops::Not;
 
@@ -18,7 +19,13 @@ impl SchemasShape {
             root: ModShape::new(ComponentName::new("schemas"), vec![]),
         };
         if let Some(object) = maybe {
-            this.root.defs = object.into_iter().map(new).collect::<Result<Vec<_>>>()?;
+            this.root.defs = object
+                .into_iter()
+                .map(new)
+                .collect::<Vec<Result<_>>>()
+                .merge()
+                .bind_errors(with_key("schemas"))
+                .to_result()?;
         }
         Ok(this)
     }
@@ -70,8 +77,8 @@ fn new(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
     let (field_name, schema_case) = kv;
     match schema_case {
         SchemaCase::Schema(obj) => {
-            let (name, object) = (field_name, *obj);
-            Shaper { name, object }.run()
+            let (name, object) = (field_name.clone(), *obj);
+            Shaper { name, object }.run().map_err(by_key(field_name))
         }
         SchemaCase::Reference(_) => todo!(),
     }
@@ -115,7 +122,7 @@ impl Shaper {
     fn for_struct(self) -> Result<DefinitionShape> {
         let shape = StructShape {
             header: self.create_type_header(),
-            fields: FieldShape::from_object(self.object)?,
+            fields: FieldShape::from_object(self.object).to_result()?,
         };
         Ok(shape.into())
     }
@@ -126,7 +133,7 @@ impl Shaper {
             required: self.object.required,
             items: {
                 let cases = self.object.all_of.expect("all_of must be Some.");
-                AllOfItemShape::from_schema_cases(cases)?
+                AllOfItemShape::from_schema_cases(cases).to_result()?
             },
         };
         Ok(shape.into())

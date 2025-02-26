@@ -153,14 +153,12 @@ fn expand_type_shape(
     let type_name = header.name.clone();
 
     let defs = if let Some(cases) = object.all_of.as_ref() {
-        expand_all_of_fields(
-            mod_path.clone(),
-            AllOfShape {
-                header,
-                items: AllOfItemShape::from_schema_cases(cases.clone())?,
-                required: object.required,
-            },
-        )?
+        let shape = AllOfShape {
+            header,
+            items: AllOfItemShape::from_schema_cases(cases.clone()).to_result()?,
+            required: object.required,
+        };
+        expand_all_of_fields(mod_path.clone(), shape)?
     } else if let Some(cases) = object.one_of.as_ref() {
         vec![OneOf(OneOfShape {
             header,
@@ -169,13 +167,8 @@ fn expand_type_shape(
     } else if let Some(values) = object.enum_values.as_ref() {
         vec![Enum(EnumShape::new(header, values.clone()))]
     } else {
-        expand_struct_fields(
-            mod_path.clone(),
-            StructShape {
-                header,
-                fields: FieldShape::from_object(object)?,
-            },
-        )?
+        let fields = FieldShape::from_object(object).to_result()?;
+        expand_struct_fields(mod_path.clone(), StructShape { header, fields })?
     };
     let type_shape = Expanded {
         type_path: mod_path.add(type_name),

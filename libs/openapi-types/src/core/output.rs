@@ -137,3 +137,9 @@ impl<A, E> OutputMergeOps<A, E> for Output<Output<Vec<A>, E>, E> {
         Output(ys, errors1)
     }
 }
+
+impl<A, E> OutputMergeOps<A, E> for Option<Output<Vec<A>, E>> {
+    fn merge(self) -> Output<Vec<A>, E> {
+        self.unwrap_or_else(|| Output(vec![], vec![]))
+    }
+}

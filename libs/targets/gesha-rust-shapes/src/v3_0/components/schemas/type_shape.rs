@@ -2,7 +2,7 @@ use crate::v3_0::components::schemas::TypeShape::{Inline, Proper};
 use crate::v3_0::components::schemas::{Optionality, Ref, TypePath};
 use gesha_core::broken;
 use gesha_core::conversions::Error::UnknownFormat;
-use gesha_core::conversions::Result;
+use gesha_core::conversions::{Error, Result};
 use gesha_rust_types::DataType;
 use openapi_types::v3_0::SchemaCase;
 use openapi_types::v3_0::SchemaCase::{Reference, Schema};
@@ -56,7 +56,10 @@ impl TypeShape {
             .clone()
             .or_else(|| object.all_of.is_some().then_some(OpenApiDataType::Object))
             .or_else(|| object.one_of.is_some().then_some(OpenApiDataType::Object))
-            .unwrap_or_else(|| unimplemented!("type unspecified: {:#?}", object));
+            .ok_or_else(|| Error::Unimplemented {
+                message: "type unspecified".to_string(),
+                object: object.clone(),
+            })?;
 
         let to_type = TypeFactory {
             object,
