@@ -6,6 +6,10 @@ impl<A, E> Output<A, E> {
         Output(a, errors)
     }
 
+    pub fn ok(a: A) -> Self {
+        Output(a, vec![])
+    }
+
     pub fn append(mut self, errors: Vec<E>) -> Self {
         self.1.extend(errors);
         self

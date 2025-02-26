@@ -2,7 +2,7 @@ use crate::v3_0::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, NewTypeShape,
     OneOfItemShape, OneOfShape, Ref, StructShape, TypeHeaderShape, TypeShape,
 };
-use gesha_core::conversions::{by_key, with_key, Result};
+use gesha_core::conversions::{by_key, Output, Result};
 use gesha_rust_types::ModDef;
 use openapi_types::core::OutputMergeOps;
 use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject, SchemasObject};
@@ -14,20 +14,21 @@ pub struct SchemasShape {
 }
 
 impl SchemasShape {
-    pub fn shape(maybe: Option<SchemasObject>) -> Result<Self> {
-        let mut this = Self {
-            root: ModShape::new(ComponentName::new("schemas"), vec![]),
-        };
-        if let Some(object) = maybe {
-            this.root.defs = object
+    pub fn shape(maybe: Option<SchemasObject>) -> Output<Self> {
+        let (defs, errors) = if let Some(object) = maybe {
+            object
                 .into_iter()
                 .map(new)
                 .collect::<Vec<Result<_>>>()
                 .merge()
-                .bind_errors(with_key("schemas"))
-                .to_result()?;
-        }
-        Ok(this)
+                .into_tuple()
+        } else {
+            Default::default()
+        };
+        let this = Self {
+            root: ModShape::new(ComponentName::new("schemas"), defs),
+        };
+        Output::new(this, errors)
     }
 
     pub fn define(self) -> Result<Option<ModDef>> {

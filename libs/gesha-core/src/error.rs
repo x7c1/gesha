@@ -103,9 +103,10 @@ impl Error {
             }
         }
     }
-    pub fn conversion<A: Into<PathBuf>>(path: A) -> impl FnOnce(conversions::Error) -> Self {
-        |cause| Self::Conversion {
-            path: path.into(),
+    pub fn conversion<A: Into<PathBuf>>(path: A) -> impl Fn(conversions::Error) -> Self {
+        let path = path.into();
+        move |cause| Self::Conversion {
+            path: path.clone(),
             cause,
         }
     }

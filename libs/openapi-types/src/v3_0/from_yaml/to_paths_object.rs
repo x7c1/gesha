@@ -74,5 +74,5 @@ fn to_http_status_code(_v: String) -> Result<HttpStatusCode> {
 fn to_response_case(_map: YamlMap) -> Result<Output<ResponseCase>> {
     // TODO:
     let case = ResponseCase::Response(ResponseObject {});
-    Ok(Output::new(case, vec![]))
+    Ok(Output::ok(case))
 }

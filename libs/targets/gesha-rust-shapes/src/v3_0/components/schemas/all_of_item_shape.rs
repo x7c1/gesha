@@ -46,7 +46,7 @@ impl AllOfItemShape {
     fn from_schema_case(case: SchemaCase) -> Output<Self> {
         match case {
             SchemaCase::Schema(object) => Self::from_schema_object(*object),
-            SchemaCase::Reference(x) => Output::new(Self::Ref(x), vec![]),
+            SchemaCase::Reference(x) => Output::ok(Self::Ref(x)),
         }
     }
 }

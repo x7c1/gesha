@@ -3,7 +3,7 @@ use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::SchemasShape;
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions;
-use gesha_core::conversions::Error;
+use gesha_core::conversions::{by_key, with_key, Output, Result};
 use gesha_core::Error::FormatFailed;
 use gesha_rust_types::NonDocComments;
 use openapi_types::v3_0;
@@ -18,11 +18,11 @@ impl conversions::Converter for DocumentConverter {
     type OpenApiType = v3_0::Document;
     type TargetType = gesha_rust_types::SourceCode;
 
-    fn convert(&self, src: Self::OpenApiType) -> Result<Self::TargetType, Error> {
+    fn convert(&self, src: Self::OpenApiType) -> Result<Output<Self::TargetType>> {
         let Some(components) = src.components else {
             // the spec allows empty components
             // see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#document-structure
-            return Ok(gesha_rust_types::SourceCode::empty());
+            return Ok(Output::ok(gesha_rust_types::SourceCode::empty()));
         };
         generate_components_code(components)
     }
@@ -40,14 +40,22 @@ pub(crate) fn new_code() -> gesha_rust_types::SourceCode {
 
 pub(crate) fn generate_components_code(
     components: ComponentsObject,
-) -> Result<gesha_rust_types::SourceCode, Error> {
+) -> Result<Output<gesha_rust_types::SourceCode>> {
+    let (schemas, errors) = SchemasShape::shape(components.schemas)
+        .bind_errors(with_key("schemas"))
+        .into_tuple();
+
+    let request_bodies = RequestBodiesShape::shape(components.request_bodies) //
+        .map_err(by_key("request_bodies"))?;
+
     let shapes = ComponentsShape {
-        schemas: SchemasShape::shape(components.schemas)?,
-        request_bodies: RequestBodiesShape::shape(components.request_bodies)?,
+        schemas,
+        request_bodies,
         core: CoreShape::default(),
     };
     let mod_defs = shapes.into_mod_defs()?;
-    Ok(new_code().set_mod_defs(mod_defs))
+    let code = new_code().set_mod_defs(mod_defs);
+    Ok(Output::new(code, errors))
 }
 
 pub(crate) fn format_code(path: &Path) -> gesha_core::Result<String> {
