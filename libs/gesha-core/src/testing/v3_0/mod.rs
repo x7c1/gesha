@@ -29,6 +29,7 @@ pub fn schemas_files() -> Vec<&'static str> {
         "one_of.yaml",
         "object_inline_one_of.yaml",
         "all_of_inline_array.yaml",
+        "all_of_override_by_enum.yaml",
     ]
 }
 
