@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-gesha-core = { workspace = true }
+gesha-core = { workspace = true, features = ["testing"] }
 gesha-rust-shapes = { workspace = true, features = ["testing"] }
 
 clap = { workspace = true }
@@ -14,4 +14,5 @@ tokio = { workspace = true }
 tracing = { workspace = true }
 
 [dev-dependencies]
+ctor = "0.4.0"
 pretty_assertions = { workspace = true }
