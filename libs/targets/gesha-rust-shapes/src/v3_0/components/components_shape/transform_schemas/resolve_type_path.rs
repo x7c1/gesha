@@ -4,7 +4,9 @@ use crate::v3_0::components::schemas::{
 };
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::broken;
+use gesha_core::conversions::Error::Unimplemented;
 use gesha_core::conversions::Result;
+use tracing::error;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
@@ -113,7 +115,16 @@ impl Transformer<'_> {
             TypeShape::Option(x) => TypeShape::Option(Box::new(self.transform_field_type(*x)?)),
             TypeShape::Maybe(x) => TypeShape::Maybe(Box::new(self.transform_field_type(*x)?)),
             TypeShape::Patch(x) => TypeShape::Patch(Box::new(self.transform_field_type(*x)?)),
-            TypeShape::Inline { .. } => Err(broken!(shape))?,
+            TypeShape::Inline { .. } => {
+                error!(
+                    "unprocessed shape found: {shape:#?}\n  at {file}:{line}",
+                    file = file!(),
+                    line = line!()
+                );
+                Err(Unimplemented {
+                    message: "unprocessed shape found".to_string(),
+                })?
+            }
         };
         Ok(resolved_type)
     }
