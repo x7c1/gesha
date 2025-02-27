@@ -50,7 +50,7 @@ impl ComponentsShape {
             .flatten()
             .collect();
 
-        let output = Output::new(mod_defs, vec![])
+        let output = Output::ok(mod_defs)
             .append(errors_of_request_bodies)
             .append(errors_of_schemas)
             .append(errors_of_core);

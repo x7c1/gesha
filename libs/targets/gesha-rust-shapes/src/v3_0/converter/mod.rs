@@ -64,8 +64,7 @@ pub(crate) fn generate_components_code(
         .into_tuple();
 
     let code = new_code().set_mod_defs(mod_defs);
-
-    Output::new(code, vec![])
+    Output::ok(code)
         .append(errors_of_schemas)
         .append(errors_of_request_bodies)
         .append(errors_of_mods)
