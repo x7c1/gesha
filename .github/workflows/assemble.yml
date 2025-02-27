@@ -50,16 +50,18 @@ jobs:
               curl
 
       - run: |
-          cargo fmt -- --check
+          make cargo-fmt-check
 
       - run: |
           make cargo-clippy
 
       - run: |
-          cargo test
+          make cargo-test
 
       - run: |
           make gesha-verify
+
+      - run: |
           make gesha-sample
 
       - name: Cache deno.land dependencies
