@@ -10,8 +10,9 @@ use transform_schemas::transform_schemas;
 use crate::v3_0::components::core::CoreShape;
 use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::{SchemasShape, TypeShape};
-use gesha_core::conversions::Result;
+use gesha_core::conversions::{with_key, Output, Result};
 use gesha_rust_types::ModDef;
+use openapi_types::core::OutputOptionOps;
 
 #[derive(Clone, Debug)]
 pub struct ComponentsShape {
@@ -21,18 +22,40 @@ pub struct ComponentsShape {
 }
 
 impl ComponentsShape {
-    pub fn into_mod_defs(self) -> Result<Vec<ModDef>> {
+    pub fn into_mod_defs(self) -> Result<Output<Vec<ModDef>>> {
         let this = transform(self)?;
-        let mod_defs = vec![
-            this.request_bodies.define()?,
-            this.schemas.define()?,
-            this.core.define()?,
-        ]
-        .into_iter()
-        .flatten()
-        .collect();
+        let (request_bodies, errors_of_request_bodies) = this
+            .request_bodies
+            .define()
+            .maybe()
+            .bind_errors(with_key("request_bodies"))
+            .into_tuple();
 
-        Ok(mod_defs)
+        let (schemas, errors_of_schemas) = this
+            .schemas
+            .define()
+            .maybe()
+            .bind_errors(with_key("schemas"))
+            .into_tuple();
+
+        let (core, errors_of_core) = this
+            .core
+            .define()
+            .maybe()
+            .bind_errors(with_key("core"))
+            .into_tuple();
+
+        let mod_defs = vec![request_bodies, schemas, core]
+            .into_iter()
+            .flatten()
+            .collect();
+
+        let output = Output::new(mod_defs, vec![])
+            .append(errors_of_request_bodies)
+            .append(errors_of_schemas)
+            .append(errors_of_core);
+
+        Ok(output)
     }
 
     pub fn any_type(&self, f: impl Fn(&TypeShape) -> bool) -> bool {
@@ -41,8 +64,17 @@ impl ComponentsShape {
 }
 
 fn transform(shapes: ComponentsShape) -> Result<ComponentsShape> {
-    let shapes = transform_schemas(shapes)?;
-    let shapes = transform_request_bodies(shapes)?;
-    let shapes = transform_core(shapes)?;
-    Ok(shapes)
+    let maybe = Output::optionize(transform_schemas)(Some(shapes))
+        .bind_errors(with_key("schemas"))
+        .to_result()?;
+
+    let maybe = Output::optionize(transform_request_bodies)(maybe)
+        .bind_errors(with_key("request_bodies"))
+        .to_result()?;
+
+    let shape = Output::optionize(transform_core)(maybe)
+        .bind_errors(with_key("core"))
+        .ok_or_errors()?;
+
+    Ok(shape)
 }

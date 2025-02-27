@@ -7,6 +7,7 @@ use gesha_rust_types::DataType;
 use openapi_types::v3_0::SchemaCase;
 use openapi_types::v3_0::SchemaCase::{Reference, Schema};
 use openapi_types::v3_0::{FormatModifier, OpenApiDataType, SchemaObject};
+use tracing::error;
 
 #[derive(Clone, Debug)]
 pub enum TypeShape {
@@ -56,9 +57,11 @@ impl TypeShape {
             .clone()
             .or_else(|| object.all_of.is_some().then_some(OpenApiDataType::Object))
             .or_else(|| object.one_of.is_some().then_some(OpenApiDataType::Object))
-            .ok_or_else(|| Error::Unimplemented {
-                message: "type unspecified".to_string(),
-                object: object.clone(),
+            .ok_or_else(|| {
+                error!("type unspecified: {:#?}", object);
+                Error::Unimplemented {
+                    message: "type unspecified".to_string(),
+                }
             })?;
 
         let to_type = TypeFactory {

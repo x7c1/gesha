@@ -57,6 +57,20 @@ impl<A, E> Output<A, E> {
             Ok(Output(a, vec![]))
         }
     }
+
+    pub fn optionize<F>(f: F) -> impl FnOnce(Option<A>) -> Output<Option<A>, E>
+    where
+        F: FnOnce(A) -> Result<A, E>,
+    {
+        |output| output.map(f).maybe()
+    }
+}
+
+impl<A, E> Output<Option<A>, E> {
+    pub fn ok_or_errors(self) -> Result<A, Vec<E>> {
+        let Output(maybe_a, errors) = self;
+        maybe_a.ok_or(errors)
+    }
 }
 
 pub trait OutputOptionOps<A, E> {
@@ -78,6 +92,25 @@ impl<A, E> OutputOptionOps<A, E> for Option<Result<A, E>> {
             None => Output(None, vec![]),
             Some(Ok(a)) => Output(Some(a), vec![]),
             Some(Err(e)) => Output(None, vec![e]),
+        }
+    }
+}
+
+impl<A, E> OutputOptionOps<A, E> for Result<Option<A>, E> {
+    fn maybe(self) -> Output<Option<A>, E> {
+        match self {
+            Ok(Some(a)) => Output(Some(a), vec![]),
+            Ok(None) => Output(None, vec![]),
+            Err(e) => Output(None, vec![e]),
+        }
+    }
+}
+
+impl<A, E> OutputOptionOps<A, E> for Result<A, E> {
+    fn maybe(self) -> Output<Option<A>, E> {
+        match self {
+            Ok(a) => Output(Some(a), vec![]),
+            Err(e) => Output(None, vec![e]),
         }
     }
 }
@@ -145,5 +178,11 @@ impl<A, E> OutputMergeOps<A, E> for Output<Output<Vec<A>, E>, E> {
 impl<A, E> OutputMergeOps<A, E> for Option<Output<Vec<A>, E>> {
     fn merge(self) -> Output<Vec<A>, E> {
         self.unwrap_or_else(|| Output(vec![], vec![]))
+    }
+}
+
+impl<A, E> OutputMergeOps<A, E> for Result<Output<Vec<A>, E>, E> {
+    fn merge(self) -> Output<Vec<A>, E> {
+        self.unwrap_or_else(|e| Output(vec![], vec![e]))
     }
 }
