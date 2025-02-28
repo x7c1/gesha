@@ -1,12 +1,5 @@
 schemas:
-  NumberList1:
-    type: array
-    items:
-      type: object
-      properties:
-        a1:
-          type: number
-  NumberList2:
+  NumberList:
     type: array
     items:
       type: array
