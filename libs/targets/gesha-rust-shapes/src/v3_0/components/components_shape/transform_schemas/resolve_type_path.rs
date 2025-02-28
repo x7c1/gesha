@@ -1,3 +1,4 @@
+use crate::misc::OutputResult;
 use crate::v3_0::components::schemas::{
     DefinitionShape, FieldShape, Optionality, TypePath, TypeShape,
 };
@@ -5,7 +6,6 @@ use crate::v3_0::components::ComponentsShape;
 use gesha_core::broken;
 use gesha_core::conversions::Error::Unimplemented;
 use gesha_core::conversions::{by_key, Result};
-use openapi_types::core::OutputMergeOps;
 use tracing::error;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
@@ -16,14 +16,7 @@ pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape>
         mod_path: TypePath::new(),
     };
     let defs = shapes.schemas.root.defs;
-    let defs = defs
-        .into_iter()
-        .map(|shape| transformer.apply(shape))
-        .collect::<Vec<Result<_>>>()
-        .merge()
-        .to_result()?;
-
-    shapes.schemas.root.defs = defs;
+    shapes.schemas.root.defs = defs.map_each(|x| transformer.apply(x)).to_result()?;
     Ok(shapes)
 }
 

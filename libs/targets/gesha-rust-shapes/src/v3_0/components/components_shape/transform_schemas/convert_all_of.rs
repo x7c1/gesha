@@ -1,7 +1,7 @@
+use crate::misc::OutputResult;
 use crate::v3_0::components::schemas::{DefinitionShape, FieldShape, StructShape};
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions::Result;
-use openapi_types::core::OutputMergeOps;
 use DefinitionShape::{AllOf, Mod};
 
 pub fn convert_all_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
@@ -9,14 +9,7 @@ pub fn convert_all_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
         snapshot: shapes.clone(),
     };
     let defs = shapes.schemas.root.defs;
-    let defs = defs
-        .into_iter()
-        .map(|x| transformer.shape_all_of(x))
-        .collect::<Vec<Result<_>>>()
-        .merge()
-        .to_result()?;
-
-    shapes.schemas.root.defs = defs;
+    shapes.schemas.root.defs = defs.map_each(|x| transformer.shape_all_of(x)).to_result()?;
     Ok(shapes)
 }
 

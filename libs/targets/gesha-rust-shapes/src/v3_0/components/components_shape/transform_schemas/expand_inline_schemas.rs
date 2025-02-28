@@ -1,4 +1,4 @@
-use crate::misc::TryMap;
+use crate::misc::{OutputResult, TryMap};
 use crate::v3_0::components::schemas::TypeShape::{Expanded, Inline};
 use crate::v3_0::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, NewTypeShape,
@@ -6,17 +6,13 @@ use crate::v3_0::components::schemas::{
 };
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions::{by_key, Result};
-use openapi_types::core::OutputMergeOps;
 use std::ops::Not;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn expand_inline_schemas(mut shape: ComponentsShape) -> Result<ComponentsShape> {
     let defs = shape.schemas.root.defs;
     let defs = defs
-        .into_iter()
-        .map(expand)
-        .collect::<Vec<Result<Vec<_>>>>()
-        .merge()
+        .map_each(expand)
         .to_result()?
         .into_iter()
         .flatten()
