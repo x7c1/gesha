@@ -1,4 +1,4 @@
-use crate::misc::{OutputResult, TryMap};
+use crate::misc::{MapOutput, TryMap};
 use crate::v3_0::components::schemas::DefinitionShape::{Mod, OneOf};
 use crate::v3_0::components::schemas::{
     DefinitionShape, EnumShape, EnumVariantShape, OneOfItemShape, OneOfShape,
@@ -14,7 +14,9 @@ pub fn convert_one_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
         snapshot: shapes.clone(),
     };
     let defs = shapes.schemas.root.defs;
-    shapes.schemas.root.defs = defs.map_each(|x| transformer.shape_one_of(x)).to_result()?;
+    shapes.schemas.root.defs = defs
+        .map_output(|x| transformer.shape_one_of(x))
+        .to_result()?;
     Ok(shapes)
 }
 

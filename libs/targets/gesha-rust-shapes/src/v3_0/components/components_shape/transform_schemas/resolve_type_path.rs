@@ -1,4 +1,4 @@
-use crate::misc::OutputResult;
+use crate::misc::MapOutput;
 use crate::v3_0::components::schemas::{
     DefinitionShape, FieldShape, Optionality, TypePath, TypeShape,
 };
@@ -16,7 +16,7 @@ pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape>
         mod_path: TypePath::new(),
     };
     let defs = shapes.schemas.root.defs;
-    shapes.schemas.root.defs = defs.map_each(|x| transformer.apply(x)).to_result()?;
+    shapes.schemas.root.defs = defs.map_output(|x| transformer.apply(x)).to_result()?;
     Ok(shapes)
 }
 

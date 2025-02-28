@@ -1,4 +1,4 @@
-use crate::misc::OutputResult;
+use crate::misc::MapOutput;
 use crate::v3_0::components::request_bodies::{ContentShape, DefinitionShape, MediaTypeShape};
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions::Error::ReferenceObjectNotFound;
@@ -11,7 +11,7 @@ pub fn transform_request_bodies(mut shape: ComponentsShape) -> Result<Components
         snapshot: shape.clone(),
     };
     let defs = shape.request_bodies.root.defs;
-    let request_bodies = defs.map_each(|x| transformer.run(x)).to_result()?;
+    let request_bodies = defs.map_output(|x| transformer.run(x)).to_result()?;
     shape.request_bodies.root.defs = request_bodies;
     Ok(shape)
 }
@@ -24,7 +24,7 @@ impl Transformer {
     fn run(&self, mut shape: DefinitionShape) -> Result<DefinitionShape> {
         let defined = shape
             .contents
-            .map_each(|x| self.content_shape_to_variant(x))
+            .map_output(|x| self.content_shape_to_variant(x))
             .to_result()?;
 
         shape.contents = defined;

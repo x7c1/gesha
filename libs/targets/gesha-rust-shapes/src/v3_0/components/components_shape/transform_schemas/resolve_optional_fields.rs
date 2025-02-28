@@ -1,4 +1,4 @@
-use crate::misc::OutputResult;
+use crate::misc::MapOutput;
 use crate::v3_0::components::schemas::{DefinitionShape, FieldShape};
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::broken;
@@ -7,7 +7,7 @@ use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn resolve_optionality(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let defs = shapes.schemas.root.defs;
-    shapes.schemas.root.defs = defs.map_each(resolve).to_result()?;
+    shapes.schemas.root.defs = defs.map_output(resolve).to_result()?;
     Ok(shapes)
 }
 

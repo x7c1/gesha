@@ -1,4 +1,4 @@
-use crate::misc::{OutputResult, TryMap};
+use crate::misc::{MapOutput, TryMap};
 use crate::v3_0::components::schemas::TypeShape::{Expanded, Inline};
 use crate::v3_0::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, NewTypeShape,
@@ -12,7 +12,7 @@ use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 pub fn expand_inline_schemas(mut shape: ComponentsShape) -> Result<ComponentsShape> {
     let defs = shape.schemas.root.defs;
     let defs = defs
-        .map_each(expand)
+        .map_output(expand)
         .to_result()?
         .into_iter()
         .flatten()

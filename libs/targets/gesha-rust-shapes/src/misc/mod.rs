@@ -10,12 +10,12 @@ impl<A> TryMap<A> for Vec<A> {
     }
 }
 
-pub trait OutputResult<A, E> {
-    fn map_each<B>(self, f: impl FnMut(A) -> Result<B, E>) -> Output<Vec<B>, E>;
+pub trait MapOutput<A, E> {
+    fn map_output<B>(self, f: impl FnMut(A) -> Result<B, E>) -> Output<Vec<B>, E>;
 }
 
-impl<A, E> OutputResult<A, E> for Vec<A> {
-    fn map_each<B>(self, f: impl FnMut(A) -> Result<B, E>) -> Output<Vec<B>, E> {
+impl<A, E> MapOutput<A, E> for Vec<A> {
+    fn map_output<B>(self, f: impl FnMut(A) -> Result<B, E>) -> Output<Vec<B>, E> {
         self.into_iter()
             .map(f)
             .collect::<Vec<Result<B, E>>>()
