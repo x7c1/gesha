@@ -1,0 +1,10 @@
+schemas:
+  Target:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+  Bar:
+    $ref: '#/components/schemas/Target'
