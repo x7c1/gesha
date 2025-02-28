@@ -30,6 +30,20 @@ impl TypeHeaderShape {
         }
     }
 
+    pub fn from_name(name: impl Into<String>) -> Self {
+        let name = {
+            let camel_cased = name.into().to_upper_camel_case();
+            ComponentName::new(camel_cased)
+        };
+        Self {
+            name,
+            doc_comments: None,
+            is_nullable: false,
+            serde_attrs: vec![],
+            _hide_default_constructor: true,
+        }
+    }
+
     pub fn define(self) -> TypeHeader {
         TypeHeader::new(self.name, self.doc_comments, self.serde_attrs)
     }

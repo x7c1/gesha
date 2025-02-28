@@ -2,13 +2,11 @@ use crate::v3_0::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, NewTypeShape,
     OneOfItemShape, OneOfShape, Ref, StructShape, TypeHeaderShape, TypeShape,
 };
-use gesha_core::conversions::Error::Unimplemented;
 use gesha_core::conversions::{by_key, Output, Result};
 use gesha_rust_types::ModDef;
 use openapi_types::core::OutputMergeOps;
 use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject, SchemasObject};
 use std::ops::Not;
-use tracing::error;
 
 #[derive(Debug, Clone)]
 pub struct SchemasShape {
@@ -84,16 +82,13 @@ fn new(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
             Shaper { name, object }.run().map_err(by_key(field_name))
         }
         SchemaCase::Reference(obj) => {
-            error!(
-                "direct $ref not supported:\n  {src} > {dst} \n  at {file}:{line}",
-                src = field_name.as_ref(),
-                dst = obj.as_ref(),
-                file = file!(),
-                line = line!(),
-            );
-            Err(Unimplemented {
-                message: format!("direct $ref not supported: {}", field_name),
-            })
+            let type_shape = TypeShape::Ref {
+                target: obj,
+                is_required: true,
+            };
+            let header = TypeHeaderShape::from_name(field_name);
+            let shape = NewTypeShape::new(header, type_shape);
+            Ok(shape.into())
         }
     }
 }
