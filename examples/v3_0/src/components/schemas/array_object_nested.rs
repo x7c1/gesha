@@ -22,6 +22,10 @@ pub mod schemas {
         use serde::Deserialize;
         use serde::Serialize;
 
+        /**
+        The generated Rust type results in the weird suffix `-ItemItem`, but that's actually correct.
+        See also `array_object.yaml`.
+        */
         #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct NumberListItemItem {
             #[serde(default, skip_serializing_if = "Option::is_none")]
