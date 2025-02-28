@@ -8,6 +8,7 @@ pub mod all_of_override_fields;
 pub mod all_of_override_optional;
 pub mod all_of_ref;
 pub mod array;
+pub mod array_nested;
 pub mod boolean_field;
 pub mod camel_case_fields;
 pub mod enums;
