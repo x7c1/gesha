@@ -12,7 +12,7 @@ impl conversions::Converter for ComponentsConverter {
     type TargetType = gesha_rust_types::SourceCode;
 
     fn convert(&self, src: Self::OpenApiType) -> Result<Output<Self::TargetType>> {
-        generate_components_code(src)
+        Ok(generate_components_code(src))
     }
 
     fn format_code(&self, path: &Path) -> gesha_core::Result<String> {

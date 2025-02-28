@@ -1,4 +1,4 @@
-use openapi_types::v3_0::{OpenApiDataType, SchemaObject};
+use openapi_types::v3_0::OpenApiDataType;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
@@ -34,7 +34,6 @@ pub enum Error {
     /// ## Internal Error
     Unimplemented {
         message: String,
-        object: SchemaObject,
     },
 }
 

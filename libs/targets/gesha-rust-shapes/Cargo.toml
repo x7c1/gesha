@@ -16,3 +16,4 @@ openapi-types = { workspace = true }
 
 heck = { workspace = true }
 indexmap = { workspace = true }
+tracing = { workspace = true }

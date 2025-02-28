@@ -1,20 +1,19 @@
-use crate::misc::TryMap;
+use crate::misc::{MapOutput, TryMap};
 use crate::v3_0::components::schemas::TypeShape::{Expanded, Inline};
 use crate::v3_0::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, NewTypeShape,
     OneOfItemShape, OneOfShape, StructShape, TypeHeaderShape, TypePath, TypeShape,
 };
 use crate::v3_0::components::ComponentsShape;
-use gesha_core::conversions::Result;
+use gesha_core::conversions::{by_key, Result};
 use std::ops::Not;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn expand_inline_schemas(mut shape: ComponentsShape) -> Result<ComponentsShape> {
     let defs = shape.schemas.root.defs;
     let defs = defs
-        .into_iter()
-        .map(expand)
-        .collect::<Result<Vec<Vec<_>>>>()?
+        .map_output(expand)
+        .to_result()?
         .into_iter()
         .flatten()
         .collect();
@@ -25,13 +24,22 @@ pub fn expand_inline_schemas(mut shape: ComponentsShape) -> Result<ComponentsSha
 
 fn expand(def: DefinitionShape) -> Result<Vec<DefinitionShape>> {
     match def {
-        Struct(x) => expand_struct_fields(TypePath::new(), x),
-        AllOf(x) => expand_all_of_fields(TypePath::new(), x),
+        Struct(x) => {
+            let name = x.header.name.clone();
+            expand_struct_fields(TypePath::new(), x).map_err(by_key(name))
+        }
+        AllOf(x) => {
+            let name = x.header.name.clone();
+            expand_all_of_fields(TypePath::new(), x).map_err(by_key(name))
+        }
         OneOf(_) => {
             // inline definition in oneOf is not supported
             Ok(vec![def])
         }
-        NewType(x) => expand_newtype_field(TypePath::new(), x),
+        NewType(x) => {
+            let name = x.header.name.clone();
+            expand_newtype_field(TypePath::new(), x).map_err(by_key(name))
+        }
         Enum(_) | Mod(_) => {
             // nop
             Ok(vec![def])

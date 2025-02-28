@@ -63,11 +63,12 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         .bind_errors(with_key("items"))
         .into_tuple();
 
-    // TODO: use Output
-    let enum_values = map
+    let (enum_values, errors_of_enum) = map
         .remove_if_exists::<YamlArray>("enum")?
         .map(to_enum_values)
-        .transpose()?;
+        .maybe()
+        .bind_errors(with_key("enum"))
+        .into_tuple();
 
     let (all_of, errors_all_of) = map
         .remove_if_exists::<YamlArray>("allOf")?
@@ -99,6 +100,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
     let output = Output::new(object, errors_of_properties)
         .append(errors_of_data_type)
         .append(errors_of_items)
+        .append(errors_of_enum)
         .append(errors_all_of)
         .append(errors_one_of);
 

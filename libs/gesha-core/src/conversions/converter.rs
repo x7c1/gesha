@@ -9,7 +9,7 @@ pub trait Converter: Debug + Clone + Sized + Send + Sync + 'static {
     type OpenApiType: ToOpenApi + Debug + Send + Sync;
 
     /// The target type that this definition converts to.
-    type TargetType: Display + Send + Sync;
+    type TargetType: Display + Debug + Send + Sync;
 
     /// Convert the given OpenAPI type to the target type.
     fn convert(&self, src: Self::OpenApiType) -> Result<Output<Self::TargetType>>;

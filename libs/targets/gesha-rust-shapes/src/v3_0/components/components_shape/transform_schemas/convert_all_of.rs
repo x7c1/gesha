@@ -1,4 +1,4 @@
-use crate::misc::TryMap;
+use crate::misc::MapOutput;
 use crate::v3_0::components::schemas::{DefinitionShape, FieldShape, StructShape};
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions::Result;
@@ -9,8 +9,9 @@ pub fn convert_all_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
         snapshot: shapes.clone(),
     };
     let defs = shapes.schemas.root.defs;
-    let defs = defs.try_map(|x| transformer.shape_all_of(x))?;
-    shapes.schemas.root.defs = defs;
+    shapes.schemas.root.defs = defs
+        .map_output(|x| transformer.shape_all_of(x))
+        .to_result()?;
     Ok(shapes)
 }
 

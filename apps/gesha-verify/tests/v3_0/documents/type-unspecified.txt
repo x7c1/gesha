@@ -1,21 +1,6 @@
 path: ./examples/v3_0/invalid/type-unspecified.yaml
 
-    @ schemas > Foo
+    @ #(convert) > components > schemas > Foo
     Unimplemented {
         message: "type unspecified",
-        object: SchemaObject {
-            title: Some(
-                "no-type-schema",
-            ),
-            description: None,
-            data_type: None,
-            format: None,
-            nullable: None,
-            required: None,
-            properties: None,
-            items: None,
-            enum_values: None,
-            all_of: None,
-            one_of: None,
-        },
     }
