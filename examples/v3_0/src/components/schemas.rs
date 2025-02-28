@@ -13,6 +13,7 @@ pub mod camel_case_fields;
 pub mod enums;
 pub mod newtype;
 pub mod newtype_numeric;
+pub mod newtype_ref;
 pub mod nullable_field;
 pub mod numeric_fields;
 pub mod object_inline;
