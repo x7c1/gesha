@@ -1,11 +1,11 @@
-use crate::misc::TryMap;
 use crate::v3_0::components::schemas::{
     DefinitionShape, FieldShape, Optionality, TypePath, TypeShape,
 };
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::broken;
 use gesha_core::conversions::Error::Unimplemented;
-use gesha_core::conversions::Result;
+use gesha_core::conversions::{by_key, Result};
+use openapi_types::core::OutputMergeOps;
 use tracing::error;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
@@ -16,7 +16,14 @@ pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape>
         mod_path: TypePath::new(),
     };
     let defs = shapes.schemas.root.defs;
-    shapes.schemas.root.defs = defs.try_map(|x| transformer.apply(x))?;
+    let defs = defs
+        .into_iter()
+        .map(|shape| transformer.apply(shape))
+        .collect::<Vec<Result<_>>>()
+        .merge()
+        .to_result()?;
+
+    shapes.schemas.root.defs = defs;
     Ok(shapes)
 }
 
@@ -30,20 +37,34 @@ impl Transformer<'_> {
     fn apply(&self, def: DefinitionShape) -> Result<DefinitionShape> {
         let def = match def {
             Struct(mut shape) => {
-                shape.fields = self.transform_fields(shape.fields)?;
+                shape.fields = self
+                    .transform_fields(shape.fields)
+                    .map_err(by_key(shape.header.name.clone()))?;
+
                 shape.into()
             }
             NewType(mut shape) => {
-                shape.type_shape = self.transform_field_type(shape.type_shape)?;
+                shape.type_shape = self
+                    .transform_field_type(shape.type_shape)
+                    .map_err(by_key(shape.header.name.clone()))?;
+
                 shape.into()
             }
             Mod(shape) => {
+                let name = shape.name.clone();
                 let mod_path = self.mod_path.clone().add(shape.name.clone());
-                let next = shape.map_def(|x| self.resolve_in_mod(mod_path.clone(), x))?;
+                let next = shape
+                    .map_def(|x| self.resolve_in_mod(mod_path.clone(), x))
+                    .map_err(by_key(name))?;
+
                 next.into()
             }
             Enum(shape) => {
-                let next = shape.map_type(|x| self.transform_field_type(x))?;
+                let name = shape.header.name.clone();
+                let next = shape
+                    .map_type(|x| self.transform_field_type(x))
+                    .map_err(by_key(name))?;
+
                 next.into()
             }
             AllOf(_) | OneOf(_) => Err(broken!(def))?,
