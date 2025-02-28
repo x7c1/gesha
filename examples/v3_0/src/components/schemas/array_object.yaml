@@ -1,0 +1,8 @@
+schemas:
+  NumberList:
+    type: array
+    items:
+      type: object
+      properties:
+        a1:
+          type: number

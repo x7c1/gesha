@@ -6,6 +6,8 @@ pub fn schemas_files() -> Vec<&'static str> {
         "numeric_fields.yaml",
         "boolean_field.yaml",
         "array.yaml",
+        "array_object.yaml",
+        "array_object_nested.yaml",
         "ref_property.yaml",
         "ref_items.yaml",
         "optional_field.yaml",

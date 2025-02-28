@@ -1,0 +1,15 @@
+schemas:
+  NumberList:
+    type: array
+    items:
+      type: array
+      items:
+        type: object
+        description:
+          The generated Rust type results in the weird suffix `-ItemItem`,
+          but that's actually correct.
+
+          See also `array_object.yaml`.
+        properties:
+          a1:
+            type: number

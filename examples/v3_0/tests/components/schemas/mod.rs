@@ -1,3 +1,4 @@
+mod array_object_nested;
 mod camel_case_fields;
 mod enums;
 mod newtype;
