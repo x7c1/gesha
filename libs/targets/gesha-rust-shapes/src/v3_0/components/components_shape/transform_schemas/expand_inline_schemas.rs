@@ -1,11 +1,12 @@
 use crate::misc::{MapOutput, TryMap};
-use crate::v3_0::components::schemas::TypeShape::{Expanded, Inline};
+use crate::v3_0::components::schemas::TypeShape::Expanded;
 use crate::v3_0::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, NewTypeShape,
-    OneOfItemShape, OneOfShape, StructShape, TypeHeaderShape, TypePath, TypeShape,
+    OneOfItemShape, OneOfShape, Optionality, StructShape, TypeHeaderShape, TypePath, TypeShape,
 };
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions::{by_key, Result};
+use openapi_types::v3_0::SchemaObject;
 use std::ops::Not;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
@@ -94,15 +95,8 @@ fn expand_newtype_field(path: TypePath, mut shape: NewTypeShape) -> Result<Vec<D
         TypeShape::Array {
             type_shape,
             optionality,
-        } => {
-            let item_name = String::from(mod_name.clone()) + "_item";
-            let (expanded, defs) = expand_type_shape(path, item_name, *type_shape)?;
-            let shape = TypeShape::Array {
-                type_shape: Box::new(expanded),
-                optionality,
-            };
-            (shape, defs)
-        }
+        } => expand_array_type_shape(path, mod_name.clone(), *type_shape, optionality)?,
+
         TypeShape::Inline { .. }
         | TypeShape::Proper { .. }
         | TypeShape::Ref { .. }
@@ -150,13 +144,35 @@ fn expand_type_shape(
     type_name: impl Into<String>,
     type_shape: TypeShape,
 ) -> Result<(TypeShape, Vec<DefinitionShape>)> {
-    let Inline {
-        object,
-        optionality,
-    } = type_shape
-    else {
-        return Ok((type_shape, vec![]));
-    };
+    match type_shape {
+        TypeShape::Inline {
+            object,
+            optionality,
+        } => expand_inline_type_shape(mod_path, type_name, object, optionality),
+
+        TypeShape::Array {
+            type_shape,
+            optionality,
+        } => expand_array_type_shape(mod_path, type_name, *type_shape, optionality),
+
+        TypeShape::Proper { .. }
+        | TypeShape::Ref { .. }
+        | TypeShape::Expanded { .. }
+        | TypeShape::Option(_)
+        | TypeShape::Maybe(_)
+        | TypeShape::Patch(_) => {
+            // nop
+            Ok((type_shape, vec![]))
+        }
+    }
+}
+
+fn expand_inline_type_shape(
+    mod_path: TypePath,
+    type_name: impl Into<String>,
+    object: SchemaObject,
+    optionality: Optionality,
+) -> Result<(TypeShape, Vec<DefinitionShape>)> {
     let header = TypeHeaderShape::new(type_name, &object, vec![]);
     let type_name = header.name.clone();
 
@@ -183,6 +199,22 @@ fn expand_type_shape(
         optionality,
     };
     Ok((type_shape, defs))
+}
+
+fn expand_array_type_shape(
+    mod_path: TypePath,
+    type_name: impl Into<String>,
+    type_shape: TypeShape,
+    optionality: Optionality,
+) -> Result<(TypeShape, Vec<DefinitionShape>)> {
+    let mod_name = type_name.into();
+    let item_name = mod_name.clone() + "_item";
+    let (expanded, defs) = expand_type_shape(mod_path, item_name, type_shape)?;
+    let shape = TypeShape::Array {
+        type_shape: Box::new(expanded),
+        optionality,
+    };
+    Ok((shape, defs))
 }
 
 fn collect<A, B>(pairs: Vec<(A, Vec<B>)>) -> (Vec<A>, Vec<B>) {
