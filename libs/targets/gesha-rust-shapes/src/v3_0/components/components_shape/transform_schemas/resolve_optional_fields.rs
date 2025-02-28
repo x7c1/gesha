@@ -1,13 +1,19 @@
-use crate::misc::TryMap;
 use crate::v3_0::components::schemas::{DefinitionShape, FieldShape};
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::broken;
 use gesha_core::conversions::Result;
+use openapi_types::core::OutputMergeOps;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn resolve_optionality(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let defs = shapes.schemas.root.defs;
-    let defs = defs.try_map(resolve)?;
+    let defs = defs
+        .into_iter()
+        .map(resolve)
+        .collect::<Vec<Result<_>>>()
+        .merge()
+        .to_result()?;
+
     shapes.schemas.root.defs = defs;
     Ok(shapes)
 }
