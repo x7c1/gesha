@@ -3,6 +3,7 @@
   "extends": [
     "config:base",
     "schedule:weekends",
+    ":semanticCommitTypeAll(chore)",
     "group:allNonMajor"
   ],
   "labels": ["dependencies"]
