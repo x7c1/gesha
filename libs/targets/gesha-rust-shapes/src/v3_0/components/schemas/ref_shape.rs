@@ -1,5 +1,6 @@
 use crate::v3_0::components::schemas::TypeShape;
 use gesha_core::conversions::Result;
+use heck::ToUpperCamelCase;
 
 use openapi_types::v3_0::{ReferenceObject, SchemaObject};
 type Ref = ReferenceObject<SchemaObject>;
@@ -29,8 +30,7 @@ fn to_pascal_case(target: &Ref) -> String {
         x if x.starts_with(prefix) => x.replace(prefix, ""),
         x => unimplemented!("not implemented: {x}"),
     };
-    // type_name.to_upper_camel_case();
-    type_name
+    type_name.to_upper_camel_case()
 }
 
 impl From<RefShape> for TypeShape {

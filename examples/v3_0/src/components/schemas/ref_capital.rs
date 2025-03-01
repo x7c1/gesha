@@ -11,7 +11,7 @@ pub mod schemas {
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Foo {
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub foo1: Option<BAR_BAZ>,
+        pub foo1: Option<BarBaz>,
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
