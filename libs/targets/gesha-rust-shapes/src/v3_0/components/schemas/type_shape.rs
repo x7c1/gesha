@@ -1,5 +1,5 @@
 use crate::v3_0::components::schemas::TypeShape::{Inline, Proper};
-use crate::v3_0::components::schemas::{Optionality, Ref, TypePath};
+use crate::v3_0::components::schemas::{Optionality, RefShape, TypePath};
 use gesha_core::broken;
 use gesha_core::conversions::Error::UnknownFormat;
 use gesha_core::conversions::{Error, Result};
@@ -19,10 +19,7 @@ pub enum TypeShape {
         type_shape: Box<TypeShape>,
         optionality: Optionality,
     },
-    Ref {
-        target: Ref,
-        is_required: bool,
-    },
+    Ref(RefShape),
     Expanded {
         type_path: TypePath,
         optionality: Optionality,
@@ -43,10 +40,7 @@ impl TypeShape {
     pub fn from_case(schema_case: SchemaCase, is_required: bool) -> Result<TypeShape> {
         let shape = match schema_case {
             Schema(object) => Self::from_object(*object, is_required)?,
-            Reference(target) => TypeShape::Ref {
-                target,
-                is_required,
-            },
+            Reference(target) => TypeShape::Ref(RefShape::new(target, is_required)?),
         };
         Ok(shape)
     }
@@ -115,10 +109,10 @@ impl TypeShape {
                 ..
             } => optionality.is_required = true,
 
-            Self::Ref {
+            Self::Ref(RefShape {
                 ref mut is_required,
                 ..
-            } => *is_required = true,
+            }) => *is_required = true,
 
             Self::Option(_) | Self::Maybe(_) | Self::Patch(_) => { /* nop */ }
         }

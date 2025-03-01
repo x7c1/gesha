@@ -1,5 +1,5 @@
 use crate::v3_0::components::schemas::{
-    AllOfShape, EnumShape, FieldShape, ModShape, NewTypeShape, OneOfShape, Ref, StructShape,
+    AllOfShape, EnumShape, FieldShape, ModShape, NewTypeShape, OneOfShape, RefShape, StructShape,
     TypeHeaderShape, TypeShape,
 };
 use gesha_core::broken;
@@ -50,7 +50,10 @@ impl DefinitionShape {
         }
     }
 
-    pub fn collect_fields(&self, resolve_ref: impl Fn(&Ref) -> Vec<FieldShape>) -> Vec<FieldShape> {
+    pub fn collect_fields(
+        &self,
+        resolve_ref: impl Fn(&RefShape) -> Vec<FieldShape>,
+    ) -> Vec<FieldShape> {
         match self {
             Self::Struct(shape) => shape.fields.clone(),
             Self::AllOf(shape) => shape.expand_fields(resolve_ref),

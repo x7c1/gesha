@@ -1,0 +1,13 @@
+# https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/
+schemas:
+  Foo:
+    type: object
+    title: Example of $ref to CAPITAL_CASE_TYPE
+    properties:
+      foo1:
+        $ref: "#/components/schemas/BAR_BAZ"
+  BAR_BAZ:
+    type: object
+    properties:
+      x1:
+        type: integer

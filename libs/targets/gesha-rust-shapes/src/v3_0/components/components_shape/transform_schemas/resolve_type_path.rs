@@ -11,7 +11,6 @@ use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let transformer = Transformer {
-        prefix: "#/components/schemas/",
         snapshot: &shapes.clone(),
         mod_path: TypePath::new(),
     };
@@ -21,7 +20,6 @@ pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape>
 }
 
 struct Transformer<'a> {
-    prefix: &'static str,
     snapshot: &'a ComponentsShape,
     mod_path: TypePath,
 }
@@ -71,7 +69,6 @@ impl Transformer<'_> {
         shape: DefinitionShape,
     ) -> Result<DefinitionShape> {
         let resolver = Self {
-            prefix: self.prefix,
             snapshot: self.snapshot,
             mod_path,
         };
@@ -94,19 +91,12 @@ impl Transformer<'_> {
 
     fn transform_field_type(&self, shape: TypeShape) -> Result<TypeShape> {
         let resolved_type = match shape {
-            TypeShape::Ref {
-                target,
-                is_required,
-            } => {
+            TypeShape::Ref(target) => {
                 let is_nullable = self.snapshot.schemas.is_nullable(&target);
-                let type_name = match String::from(target) {
-                    x if x.starts_with(self.prefix) => x.replace(self.prefix, ""),
-                    x => unimplemented!("not implemented: {x}"),
-                };
                 TypeShape::Proper {
-                    data_type: self.mod_path.ancestors().add(type_name).into(),
+                    data_type: self.mod_path.ancestors().add(target.type_name).into(),
                     optionality: Optionality {
-                        is_required,
+                        is_required: target.is_required,
                         is_nullable,
                     },
                 }

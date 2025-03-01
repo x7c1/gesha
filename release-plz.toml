@@ -3,11 +3,18 @@
 [workspace]
 release = false
 publish = false
+pr_labels = ["release"]
 
 [[package]]
 name = "gesha"
 publish = true
 release = true
+changelog_include = [
+    "openapi-types",
+    "gesha-core",
+    "gesha-rust-shapes",
+    "gesha-rust-types",
+]
 
 [[package]]
 name = "openapi-types"

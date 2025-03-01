@@ -1,5 +1,5 @@
 use crate::misc::TryMap;
-use crate::v3_0::components::schemas::{DefinitionShape, Ref, TypeHeaderShape, TypeShape};
+use crate::v3_0::components::schemas::{DefinitionShape, RefShape, TypeHeaderShape, TypeShape};
 use gesha_core::conversions::Result;
 use gesha_rust_types::{EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName};
 use openapi_types::v3_0::EnumValues;
@@ -61,22 +61,15 @@ pub struct EnumVariantShape {
 impl EnumVariantShape {
     pub fn tuple(
         name: EnumVariantName,
-        types: Vec<Ref>,
+        types: Vec<RefShape>,
         attributes: Vec<EnumVariantAttribute>,
-    ) -> Self {
-        let types = types
-            .into_iter()
-            .map(|x| TypeShape::Ref {
-                target: x,
-                is_required: true,
-            })
-            .collect();
-
-        EnumVariantShape {
+    ) -> Result<Self> {
+        let types = types.into_iter().map(|shape| shape.into()).collect();
+        Ok(EnumVariantShape {
             name,
             attributes,
             case: EnumCaseShape::Tuple(types),
-        }
+        })
     }
 
     pub fn map_type(mut self, f: impl Fn(TypeShape) -> Result<TypeShape>) -> Result<Self> {

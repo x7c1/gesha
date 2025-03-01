@@ -1,5 +1,5 @@
 use crate::v3_0::components::schemas::{
-    AllOfItemShape, DefinitionShape, FieldShape, Ref, TypeHeaderShape, TypeShape,
+    AllOfItemShape, DefinitionShape, FieldShape, RefShape, TypeHeaderShape, TypeShape,
 };
 use openapi_types::v3_0::RequiredSchemaFields;
 
@@ -25,7 +25,10 @@ impl AllOfShape {
         })
     }
 
-    pub fn expand_fields(&self, resolve_ref: impl Fn(&Ref) -> Vec<FieldShape>) -> Vec<FieldShape> {
+    pub fn expand_fields(
+        &self,
+        resolve_ref: impl Fn(&RefShape) -> Vec<FieldShape>,
+    ) -> Vec<FieldShape> {
         let to_required = |mut field: FieldShape| {
             let is_required = self
                 .required

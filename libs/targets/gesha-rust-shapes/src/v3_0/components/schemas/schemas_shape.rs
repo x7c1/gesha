@@ -1,6 +1,6 @@
 use crate::v3_0::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, NewTypeShape,
-    OneOfItemShape, OneOfShape, Ref, StructShape, TypeHeaderShape, TypeShape,
+    OneOfItemShape, OneOfShape, RefShape, StructShape, TypeHeaderShape, TypeShape,
 };
 use gesha_core::conversions::{by_key, Output, Result};
 use gesha_rust_types::ModDef;
@@ -40,18 +40,18 @@ impl SchemasShape {
         self.root.defs.iter().any(|x| x.any_type(f))
     }
 
-    pub fn find_type_name(&self, target: &Ref) -> Option<&ComponentName> {
+    pub fn find_type_name(&self, target: &RefShape) -> Option<&ComponentName> {
         self.find_header(target).map(|x| &x.name)
     }
 
-    pub fn is_nullable(&self, target: &Ref) -> bool {
+    pub fn is_nullable(&self, target: &RefShape) -> bool {
         self.find_header(target)
             .map(|x| x.is_nullable)
             .unwrap_or(false)
     }
 
-    pub fn collect_fields(&self, target: &Ref) -> Vec<FieldShape> {
-        let name = extract_ref_name(target);
+    pub fn collect_fields(&self, target: &RefShape) -> Vec<FieldShape> {
+        let name = &target.type_name;
         self.root
             .defs
             .iter()
@@ -64,8 +64,8 @@ impl SchemasShape {
             .unwrap_or_default()
     }
 
-    fn find_header(&self, target: &Ref) -> Option<&TypeHeaderShape> {
-        let name = extract_ref_name(target);
+    fn find_header(&self, target: &RefShape) -> Option<&TypeHeaderShape> {
+        let name = &target.type_name;
         self.root
             .defs
             .iter()
@@ -82,22 +82,11 @@ fn new(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
             Shaper { name, object }.run().map_err(by_key(field_name))
         }
         SchemaCase::Reference(obj) => {
-            let type_shape = TypeShape::Ref {
-                target: obj,
-                is_required: true,
-            };
+            let type_shape = RefShape::new(obj, /* is_required */ true)?;
             let header = TypeHeaderShape::from_name(field_name);
-            let shape = NewTypeShape::new(header, type_shape);
+            let shape = NewTypeShape::new(header, type_shape.into());
             Ok(shape.into())
         }
-    }
-}
-
-fn extract_ref_name(target: &Ref) -> &str {
-    if let Some(x) = target.as_ref().strip_prefix("#/components/schemas/") {
-        x
-    } else {
-        unimplemented!()
     }
 }
 
