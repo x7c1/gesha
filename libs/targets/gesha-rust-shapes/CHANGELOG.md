@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.6](https://github.com/x7c1/gesha/compare/gesha-rust-shapes-v0.0.5...gesha-rust-shapes-v0.0.6) - 2025-03-01
+
+### Added
+
+- support newtype conversion from $ref schemas (#119)
+- enhance error messages (#117)
+
+### Fixed
+
+- allow non-PascalCase type names in $ref (#122)
+- prevent crash when inline items are nested (#120)
+
 ## [0.0.5](https://github.com/x7c1/gesha/compare/gesha-rust-shapes-v0.0.4...gesha-rust-shapes-v0.0.5) - 2025-02-26
 
 ### Fixed
