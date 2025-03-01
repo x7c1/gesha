@@ -1,5 +1,5 @@
 use crate::v3_0::components::schemas::{
-    DefinitionShape, FieldShape, OneOfItemShape, Ref, TypeHeaderShape, TypeShape,
+    DefinitionShape, FieldShape, OneOfItemShape, RefShape, TypeHeaderShape, TypeShape,
 };
 
 #[derive(Clone, Debug)]
@@ -19,7 +19,7 @@ impl OneOfShape {
         false
     }
 
-    pub fn expand_fields(&self, _: impl Fn(&Ref) -> Vec<FieldShape>) -> Vec<FieldShape> {
+    pub fn expand_fields(&self, _: impl Fn(&RefShape) -> Vec<FieldShape>) -> Vec<FieldShape> {
         // implement when inline item is supported
         vec![]
     }

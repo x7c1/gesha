@@ -57,9 +57,9 @@ impl Transformer {
             .snapshot
             .schemas
             .find_type_name(&item.target)
-            .ok_or_else(|| ReferenceObjectNotFound(item.target.clone().into()))
+            .ok_or_else(|| ReferenceObjectNotFound(item.target.original.clone().into()))
             .map(EnumVariantName::new)?;
 
-        Ok(EnumVariantShape::tuple(name, vec![item.target], vec![]))
+        EnumVariantShape::tuple(name, vec![item.target], vec![])
     }
 }

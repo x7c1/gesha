@@ -1,5 +1,6 @@
 use crate::misc::MapOutput;
 use crate::v3_0::components::request_bodies::{ContentShape, DefinitionShape, MediaTypeShape};
+use crate::v3_0::components::schemas::RefShape;
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions::Error::ReferenceObjectNotFound;
 use gesha_core::conversions::Result;
@@ -61,12 +62,14 @@ impl Transformer {
 
     fn require_schema_type_name(&self, schema: &SchemaCase) -> Result<String> {
         match schema {
-            SchemaCase::Reference(x) => self
-                .snapshot
-                .schemas
-                .find_type_name(x)
-                .ok_or_else(|| ReferenceObjectNotFound(x.clone().into()))
-                .map(|name| name.clone().into()),
+            SchemaCase::Reference(x) => {
+                let ref_shape = RefShape::new(x.clone(), /* is_required */ true)?;
+                self.snapshot
+                    .schemas
+                    .find_type_name(&ref_shape)
+                    .ok_or_else(|| ReferenceObjectNotFound(x.clone().into()))
+                    .map(|name| name.clone().into())
+            }
 
             SchemaCase::Schema(_) => {
                 unimplemented!("inline object not supported yet")

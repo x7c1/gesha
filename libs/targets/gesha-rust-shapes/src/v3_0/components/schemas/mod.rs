@@ -28,6 +28,9 @@ pub use one_of_item_shape::OneOfItemShape;
 mod optionality;
 pub use optionality::Optionality;
 
+mod ref_shape;
+pub use ref_shape::RefShape;
+
 mod schemas_shape;
 pub use schemas_shape::SchemasShape;
 
@@ -42,6 +45,3 @@ pub use type_path::TypePath;
 
 mod type_shape;
 pub use type_shape::TypeShape;
-
-use openapi_types::v3_0::{ReferenceObject, SchemaObject};
-type Ref = ReferenceObject<SchemaObject>;

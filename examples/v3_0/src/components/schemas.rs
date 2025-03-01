@@ -28,6 +28,7 @@ pub mod object_inline_ref;
 pub mod object_simple;
 pub mod one_of;
 pub mod optional_field;
+pub mod ref_capital;
 pub mod ref_items;
 pub mod ref_property;
 pub mod reserved_keywords;
