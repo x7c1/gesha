@@ -10,6 +10,7 @@ pub fn schemas_files() -> Vec<&'static str> {
         "array_object_nested.yaml",
         "ref_property.yaml",
         "ref_items.yaml",
+        "ref_capital.yaml",
         "optional_field.yaml",
         "newtype.yaml",
         "newtype_numeric.yaml",
