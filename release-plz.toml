@@ -3,6 +3,7 @@
 [workspace]
 release = false
 publish = false
+pr_labels = ["release"]
 
 [[package]]
 name = "gesha"
