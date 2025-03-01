@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.5](https://github.com/x7c1/gesha/compare/openapi-types-v0.0.4...openapi-types-v0.0.5) - 2025-03-01
+
+### Added
+
+- enhance error messages (#117)
+
 ## [0.0.4](https://github.com/x7c1/gesha/compare/openapi-types-v0.0.3...openapi-types-v0.0.4) - 2025-02-26
 
 ### Fixed
