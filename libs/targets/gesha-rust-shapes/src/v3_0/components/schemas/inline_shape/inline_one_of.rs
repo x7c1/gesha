@@ -1,11 +1,31 @@
-use crate::v3_0::components::schemas::{OneOfShape, TypeHeaderShape};
+use crate::v3_0::components::schemas::type_header_shape::HeaderParts;
+use crate::v3_0::components::schemas::{OneOfItemShape, OneOfShape, TypeHeaderShape};
 use gesha_core::conversions::Result;
+use openapi_types::v3_0::SchemaObject;
 
 #[derive(Clone, Debug)]
-pub struct InlineOneOfShape {}
+pub struct InlineOneOfShape {
+    object: SchemaObject,
+}
 
 impl InlineOneOfShape {
-    pub fn expand_with(&self, _shape: TypeHeaderShape) -> Result<OneOfShape> {
-        todo!()
+    pub fn new(object: SchemaObject) -> Result<Self> {
+        Ok(Self { object })
+    }
+    pub fn expand_with(&self, header: TypeHeaderShape) -> Result<OneOfShape> {
+        // TODO: remove unwrap
+        let cases = self.object.one_of.clone().unwrap();
+        let shape = OneOfShape {
+            header,
+            items: OneOfItemShape::from_schema_cases(cases)?,
+        };
+        Ok(shape)
+    }
+    pub fn generate_header_parts(&self) -> HeaderParts {
+        HeaderParts {
+            title: self.object.title.clone(),
+            description: self.object.description.clone(),
+            nullable: self.object.nullable.clone(),
+        }
     }
 }

@@ -12,36 +12,20 @@ pub struct TypeHeaderShape {
 }
 
 impl TypeHeaderShape {
-    // pub fn new(
-    //     name: impl Into<String>,
-    //     object: &SchemaObject,
-    //     serde_attrs: Vec<SerdeAttribute>,
-    // ) -> Self {
-    //     let name = {
-    //         let camel_cased = name.into().to_upper_camel_case();
-    //         ComponentName::new(camel_cased)
-    //     };
-    //     Self {
-    //         name,
-    //         doc_comments: to_doc_comments(object.title.as_deref(), object.description.as_deref()),
-    //         is_nullable: object.nullable.unwrap_or(false),
-    //         serde_attrs,
-    //         _hide_default_constructor: true,
-    //     }
-    // }
     pub fn new(
         name: impl Into<String>,
-        object: &impl CanConstructHeader,
+        object: &impl HeaderPartsGenerator,
         serde_attrs: Vec<SerdeAttribute>,
     ) -> Self {
         let name = {
             let camel_cased = name.into().to_upper_camel_case();
             ComponentName::new(camel_cased)
         };
+        let parts = object.generate();
         Self {
             name,
-            doc_comments: to_doc_comments(object.title(), object.description()),
-            is_nullable: object.nullable().unwrap_or(false),
+            doc_comments: to_doc_comments(parts.title.as_deref(), parts.description.as_deref()),
+            is_nullable: parts.nullable.unwrap_or(false),
             serde_attrs,
             _hide_default_constructor: true,
         }
@@ -77,22 +61,22 @@ fn to_doc_comments(title: Option<&str>, description: Option<&str>) -> Option<Doc
     DocComments::wrap(maybe)
 }
 
-pub trait CanConstructHeader {
-    fn title(&self) -> Option<&str>;
-    fn description(&self) -> Option<&str>;
-    fn nullable(&self) -> Option<bool>;
+pub trait HeaderPartsGenerator {
+    fn generate(&self) -> HeaderParts;
 }
 
-impl CanConstructHeader for SchemaObject {
-    fn title(&self) -> Option<&str> {
-        self.title.as_deref()
+impl HeaderPartsGenerator for SchemaObject {
+    fn generate(&self) -> HeaderParts {
+        HeaderParts {
+            title: self.title.clone(),
+            description: self.description.clone(),
+            nullable: self.nullable,
+        }
     }
+}
 
-    fn description(&self) -> Option<&str> {
-        self.description.as_deref()
-    }
-
-    fn nullable(&self) -> Option<bool> {
-        self.nullable
-    }
+pub struct HeaderParts {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub nullable: Option<bool>,
 }
