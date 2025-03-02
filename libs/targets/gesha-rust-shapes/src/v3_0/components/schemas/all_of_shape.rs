@@ -25,6 +25,13 @@ impl AllOfShape {
         })
     }
 
+    // pub fn pop_if_only_one_ref(&self) -> Option<&RefShape> {
+    //     match self.items.as_slice() {
+    //         [AllOfItemShape::Ref(x)] => Some(x),
+    //         _ => None,
+    //     }
+    // }
+
     pub fn expand_fields(
         &self,
         resolve_ref: impl Fn(&RefShape) -> Vec<FieldShape>,

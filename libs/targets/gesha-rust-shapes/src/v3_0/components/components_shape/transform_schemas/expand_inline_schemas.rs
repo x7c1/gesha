@@ -1,12 +1,11 @@
 use crate::misc::{MapOutput, TryMap};
 use crate::v3_0::components::schemas::TypeShape::Expanded;
 use crate::v3_0::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, NewTypeShape,
-    OneOfItemShape, OneOfShape, Optionality, StructShape, TypeHeaderShape, TypePath, TypeShape,
+    AllOfShape, DefinitionShape, FieldShape, InlineShape, ModShape, NewTypeShape, Optionality,
+    StructShape, TypeHeaderShape, TypePath, TypeShape,
 };
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions::{by_key, Result};
-use openapi_types::v3_0::SchemaObject;
 use std::ops::Not;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
@@ -170,9 +169,33 @@ fn expand_type_shape(
 fn expand_inline_type_shape(
     mod_path: TypePath,
     type_name: impl Into<String>,
-    object: SchemaObject,
+    // object: SchemaObject,
+    // object: DefinitionShape,
+    object: InlineShape,
     optionality: Optionality,
 ) -> Result<(TypeShape, Vec<DefinitionShape>)> {
+    let header = TypeHeaderShape::new(type_name, &object, vec![]);
+    let type_name = header.name.clone();
+
+    let defs = match object {
+        InlineShape::Struct(inline) => {
+            let shape = inline.expand_with(header)?;
+            expand_struct_fields(mod_path.clone(), shape)?
+        }
+        InlineShape::AllOf(inline) => {
+            let shape = inline.expand_with(header)?;
+            expand_all_of_fields(mod_path.clone(), shape)?
+        }
+        InlineShape::Enum(inline) => {
+            let shape = Enum(inline.expand_with(header)?);
+            vec![shape]
+        }
+        InlineShape::OneOf(inline) => {
+            let shape = OneOf(inline.expand_with(header)?);
+            vec![shape]
+        }
+    };
+    /*
     let header = TypeHeaderShape::new(type_name, &object, vec![]);
     let type_name = header.name.clone();
 
@@ -194,6 +217,8 @@ fn expand_inline_type_shape(
         let fields = FieldShape::from_object(object).to_result()?;
         expand_struct_fields(mod_path.clone(), StructShape { header, fields })?
     };
+
+     */
     let type_shape = Expanded {
         type_path: mod_path.add(type_name),
         optionality,

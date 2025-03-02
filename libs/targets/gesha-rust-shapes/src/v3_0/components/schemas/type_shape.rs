@@ -1,5 +1,6 @@
-use crate::v3_0::components::schemas::TypeShape::{Inline, Proper};
-use crate::v3_0::components::schemas::{Optionality, RefShape, TypePath};
+use crate::v3_0::components::schemas::{
+    InlineEnumShape, InlineShape, Optionality, RefShape, TypePath,
+};
 use gesha_core::broken;
 use gesha_core::conversions::Error::UnknownFormat;
 use gesha_core::conversions::{Error, Result};
@@ -25,7 +26,9 @@ pub enum TypeShape {
         optionality: Optionality,
     },
     Inline {
-        object: SchemaObject,
+        // object: SchemaObject,
+        // object: Box<DefinitionShape>,
+        object: InlineShape,
         optionality: Optionality,
     },
     /// required:true, nullable:true
@@ -178,6 +181,7 @@ struct TypeFactory {
 
 impl TypeFactory {
     fn apply(self, data_type: OpenApiDataType) -> Result<TypeShape> {
+        use crate::v3_0::components::schemas::TypeShape::{Inline, Proper};
         use DataType as tp;
         use FormatModifier as fm;
         use OpenApiDataType as ot;
@@ -209,7 +213,9 @@ impl TypeFactory {
                 optionality,
             }),
             (ot::String, _) if self.object.enum_values.is_some() => Ok(Inline {
-                object: self.object,
+                // object: self.object,
+                // object: Box::new(EnumShape::init(self.object)?.into()),
+                object: InlineEnumShape::new(self.object)?.into(),
                 optionality,
             }),
             (ot::String, _) => Ok(Proper {
@@ -217,7 +223,9 @@ impl TypeFactory {
                 optionality,
             }),
             (ot::Object, _) => Ok(Inline {
-                object: self.object,
+                // object: self.object,
+                // object: Box::new(DefinitionShape::init(self.object)?),
+                object: InlineShape::new(self.object)?,
                 optionality,
             }),
             (_, Some(x)) => Err(UnknownFormat {

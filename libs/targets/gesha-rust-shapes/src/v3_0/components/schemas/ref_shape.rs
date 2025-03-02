@@ -14,6 +14,7 @@ pub struct RefShape {
 
 impl RefShape {
     pub fn new(original: Ref, is_required: bool) -> Result<Self> {
+        // TODO: return error if original is not supported format
         let type_name = to_pascal_case(&original);
         Ok(Self {
             original,
