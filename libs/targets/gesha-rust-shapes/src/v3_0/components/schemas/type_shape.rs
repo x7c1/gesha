@@ -26,8 +26,6 @@ pub enum TypeShape {
         optionality: Optionality,
     },
     Inline {
-        // object: SchemaObject,
-        // object: Box<DefinitionShape>,
         object: InlineShape,
         optionality: Optionality,
     },
@@ -213,8 +211,6 @@ impl TypeFactory {
                 optionality,
             }),
             (ot::String, _) if self.object.enum_values.is_some() => Ok(Inline {
-                // object: self.object,
-                // object: Box::new(EnumShape::init(self.object)?.into()),
                 object: InlineEnumShape::new(self.object)?.into(),
                 optionality,
             }),
@@ -223,8 +219,6 @@ impl TypeFactory {
                 optionality,
             }),
             (ot::Object, _) => Ok(Inline {
-                // object: self.object,
-                // object: Box::new(DefinitionShape::init(self.object)?),
                 object: InlineShape::new(self.object)?,
                 optionality,
             }),
