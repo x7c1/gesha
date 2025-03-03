@@ -10,6 +10,9 @@ pub use inline_one_of::InlineOneOfShape;
 mod inline_struct;
 pub use inline_struct::InlineStructShape;
 
+mod inline_schema_shape;
+pub use inline_schema_shape::InlineSchemaShape;
+
 use crate::v3_0::components::schemas::type_header_shape::{HeaderParts, HeaderPartsGenerator};
 use crate::v3_0::components::schemas::Optionality;
 use gesha_core::conversions::Result;

@@ -19,7 +19,7 @@ pub fn collapse_single_all_of(mut shape: ComponentsShape) -> Result<ComponentsSh
 fn transform(def: DefinitionShape) -> Result<DefinitionShape> {
     let transformed = match def {
         Struct(shape) => transform_struct(shape)?.into(),
-        AllOf(shape) => transform_all_of(shape)?.into(),
+        AllOf(shape) => transform_all_of(shape)?,
         NewType(shape) => transform_new_type(shape)?.into(),
         Enum(_) => {
             // enum has no shape to transform
@@ -39,8 +39,15 @@ fn transform_struct(mut shape: StructShape) -> Result<StructShape> {
     Ok(shape)
 }
 
-fn transform_all_of(shape: AllOfShape) -> Result<AllOfShape> {
-    Ok(shape)
+/// return NewTypeShape if given AllOfShape has only one $ref
+fn transform_all_of(shape: AllOfShape) -> Result<DefinitionShape> {
+    let Some(ref_shape) = shape.pop_if_only_one_ref() else {
+        // TODO: convert nested items as well
+        return Ok(shape.into());
+    };
+    let type_shape = TypeShape::from(ref_shape);
+    let def_shape = NewTypeShape::new(shape.header, type_shape);
+    Ok(def_shape.into())
 }
 
 fn transform_new_type(shape: NewTypeShape) -> Result<NewTypeShape> {

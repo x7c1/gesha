@@ -1,29 +1,28 @@
+use crate::v3_0::components::schemas::inline_shape::InlineSchemaShape;
 use crate::v3_0::components::schemas::type_header_shape::HeaderParts;
 use crate::v3_0::components::schemas::{
     AllOfItemShape, AllOfShape, InlineShape, Optionality, RefShape, TypeHeaderShape,
 };
 use gesha_core::conversions::Result;
-use openapi_types::v3_0::{SchemaCase, SchemaObject};
+use openapi_types::v3_0::SchemaObject;
 
 #[derive(Clone, Debug)]
 pub struct InlineAllOfShape {
-    object: SchemaObject,
+    object: InlineSchemaShape,
     pub optionality: Optionality,
 }
 
 impl InlineAllOfShape {
     pub fn new(object: SchemaObject, optionality: Optionality) -> Result<Self> {
         Ok(Self {
-            object,
+            object: InlineSchemaShape::shape(object)?,
             optionality,
         })
     }
     pub fn expand_with(self, header: TypeHeaderShape) -> Result<AllOfShape> {
-        // TODO: remove unwrap
-        let cases = self.object.all_of.unwrap();
         let shape = AllOfShape {
             header,
-            items: AllOfItemShape::from_schema_cases(cases).to_result()?,
+            items: self.object.all_of,
             required: self.object.required,
         };
         Ok(shape)
@@ -36,18 +35,15 @@ impl InlineAllOfShape {
         }
     }
     pub fn pop_if_only_one_ref(&self) -> Result<Option<RefShape>> {
-        let Some(all_of) = &self.object.all_of else {
-            return Ok(None);
-        };
-        let ref_object = match all_of.as_slice() {
-            [SchemaCase::Reference(object)] => object,
+        let ref_shape = match self.object.all_of.as_slice() {
+            [AllOfItemShape::Ref(object)] => object,
             _ => return Ok(None),
         };
-        let required = self.optionality.is_required;
+        let mut ref_shape = ref_shape.clone();
+        ref_shape.is_required = self.optionality.is_required;
+        ref_shape.nullable = Some(self.optionality.is_nullable);
 
-        // TODO: Pass self.optionality.is_nullable to RefShape
-        let shape = RefShape::new(ref_object.clone(), required)?;
-        Ok(Some(shape))
+        Ok(Some(ref_shape.clone()))
     }
 }
 
