@@ -1,12 +1,12 @@
 use crate::v3_0::components::schemas::inline_shape::InlineSchemaShape;
 use crate::v3_0::components::schemas::type_header_shape::HeaderParts;
-use crate::v3_0::components::schemas::{Optionality, StructShape, TypeHeaderShape};
+use crate::v3_0::components::schemas::{InlineShape, Optionality, StructShape, TypeHeaderShape};
 use gesha_core::conversions::Result;
 use openapi_types::v3_0::SchemaObject;
 
 #[derive(Clone, Debug)]
 pub struct InlineStructShape {
-    object: InlineSchemaShape,
+    pub object: InlineSchemaShape,
     pub optionality: Optionality,
 }
 
@@ -29,5 +29,11 @@ impl InlineStructShape {
             description: self.object.description.clone(),
             nullable: self.object.nullable,
         }
+    }
+}
+
+impl From<InlineStructShape> for InlineShape {
+    fn from(value: InlineStructShape) -> Self {
+        Self::Struct(value)
     }
 }

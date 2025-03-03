@@ -1,7 +1,8 @@
 use crate::misc::{MapOutput, TryMap};
 use crate::v3_0::components::schemas::DefinitionShape::{AllOf, Mod};
 use crate::v3_0::components::schemas::{
-    AllOfShape, DefinitionShape, FieldShape, InlineShape, NewTypeShape, StructShape, TypeShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, InlineAllOfShape, InlineShape,
+    InlineStructShape, NewTypeShape, StructShape, TypeShape,
 };
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::broken;
@@ -40,14 +41,19 @@ fn transform_struct(mut shape: StructShape) -> Result<StructShape> {
 }
 
 /// return NewTypeShape if given AllOfShape has only one $ref
-fn transform_all_of(shape: AllOfShape) -> Result<DefinitionShape> {
-    let Some(ref_shape) = shape.pop_if_only_one_ref() else {
-        // TODO: convert nested items as well
-        return Ok(shape.into());
+fn transform_all_of(mut shape: AllOfShape) -> Result<DefinitionShape> {
+    if let Some(ref_shape) = shape.pop_if_only_one_ref() {
+        let type_shape = TypeShape::from(ref_shape);
+        let def_shape = NewTypeShape::new(shape.header, type_shape);
+        return Ok(def_shape.into());
     };
-    let type_shape = TypeShape::from(ref_shape);
-    let def_shape = NewTypeShape::new(shape.header, type_shape);
-    Ok(def_shape.into())
+    shape.items = shape
+        .items
+        .into_iter()
+        .map(transform_all_of_item)
+        .collect::<Result<Vec<_>>>()?;
+
+    Ok(shape.into())
 }
 
 fn transform_new_type(shape: NewTypeShape) -> Result<NewTypeShape> {
@@ -73,14 +79,40 @@ fn transform_type_shape(shape: TypeShape) -> Result<TypeShape> {
 }
 
 fn transform_inline_shape(shape: InlineShape) -> Result<TypeShape> {
-    let all_of = match shape {
-        InlineShape::AllOf(ref inner) => inner,
-        InlineShape::Struct(_) | InlineShape::Enum(_) | InlineShape::OneOf(_) => {
-            return Ok(TypeShape::Inline(shape))
-        }
-    };
+    match shape {
+        InlineShape::AllOf(inline) => transform_inline_all_of_shape(inline),
+        InlineShape::Struct(inline) => transform_inline_struct_shape(inline),
+        InlineShape::Enum(_) | InlineShape::OneOf(_) => Ok(shape.into()),
+    }
+}
+
+fn transform_inline_struct_shape(mut shape: InlineStructShape) -> Result<TypeShape> {
+    shape.object.fields = shape.object.fields.try_map(transform_field_shape)?;
+    Ok(TypeShape::Inline(shape.into()))
+}
+
+fn transform_inline_all_of_shape(all_of: InlineAllOfShape) -> Result<TypeShape> {
     let Some(ref_shape) = all_of.pop_if_only_one_ref()? else {
-        return Ok(TypeShape::Inline(shape));
+        return Ok(TypeShape::Inline(InlineShape::AllOf(all_of)));
     };
+    // TODO: convert other items
     Ok(TypeShape::Ref(ref_shape))
+}
+
+fn transform_all_of_item(item: AllOfItemShape) -> Result<AllOfItemShape> {
+    let AllOfItemShape::Object(fields) = item else {
+        return Ok(item);
+    };
+    let transformed = fields
+        .into_iter()
+        .map(transform_field_shape)
+        .collect::<Result<Vec<_>>>()?;
+
+    Ok(AllOfItemShape::Object(transformed))
+}
+
+fn transform_field_shape(shape: FieldShape) -> Result<FieldShape> {
+    let FieldShape { name, type_shape } = shape;
+    let type_shape = transform_type_shape(type_shape)?;
+    Ok(FieldShape { name, type_shape })
 }

@@ -14,7 +14,7 @@ mod inline_schema_shape;
 pub use inline_schema_shape::InlineSchemaShape;
 
 use crate::v3_0::components::schemas::type_header_shape::{HeaderParts, HeaderPartsGenerator};
-use crate::v3_0::components::schemas::Optionality;
+use crate::v3_0::components::schemas::{Optionality, TypeShape};
 use gesha_core::conversions::Result;
 use openapi_types::v3_0::SchemaObject;
 
@@ -127,5 +127,11 @@ impl HeaderPartsGenerator for InlineShape {
             InlineShape::AllOf(shape) => shape.generate_header_parts(),
             InlineShape::OneOf(shape) => shape.generate_header_parts(),
         }
+    }
+}
+
+impl From<InlineShape> for TypeShape {
+    fn from(value: InlineShape) -> Self {
+        Self::Inline(value)
     }
 }
