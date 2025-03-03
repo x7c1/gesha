@@ -32,6 +32,7 @@ pub mod ref_capital;
 pub mod ref_items;
 pub mod ref_property;
 pub mod ref_single_all_of;
+pub mod ref_single_all_of_array;
 pub mod ref_single_all_of_inline;
 pub mod ref_single_all_of_inline_all_of;
 pub mod ref_single_all_of_inline_nested;
