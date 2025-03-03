@@ -4,7 +4,6 @@
 pub mod all_of;
 pub mod all_of_inline_all_of;
 pub mod all_of_inline_array;
-pub mod all_of_inline_single;
 pub mod all_of_override_fields;
 pub mod all_of_override_optional;
 pub mod all_of_ref;
@@ -32,5 +31,6 @@ pub mod optional_field;
 pub mod ref_capital;
 pub mod ref_items;
 pub mod ref_property;
+pub mod ref_single_all_of;
 pub mod reserved_keywords;
 pub mod title_description;

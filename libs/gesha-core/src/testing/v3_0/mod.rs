@@ -34,7 +34,7 @@ pub fn schemas_files() -> Vec<&'static str> {
         "object_inline_one_of.yaml",
         "all_of_inline_array.yaml",
         "all_of_override_fields.yaml",
-        "all_of_inline_single.yaml",
+        "ref_single_all_of.yaml",
     ]
 }
 
