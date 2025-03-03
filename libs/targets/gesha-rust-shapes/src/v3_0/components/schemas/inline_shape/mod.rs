@@ -1,7 +1,7 @@
 mod inline_schema;
 pub use inline_schema::InlineSchema;
 
-use crate::v3_0::components::schemas::type_header_shape::{HeaderParts, HeaderPartsGenerator};
+use crate::v3_0::components::schemas::type_header_shape::HeaderBody;
 use crate::v3_0::components::schemas::{Optionality, TypeShape};
 use gesha_core::conversions::Result;
 use openapi_types::v3_0::SchemaObject;
@@ -82,9 +82,9 @@ impl InlineShape {
     }
 }
 
-impl HeaderPartsGenerator for InlineShape {
-    fn generate(&self) -> HeaderParts {
-        self.get_inline_object().generate_header_parts()
+impl From<&InlineShape> for HeaderBody {
+    fn from(value: &InlineShape) -> Self {
+        value.get_inline_object().generate_header_body()
     }
 }
 

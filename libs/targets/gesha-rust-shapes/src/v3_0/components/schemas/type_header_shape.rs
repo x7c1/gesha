@@ -14,18 +14,18 @@ pub struct TypeHeaderShape {
 impl TypeHeaderShape {
     pub fn new(
         name: impl Into<String>,
-        object: &impl HeaderPartsGenerator,
+        body: impl Into<HeaderBody>,
         serde_attrs: Vec<SerdeAttribute>,
     ) -> Self {
         let name = {
             let camel_cased = name.into().to_upper_camel_case();
             ComponentName::new(camel_cased)
         };
-        let parts = object.generate();
+        let body = body.into();
         Self {
             name,
-            doc_comments: to_doc_comments(parts.title.as_deref(), parts.description.as_deref()),
-            is_nullable: parts.nullable.unwrap_or(false),
+            doc_comments: to_doc_comments(body.title.as_deref(), body.description.as_deref()),
+            is_nullable: body.nullable.unwrap_or(false),
             serde_attrs,
             _hide_default_constructor: true,
         }
@@ -61,22 +61,18 @@ fn to_doc_comments(title: Option<&str>, description: Option<&str>) -> Option<Doc
     DocComments::wrap(maybe)
 }
 
-pub trait HeaderPartsGenerator {
-    fn generate(&self) -> HeaderParts;
-}
-
-impl HeaderPartsGenerator for SchemaObject {
-    fn generate(&self) -> HeaderParts {
-        HeaderParts {
-            title: self.title.clone(),
-            description: self.description.clone(),
-            nullable: self.nullable,
-        }
-    }
-}
-
-pub struct HeaderParts {
+pub struct HeaderBody {
     pub title: Option<String>,
     pub description: Option<String>,
     pub nullable: Option<bool>,
+}
+
+impl From<&SchemaObject> for HeaderBody {
+    fn from(value: &SchemaObject) -> Self {
+        Self {
+            title: value.title.clone(),
+            description: value.description.clone(),
+            nullable: value.nullable,
+        }
+    }
 }

@@ -1,4 +1,4 @@
-use crate::v3_0::components::schemas::type_header_shape::HeaderParts;
+use crate::v3_0::components::schemas::type_header_shape::HeaderBody;
 use crate::v3_0::components::schemas::{
     AllOfItemShape, FieldShape, OneOfItemShape, Optionality, RefShape,
 };
@@ -42,8 +42,8 @@ impl InlineSchema {
             optionality,
         })
     }
-    pub fn generate_header_parts(&self) -> HeaderParts {
-        HeaderParts {
+    pub fn generate_header_body(&self) -> HeaderBody {
+        HeaderBody {
             title: self.title.clone(),
             description: self.description.clone(),
             nullable: self.nullable,
