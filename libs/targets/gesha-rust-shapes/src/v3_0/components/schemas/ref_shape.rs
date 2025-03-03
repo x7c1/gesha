@@ -14,6 +14,7 @@ pub struct RefShape {
     /**
     ## Some(true)
     ```yaml
+    type: object
     nullable: true
     allOf:
         - $ref: '#/components/schemas/SomeType'
@@ -21,6 +22,7 @@ pub struct RefShape {
 
     ## Some(false)
     ```yaml
+    type: object
     nullable: false
     allOf:
         - $ref: '#/components/schemas/SomeType'
@@ -28,7 +30,8 @@ pub struct RefShape {
 
     ## None
     ```yaml
-    # nullable not present
+    type: object
+    # nullable property not present
     allOf:
         - $ref: '#/components/schemas/SomeType'
     ```
