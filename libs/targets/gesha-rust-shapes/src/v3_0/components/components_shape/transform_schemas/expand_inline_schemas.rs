@@ -143,10 +143,7 @@ fn expand_type_shape(
     type_shape: TypeShape,
 ) -> Result<(TypeShape, Vec<DefinitionShape>)> {
     match type_shape {
-        TypeShape::Inline {
-            object,
-            optionality,
-        } => expand_inline_type_shape(mod_path, type_name, object, optionality),
+        TypeShape::Inline(shape) => expand_inline_type_shape(mod_path, type_name, shape),
 
         TypeShape::Array {
             type_shape,
@@ -169,8 +166,8 @@ fn expand_inline_type_shape(
     mod_path: TypePath,
     type_name: impl Into<String>,
     object: InlineShape,
-    optionality: Optionality,
 ) -> Result<(TypeShape, Vec<DefinitionShape>)> {
+    let optionality = object.optionality().clone();
     let header = TypeHeaderShape::new(type_name, &object, vec![]);
     let type_name = header.name.clone();
 

@@ -1,13 +1,11 @@
-use crate::misc::MapOutput;
+use crate::misc::{MapOutput, TryMap};
 use crate::v3_0::components::schemas::DefinitionShape::{AllOf, Mod};
 use crate::v3_0::components::schemas::{
-    AllOfShape, DefinitionShape, FieldShape, NewTypeShape, RefShape, StructShape, TypeShape,
+    AllOfShape, DefinitionShape, FieldShape, InlineShape, NewTypeShape, StructShape, TypeShape,
 };
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::broken;
 use gesha_core::conversions::Result;
-use openapi_types::v3_0::SchemaCase;
-use tracing::error;
 use DefinitionShape::{Enum, NewType, OneOf, Struct};
 
 /// If `allOf` has only one $ref,
@@ -27,7 +25,8 @@ fn transform(def: DefinitionShape) -> Result<DefinitionShape> {
             // enum has no shape to transform
             def
         }
-        OneOf(ref shape) => {
+        OneOf(_) => {
+            // TODO:
             def
         }
         Mod(_) => return Err(broken!(def)),
@@ -35,69 +34,46 @@ fn transform(def: DefinitionShape) -> Result<DefinitionShape> {
     Ok(transformed)
 }
 
-fn transform_struct(shape: StructShape) -> Result<StructShape> {
-    todo!()
+fn transform_struct(mut shape: StructShape) -> Result<StructShape> {
+    shape.fields = shape.fields.try_map(transform_field)?;
+    Ok(shape)
 }
 
 fn transform_all_of(shape: AllOfShape) -> Result<AllOfShape> {
-    todo!()
+    Ok(shape)
 }
 
 fn transform_new_type(shape: NewTypeShape) -> Result<NewTypeShape> {
-    todo!()
-}
-
-/*
-fn transform_struct(shape: StructShape) -> Result<StructShape> {
-    let fields = shape.fields;
-    let next = StructShape {
-        header: shape.header,
-        fields: fields
-            .into_iter()
-            .map(transform_field)
-            .collect::<Result<Vec<_>>>()?,
-    };
-    Ok(next.into())
+    Ok(shape)
 }
 
 fn transform_field(mut field: FieldShape) -> Result<FieldShape> {
-    match &field.type_shape {
-        TypeShape::Inline {
-            object,
-            optionality,
-        } => {
-            let single_ref = object
-                .all_of
-                .as_ref()
-                .and_then(|x| (x.len() == 1).then_some(&x[0]))
-                .and_then(|x| match x {
-                    SchemaCase::Schema(_) => None,
-                    SchemaCase::Reference(x) => Some(x),
-                });
+    field.type_shape = transform_type_shape(field.type_shape)?;
+    Ok(field)
+}
 
-            if let Some(rf) = single_ref {
-                /*
-                // TODO: support optionality.is_nullable
-                for following code
-                ```
-                nullable: true
-                allOf:
-                  - $ref: '#/components/schemas/FooBar'
-                ```
-                */
-                field.type_shape = RefShape::new(rf.clone(), optionality.is_required)?.into();
-                return Ok(field);
-            };
-
-            Ok(field)
-        }
+fn transform_type_shape(shape: TypeShape) -> Result<TypeShape> {
+    match shape {
+        TypeShape::Inline(shape) => transform_inline_shape(shape),
         TypeShape::Proper { .. }
         | TypeShape::Array { .. }
         | TypeShape::Ref(_)
         | TypeShape::Expanded { .. }
         | TypeShape::Option(_)
         | TypeShape::Maybe(_)
-        | TypeShape::Patch(_) => Ok(field),
+        | TypeShape::Patch(_) => Ok(shape),
     }
 }
-*/
+
+fn transform_inline_shape(shape: InlineShape) -> Result<TypeShape> {
+    let all_of = match shape {
+        InlineShape::AllOf(ref inner) => inner,
+        InlineShape::Struct(_) | InlineShape::Enum(_) | InlineShape::OneOf(_) => {
+            return Ok(TypeShape::Inline(shape))
+        }
+    };
+    let Some(ref_shape) = all_of.pop_if_only_one_ref()? else {
+        return Ok(TypeShape::Inline(shape));
+    };
+    Ok(TypeShape::Ref(ref_shape))
+}

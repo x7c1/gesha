@@ -10,6 +10,28 @@ pub struct RefShape {
     pub original: Ref,
     pub is_required: bool,
     pub type_name: String,
+
+    /**
+    ## Some(true)
+        ```
+        nullable: true
+        allOf:
+            - $ref: '#/components/schemas/SomeType'
+        ```
+    ## Some(false)
+        ```
+        nullable: false
+        allOf:
+            - $ref: '#/components/schemas/SomeType'
+        ```
+    ## None
+        ```
+        # nullable not present
+        allOf:
+            - $ref: '#/components/schemas/SomeType'
+        ```
+    */
+    pub nullable: Option<bool>,
 }
 
 impl RefShape {
@@ -20,6 +42,7 @@ impl RefShape {
             original,
             is_required,
             type_name,
+            nullable: None,
         })
     }
 }

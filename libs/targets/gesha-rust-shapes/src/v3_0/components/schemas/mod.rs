@@ -14,9 +14,7 @@ mod field_shape;
 pub use field_shape::FieldShape;
 
 mod inline_shape;
-pub use inline_shape::{
-    InlineAllOfShape, InlineEnumShape, InlineOneOfShape, InlineShape, InlineStructShape,
-};
+pub use inline_shape::{InlineEnumShape, InlineShape};
 
 mod mod_shape;
 pub use mod_shape::ModShape;

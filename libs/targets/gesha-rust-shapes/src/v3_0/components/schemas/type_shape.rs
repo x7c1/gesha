@@ -25,14 +25,14 @@ pub enum TypeShape {
         type_path: TypePath,
         optionality: Optionality,
     },
-    Inline {
-        object: InlineShape,
-        optionality: Optionality,
-    },
+    Inline(InlineShape),
+
     /// required:true, nullable:true
     Option(Box<TypeShape>),
+
     /// required:false, nullable:false
     Maybe(Box<TypeShape>),
+
     /// required:false, nullable:true
     Patch(Box<TypeShape>),
 }
@@ -104,16 +104,16 @@ impl TypeShape {
             | Self::Expanded {
                 ref mut optionality,
                 ..
-            }
-            | Self::Inline {
-                ref mut optionality,
-                ..
             } => optionality.is_required = true,
 
             Self::Ref(RefShape {
                 ref mut is_required,
                 ..
             }) => *is_required = true,
+
+            Self::Inline(ref mut shape) => {
+                shape.set_required(true);
+            }
 
             Self::Option(_) | Self::Maybe(_) | Self::Patch(_) => { /* nop */ }
         }
@@ -139,9 +139,8 @@ impl TypeShape {
         match self {
             Self::Proper { optionality, .. }
             | Self::Array { optionality, .. }
-            | Self::Expanded { optionality, .. }
-            | Self::Inline { optionality, .. } => Some(optionality.clone()),
-
+            | Self::Expanded { optionality, .. } => Some(optionality.clone()),
+            Self::Inline(shape) => Some(shape.optionality().clone()),
             Self::Ref { .. } | Self::Option(_) | Self::Maybe(_) | Self::Patch(_) => None,
         }
     }
@@ -159,11 +158,9 @@ impl TypeShape {
             | Self::Expanded {
                 ref mut optionality,
                 ..
-            }
-            | Self::Inline {
-                ref mut optionality,
-                ..
             } => *optionality = target,
+
+            Self::Inline(ref mut shape) => shape.set_optionality(target),
 
             Self::Ref { .. } | Self::Option(_) | Self::Maybe(_) | Self::Patch(_) => { /* nop */ }
         }
@@ -210,18 +207,14 @@ impl TypeFactory {
                 data_type: tp::Float64,
                 optionality,
             }),
-            (ot::String, _) if self.object.enum_values.is_some() => Ok(Inline {
-                object: InlineEnumShape::new(self.object)?.into(),
-                optionality,
-            }),
+            (ot::String, _) if self.object.enum_values.is_some() => Ok(Inline(
+                InlineEnumShape::new(self.object, optionality)?.into(),
+            )),
             (ot::String, _) => Ok(Proper {
                 data_type: tp::String,
                 optionality,
             }),
-            (ot::Object, _) => Ok(Inline {
-                object: InlineShape::new(self.object)?,
-                optionality,
-            }),
+            (ot::Object, _) => Ok(Inline(InlineShape::new(self.object, optionality)?)),
             (_, Some(x)) => Err(UnknownFormat {
                 data_type,
                 format: x.to_string(),

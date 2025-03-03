@@ -11,6 +11,7 @@ mod inline_struct;
 pub use inline_struct::InlineStructShape;
 
 use crate::v3_0::components::schemas::type_header_shape::{HeaderParts, HeaderPartsGenerator};
+use crate::v3_0::components::schemas::Optionality;
 use gesha_core::conversions::Result;
 use openapi_types::v3_0::SchemaObject;
 
@@ -23,7 +24,7 @@ pub enum InlineShape {
 }
 
 impl InlineShape {
-    pub fn new(object: SchemaObject) -> Result<Self> {
+    pub fn new(object: SchemaObject, optionality: Optionality) -> Result<Self> {
         let has_all_of = object
             .all_of
             .as_ref()
@@ -31,7 +32,7 @@ impl InlineShape {
             .unwrap_or(false);
 
         if has_all_of {
-            return InlineAllOfShape::new(object).map(Self::AllOf);
+            return InlineAllOfShape::new(object, optionality).map(Self::AllOf);
         }
 
         let has_one_of = object
@@ -41,7 +42,7 @@ impl InlineShape {
             .unwrap_or(false);
 
         if has_one_of {
-            return InlineOneOfShape::new(object).map(Self::OneOf);
+            return InlineOneOfShape::new(object, optionality).map(Self::OneOf);
         }
 
         let has_enum = object
@@ -51,10 +52,67 @@ impl InlineShape {
             .unwrap_or(false);
 
         if has_enum {
-            return InlineEnumShape::new(object).map(Self::Enum);
+            return InlineEnumShape::new(object, optionality).map(Self::Enum);
         }
 
-        InlineStructShape::new(object).map(Self::Struct)
+        InlineStructShape::new(object, optionality).map(Self::Struct)
+    }
+
+    pub fn optionality(&self) -> &Optionality {
+        match self {
+            InlineShape::Struct(InlineStructShape { optionality, .. }) => optionality,
+            InlineShape::Enum(InlineEnumShape { optionality, .. }) => optionality,
+            InlineShape::AllOf(InlineAllOfShape { optionality, .. }) => optionality,
+            InlineShape::OneOf(InlineOneOfShape { optionality, .. }) => optionality,
+        }
+    }
+
+    pub fn set_optionality(&mut self, x: Optionality) {
+        match self {
+            InlineShape::Struct(InlineStructShape {
+                ref mut optionality,
+                ..
+            }) => *optionality = x,
+
+            InlineShape::Enum(InlineEnumShape {
+                ref mut optionality,
+                ..
+            }) => *optionality = x,
+
+            InlineShape::AllOf(InlineAllOfShape {
+                ref mut optionality,
+                ..
+            }) => *optionality = x,
+
+            InlineShape::OneOf(InlineOneOfShape {
+                ref mut optionality,
+                ..
+            }) => *optionality = x,
+        }
+    }
+
+    pub fn set_required(&mut self, required: bool) {
+        match self {
+            InlineShape::Struct(InlineStructShape {
+                ref mut optionality,
+                ..
+            }) => optionality.is_required = required,
+
+            InlineShape::Enum(InlineEnumShape {
+                ref mut optionality,
+                ..
+            }) => optionality.is_required = required,
+
+            InlineShape::AllOf(InlineAllOfShape {
+                ref mut optionality,
+                ..
+            }) => optionality.is_required = required,
+
+            InlineShape::OneOf(InlineOneOfShape {
+                ref mut optionality,
+                ..
+            }) => optionality.is_required = required,
+        }
     }
 }
 
