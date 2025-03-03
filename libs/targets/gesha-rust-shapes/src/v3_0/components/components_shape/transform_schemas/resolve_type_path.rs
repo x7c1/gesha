@@ -92,7 +92,10 @@ impl Transformer<'_> {
     fn transform_field_type(&self, shape: TypeShape) -> Result<TypeShape> {
         let resolved_type = match shape {
             TypeShape::Ref(target) => {
-                let is_nullable = self.snapshot.schemas.is_nullable(&target);
+                let is_nullable = target
+                    .nullable
+                    .unwrap_or_else(|| self.snapshot.schemas.is_nullable(&target));
+
                 TypeShape::Proper {
                     data_type: self.mod_path.ancestors().add(target.type_name).into(),
                     optionality: Optionality {
