@@ -1,7 +1,7 @@
 use crate::misc::{MapOutput, TryMap};
 use crate::v3_0::components::schemas::DefinitionShape::{AllOf, Mod};
 use crate::v3_0::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, InlineObject, InlineShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, InlineSchema, InlineShape,
     NewTypeShape, Optionality, StructShape, TypeShape,
 };
 use crate::v3_0::components::ComponentsShape;
@@ -100,16 +100,16 @@ fn transform_array_shape(shape: TypeShape, optionality: Optionality) -> Result<T
     })
 }
 
-fn transform_inline_struct_shape(mut shape: InlineObject) -> Result<TypeShape> {
-    shape.object.fields = shape.object.fields.try_map(transform_field_shape)?;
+fn transform_inline_struct_shape(mut shape: InlineSchema) -> Result<TypeShape> {
+    shape.fields = shape.fields.try_map(transform_field_shape)?;
     Ok(InlineShape::Struct(shape).into())
 }
 
-fn transform_inline_all_of_shape(mut all_of: InlineObject) -> Result<TypeShape> {
+fn transform_inline_all_of_shape(mut all_of: InlineSchema) -> Result<TypeShape> {
     if let Some(ref_shape) = all_of.pop_all_of_if_single_ref()? {
         return Ok(TypeShape::Ref(ref_shape));
     };
-    all_of.object.all_of = all_of.object.all_of.try_map(transform_all_of_item)?;
+    all_of.all_of = all_of.all_of.try_map(transform_all_of_item)?;
     Ok(InlineShape::AllOf(all_of).into())
 }
 

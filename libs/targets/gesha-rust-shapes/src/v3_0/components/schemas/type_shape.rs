@@ -1,5 +1,5 @@
 use crate::v3_0::components::schemas::{
-    InlineObject, InlineShape, Optionality, RefShape, TypePath,
+    InlineSchema, InlineShape, Optionality, RefShape, TypePath,
 };
 use gesha_core::broken;
 use gesha_core::conversions::Error::UnknownFormat;
@@ -208,7 +208,7 @@ impl TypeFactory {
                 optionality,
             }),
             (ot::String, _) if self.object.enum_values.is_some() => {
-                let inline = InlineShape::Enum(InlineObject::new(self.object, optionality)?);
+                let inline = InlineShape::Enum(InlineSchema::new(self.object, optionality)?);
                 Ok(inline.into())
             }
             (ot::String, _) => Ok(Proper {

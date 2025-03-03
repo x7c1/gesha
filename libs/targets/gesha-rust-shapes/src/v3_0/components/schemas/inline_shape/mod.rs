@@ -1,8 +1,5 @@
-mod inline_object;
-pub use inline_object::InlineObject;
-
-mod inline_schema_shape;
-pub use inline_schema_shape::InlineSchemaShape;
+mod inline_schema;
+pub use inline_schema::InlineSchema;
 
 use crate::v3_0::components::schemas::type_header_shape::{HeaderParts, HeaderPartsGenerator};
 use crate::v3_0::components::schemas::{Optionality, TypeShape};
@@ -11,10 +8,10 @@ use openapi_types::v3_0::SchemaObject;
 
 #[derive(Clone, Debug)]
 pub enum InlineShape {
-    Struct(InlineObject),
-    Enum(InlineObject),
-    AllOf(InlineObject),
-    OneOf(InlineObject),
+    Struct(InlineSchema),
+    Enum(InlineSchema),
+    AllOf(InlineSchema),
+    OneOf(InlineSchema),
 }
 
 impl InlineShape {
@@ -26,7 +23,7 @@ impl InlineShape {
             .unwrap_or(false);
 
         if has_all_of {
-            return InlineObject::new(object, optionality).map(Self::AllOf);
+            return InlineSchema::new(object, optionality).map(Self::AllOf);
         }
 
         let has_one_of = object
@@ -36,7 +33,7 @@ impl InlineShape {
             .unwrap_or(false);
 
         if has_one_of {
-            return InlineObject::new(object, optionality).map(Self::OneOf);
+            return InlineSchema::new(object, optionality).map(Self::OneOf);
         }
 
         let has_enum = object
@@ -46,10 +43,10 @@ impl InlineShape {
             .unwrap_or(false);
 
         if has_enum {
-            return InlineObject::new(object, optionality).map(Self::Enum);
+            return InlineSchema::new(object, optionality).map(Self::Enum);
         }
 
-        InlineObject::new(object, optionality).map(Self::Struct)
+        InlineSchema::new(object, optionality).map(Self::Struct)
     }
 
     pub fn get_optionality(&self) -> &Optionality {
@@ -66,7 +63,7 @@ impl InlineShape {
         inline.optionality.is_required = required;
     }
 
-    fn get_inline_object(&self) -> &InlineObject {
+    fn get_inline_object(&self) -> &InlineSchema {
         match self {
             InlineShape::Struct(inline) => inline,
             InlineShape::Enum(inline) => inline,
@@ -75,7 +72,7 @@ impl InlineShape {
         }
     }
 
-    fn get_mut_inline_object(&mut self) -> &mut InlineObject {
+    fn get_mut_inline_object(&mut self) -> &mut InlineSchema {
         match self {
             InlineShape::Struct(inline) => inline,
             InlineShape::Enum(inline) => inline,

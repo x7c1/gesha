@@ -1,9 +1,12 @@
-use crate::v3_0::components::schemas::{AllOfItemShape, FieldShape, OneOfItemShape};
+use crate::v3_0::components::schemas::type_header_shape::HeaderParts;
+use crate::v3_0::components::schemas::{
+    AllOfItemShape, FieldShape, OneOfItemShape, Optionality, RefShape,
+};
 use gesha_core::conversions::Result;
 use openapi_types::v3_0::{EnumValues, RequiredSchemaFields, SchemaObject};
 
 #[derive(Clone, Debug)]
-pub struct InlineSchemaShape {
+pub struct InlineSchema {
     pub title: Option<String>,
     pub description: Option<String>,
     pub fields: Vec<FieldShape>,
@@ -12,10 +15,11 @@ pub struct InlineSchemaShape {
     pub all_of: Vec<AllOfItemShape>,
     pub one_of: Vec<OneOfItemShape>,
     pub enum_values: Option<EnumValues>,
+    pub optionality: Optionality,
 }
 
-impl InlineSchemaShape {
-    pub fn shape(object: SchemaObject) -> Result<Self> {
+impl InlineSchema {
+    pub fn new(object: SchemaObject, optionality: Optionality) -> Result<Self> {
         let all_of = if let Some(all_of) = object.all_of.clone() {
             AllOfItemShape::from_schema_cases(all_of).to_result()?
         } else {
@@ -35,6 +39,25 @@ impl InlineSchemaShape {
             fields: FieldShape::from_object(object).to_result()?,
             all_of,
             one_of,
+            optionality,
         })
+    }
+    pub fn generate_header_parts(&self) -> HeaderParts {
+        HeaderParts {
+            title: self.title.clone(),
+            description: self.description.clone(),
+            nullable: self.nullable,
+        }
+    }
+    pub fn pop_all_of_if_single_ref(&self) -> Result<Option<RefShape>> {
+        let ref_shape = match self.all_of.as_slice() {
+            [AllOfItemShape::Ref(object)] => object,
+            _ => return Ok(None),
+        };
+        let mut ref_shape = ref_shape.clone();
+        ref_shape.is_required = self.optionality.is_required;
+        ref_shape.nullable = Some(self.optionality.is_nullable);
+
+        Ok(Some(ref_shape.clone()))
     }
 }

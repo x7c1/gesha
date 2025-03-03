@@ -175,27 +175,27 @@ fn expand_inline_type_shape(
         InlineShape::Struct(inline) => {
             let shape = StructShape {
                 header,
-                fields: inline.object.fields,
+                fields: inline.fields,
             };
             expand_struct_fields(mod_path.clone(), shape)?
         }
         InlineShape::AllOf(inline) => {
             let shape = AllOfShape {
                 header,
-                items: inline.object.all_of,
-                required: inline.object.required,
+                items: inline.all_of,
+                required: inline.required,
             };
             expand_all_of_fields(mod_path.clone(), shape)?
         }
         InlineShape::Enum(inline) => {
-            let values = inline.object.enum_values.unwrap_or_default();
+            let values = inline.enum_values.unwrap_or_default();
             let shape = EnumShape::new(header, values);
             vec![Enum(shape)]
         }
         InlineShape::OneOf(inline) => {
             let shape = OneOfShape {
                 header,
-                items: inline.object.one_of,
+                items: inline.one_of,
             };
             vec![OneOf(shape)]
         }
