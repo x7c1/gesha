@@ -2,7 +2,7 @@ use crate::misc::{MapOutput, TryMap};
 use crate::v3_0::components::schemas::DefinitionShape::{AllOf, Mod};
 use crate::v3_0::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, InlineObject, InlineShape,
-    NewTypeShape, StructShape, TypeShape,
+    NewTypeShape, Optionality, StructShape, TypeShape,
 };
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::broken;
@@ -68,8 +68,13 @@ fn transform_field(mut field: FieldShape) -> Result<FieldShape> {
 fn transform_type_shape(shape: TypeShape) -> Result<TypeShape> {
     match shape {
         TypeShape::Inline(shape) => transform_inline_shape(*shape),
+
+        TypeShape::Array {
+            type_shape,
+            optionality,
+        } => transform_array_shape(*type_shape, optionality),
+
         TypeShape::Proper { .. }
-        | TypeShape::Array { .. }
         | TypeShape::Ref(_)
         | TypeShape::Expanded { .. }
         | TypeShape::Option(_)
@@ -84,6 +89,14 @@ fn transform_inline_shape(shape: InlineShape) -> Result<TypeShape> {
         InlineShape::Struct(inline) => transform_inline_struct_shape(inline),
         InlineShape::Enum(_) | InlineShape::OneOf(_) => Ok(shape.into()),
     }
+}
+
+fn transform_array_shape(shape: TypeShape, optionality: Optionality) -> Result<TypeShape> {
+    let transformed = transform_type_shape(shape)?;
+    Ok(TypeShape::Array {
+        type_shape: Box::new(transformed),
+        optionality,
+    })
 }
 
 fn transform_inline_struct_shape(mut shape: InlineObject) -> Result<TypeShape> {
