@@ -32,5 +32,6 @@ pub mod ref_capital;
 pub mod ref_items;
 pub mod ref_property;
 pub mod ref_single_all_of;
+pub mod ref_single_all_of_inline;
 pub mod reserved_keywords;
 pub mod title_description;
