@@ -13,23 +13,25 @@ pub struct RefShape {
 
     /**
     ## Some(true)
-        ```
-        nullable: true
-        allOf:
-            - $ref: '#/components/schemas/SomeType'
-        ```
+    ```yaml
+    nullable: true
+    allOf:
+        - $ref: '#/components/schemas/SomeType'
+    ```
+
     ## Some(false)
-        ```
-        nullable: false
-        allOf:
-            - $ref: '#/components/schemas/SomeType'
-        ```
+    ```yaml
+    nullable: false
+    allOf:
+        - $ref: '#/components/schemas/SomeType'
+    ```
+
     ## None
-        ```
-        # nullable not present
-        allOf:
-            - $ref: '#/components/schemas/SomeType'
-        ```
+    ```yaml
+    # nullable not present
+    allOf:
+        - $ref: '#/components/schemas/SomeType'
+    ```
     */
     pub nullable: Option<bool>,
 }
