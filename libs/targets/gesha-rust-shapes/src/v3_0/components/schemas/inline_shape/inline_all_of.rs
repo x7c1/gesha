@@ -8,7 +8,7 @@ use openapi_types::v3_0::SchemaObject;
 
 #[derive(Clone, Debug)]
 pub struct InlineAllOfShape {
-    object: InlineSchemaShape,
+    pub object: InlineSchemaShape,
     pub optionality: Optionality,
 }
 

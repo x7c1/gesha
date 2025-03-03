@@ -91,12 +91,12 @@ fn transform_inline_struct_shape(mut shape: InlineStructShape) -> Result<TypeSha
     Ok(TypeShape::Inline(shape.into()))
 }
 
-fn transform_inline_all_of_shape(all_of: InlineAllOfShape) -> Result<TypeShape> {
-    let Some(ref_shape) = all_of.pop_if_only_one_ref()? else {
-        return Ok(TypeShape::Inline(InlineShape::AllOf(all_of)));
+fn transform_inline_all_of_shape(mut all_of: InlineAllOfShape) -> Result<TypeShape> {
+    if let Some(ref_shape) = all_of.pop_if_only_one_ref()? {
+        return Ok(TypeShape::Ref(ref_shape));
     };
-    // TODO: convert other items
-    Ok(TypeShape::Ref(ref_shape))
+    all_of.object.fields = all_of.object.fields.try_map(transform_field_shape)?;
+    Ok(TypeShape::Inline(all_of.into()))
 }
 
 fn transform_all_of_item(item: AllOfItemShape) -> Result<AllOfItemShape> {
