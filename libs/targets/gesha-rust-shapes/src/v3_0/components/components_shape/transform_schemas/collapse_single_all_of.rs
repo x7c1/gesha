@@ -56,7 +56,8 @@ fn transform_all_of(mut shape: AllOfShape) -> Result<DefinitionShape> {
     Ok(shape.into())
 }
 
-fn transform_new_type(shape: NewTypeShape) -> Result<NewTypeShape> {
+fn transform_new_type(mut shape: NewTypeShape) -> Result<NewTypeShape> {
+    shape.type_shape = transform_type_shape(shape.type_shape)?;
     Ok(shape)
 }
 
