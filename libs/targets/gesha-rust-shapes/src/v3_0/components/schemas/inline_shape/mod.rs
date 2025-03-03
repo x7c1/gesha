@@ -84,12 +84,7 @@ impl InlineShape {
 
 impl HeaderPartsGenerator for InlineShape {
     fn generate(&self) -> HeaderParts {
-        match self {
-            InlineShape::Struct(shape) => shape.generate_header_parts(),
-            InlineShape::Enum(shape) => shape.generate_header_parts(),
-            InlineShape::AllOf(shape) => shape.generate_header_parts(),
-            InlineShape::OneOf(shape) => shape.generate_header_parts(),
-        }
+        self.get_inline_object().generate_header_parts()
     }
 }
 
