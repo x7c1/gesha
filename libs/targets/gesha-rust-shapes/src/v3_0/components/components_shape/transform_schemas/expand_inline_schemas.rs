@@ -167,7 +167,7 @@ fn expand_inline_type_shape(
     type_name: impl Into<String>,
     object: InlineShape,
 ) -> Result<(TypeShape, Vec<DefinitionShape>)> {
-    let optionality = object.optionality().clone();
+    let optionality = object.get_optionality().clone();
     let header = TypeHeaderShape::new(type_name, &object, vec![]);
     let type_name = header.name.clone();
 

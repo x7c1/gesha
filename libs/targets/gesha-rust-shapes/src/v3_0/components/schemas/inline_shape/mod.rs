@@ -52,60 +52,35 @@ impl InlineShape {
         InlineObject::new(object, optionality).map(Self::Struct)
     }
 
-    pub fn optionality(&self) -> &Optionality {
-        match self {
-            InlineShape::Struct(InlineObject { optionality, .. }) => optionality,
-            InlineShape::Enum(InlineObject { optionality, .. }) => optionality,
-            InlineShape::AllOf(InlineObject { optionality, .. }) => optionality,
-            InlineShape::OneOf(InlineObject { optionality, .. }) => optionality,
-        }
+    pub fn get_optionality(&self) -> &Optionality {
+        &self.get_inline_object().optionality
     }
 
-    pub fn set_optionality(&mut self, x: Optionality) {
-        match self {
-            InlineShape::Struct(InlineObject {
-                ref mut optionality,
-                ..
-            }) => *optionality = x,
-
-            InlineShape::Enum(InlineObject {
-                ref mut optionality,
-                ..
-            }) => *optionality = x,
-
-            InlineShape::AllOf(InlineObject {
-                ref mut optionality,
-                ..
-            }) => *optionality = x,
-
-            InlineShape::OneOf(InlineObject {
-                ref mut optionality,
-                ..
-            }) => *optionality = x,
-        }
+    pub fn set_optionality(&mut self, optionality: Optionality) {
+        let inline = self.get_mut_inline_object();
+        inline.optionality = optionality;
     }
 
     pub fn set_required(&mut self, required: bool) {
+        let inline = self.get_mut_inline_object();
+        inline.optionality.is_required = required;
+    }
+
+    fn get_inline_object(&self) -> &InlineObject {
         match self {
-            InlineShape::Struct(InlineObject {
-                ref mut optionality,
-                ..
-            }) => optionality.is_required = required,
+            InlineShape::Struct(inline) => inline,
+            InlineShape::Enum(inline) => inline,
+            InlineShape::AllOf(inline) => inline,
+            InlineShape::OneOf(inline) => inline,
+        }
+    }
 
-            InlineShape::Enum(InlineObject {
-                ref mut optionality,
-                ..
-            }) => optionality.is_required = required,
-
-            InlineShape::AllOf(InlineObject {
-                ref mut optionality,
-                ..
-            }) => optionality.is_required = required,
-
-            InlineShape::OneOf(InlineObject {
-                ref mut optionality,
-                ..
-            }) => optionality.is_required = required,
+    fn get_mut_inline_object(&mut self) -> &mut InlineObject {
+        match self {
+            InlineShape::Struct(inline) => inline,
+            InlineShape::Enum(inline) => inline,
+            InlineShape::AllOf(inline) => inline,
+            InlineShape::OneOf(inline) => inline,
         }
     }
 }

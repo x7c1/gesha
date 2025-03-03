@@ -140,7 +140,7 @@ impl TypeShape {
             Self::Proper { optionality, .. }
             | Self::Array { optionality, .. }
             | Self::Expanded { optionality, .. } => Some(optionality.clone()),
-            Self::Inline(shape) => Some(shape.optionality().clone()),
+            Self::Inline(shape) => Some(shape.get_optionality().clone()),
             Self::Ref { .. } | Self::Option(_) | Self::Maybe(_) | Self::Patch(_) => None,
         }
     }
