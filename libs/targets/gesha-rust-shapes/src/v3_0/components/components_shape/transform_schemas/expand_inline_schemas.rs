@@ -1,7 +1,7 @@
 use crate::misc::{MapOutput, TryMap};
 use crate::v3_0::components::schemas::{
-    AllOfShape, DefinitionShape, FieldShape, InlineShape, ModShape, NewTypeShape, Optionality,
-    StructShape, TypeHeaderShape, TypePath, TypeShape,
+    AllOfShape, DefinitionShape, EnumShape, FieldShape, InlineShape, ModShape, NewTypeShape,
+    OneOfShape, Optionality, StructShape, TypeHeaderShape, TypePath, TypeShape,
 };
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions::{by_key, Result};
@@ -143,7 +143,7 @@ fn expand_type_shape(
     type_shape: TypeShape,
 ) -> Result<(TypeShape, Vec<DefinitionShape>)> {
     match type_shape {
-        TypeShape::Inline(shape) => expand_inline_type_shape(mod_path, type_name, shape),
+        TypeShape::Inline(shape) => expand_inline_type_shape(mod_path, type_name, *shape),
 
         TypeShape::Array {
             type_shape,
@@ -173,20 +173,31 @@ fn expand_inline_type_shape(
 
     let defs = match object {
         InlineShape::Struct(inline) => {
-            let shape = inline.expand_with(header)?;
+            let shape = StructShape {
+                header,
+                fields: inline.object.fields,
+            };
             expand_struct_fields(mod_path.clone(), shape)?
         }
         InlineShape::AllOf(inline) => {
-            let shape = inline.expand_with(header)?;
+            let shape = AllOfShape {
+                header,
+                items: inline.object.all_of,
+                required: inline.object.required,
+            };
             expand_all_of_fields(mod_path.clone(), shape)?
         }
         InlineShape::Enum(inline) => {
-            let shape = Enum(inline.expand_with(header)?);
-            vec![shape]
+            let values = inline.object.enum_values.unwrap_or_default();
+            let shape = EnumShape::new(header, values);
+            vec![Enum(shape)]
         }
         InlineShape::OneOf(inline) => {
-            let shape = OneOf(inline.expand_with(header)?);
-            vec![shape]
+            let shape = OneOfShape {
+                header,
+                items: inline.object.one_of,
+            };
+            vec![OneOf(shape)]
         }
     };
     let type_shape = TypeShape::Expanded {

@@ -1,6 +1,6 @@
-use crate::v3_0::components::schemas::{AllOfItemShape, FieldShape};
+use crate::v3_0::components::schemas::{AllOfItemShape, FieldShape, OneOfItemShape};
 use gesha_core::conversions::Result;
-use openapi_types::v3_0::{RequiredSchemaFields, SchemaObject};
+use openapi_types::v3_0::{EnumValues, RequiredSchemaFields, SchemaObject};
 
 #[derive(Clone, Debug)]
 pub struct InlineSchemaShape {
@@ -10,6 +10,8 @@ pub struct InlineSchemaShape {
     pub nullable: Option<bool>,
     pub required: Option<RequiredSchemaFields>,
     pub all_of: Vec<AllOfItemShape>,
+    pub one_of: Vec<OneOfItemShape>,
+    pub enum_values: Option<EnumValues>,
 }
 
 impl InlineSchemaShape {
@@ -19,13 +21,20 @@ impl InlineSchemaShape {
         } else {
             vec![]
         };
+        let one_of = if let Some(one_of) = object.one_of.clone() {
+            OneOfItemShape::from_schema_cases(one_of).to_result()?
+        } else {
+            vec![]
+        };
         Ok(Self {
             title: object.title.clone(),
             description: object.description.clone(),
             nullable: object.nullable,
             required: object.required.clone(),
+            enum_values: object.enum_values.clone(),
             fields: FieldShape::from_object(object).to_result()?,
             all_of,
+            one_of,
         })
     }
 }

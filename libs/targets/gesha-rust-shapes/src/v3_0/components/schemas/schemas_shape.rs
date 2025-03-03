@@ -142,7 +142,7 @@ impl Shaper {
             header: self.create_type_header(),
             items: {
                 let cases = self.object.one_of.expect("one_of must be Some.");
-                OneOfItemShape::from_schema_cases(cases)?
+                OneOfItemShape::from_schema_cases(cases).to_result()?
             },
         };
         Ok(shape.into())

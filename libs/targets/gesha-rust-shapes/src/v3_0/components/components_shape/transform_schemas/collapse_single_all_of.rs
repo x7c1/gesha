@@ -1,8 +1,8 @@
 use crate::misc::{MapOutput, TryMap};
 use crate::v3_0::components::schemas::DefinitionShape::{AllOf, Mod};
 use crate::v3_0::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, InlineAllOfShape, InlineShape,
-    InlineStructShape, NewTypeShape, StructShape, TypeShape,
+    AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, InlineObject, InlineShape,
+    NewTypeShape, StructShape, TypeShape,
 };
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::broken;
@@ -67,7 +67,7 @@ fn transform_field(mut field: FieldShape) -> Result<FieldShape> {
 
 fn transform_type_shape(shape: TypeShape) -> Result<TypeShape> {
     match shape {
-        TypeShape::Inline(shape) => transform_inline_shape(shape),
+        TypeShape::Inline(shape) => transform_inline_shape(*shape),
         TypeShape::Proper { .. }
         | TypeShape::Array { .. }
         | TypeShape::Ref(_)
@@ -86,17 +86,17 @@ fn transform_inline_shape(shape: InlineShape) -> Result<TypeShape> {
     }
 }
 
-fn transform_inline_struct_shape(mut shape: InlineStructShape) -> Result<TypeShape> {
+fn transform_inline_struct_shape(mut shape: InlineObject) -> Result<TypeShape> {
     shape.object.fields = shape.object.fields.try_map(transform_field_shape)?;
-    Ok(TypeShape::Inline(shape.into()))
+    Ok(InlineShape::Struct(shape).into())
 }
 
-fn transform_inline_all_of_shape(mut all_of: InlineAllOfShape) -> Result<TypeShape> {
-    if let Some(ref_shape) = all_of.pop_if_only_one_ref()? {
+fn transform_inline_all_of_shape(mut all_of: InlineObject) -> Result<TypeShape> {
+    if let Some(ref_shape) = all_of.pop_all_of_if_single_ref()? {
         return Ok(TypeShape::Ref(ref_shape));
     };
     all_of.object.all_of = all_of.object.all_of.try_map(transform_all_of_item)?;
-    Ok(TypeShape::Inline(all_of.into()))
+    Ok(InlineShape::AllOf(all_of).into())
 }
 
 fn transform_all_of_item(item: AllOfItemShape) -> Result<AllOfItemShape> {
