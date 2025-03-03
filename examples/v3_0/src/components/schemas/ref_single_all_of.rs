@@ -6,12 +6,6 @@ pub mod schemas {
     use serde::Serialize;
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Target {
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub id: Option<i64>,
-    }
-
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct Bar(Target);
     impl From<Target> for Bar {
         fn from(this: Target) -> Self {
@@ -22,5 +16,11 @@ pub mod schemas {
         fn from(this: Bar) -> Self {
             this.0
         }
+    }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct Target {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub id: Option<i64>,
     }
 }

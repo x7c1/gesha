@@ -13,8 +13,6 @@ schemas:
         $ref: '#/components/schemas/NewTypeSample'
       x2:
         $ref: '#/components/schemas/EnumSample'
-      x3:
-        $ref: '#/components/schemas/AllOfSample'
   ObjectSample:
     type: object
     required:
@@ -30,6 +28,3 @@ schemas:
   EnumSample:
     type: string
     enum: [a, b, c]
-  AllOfSample:
-    allOf:
-      - $ref: '#/components/schemas/ObjectSample'
