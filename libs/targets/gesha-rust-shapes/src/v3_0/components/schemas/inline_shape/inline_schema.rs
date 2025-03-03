@@ -10,7 +10,6 @@ pub struct InlineSchema {
     pub title: Option<String>,
     pub description: Option<String>,
     pub fields: Vec<FieldShape>,
-    pub nullable: Option<bool>,
     pub required: Option<RequiredSchemaFields>,
     pub all_of: Vec<AllOfItemShape>,
     pub one_of: Vec<OneOfItemShape>,
@@ -33,7 +32,6 @@ impl InlineSchema {
         Ok(Self {
             title: object.title.clone(),
             description: object.description.clone(),
-            nullable: object.nullable,
             required: object.required.clone(),
             enum_values: object.enum_values.clone(),
             fields: FieldShape::from_object(object).to_result()?,
@@ -46,7 +44,7 @@ impl InlineSchema {
         HeaderBody {
             title: self.title.clone(),
             description: self.description.clone(),
-            nullable: self.nullable,
+            nullable: Some(self.optionality.is_nullable),
         }
     }
     pub fn pop_all_of_if_single_ref(&self) -> Result<Option<RefShape>> {
