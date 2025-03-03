@@ -1,14 +1,11 @@
 schemas:
   Foo:
-    type: object
-    properties:
-      bar1:
-        type: array
-        items:
+    type: array
+    items:
+      type: object
+      properties:
+        bar1:
           allOf:
             - $ref: '#/components/schemas/Bar1'
   Bar1:
-    type: object
-    properties:
-      id:
-        type: integer
+    type: number
