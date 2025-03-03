@@ -1,12 +1,9 @@
 schemas:
-  Foo:
-    type: object
-    properties:
-      foo1:
-        allOf:
-          - $ref: '#/components/schemas/Bar'
   Bar:
+    allOf:
+      - $ref: '#/components/schemas/Target'
+  Target:
     type: object
     properties:
-      bar1:
-        type: string
+      id:
+        type: integer

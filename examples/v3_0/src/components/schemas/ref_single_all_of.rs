@@ -6,14 +6,21 @@ pub mod schemas {
     use serde::Serialize;
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Foo {
+    pub struct Target {
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub foo1: Option<Bar>,
+        pub id: Option<i64>,
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Bar {
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub bar1: Option<String>,
+    pub struct Bar(Target);
+    impl From<Target> for Bar {
+        fn from(this: Target) -> Self {
+            Self(this)
+        }
+    }
+    impl From<Bar> for Target {
+        fn from(this: Bar) -> Self {
+            this.0
+        }
     }
 }

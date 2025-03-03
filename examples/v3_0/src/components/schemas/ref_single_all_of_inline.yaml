@@ -3,14 +3,8 @@ schemas:
     type: object
     properties:
       foo1:
-        type: object
-        properties:
-          foo2:
-            type: string
-          foo3:
-            allOf:
-              - $ref: '#/components/schemas/Bar'
-
+        allOf:
+          - $ref: '#/components/schemas/Bar'
   Bar:
     type: object
     properties:
