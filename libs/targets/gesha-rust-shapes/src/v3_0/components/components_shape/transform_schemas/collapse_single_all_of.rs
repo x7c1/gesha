@@ -95,7 +95,7 @@ fn transform_inline_all_of_shape(mut all_of: InlineAllOfShape) -> Result<TypeSha
     if let Some(ref_shape) = all_of.pop_if_only_one_ref()? {
         return Ok(TypeShape::Ref(ref_shape));
     };
-    all_of.object.fields = all_of.object.fields.try_map(transform_field_shape)?;
+    all_of.object.all_of = all_of.object.all_of.try_map(transform_all_of_item)?;
     Ok(TypeShape::Inline(all_of.into()))
 }
 
