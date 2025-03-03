@@ -25,7 +25,7 @@ impl InlineEnumShape {
         HeaderParts {
             title: self.object.title.clone(),
             description: self.object.description.clone(),
-            nullable: self.object.nullable.clone(),
+            nullable: self.object.nullable,
         }
     }
 }
