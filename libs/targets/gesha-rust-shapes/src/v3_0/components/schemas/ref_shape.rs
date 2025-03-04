@@ -10,15 +10,44 @@ pub struct RefShape {
     pub original: Ref,
     pub is_required: bool,
     pub type_name: String,
+
+    /**
+    ## Some(true)
+    ```yaml
+    type: object
+    nullable: true
+    allOf:
+        - $ref: '#/components/schemas/SomeType'
+    ```
+
+    ## Some(false)
+    ```yaml
+    type: object
+    nullable: false
+    allOf:
+        - $ref: '#/components/schemas/SomeType'
+    ```
+
+    ## None
+    ```yaml
+    type: object
+    # nullable property not present
+    allOf:
+        - $ref: '#/components/schemas/SomeType'
+    ```
+    */
+    pub nullable: Option<bool>,
 }
 
 impl RefShape {
     pub fn new(original: Ref, is_required: bool) -> Result<Self> {
+        // TODO: return error if original is not supported format
         let type_name = to_pascal_case(&original);
         Ok(Self {
             original,
             is_required,
             type_name,
+            nullable: None,
         })
     }
 }

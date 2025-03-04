@@ -46,6 +46,16 @@ impl AllOfShape {
             .flat_map(|x| x.collect_fields(&resolve_ref).into_iter().map(to_required))
             .collect()
     }
+
+    pub fn pop_if_only_one_ref(&self) -> Option<RefShape> {
+        let ref_shape = match self.items.as_slice() {
+            [AllOfItemShape::Ref(object)] => Some(object.clone()),
+            _ => None,
+        };
+        let mut ref_shape = ref_shape?;
+        ref_shape.nullable = Some(self.header.is_nullable);
+        Some(ref_shape)
+    }
 }
 
 impl From<AllOfShape> for DefinitionShape {

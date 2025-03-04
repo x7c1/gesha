@@ -1,6 +1,6 @@
 mod from_json {
     use examples_v3_0::components::schemas::ref_property::schemas::{
-        AllOfSample, Container, EnumSample, NewTypeSample, ObjectSample,
+        Container, EnumSample, NewTypeSample, ObjectSample,
     };
 
     #[test]
@@ -12,11 +12,7 @@ mod from_json {
                     "name": "x0-name"
                 },
                 "x1": "x1-value",
-                "x2": "a",
-                "x3": {
-                    "id": 3,
-                    "name": "x3-name"
-                }
+                "x2": "a"
             }"#,
         )
         .unwrap();
@@ -27,10 +23,6 @@ mod from_json {
             },
             x1: NewTypeSample::from("x1-value".to_string()),
             x2: EnumSample::A,
-            x3: AllOfSample {
-                id: 3,
-                name: "x3-name".to_string(),
-            },
         };
         assert_eq!(actual, expected)
     }
@@ -39,7 +31,7 @@ mod from_json {
 mod to_json {
     use crate::components::flatten;
     use examples_v3_0::components::schemas::ref_property::schemas::{
-        AllOfSample, Container, EnumSample, NewTypeSample, ObjectSample,
+        Container, EnumSample, NewTypeSample, ObjectSample,
     };
 
     #[test]
@@ -51,10 +43,6 @@ mod to_json {
             },
             x1: NewTypeSample::from("x1-value".to_string()),
             x2: EnumSample::A,
-            x3: AllOfSample {
-                id: 3,
-                name: "x3-name".to_string(),
-            },
         };
         let actual = serde_json::to_string(&sample).unwrap();
         let expected = flatten(
@@ -64,11 +52,7 @@ mod to_json {
                     "name": "x0-name"
                 },
                 "x1": "x1-value",
-                "x2": "a",
-                "x3": {
-                    "id": 3,
-                    "name": "x3-name"
-                }
+                "x2": "a"
             }"#,
         );
         assert_eq!(actual, expected)

@@ -12,6 +12,7 @@ pub fn convert_all_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     shapes.schemas.root.defs = defs
         .map_output(|x| transformer.shape_all_of(x))
         .to_result()?;
+
     Ok(shapes)
 }
 

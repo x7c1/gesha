@@ -14,17 +14,18 @@ pub struct TypeHeaderShape {
 impl TypeHeaderShape {
     pub fn new(
         name: impl Into<String>,
-        object: &SchemaObject,
+        body: impl Into<HeaderBody>,
         serde_attrs: Vec<SerdeAttribute>,
     ) -> Self {
         let name = {
             let camel_cased = name.into().to_upper_camel_case();
             ComponentName::new(camel_cased)
         };
+        let body = body.into();
         Self {
             name,
-            doc_comments: to_doc_comments(object.title.as_deref(), object.description.as_deref()),
-            is_nullable: object.nullable.unwrap_or(false),
+            doc_comments: to_doc_comments(body.title.as_deref(), body.description.as_deref()),
+            is_nullable: body.nullable.unwrap_or(false),
             serde_attrs,
             _hide_default_constructor: true,
         }
@@ -58,4 +59,20 @@ fn to_doc_comments(title: Option<&str>, description: Option<&str>) -> Option<Doc
         (Some(t), Some(d)) => Some(format!("{t}\n\n{d}")),
     };
     DocComments::wrap(maybe)
+}
+
+pub struct HeaderBody {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub nullable: Option<bool>,
+}
+
+impl From<&SchemaObject> for HeaderBody {
+    fn from(value: &SchemaObject) -> Self {
+        Self {
+            title: value.title.clone(),
+            description: value.description.clone(),
+            nullable: value.nullable,
+        }
+    }
 }

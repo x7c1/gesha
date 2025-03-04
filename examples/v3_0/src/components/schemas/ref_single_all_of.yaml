@@ -1,0 +1,9 @@
+schemas:
+  Bar:
+    allOf:
+      - $ref: '#/components/schemas/Target'
+  Target:
+    type: object
+    properties:
+      id:
+        type: integer

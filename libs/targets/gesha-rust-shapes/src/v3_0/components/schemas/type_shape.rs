@@ -1,5 +1,6 @@
-use crate::v3_0::components::schemas::TypeShape::{Inline, Proper};
-use crate::v3_0::components::schemas::{Optionality, RefShape, TypePath};
+use crate::v3_0::components::schemas::{
+    InlineSchema, InlineShape, Optionality, RefShape, TypePath,
+};
 use gesha_core::broken;
 use gesha_core::conversions::Error::UnknownFormat;
 use gesha_core::conversions::{Error, Result};
@@ -24,14 +25,14 @@ pub enum TypeShape {
         type_path: TypePath,
         optionality: Optionality,
     },
-    Inline {
-        object: SchemaObject,
-        optionality: Optionality,
-    },
+    Inline(Box<InlineShape>),
+
     /// required:true, nullable:true
     Option(Box<TypeShape>),
+
     /// required:false, nullable:false
     Maybe(Box<TypeShape>),
+
     /// required:false, nullable:true
     Patch(Box<TypeShape>),
 }
@@ -103,16 +104,16 @@ impl TypeShape {
             | Self::Expanded {
                 ref mut optionality,
                 ..
-            }
-            | Self::Inline {
-                ref mut optionality,
-                ..
             } => optionality.is_required = true,
 
             Self::Ref(RefShape {
                 ref mut is_required,
                 ..
             }) => *is_required = true,
+
+            Self::Inline(ref mut shape) => {
+                shape.set_required(true);
+            }
 
             Self::Option(_) | Self::Maybe(_) | Self::Patch(_) => { /* nop */ }
         }
@@ -138,9 +139,8 @@ impl TypeShape {
         match self {
             Self::Proper { optionality, .. }
             | Self::Array { optionality, .. }
-            | Self::Expanded { optionality, .. }
-            | Self::Inline { optionality, .. } => Some(optionality.clone()),
-
+            | Self::Expanded { optionality, .. } => Some(optionality.clone()),
+            Self::Inline(shape) => Some(shape.get_optionality().clone()),
             Self::Ref { .. } | Self::Option(_) | Self::Maybe(_) | Self::Patch(_) => None,
         }
     }
@@ -158,11 +158,9 @@ impl TypeShape {
             | Self::Expanded {
                 ref mut optionality,
                 ..
-            }
-            | Self::Inline {
-                ref mut optionality,
-                ..
             } => *optionality = target,
+
+            Self::Inline(ref mut shape) => shape.set_optionality(target),
 
             Self::Ref { .. } | Self::Option(_) | Self::Maybe(_) | Self::Patch(_) => { /* nop */ }
         }
@@ -178,6 +176,7 @@ struct TypeFactory {
 
 impl TypeFactory {
     fn apply(self, data_type: OpenApiDataType) -> Result<TypeShape> {
+        use crate::v3_0::components::schemas::TypeShape::Proper;
         use DataType as tp;
         use FormatModifier as fm;
         use OpenApiDataType as ot;
@@ -208,18 +207,18 @@ impl TypeFactory {
                 data_type: tp::Float64,
                 optionality,
             }),
-            (ot::String, _) if self.object.enum_values.is_some() => Ok(Inline {
-                object: self.object,
-                optionality,
-            }),
+            (ot::String, _) if self.object.enum_values.is_some() => {
+                let inline = InlineShape::Enum(InlineSchema::new(self.object, optionality)?);
+                Ok(inline.into())
+            }
             (ot::String, _) => Ok(Proper {
                 data_type: tp::String,
                 optionality,
             }),
-            (ot::Object, _) => Ok(Inline {
-                object: self.object,
-                optionality,
-            }),
+            (ot::Object, _) => {
+                let inline = InlineShape::new(self.object, optionality)?;
+                Ok(inline.into())
+            }
             (_, Some(x)) => Err(UnknownFormat {
                 data_type,
                 format: x.to_string(),

@@ -52,7 +52,7 @@ impl AllOfItemShape {
         let output = match case {
             SchemaCase::Schema(object) => Self::from_schema_object(*object),
             SchemaCase::Reference(object) => {
-                let shape = RefShape::new(object, true)?;
+                let shape = RefShape::new(object, /* is_required */ true)?;
                 Output::ok(Self::Ref(shape))
             }
         };

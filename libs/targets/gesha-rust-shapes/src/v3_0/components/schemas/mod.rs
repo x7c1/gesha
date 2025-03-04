@@ -13,6 +13,9 @@ pub use enum_shape::{EnumShape, EnumVariantShape};
 mod field_shape;
 pub use field_shape::FieldShape;
 
+mod inline_shape;
+pub use inline_shape::{InlineSchema, InlineShape};
+
 mod mod_shape;
 pub use mod_shape::ModShape;
 

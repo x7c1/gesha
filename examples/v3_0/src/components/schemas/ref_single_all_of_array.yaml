@@ -1,0 +1,11 @@
+schemas:
+  Foo:
+    type: array
+    items:
+      type: object
+      properties:
+        bar1:
+          allOf:
+            - $ref: '#/components/schemas/Bar1'
+  Bar1:
+    type: number
