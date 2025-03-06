@@ -22,6 +22,9 @@ pub use enum_variant_name::EnumVariantName;
 mod error_def;
 pub use error_def::{ErrorDef, ErrorVariant};
 
+mod identifier;
+pub use identifier::TypeIdentifier;
+
 mod imports;
 pub use imports::{Imports, Package};
 
