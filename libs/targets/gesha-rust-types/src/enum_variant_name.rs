@@ -5,11 +5,11 @@ pub struct EnumVariantName(TypeIdentifier);
 
 impl EnumVariantName {
     pub fn new<A: AsRef<str>>(x: A) -> Self {
-        let identifier = TypeIdentifier::new(x);
+        let identifier = TypeIdentifier::generate(x);
         Self(identifier)
     }
     pub fn as_str(&self) -> &str {
-        self.0.as_str()
+        self.0.as_ref()
     }
 }
 
