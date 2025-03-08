@@ -11,13 +11,12 @@ impl TypeIdentifier {
         let a = a.as_ref();
         let converted = a.to_upper_camel_case();
         let result = parse_str::<Ident>(&converted);
-        if !result.is_err() {
+        if result.is_ok() {
             return Self(converted);
         }
         let init: Vec<String> = vec!["".to_string()];
         let mut converted = a
             .chars()
-            .into_iter()
             .fold(init, replace_symbol_with_name)
             .join("_")
             .to_upper_camel_case();
