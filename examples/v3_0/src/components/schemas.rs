@@ -13,6 +13,7 @@ pub mod array_object_nested;
 pub mod boolean_field;
 pub mod camel_case_fields;
 pub mod enums;
+pub mod enums_symbol;
 pub mod newtype;
 pub mod newtype_numeric;
 pub mod newtype_ref;
