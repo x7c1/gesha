@@ -1,16 +1,15 @@
-use heck::ToUpperCamelCase;
 use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
-pub struct EnumVariantName(String);
+pub struct EnumVariantName(TypeIdentifier);
 
 impl EnumVariantName {
     pub fn new<A: AsRef<str>>(x: A) -> Self {
-        // TODO: replace x with Rust compatible chars if illegal chars are included
-        Self(x.as_ref().to_upper_camel_case())
+        let identifier = TypeIdentifier::generate(x);
+        Self(identifier)
     }
     pub fn as_str(&self) -> &str {
-        &self.0
+        self.0.as_ref()
     }
 }
 
@@ -22,6 +21,8 @@ impl Display for EnumVariantName {
 
 impl From<EnumVariantName> for String {
     fn from(this: EnumVariantName) -> Self {
-        this.0
+        String::from(this.0)
     }
 }
+
+use crate::TypeIdentifier;

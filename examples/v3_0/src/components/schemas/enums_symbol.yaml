@@ -1,0 +1,7 @@
+schemas:
+  Symbols:
+    type: string
+    enum:
+      - "-"
+      - "/*"
+      - "1+abc%3"

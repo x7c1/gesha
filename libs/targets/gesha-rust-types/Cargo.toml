@@ -11,3 +11,4 @@ edition = "2021"
 [dependencies]
 heck = { workspace = true }
 indexmap = { workspace = true }
+syn = { workspace = true }

@@ -1001,6 +1001,7 @@ version = "0.0.1"
 dependencies = [
  "heck",
  "indexmap 2.7.1",
+ "syn",
 ]
 
 [[package]]
