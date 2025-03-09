@@ -112,7 +112,7 @@ fn transform_array_shape(shape: TypeShape, optionality: Optionality) -> Result<T
 }
 
 fn transform_inline_struct_shape(mut shape: InlineSchema) -> Result<TypeShape> {
-    shape.fields = shape.fields.try_map(transform_field_shape)?;
+    shape.fields = shape.fields.try_map(transform_field)?;
     Ok(InlineShape::Struct(shape).into())
 }
 
@@ -128,10 +128,4 @@ fn transform_inline_one_of_shape(schema: InlineSchema) -> Result<TypeShape> {
         return Ok(TypeShape::Ref(ref_shape));
     };
     Ok(InlineShape::OneOf(schema).into())
-}
-
-fn transform_field_shape(shape: FieldShape) -> Result<FieldShape> {
-    let FieldShape { name, type_shape } = shape;
-    let type_shape = transform_type_shape(type_shape)?;
-    Ok(FieldShape { name, type_shape })
 }
