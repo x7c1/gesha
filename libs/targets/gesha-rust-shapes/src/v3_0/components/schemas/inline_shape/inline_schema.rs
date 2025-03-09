@@ -58,4 +58,15 @@ impl InlineSchema {
 
         Ok(Some(ref_shape.clone()))
     }
+    pub fn pop_one_of_if_single_ref(&self) -> Result<Option<RefShape>> {
+        let ref_shape = match self.one_of.as_slice() {
+            [OneOfItemShape { target }] => target,
+            _ => return Ok(None),
+        };
+        let mut ref_shape = ref_shape.clone();
+        ref_shape.is_required = self.optionality.is_required;
+        ref_shape.nullable = Some(self.optionality.is_nullable);
+
+        Ok(Some(ref_shape.clone()))
+    }
 }
