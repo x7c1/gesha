@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.7](https://github.com/x7c1/gesha/compare/gesha-v0.0.6...gesha-v0.0.7) - 2025-03-08
+
+### Added
+
+- collapse single-item allOf ([#124](https://github.com/x7c1/gesha/pull/124))
+
+### Fixed
+
+- allow ascii symbols as enum values ([#127](https://github.com/x7c1/gesha/pull/127))
+
+### Other
+
+- update Cargo.lock dependencies
+
 ## [0.0.6](https://github.com/x7c1/gesha/compare/gesha-v0.0.5...gesha-v0.0.6) - 2025-03-01
 
 ### Added

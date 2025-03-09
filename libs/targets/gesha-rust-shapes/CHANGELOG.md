@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.7](https://github.com/x7c1/gesha/compare/gesha-rust-shapes-v0.0.6...gesha-rust-shapes-v0.0.7) - 2025-03-08
+
+### Added
+
+- collapse single-item allOf ([#124](https://github.com/x7c1/gesha/pull/124))
+
 ## [0.0.6](https://github.com/x7c1/gesha/compare/gesha-rust-shapes-v0.0.5...gesha-rust-shapes-v0.0.6) - 2025-03-01
 
 ### Added
