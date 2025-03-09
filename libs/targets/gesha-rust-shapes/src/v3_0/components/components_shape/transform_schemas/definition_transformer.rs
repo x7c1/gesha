@@ -2,7 +2,7 @@ use crate::misc::TryMap;
 use crate::v3_0::components::schemas::DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 use crate::v3_0::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, InlineSchema, InlineShape,
-    NewTypeShape, OneOfShape, Optionality, StructShape, TypeShape,
+    NewTypeShape, OneOfShape, Optionality, RefShape, StructShape, TypeHeaderShape, TypeShape,
 };
 use gesha_core::broken;
 use gesha_core::conversions::Result;
@@ -111,5 +111,18 @@ pub trait DefinitionTransformer {
             .collect::<Result<Vec<_>>>()?;
 
         Ok(AllOfItemShape::Object(transformed))
+    }
+
+    fn define_ref(mut ref_shape: RefShape, header: TypeHeaderShape) -> Result<DefinitionShape> {
+        ref_shape.nullable = Some(header.is_nullable);
+        let type_shape = TypeShape::from(ref_shape);
+        let def_shape = NewTypeShape::new(header, type_shape);
+        Ok(def_shape.into())
+    }
+
+    fn overwrite_ref(mut ref_shape: RefShape, optionality: &Optionality) -> Result<TypeShape> {
+        ref_shape.is_required = optionality.is_required;
+        ref_shape.nullable = Some(optionality.is_nullable);
+        Ok(TypeShape::Ref(ref_shape))
     }
 }
