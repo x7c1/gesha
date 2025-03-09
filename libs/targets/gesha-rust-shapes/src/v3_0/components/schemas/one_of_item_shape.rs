@@ -9,7 +9,7 @@ pub struct OneOfItemShape {
     pub target: RefShape,
 }
 
-impl OneOfItemShape {
+impl CaseItem for OneOfItemShape {
     fn from_schema_case(case: SchemaCase) -> Result<Output<Self>> {
         let shape = match case {
             SchemaCase::Schema(_) => unimplemented!("not supported"),
@@ -19,12 +19,6 @@ impl OneOfItemShape {
             }
         };
         Ok(Output::ok(shape))
-    }
-}
-
-impl CaseItem for OneOfItemShape {
-    fn from_schema_case(case: SchemaCase) -> Result<Output<Self>> {
-        Self::from_schema_case(case)
     }
 
     fn to_ref_shape(&self) -> Option<&RefShape> {

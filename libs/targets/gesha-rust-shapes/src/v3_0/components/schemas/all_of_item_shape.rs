@@ -40,7 +40,9 @@ impl AllOfItemShape {
         let items = FieldShape::from_object(object);
         items.map(Self::Object)
     }
+}
 
+impl CaseItem for AllOfItemShape {
     fn from_schema_case(case: SchemaCase) -> Result<Output<Self>> {
         let output = match case {
             SchemaCase::Schema(object) => Self::from_schema_object(*object),
@@ -50,12 +52,6 @@ impl AllOfItemShape {
             }
         };
         Ok(output)
-    }
-}
-
-impl CaseItem for AllOfItemShape {
-    fn from_schema_case(case: SchemaCase) -> Result<Output<Self>> {
-        Self::from_schema_case(case)
     }
 
     fn to_ref_shape(&self) -> Option<&RefShape> {
