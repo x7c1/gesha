@@ -15,7 +15,7 @@ impl AllOfItemShapes {
             .map(AllOfItemShape::from_schema_case)
             .collect::<Vec<_>>()
             .merge()
-            .map(|x| x.merge())
+            .map(|outputs| outputs.merge())
             .merge();
 
         inner.map(Self)

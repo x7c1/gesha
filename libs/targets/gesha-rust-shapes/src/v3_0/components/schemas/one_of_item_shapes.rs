@@ -12,6 +12,8 @@ impl OneOfItemShapes {
             .into_iter()
             .map(OneOfItemShape::from_schema_case)
             .collect::<Vec<_>>()
+            .merge()
+            .map(|outputs| outputs.merge())
             .merge();
 
         inner.map(Self)

@@ -1,5 +1,5 @@
 use crate::v3_0::components::schemas::RefShape;
-use gesha_core::conversions::Result;
+use gesha_core::conversions::{Output, Result};
 use openapi_types::v3_0::SchemaCase;
 
 #[derive(Clone, Debug)]
@@ -8,7 +8,7 @@ pub struct OneOfItemShape {
 }
 
 impl OneOfItemShape {
-    pub fn from_schema_case(case: SchemaCase) -> Result<Self> {
+    pub fn from_schema_case(case: SchemaCase) -> Result<Output<Self>> {
         let shape = match case {
             SchemaCase::Schema(_) => unimplemented!("not supported"),
             SchemaCase::Reference(target) => {
@@ -16,6 +16,6 @@ impl OneOfItemShape {
                 Self { target }
             }
         };
-        Ok(shape)
+        Ok(Output::ok(shape))
     }
 }
