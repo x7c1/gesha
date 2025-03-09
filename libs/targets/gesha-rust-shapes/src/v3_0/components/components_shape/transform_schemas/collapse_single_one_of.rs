@@ -39,7 +39,9 @@ fn transform_struct(mut shape: StructShape) -> Result<StructShape> {
 
 /// return NewTypeShape if given OneOfShape has only one $ref
 fn transform_one_of(shape: OneOfShape) -> Result<DefinitionShape> {
-    if let Some(ref_shape) = shape.pop_if_only_one_ref() {
+    if let Some(mut ref_shape) = shape.items.head_if_single_ref().cloned() {
+        ref_shape.nullable = Some(shape.header.is_nullable);
+
         let type_shape = TypeShape::from(ref_shape);
         let def_shape = NewTypeShape::new(shape.header, type_shape);
         return Ok(def_shape.into());
@@ -48,7 +50,7 @@ fn transform_one_of(shape: OneOfShape) -> Result<DefinitionShape> {
 }
 
 fn transform_all_of(mut shape: AllOfShape) -> Result<AllOfShape> {
-    shape.items = shape.items.try_map(transform_all_of_item)?;
+    shape.items = shape.items.transform_items(transform_all_of_item)?;
     Ok(shape)
 }
 
@@ -115,15 +117,17 @@ fn transform_inline_struct_shape(mut shape: InlineSchema) -> Result<TypeShape> {
 }
 
 fn transform_inline_all_of_shape(mut shape: InlineSchema) -> Result<TypeShape> {
-    shape.all_of = shape.all_of.try_map(transform_all_of_item)?;
+    shape.all_of = shape.all_of.transform_items(transform_all_of_item)?;
     Ok(InlineShape::AllOf(shape).into())
 }
 
-fn transform_inline_one_of_shape(one_of: InlineSchema) -> Result<TypeShape> {
-    if let Some(ref_shape) = one_of.pop_one_of_if_single_ref()? {
+fn transform_inline_one_of_shape(schema: InlineSchema) -> Result<TypeShape> {
+    if let Some(mut ref_shape) = schema.one_of.head_if_single_ref().cloned() {
+        ref_shape.is_required = schema.optionality.is_required;
+        ref_shape.nullable = Some(schema.optionality.is_nullable);
         return Ok(TypeShape::Ref(ref_shape));
     };
-    Ok(InlineShape::OneOf(one_of).into())
+    Ok(InlineShape::OneOf(schema).into())
 }
 
 fn transform_field_shape(shape: FieldShape) -> Result<FieldShape> {

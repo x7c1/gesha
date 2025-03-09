@@ -1,6 +1,5 @@
 use crate::v3_0::components::schemas::{DefinitionShape, FieldShape, RefShape};
 use gesha_core::conversions::{Output, Result};
-use openapi_types::core::OutputMergeOps;
 use openapi_types::v3_0::{SchemaCase, SchemaObject};
 
 #[derive(Clone, Debug)]
@@ -10,16 +9,6 @@ pub enum AllOfItemShape {
 }
 
 impl AllOfItemShape {
-    pub fn from_schema_cases(cases: Vec<SchemaCase>) -> Output<Vec<Self>> {
-        cases
-            .into_iter()
-            .map(Self::from_schema_case)
-            .collect::<Vec<_>>()
-            .merge()
-            .map(|x| x.merge())
-            .merge()
-    }
-
     pub fn expand_fields<F>(self, f: F) -> Result<(Self, Vec<DefinitionShape>)>
     where
         F: Fn(Vec<FieldShape>) -> Result<(Vec<FieldShape>, Vec<DefinitionShape>)>,
@@ -48,7 +37,7 @@ impl AllOfItemShape {
         items.map(Self::Object)
     }
 
-    fn from_schema_case(case: SchemaCase) -> Result<Output<Self>> {
+    pub fn from_schema_case(case: SchemaCase) -> Result<Output<Self>> {
         let output = match case {
             SchemaCase::Schema(object) => Self::from_schema_object(*object),
             SchemaCase::Reference(object) => {

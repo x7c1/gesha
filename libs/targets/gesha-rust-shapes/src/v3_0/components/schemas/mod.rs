@@ -1,6 +1,9 @@
 mod all_of_item_shape;
 pub use all_of_item_shape::AllOfItemShape;
 
+mod all_of_item_shapes;
+pub use all_of_item_shapes::AllOfItemShapes;
+
 mod all_of_shape;
 pub use all_of_shape::AllOfShape;
 
@@ -27,6 +30,9 @@ pub use one_of_shape::OneOfShape;
 
 mod one_of_item_shape;
 pub use one_of_item_shape::OneOfItemShape;
+
+mod one_of_item_shapes;
+pub use one_of_item_shapes::OneOfItemShapes;
 
 mod optionality;
 pub use optionality::Optionality;
