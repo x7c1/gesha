@@ -41,7 +41,7 @@ impl AllOfItemShape {
         items.map(Self::Object)
     }
 
-    pub fn from_schema_case(case: SchemaCase) -> Result<Output<Self>> {
+    fn from_schema_case(case: SchemaCase) -> Result<Output<Self>> {
         let output = match case {
             SchemaCase::Schema(object) => Self::from_schema_object(*object),
             SchemaCase::Reference(object) => {

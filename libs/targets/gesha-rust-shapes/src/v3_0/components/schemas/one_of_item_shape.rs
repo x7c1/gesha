@@ -10,7 +10,7 @@ pub struct OneOfItemShape {
 }
 
 impl OneOfItemShape {
-    pub fn from_schema_case(case: SchemaCase) -> Result<Output<Self>> {
+    fn from_schema_case(case: SchemaCase) -> Result<Output<Self>> {
         let shape = match case {
             SchemaCase::Schema(_) => unimplemented!("not supported"),
             SchemaCase::Reference(target) => {
