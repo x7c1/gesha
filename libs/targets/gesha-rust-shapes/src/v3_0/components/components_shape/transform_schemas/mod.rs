@@ -10,6 +10,8 @@ use convert_all_of::convert_all_of;
 mod convert_one_of;
 use convert_one_of::convert_one_of;
 
+mod definition_transformer;
+
 mod expand_inline_schemas;
 use expand_inline_schemas::expand_inline_schemas;
 

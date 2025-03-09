@@ -37,7 +37,7 @@ impl AllOfItemShapes {
         f: impl Fn(AllOfItemShape) -> Result<AllOfItemShape>,
     ) -> Result<Self> {
         let items = self.0.try_map(f)?;
-        Ok(AllOfItemShapes::new(items))
+        Ok(Self::new(items))
     }
 
     pub fn into_vec(self) -> Vec<AllOfItemShape> {
