@@ -20,12 +20,12 @@ impl InlineSchema {
         let all_of = if let Some(all_of) = object.all_of.clone() {
             AllOfItemShapes::from_schema_cases(all_of).to_result()?
         } else {
-            AllOfItemShapes::default()
+            AllOfItemShapes::empty()
         };
         let one_of = if let Some(one_of) = object.one_of.clone() {
             OneOfItemShapes::from_schema_cases(one_of).to_result()?
         } else {
-            OneOfItemShapes::default()
+            OneOfItemShapes::empty()
         };
         Ok(Self {
             title: object.title.clone(),

@@ -1,8 +1,5 @@
 mod all_of_item_shape;
-pub use all_of_item_shape::AllOfItemShape;
-
-mod all_of_item_shapes;
-pub use all_of_item_shapes::AllOfItemShapes;
+pub use all_of_item_shape::{AllOfItemShape, AllOfItemShapes};
 
 mod all_of_shape;
 pub use all_of_shape::AllOfShape;
@@ -19,6 +16,9 @@ pub use field_shape::FieldShape;
 mod inline_shape;
 pub use inline_shape::{InlineSchema, InlineShape};
 
+mod item_shapes;
+pub use item_shapes::{CaseItem, CaseItemShapes};
+
 mod mod_shape;
 pub use mod_shape::ModShape;
 
@@ -29,10 +29,7 @@ mod one_of_shape;
 pub use one_of_shape::OneOfShape;
 
 mod one_of_item_shape;
-pub use one_of_item_shape::OneOfItemShape;
-
-mod one_of_item_shapes;
-pub use one_of_item_shapes::OneOfItemShapes;
+pub use one_of_item_shape::{OneOfItemShape, OneOfItemShapes};
 
 mod optionality;
 pub use optionality::Optionality;

@@ -1,6 +1,8 @@
-use crate::v3_0::components::schemas::RefShape;
+use crate::v3_0::components::schemas::{CaseItem, CaseItemShapes, RefShape};
 use gesha_core::conversions::{Output, Result};
 use openapi_types::v3_0::SchemaCase;
+
+pub type OneOfItemShapes = CaseItemShapes<OneOfItemShape>;
 
 #[derive(Clone, Debug)]
 pub struct OneOfItemShape {
@@ -17,5 +19,15 @@ impl OneOfItemShape {
             }
         };
         Ok(Output::ok(shape))
+    }
+}
+
+impl CaseItem for OneOfItemShape {
+    fn from_schema_case(case: SchemaCase) -> Result<Output<Self>> {
+        Self::from_schema_case(case)
+    }
+
+    fn to_ref_shape(&self) -> Option<&RefShape> {
+        Some(&self.target)
     }
 }
