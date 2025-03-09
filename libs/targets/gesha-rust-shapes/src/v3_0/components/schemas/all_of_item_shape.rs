@@ -1,7 +1,10 @@
-use crate::v3_0::components::schemas::{DefinitionShape, FieldShape, RefShape};
+use crate::v3_0::components::schemas::{
+    CaseItem, CaseItemShapes, DefinitionShape, FieldShape, RefShape,
+};
 use gesha_core::conversions::{Output, Result};
-use openapi_types::core::OutputMergeOps;
 use openapi_types::v3_0::{SchemaCase, SchemaObject};
+
+pub type AllOfItemShapes = CaseItemShapes<AllOfItemShape>;
 
 #[derive(Clone, Debug)]
 pub enum AllOfItemShape {
@@ -10,16 +13,6 @@ pub enum AllOfItemShape {
 }
 
 impl AllOfItemShape {
-    pub fn from_schema_cases(cases: Vec<SchemaCase>) -> Output<Vec<Self>> {
-        cases
-            .into_iter()
-            .map(Self::from_schema_case)
-            .collect::<Vec<_>>()
-            .merge()
-            .map(|x| x.merge())
-            .merge()
-    }
-
     pub fn expand_fields<F>(self, f: F) -> Result<(Self, Vec<DefinitionShape>)>
     where
         F: Fn(Vec<FieldShape>) -> Result<(Vec<FieldShape>, Vec<DefinitionShape>)>,
@@ -47,7 +40,9 @@ impl AllOfItemShape {
         let items = FieldShape::from_object(object);
         items.map(Self::Object)
     }
+}
 
+impl CaseItem for AllOfItemShape {
     fn from_schema_case(case: SchemaCase) -> Result<Output<Self>> {
         let output = match case {
             SchemaCase::Schema(object) => Self::from_schema_object(*object),
@@ -57,5 +52,12 @@ impl AllOfItemShape {
             }
         };
         Ok(output)
+    }
+
+    fn to_ref_shape(&self) -> Option<&RefShape> {
+        match self {
+            Self::Ref(shape) => Some(shape),
+            _ => None,
+        }
     }
 }

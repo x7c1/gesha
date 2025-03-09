@@ -1,7 +1,7 @@
 use crate::misc::{MapOutput, TryMap};
 use crate::v3_0::components::schemas::{
-    AllOfShape, DefinitionShape, EnumShape, FieldShape, InlineShape, ModShape, NewTypeShape,
-    OneOfShape, Optionality, StructShape, TypeHeaderShape, TypePath, TypeShape,
+    AllOfItemShapes, AllOfShape, DefinitionShape, EnumShape, FieldShape, InlineShape, ModShape,
+    NewTypeShape, OneOfShape, Optionality, StructShape, TypeHeaderShape, TypePath, TypeShape,
 };
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions::{by_key, Result};
@@ -71,10 +71,11 @@ fn expand_all_of_fields(path: TypePath, mut shape: AllOfShape) -> Result<Vec<Def
     let path = path.add(mod_name.clone());
     let expanded = shape
         .items
+        .into_vec()
         .try_map(|x| x.expand_fields(expand_fields_from(&path)))?;
 
     let (items, defs) = collect(expanded);
-    shape.items = items;
+    shape.items = AllOfItemShapes::new(items);
 
     let mod_def = defs
         .is_empty()

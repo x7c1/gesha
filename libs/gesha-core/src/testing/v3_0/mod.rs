@@ -42,6 +42,8 @@ pub fn schemas_files() -> Vec<&'static str> {
         "ref_single_all_of_inline_all_of.yaml",
         "ref_single_all_of_inline_array.yaml",
         "ref_single_all_of_nullable.yaml",
+        "ref_single_one_of_inline_nested.yaml",
+        "ref_single_one_of_inline_all_of.yaml",
     ]
 }
 

@@ -1,6 +1,6 @@
 use crate::v3_0::components::schemas::{
-    AllOfItemShape, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, NewTypeShape,
-    OneOfItemShape, OneOfShape, RefShape, StructShape, TypeHeaderShape, TypeShape,
+    AllOfItemShapes, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, NewTypeShape,
+    OneOfItemShapes, OneOfShape, RefShape, StructShape, TypeHeaderShape, TypeShape,
 };
 use gesha_core::conversions::{by_key, Output, Result};
 use gesha_rust_types::ModDef;
@@ -131,7 +131,7 @@ impl Shaper {
             required: self.object.required,
             items: {
                 let cases = self.object.all_of.expect("all_of must be Some.");
-                AllOfItemShape::from_schema_cases(cases).to_result()?
+                AllOfItemShapes::from_schema_cases(cases).to_result()?
             },
         };
         Ok(shape.into())
@@ -142,7 +142,7 @@ impl Shaper {
             header: self.create_type_header(),
             items: {
                 let cases = self.object.one_of.expect("one_of must be Some.");
-                OneOfItemShape::from_schema_cases(cases).to_result()?
+                OneOfItemShapes::from_schema_cases(cases).to_result()?
             },
         };
         Ok(shape.into())
