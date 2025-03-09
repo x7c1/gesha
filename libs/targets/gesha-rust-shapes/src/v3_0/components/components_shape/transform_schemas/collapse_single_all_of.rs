@@ -98,7 +98,7 @@ fn transform_array_shape(shape: TypeShape, optionality: Optionality) -> Result<T
 }
 
 fn transform_inline_struct_shape(mut shape: InlineSchema) -> Result<TypeShape> {
-    shape.fields = shape.fields.try_map(transform_field_shape)?;
+    shape.fields = shape.fields.try_map(transform_field)?;
     Ok(InlineShape::Struct(shape).into())
 }
 
@@ -118,14 +118,8 @@ fn transform_all_of_item(item: AllOfItemShape) -> Result<AllOfItemShape> {
     };
     let transformed = fields
         .into_iter()
-        .map(transform_field_shape)
+        .map(transform_field)
         .collect::<Result<Vec<_>>>()?;
 
     Ok(AllOfItemShape::Object(transformed))
-}
-
-fn transform_field_shape(shape: FieldShape) -> Result<FieldShape> {
-    let FieldShape { name, type_shape } = shape;
-    let type_shape = transform_type_shape(type_shape)?;
-    Ok(FieldShape { name, type_shape })
 }
