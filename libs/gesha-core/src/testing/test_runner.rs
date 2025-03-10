@@ -77,7 +77,10 @@ where
 
     #[instrument]
     async fn run_single_test(self, case: TestCase<A>) -> Result<()> {
-        Generator::new(&self.0, &case.output).generate_from_file(&case.schema)?;
+        Generator::new(&self.0, &case.output)
+            .generate_from_file(&case.schema)?
+            .to_result()
+            .map_err(Error::Errors)?;
 
         detect_diff(&case.output, &case.example)?;
         info!("passed: {path}", path = case.schema.to_string_lossy());
