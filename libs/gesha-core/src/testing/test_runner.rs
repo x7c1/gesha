@@ -17,7 +17,7 @@ where
     }
 
     #[instrument(skip_all)]
-    pub async fn run_tests(&self, cases: Vec<TestCase<A>>) -> Output<()> {
+    pub async fn run_tests(&self, cases: Vec<TestCase<A>>) -> Result<()> {
         let errors = run_parallel(cases, |case| {
             let this = self.clone();
             this.run_single_test(case)
@@ -26,9 +26,9 @@ where
         .await;
 
         if errors.is_empty() {
-            Output::ok(())
+            Ok(())
         } else {
-            Output::new((), errors)
+            Err(Error::Errors(errors))
         }
     }
 

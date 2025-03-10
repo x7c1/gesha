@@ -1,9 +1,8 @@
 use clap::Parser;
-use gesha_core::conversions::format_errors;
 use gesha_core::testing::{TestDefinition, TestRunner};
 use gesha_core::Result;
 use gesha_rust_shapes::v3_0;
-use tracing::{error, instrument};
+use tracing::instrument;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -28,9 +27,5 @@ async fn process<A: TestDefinition>(definition: A, args: Args) -> Result<()> {
         definition.list_test_cases()
     };
     let runner = TestRunner::new(definition);
-    let output = runner.run_tests(cases).await;
-    if let Some(errors) = format_errors(output) {
-        error!("{errors}");
-    }
-    Ok(())
+    runner.run_tests(cases).await
 }
