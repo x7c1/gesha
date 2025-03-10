@@ -77,17 +77,14 @@ where
 
     #[instrument]
     async fn run_single_test(self, case: TestCase<A>) -> Result<Output<()>> {
-        let (_, errors) = Generator::new(&self.0, &case.output)
+        Generator::new(&self.0, &case.output)
             .generate_from_file(&case.schema)?
-            .into_tuple();
+            .to_result()
+            .map_err(Error::Errors)?;
 
-        if errors.is_empty() {
-            detect_diff(&case.output, &case.example)?;
-            info!("passed: {path}", path = case.schema.to_string_lossy());
-            Ok(Output::ok(()))
-        } else {
-            Err(Error::Errors(errors))
-        }
+        detect_diff(&case.output, &case.example)?;
+        info!("passed: {path}", path = case.schema.to_string_lossy());
+        Ok(Output::ok(()))
     }
 
     #[instrument(skip_all)]
