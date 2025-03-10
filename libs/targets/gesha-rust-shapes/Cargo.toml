@@ -1,6 +1,6 @@
 [package]
 name = "gesha-rust-shapes"
-version = "0.0.7"
+version = "0.0.8"
 description = "Rust types for intermediate representation in the Gesha project"
 repository = "https://github.com/x7c1/gesha/tree/main/libs/targets/gesha-rust-types"
 license = "MIT"

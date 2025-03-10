@@ -955,7 +955,7 @@ dependencies = [
 
 [[package]]
 name = "gesha"
-version = "0.0.7"
+version = "0.0.8"
 dependencies = [
  "clap",
  "gesha-core",
@@ -966,7 +966,7 @@ dependencies = [
 
 [[package]]
 name = "gesha-core"
-version = "0.0.7"
+version = "0.0.8"
 dependencies = [
  "chrono",
  "console",
@@ -985,7 +985,7 @@ dependencies = [
 
 [[package]]
 name = "gesha-rust-shapes"
-version = "0.0.7"
+version = "0.0.8"
 dependencies = [
  "gesha-core",
  "gesha-rust-types",
