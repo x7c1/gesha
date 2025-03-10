@@ -1,23 +1,16 @@
-use crate::v3_0::components::schemas::RefShape;
+use crate::v3_0::components::schemas::{CaseItem, CaseItemShapes, RefShape};
 use gesha_core::conversions::{Output, Result};
-use openapi_types::core::OutputMergeOps;
 use openapi_types::v3_0::SchemaCase;
+
+pub type OneOfItemShapes = CaseItemShapes<OneOfItemShape>;
 
 #[derive(Clone, Debug)]
 pub struct OneOfItemShape {
     pub target: RefShape,
 }
 
-impl OneOfItemShape {
-    pub fn from_schema_cases(cases: Vec<SchemaCase>) -> Output<Vec<Self>> {
-        cases
-            .into_iter()
-            .map(Self::from_schema_case)
-            .collect::<Vec<_>>()
-            .merge()
-    }
-
-    fn from_schema_case(case: SchemaCase) -> Result<Self> {
+impl CaseItem for OneOfItemShape {
+    fn from_schema_case(case: SchemaCase) -> Result<Output<Self>> {
         let shape = match case {
             SchemaCase::Schema(_) => unimplemented!("not supported"),
             SchemaCase::Reference(target) => {
@@ -25,6 +18,10 @@ impl OneOfItemShape {
                 Self { target }
             }
         };
-        Ok(shape)
+        Ok(Output::ok(shape))
+    }
+
+    fn to_ref_shape(&self) -> Option<&RefShape> {
+        Some(&self.target)
     }
 }

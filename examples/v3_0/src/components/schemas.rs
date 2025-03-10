@@ -39,5 +39,7 @@ pub mod ref_single_all_of_inline_all_of;
 pub mod ref_single_all_of_inline_array;
 pub mod ref_single_all_of_inline_nested;
 pub mod ref_single_all_of_nullable;
+pub mod ref_single_one_of_inline_all_of;
+pub mod ref_single_one_of_inline_nested;
 pub mod reserved_keywords;
 pub mod title_description;

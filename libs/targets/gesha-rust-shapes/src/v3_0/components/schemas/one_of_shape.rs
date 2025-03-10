@@ -1,11 +1,11 @@
 use crate::v3_0::components::schemas::{
-    DefinitionShape, FieldShape, OneOfItemShape, RefShape, TypeHeaderShape, TypeShape,
+    DefinitionShape, FieldShape, OneOfItemShapes, RefShape, TypeHeaderShape, TypeShape,
 };
 
 #[derive(Clone, Debug)]
 pub struct OneOfShape {
     pub header: TypeHeaderShape,
-    pub items: Vec<OneOfItemShape>,
+    pub items: OneOfItemShapes,
 }
 
 impl OneOfShape {

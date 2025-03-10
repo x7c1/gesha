@@ -48,7 +48,10 @@ impl Transformer {
                 shape.header.serde_attrs.push(Untagged);
                 shape.header
             },
-            variants: shape.items.try_map(|item| self.to_variant(item))?,
+            variants: shape
+                .items
+                .into_vec()
+                .try_map(|item| self.to_variant(item))?,
         })
     }
 
