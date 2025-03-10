@@ -1,7 +1,7 @@
 use crate::conversions::Generator;
 use crate::io::Writer;
 use crate::testing::{detect_diff, run_parallel, TestCase, TestCaseIndex, TestDefinition};
-use crate::{Error, ErrorTheme, Output, Result};
+use crate::{Error, ErrorTheme, Result};
 use std::fmt::Debug;
 use tracing::{info, instrument};
 
@@ -76,7 +76,7 @@ where
     }
 
     #[instrument]
-    async fn run_single_test(self, case: TestCase<A>) -> Result<Output<()>> {
+    async fn run_single_test(self, case: TestCase<A>) -> Result<()> {
         Generator::new(&self.0, &case.output)
             .generate_from_file(&case.schema)?
             .to_result()
@@ -84,7 +84,7 @@ where
 
         detect_diff(&case.output, &case.example)?;
         info!("passed: {path}", path = case.schema.to_string_lossy());
-        Ok(Output::ok(()))
+        Ok(())
     }
 
     #[instrument(skip_all)]
