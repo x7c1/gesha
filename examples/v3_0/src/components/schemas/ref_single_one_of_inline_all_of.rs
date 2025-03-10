@@ -33,6 +33,10 @@ pub mod schemas {
                 pub inner1: Option<String>,
                 #[serde(default, skip_serializing_if = "Option::is_none")]
                 pub inner2: Option<super::super::Bar>,
+                #[serde(default, skip_serializing_if = "Option::is_none")]
+                pub inner3: Option<String>,
+                #[serde(default, skip_serializing_if = "Option::is_none")]
+                pub inner4: Option<String>,
             }
         }
     }

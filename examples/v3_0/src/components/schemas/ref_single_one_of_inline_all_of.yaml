@@ -16,7 +16,12 @@ schemas:
                   inner2:
                     oneOf:
                       - $ref: '#/components/schemas/Bar'
-
+              - type: object
+                properties:
+                  inner3:
+                    type: string
+                  inner4:
+                    type: string
   Bar:
     type: object
     properties:
