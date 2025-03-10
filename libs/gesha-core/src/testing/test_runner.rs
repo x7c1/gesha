@@ -1,7 +1,7 @@
 use crate::conversions::Generator;
 use crate::io::Writer;
 use crate::testing::{detect_diff, run_parallel, TestCase, TestCaseIndex, TestDefinition};
-use crate::{Error, ErrorTheme, Result};
+use crate::{Error, ErrorTheme, Output, Result};
 use std::fmt::Debug;
 use tracing::{info, instrument};
 
@@ -17,7 +17,7 @@ where
     }
 
     #[instrument(skip_all)]
-    pub async fn run_tests(&self, cases: Vec<TestCase<A>>) -> Result<()> {
+    pub async fn run_tests(&self, cases: Vec<TestCase<A>>) -> Output<()> {
         let errors = run_parallel(cases, |case| {
             let this = self.clone();
             this.run_single_test(case)
@@ -26,9 +26,9 @@ where
         .await;
 
         if errors.is_empty() {
-            Ok(())
+            Output::ok(())
         } else {
-            Err(Error::Errors(errors))
+            Output::new((), errors)
         }
     }
 
@@ -76,12 +76,18 @@ where
     }
 
     #[instrument]
-    async fn run_single_test(self, case: TestCase<A>) -> Result<()> {
-        Generator::new(&self.0, &case.output).generate_from_file(&case.schema)?;
+    async fn run_single_test(self, case: TestCase<A>) -> Result<Output<()>> {
+        let (_, errors) = Generator::new(&self.0, &case.output)
+            .generate_from_file(&case.schema)?
+            .into_tuple();
 
-        detect_diff(&case.output, &case.example)?;
-        info!("passed: {path}", path = case.schema.to_string_lossy());
-        Ok(())
+        if errors.is_empty() {
+            detect_diff(&case.output, &case.example)?;
+            info!("passed: {path}", path = case.schema.to_string_lossy());
+            Ok(Output::ok(()))
+        } else {
+            Err(Error::Errors(errors))
+        }
     }
 
     #[instrument(skip_all)]

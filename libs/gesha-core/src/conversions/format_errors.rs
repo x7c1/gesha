@@ -25,6 +25,10 @@ fn format_core_error(err: Error) -> Vec<String> {
             lines.push(format!("path: {}", path.to_string_lossy()));
             lines.append(&mut conv::format_error(cause, vec![]));
         }
+        Error::Errors(errors) => {
+            let mut formatted = errors.into_iter().flat_map(format_core_error).collect();
+            lines.append(&mut formatted);
+        }
         e => lines.push(format!("{:#?}", e)),
     }
     lines.push("".to_string());
