@@ -1,1 +1,1 @@
-mod impl_enum;
+mod impl_enum_serde;

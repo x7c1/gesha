@@ -11,7 +11,7 @@ pub mod schemas {
         Minus42,
     }
 
-    gesha_macros::impl_enum!(MixedTypeEnum {
+    gesha_macros::impl_enum_serde!(MixedTypeEnum {
         u64: [(_1000, 1000)],
         str: [(_2000, "2000"), (_2001, "2001"), (_2002, "2002")],
         i64: [(Minus42, -42)],

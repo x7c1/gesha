@@ -1,5 +1,5 @@
 #[macro_export]
-macro_rules! impl_enum {
+macro_rules! impl_enum_serde {
     (
         $enum_name:ident {
             $(
