@@ -140,4 +140,25 @@ mod tests {
         let expected = "_1PlusFooEquals345PercentBar";
         assert_eq!(actual, expected);
     }
+
+    #[test]
+    fn ok_with_minus() {
+        let actual = TypeIdentifier::generate("-42");
+        let expected = "Minus42";
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn ok_with_numeric_and_symbol_as_it_is() {
+        let actual = TypeIdentifier::generate("_42");
+        let expected = "Underscore42";
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn ok_with_symbol_and_numeric() {
+        let actual = TypeIdentifier::generate("%_42");
+        let expected = "PercentUnderscore42";
+        assert_eq!(actual, expected);
+    }
 }
