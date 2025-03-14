@@ -10,8 +10,8 @@ pub use request_bodies_shape::RequestBodiesShape;
 use gesha_core::broken;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{
-    Definition, DocComments, EnumVariantName, MediaTypeVariant, RequestBodyDef, SerdeAttribute,
-    TypeHeader,
+    Definition, DeriveAttribute, DocComments, EnumVariantName, MediaTypeVariant, RequestBodyDef,
+    SerdeAttribute, TypeHeader,
 };
 use openapi_types::v3_0::{ComponentName, SchemaCase};
 
@@ -38,6 +38,7 @@ impl DefinitionShape {
             self.name.to_string(),
             self.doc_comments,
             vec![SerdeAttribute::Untagged],
+            DeriveAttribute::all(),
         );
         let variants = self
             .contents
