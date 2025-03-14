@@ -17,6 +17,7 @@ pub fn schemas_files() -> Vec<&'static str> {
         "newtype_ref.yaml",
         "reserved_keywords.yaml",
         "enums.yaml",
+        "enums_mixed_type.yaml",
         "enums_symbol.yaml",
         "all_of.yaml",
         "all_of_ref.yaml",

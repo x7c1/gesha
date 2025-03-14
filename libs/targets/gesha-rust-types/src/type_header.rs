@@ -14,10 +14,11 @@ impl TypeHeader {
         name: A,
         doc_comments: Option<DocComments>,
         serde_attrs: Vec<SerdeAttribute>,
+        derive_attrs: Vec<DeriveAttribute>,
     ) -> Self {
         Self {
             name: name.into(),
-            derive_attrs: DeriveAttribute::all(),
+            derive_attrs,
             serde_attrs,
             doc_comments,
             _hide_default_constructor: true,

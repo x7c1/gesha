@@ -35,3 +35,8 @@ release = true
 name = "gesha-rust-types"
 publish = true
 release = true
+
+[[package]]
+name = "gesha-macros"
+publish = true
+release = true

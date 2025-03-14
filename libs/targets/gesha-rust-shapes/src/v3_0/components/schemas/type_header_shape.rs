@@ -1,4 +1,4 @@
-use gesha_rust_types::{DocComments, SerdeAttribute, TypeHeader};
+use gesha_rust_types::{DeriveAttribute, DocComments, SerdeAttribute, TypeHeader};
 use heck::ToUpperCamelCase;
 use openapi_types::v3_0::{ComponentName, SchemaObject};
 
@@ -8,6 +8,7 @@ pub struct TypeHeaderShape {
     pub doc_comments: Option<DocComments>,
     pub is_nullable: bool,
     pub serde_attrs: Vec<SerdeAttribute>,
+    pub derive_attrs: Vec<DeriveAttribute>,
     _hide_default_constructor: bool,
 }
 
@@ -27,6 +28,8 @@ impl TypeHeaderShape {
             doc_comments: to_doc_comments(body.title.as_deref(), body.description.as_deref()),
             is_nullable: body.nullable.unwrap_or(false),
             serde_attrs,
+            // TODO
+            derive_attrs: DeriveAttribute::all(),
             _hide_default_constructor: true,
         }
     }
@@ -41,12 +44,19 @@ impl TypeHeaderShape {
             doc_comments: None,
             is_nullable: false,
             serde_attrs: vec![],
+            // TODO
+            derive_attrs: DeriveAttribute::all(),
             _hide_default_constructor: true,
         }
     }
 
     pub fn define(self) -> TypeHeader {
-        TypeHeader::new(self.name, self.doc_comments, self.serde_attrs)
+        TypeHeader::new(
+            self.name,
+            self.doc_comments,
+            self.serde_attrs,
+            self.derive_attrs,
+        )
     }
 }
 
