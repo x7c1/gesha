@@ -818,6 +818,7 @@ dependencies = [
 name = "examples_v3_0"
 version = "0.0.1"
 dependencies = [
+ "gesha-macros",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -982,6 +983,10 @@ dependencies = [
  "tracing-opentelemetry",
  "tracing-subscriber",
 ]
+
+[[package]]
+name = "gesha-macros"
+version = "0.0.1"
 
 [[package]]
 name = "gesha-rust-shapes"
