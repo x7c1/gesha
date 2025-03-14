@@ -12,8 +12,8 @@ pub struct Example2 {
 }
 
 mod to_json {
-    use crate::components::flatten;
     use super::Example1;
+    use crate::components::flatten;
     use examples_v3_0::components::schemas::enums_mixed_type::schemas::MixedTypeEnum;
     use pretty_assertions::assert_eq;
 
@@ -58,9 +58,11 @@ mod from_json {
     #[test]
     fn ok_1() {
         let actual = serde_json::from_str::<Example1>(
-            r#"{
-                    "x1": 1000
-                }"#,
+            r#"
+            {
+                "x1": 1000
+            }
+            "#,
         )
         .unwrap();
 
@@ -73,9 +75,10 @@ mod from_json {
     #[test]
     fn ok_2() {
         let actual = serde_json::from_str::<Example1>(
-            r#"{
-                   "x1": "2001"
-               }"#,
+            r#"
+            {
+                "x1": "2001"
+            }"#,
         )
         .unwrap();
 
