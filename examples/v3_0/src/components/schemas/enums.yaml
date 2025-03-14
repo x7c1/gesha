@@ -22,12 +22,3 @@ schemas:
     enum:
       - Foo
       - Bar
-
-# TODO:
-#  Int32Enum:
-#    type: integer
-#    format: int32
-#    enum:
-#      - 10
-#      - 20
-#      - 30
