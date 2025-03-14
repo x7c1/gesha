@@ -106,11 +106,13 @@ impl Shaper {
         use openapi_types::v3_0::OpenApiDataType as o;
         match self.object.data_type.as_ref() {
             Some(o::Object) => self.for_struct(),
-            Some(o::String) => match self.object.enum_values {
-                Some(_) => self.for_enum(),
-                None => self.for_newtype(),
-            },
-            Some(o::Integer | o::Number | o::Boolean | o::Array) => self.for_newtype(),
+            Some(o::String) | Some(o::Integer) | Some(o::Boolean) => {
+                match self.object.enum_values {
+                    Some(_) => self.for_enum(),
+                    None => self.for_newtype(),
+                }
+            }
+            Some(o::Number | o::Array) => self.for_newtype(),
 
             // define it as 'object' if 'type' is not specified.
             None => self.for_struct(),

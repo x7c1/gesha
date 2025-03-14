@@ -1,3 +1,4 @@
+use crate::TypeIdentifier;
 use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
@@ -24,5 +25,3 @@ impl From<EnumVariantName> for String {
         String::from(this.0)
     }
 }
-
-use crate::TypeIdentifier;

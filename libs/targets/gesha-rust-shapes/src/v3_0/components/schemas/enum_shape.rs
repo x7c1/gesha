@@ -2,7 +2,7 @@ use crate::misc::TryMap;
 use crate::v3_0::components::schemas::{DefinitionShape, RefShape, TypeHeaderShape, TypeShape};
 use gesha_core::conversions::Result;
 use gesha_rust_types::{EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName};
-use openapi_types::v3_0::EnumValues;
+use openapi_types::v3_0::{EnumValue, EnumValues};
 
 #[derive(Clone, Debug)]
 pub struct EnumShape {
@@ -36,18 +36,32 @@ impl From<EnumShape> for DefinitionShape {
     }
 }
 
-fn to_enum_variant(original: String) -> EnumVariantShape {
-    let name = EnumVariantName::new(original.as_str());
+fn to_enum_variant(original: EnumValue) -> EnumVariantShape {
+    let original_name = to_enum_variant_name(&original);
+    let is_string = matches!(original, EnumValue::String(_));
+
+    // TODO: hold original value and specify it by serde attrs
+
+    let name = EnumVariantName::new(&original_name);
     let mut attrs = vec![];
-    if name.as_str() != original {
+    if is_string && name.as_str() != original_name {
         attrs.push(EnumVariantAttribute::new(format!(
-            r#"serde(rename="{original}")"#
+            r#"serde(rename="{original_name}")"#
         )))
     }
     EnumVariantShape {
         name,
         attributes: attrs,
         case: EnumCaseShape::Unit,
+    }
+}
+
+fn to_enum_variant_name(value: &EnumValue) -> String {
+    match value {
+        EnumValue::String(value) => value.clone(),
+        EnumValue::Integer(value) => value.to_string(),
+        EnumValue::Boolean(value) => value.to_string(),
+        EnumValue::Null => "null".to_string(),
     }
 }
 

@@ -1,4 +1,4 @@
-use crate::v3_0::{ComponentName, FormatModifier, OpenApiDataType, ReferenceObject};
+use crate::v3_0::{ComponentName, EnumValues, FormatModifier, OpenApiDataType, ReferenceObject};
 use indexmap::{IndexMap, IndexSet};
 
 /// Schema Object | Reference Object
@@ -141,12 +141,6 @@ impl From<ArrayItems> for SchemaCase {
         *xs.0
     }
 }
-
-/// https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.20
-/// > The value of this keyword MUST be an array. This array SHOULD have
-/// > at least one element.  Elements in the array SHOULD be unique.
-/// > Elements in the array MAY be of any type, including null.
-pub type EnumValues = IndexSet<String>;
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schema-object
 /// > Inline or referenced schema MUST be of a Schema Object and not a standard JSON Schema.

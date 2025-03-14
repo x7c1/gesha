@@ -9,6 +9,9 @@ pub use components_object::{ComponentsObject, SchemasObject};
 mod document;
 pub use document::{Document, InfoObject};
 
+mod enum_value;
+pub use enum_value::{EnumValue, EnumValues};
+
 mod format_modifier;
 pub use format_modifier::FormatModifier;
 
@@ -37,6 +40,5 @@ pub use request_body_object::{RequestBodiesObject, RequestBodyCase, RequestBodyO
 
 mod schema_case;
 pub use schema_case::{
-    AllOf, ArrayItems, EnumValues, OneOf, RequiredSchemaFields, SchemaCase, SchemaObject,
-    SchemaProperties,
+    AllOf, ArrayItems, OneOf, RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
 };
