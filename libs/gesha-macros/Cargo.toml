@@ -1,6 +1,9 @@
 [package]
 name = "gesha-macros"
 version = "0.0.1"
+description = "Macors for Gesha proejct"
+repository = "https://github.com/x7c1/gesha/tree/main/libs/gesha-macros"
+license = "MIT"
 edition = "2024"
 
 [dependencies]
