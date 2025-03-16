@@ -120,7 +120,7 @@ impl EnumVariantShape {
             }
             EnumCaseShape::Tuple(xs) => {
                 let types = xs.try_map(|x| x.define())?;
-                EnumVariant::tuple(self.name, types, vec![])
+                EnumVariant::tuple(self.name, types, self.attributes)
             }
         };
         Ok(variant)
