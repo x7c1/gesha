@@ -1,7 +1,10 @@
 use crate::misc::TryMap;
 use crate::v3_0::components::schemas::{DefinitionShape, RefShape, TypeHeaderShape, TypeShape};
 use gesha_core::conversions::Result;
-use gesha_rust_types::{EnumDef, EnumVariant, EnumVariantAttribute, EnumVariantName};
+use gesha_rust_types::{
+    EnumConstant, EnumDef, EnumMacroImpl, EnumVariant, EnumVariantAttribute, EnumVariantName,
+    TypeIdentifier,
+};
 use openapi_types::v3_0::{EnumValue, EnumValues};
 
 #[derive(Clone, Debug)]
@@ -12,10 +15,19 @@ pub struct EnumShape {
 
 impl EnumShape {
     pub fn new(header: TypeHeaderShape, values: EnumValues) -> Self {
-        Self {
-            header,
-            variants: values.into_iter().map(to_enum_variant).collect(),
+        /*
+            `#[serde(rename = "...")]` is needed when all enum variants are strings
+            because otherwise, `gesha_macros::impl_enum_serde` is used.
+        */
+        let need_attrs = values.iter().all(|x| matches!(x, EnumValue::String(_)));
+        let mut variants = values.into_iter().map(to_enum_variant).collect::<Vec<_>>();
+
+        if !need_attrs {
+            variants
+                .iter_mut()
+                .for_each(|variant| variant.erase_attributes());
         }
+        Self { header, variants }
     }
 
     pub fn map_type(mut self, f: impl Fn(TypeShape) -> Result<TypeShape>) -> Result<Self> {
@@ -24,8 +36,20 @@ impl EnumShape {
     }
 
     pub fn define(self) -> Result<EnumDef> {
+        let need_macros = {
+            let all_string = self.variants.iter().all(|x| x.is_string());
+            let all_tuple = self.variants.iter().all(|x| x.is_tuple());
+            !all_string && !all_tuple
+        };
         let variants = self.variants.try_map(|x| x.define())?;
-        let def = EnumDef::new(self.header.define(), variants);
+        let macro_impls = if need_macros {
+            // TODO: use header.name as it is after TypeHeader is refactored
+            let ident = TypeIdentifier::generate(&self.header.name);
+            Some(EnumMacroImpl::from_variants(ident, variants.clone()))
+        } else {
+            None
+        };
+        let def = EnumDef::new(self.header.define(), variants, macro_impls);
         Ok(def)
     }
 }
@@ -38,13 +62,9 @@ impl From<EnumShape> for DefinitionShape {
 
 fn to_enum_variant(original: EnumValue) -> EnumVariantShape {
     let original_name = to_enum_variant_name(&original);
-    let is_string = matches!(original, EnumValue::String(_));
-
-    // TODO: hold original value and specify it by serde attrs
-
     let name = EnumVariantName::new(&original_name);
     let mut attrs = vec![];
-    if is_string && name.as_str() != original_name {
+    if name.as_str() != original_name {
         attrs.push(EnumVariantAttribute::new(format!(
             r#"serde(rename="{original_name}")"#
         )))
@@ -52,7 +72,17 @@ fn to_enum_variant(original: EnumValue) -> EnumVariantShape {
     EnumVariantShape {
         name,
         attributes: attrs,
-        case: EnumCaseShape::Unit,
+        case: EnumCaseShape::Unit(to_enum_constant(original)),
+    }
+}
+
+fn to_enum_constant(value: EnumValue) -> EnumConstant {
+    match value {
+        EnumValue::String(value) => EnumConstant::Str(value),
+        EnumValue::Integer(value) if value > 0 => EnumConstant::U64(value as u64),
+        EnumValue::Integer(value) => EnumConstant::I64(value),
+        EnumValue::Boolean(value) => todo!("<{value}>"),
+        EnumValue::Null => todo!("<null>"),
     }
 }
 
@@ -61,6 +91,12 @@ fn to_enum_variant_name(value: &EnumValue) -> String {
         EnumValue::String(value) => value.clone(),
         EnumValue::Integer(value) => value.to_string(),
         EnumValue::Boolean(value) => value.to_string(),
+
+        /*
+        This is not an issue, though it cannot distinguish between null and "null"
+        because this library does not allow duplicate variant names.
+        For example, in cases like "null" and null, or "123" and 123.
+        */
         EnumValue::Null => "null".to_string(),
     }
 }
@@ -88,7 +124,7 @@ impl EnumVariantShape {
 
     pub fn map_type(mut self, f: impl Fn(TypeShape) -> Result<TypeShape>) -> Result<Self> {
         self.case = match self.case {
-            EnumCaseShape::Unit => self.case,
+            EnumCaseShape::Unit(_) => self.case,
             EnumCaseShape::Tuple(types) => {
                 let types = types.try_map(f)?;
                 EnumCaseShape::Tuple(types)
@@ -99,18 +135,31 @@ impl EnumVariantShape {
 
     pub fn define(self) -> Result<EnumVariant> {
         let variant = match self.case {
-            EnumCaseShape::Unit => EnumVariant::unit(self.name, self.attributes),
+            EnumCaseShape::Unit(constant) => {
+                EnumVariant::unit(self.name, constant, self.attributes)
+            }
             EnumCaseShape::Tuple(xs) => {
                 let types = xs.try_map(|x| x.define())?;
-                EnumVariant::tuple(self.name, types, self.attributes)
+                EnumVariant::tuple(self.name, types, vec![])
             }
         };
         Ok(variant)
+    }
+
+    pub fn is_string(&self) -> bool {
+        matches!(self.case, EnumCaseShape::Unit(EnumConstant::Str(_)))
+    }
+    pub fn is_tuple(&self) -> bool {
+        matches!(self.case, EnumCaseShape::Tuple(_))
+    }
+
+    pub fn erase_attributes(&mut self) {
+        self.attributes = vec![];
     }
 }
 
 #[derive(Clone, Debug)]
 pub enum EnumCaseShape {
-    Unit,
+    Unit(EnumConstant),
     Tuple(Vec<TypeShape>),
 }

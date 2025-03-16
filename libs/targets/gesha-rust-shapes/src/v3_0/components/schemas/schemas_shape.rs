@@ -5,7 +5,7 @@ use crate::v3_0::components::schemas::{
 use gesha_core::conversions::{by_key, Output, Result};
 use gesha_rust_types::ModDef;
 use openapi_types::core::OutputMergeOps;
-use openapi_types::v3_0::{ComponentName, SchemaCase, SchemaObject, SchemasObject};
+use openapi_types::v3_0::{ComponentName, EnumValues, SchemaCase, SchemaObject, SchemasObject};
 use std::ops::Not;
 
 #[derive(Debug, Clone)]
@@ -103,16 +103,13 @@ impl Shaper {
         if self.object.one_of.is_some() {
             return self.for_one_of();
         }
+        if let Some(values) = self.object.enum_values.clone() {
+            return self.for_enum(values);
+        }
         use openapi_types::v3_0::OpenApiDataType as o;
         match self.object.data_type.as_ref() {
             Some(o::Object) => self.for_struct(),
-            Some(o::String) | Some(o::Integer) | Some(o::Boolean) => {
-                match self.object.enum_values {
-                    Some(_) => self.for_enum(),
-                    None => self.for_newtype(),
-                }
-            }
-            Some(o::Number | o::Array) => self.for_newtype(),
+            Some(o::String | o::Integer | o::Boolean | o::Number | o::Array) => self.for_newtype(),
 
             // define it as 'object' if 'type' is not specified.
             None => self.for_struct(),
@@ -158,11 +155,8 @@ impl Shaper {
         Ok(shape.into())
     }
 
-    fn for_enum(self) -> Result<DefinitionShape> {
-        let shape = EnumShape::new(
-            self.create_type_header(),
-            self.object.enum_values.expect("enum_values must be Some."),
-        );
+    fn for_enum(self, values: EnumValues) -> Result<DefinitionShape> {
+        let shape = EnumShape::new(self.create_type_header(), values);
         Ok(shape.into())
     }
 

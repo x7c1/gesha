@@ -2,6 +2,7 @@ use crate::{DeriveAttribute, DocComments, SerdeAttribute};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct TypeHeader {
+    // TODO: use TypeIdentifier
     pub name: String,
     pub derive_attrs: Vec<DeriveAttribute>,
     pub serde_attrs: Vec<SerdeAttribute>,

@@ -11,11 +11,15 @@ pub struct EnumVariant {
 }
 
 impl EnumVariant {
-    pub fn unit(name: EnumVariantName, attributes: Vec<EnumVariantAttribute>) -> Self {
+    pub fn unit(
+        name: EnumVariantName,
+        constant: EnumConstant,
+        attributes: Vec<EnumVariantAttribute>,
+    ) -> Self {
         EnumVariant {
             name,
             attributes,
-            case: EnumCase::Unit,
+            case: EnumCase::Unit(constant),
             _hide_default_constructor: true,
         }
     }
@@ -35,8 +39,25 @@ impl EnumVariant {
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub enum EnumCase {
-    Unit,
+    Unit(EnumConstant),
     Tuple(Vec<DataType>),
+}
+
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+pub enum EnumConstant {
+    U64(u64),
+    I64(i64),
+    Str(String),
+}
+
+impl Display for EnumConstant {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            EnumConstant::U64(x) => Display::fmt(x, f),
+            EnumConstant::I64(x) => Display::fmt(x, f),
+            EnumConstant::Str(x) => Display::fmt(&format!(r#""{x}""#), f),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
