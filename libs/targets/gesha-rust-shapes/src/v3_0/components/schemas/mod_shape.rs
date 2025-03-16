@@ -1,7 +1,7 @@
 use crate::misc::TryMap;
 use crate::v3_0::components::schemas::{DefinitionShape, TypeShape};
 use gesha_core::conversions::Result;
-use gesha_rust_types::{Definitions, ModDef, ModuleName, Package};
+use gesha_rust_types::{Definitions, DeriveAttribute, ModDef, ModuleName, Package};
 
 #[derive(Clone, Debug)]
 pub struct ModShape {
@@ -25,6 +25,10 @@ impl ModShape {
 
     pub fn any_type_directly(&self, f: &impl Fn(&TypeShape) -> bool) -> bool {
         self.defs.iter().any(|x| x.any_type_directly(f))
+    }
+
+    pub fn any_derive_directly(&self, mut f: impl FnMut(&DeriveAttribute) -> bool) -> bool {
+        self.defs.iter().any(|x| x.any_derive_directly(&mut f))
     }
 
     pub fn map_def(

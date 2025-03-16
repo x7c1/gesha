@@ -52,6 +52,8 @@ impl Transformer {
                 .items
                 .into_vec()
                 .try_map(|item| self.to_variant(item))?,
+
+            macro_impl: None,
         })
     }
 

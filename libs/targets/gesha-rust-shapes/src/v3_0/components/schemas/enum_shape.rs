@@ -10,23 +10,16 @@ use openapi_types::v3_0::{EnumValue, EnumValues};
 pub struct EnumShape {
     pub header: TypeHeaderShape,
     pub variants: Vec<EnumVariantShape>,
+    pub macro_impl: Option<EnumMacroImpl>,
 }
 
 impl EnumShape {
     pub fn new(header: TypeHeaderShape, values: EnumValues) -> Self {
-        /*
-            `#[serde(rename = "...")]` is needed when all enum variants are strings
-            because otherwise, `gesha_macros::impl_enum_serde` is used.
-        */
-        let need_attrs = values.iter().all(|x| matches!(x, EnumValue::String(_)));
-        let mut variants = values.into_iter().map(to_enum_variant).collect::<Vec<_>>();
-
-        if !need_attrs {
-            variants
-                .iter_mut()
-                .for_each(|variant| variant.erase_attributes());
+        Self {
+            header,
+            variants: values.into_iter().map(to_enum_variant).collect(),
+            macro_impl: None,
         }
-        Self { header, variants }
     }
 
     pub fn map_type(mut self, f: impl Fn(TypeShape) -> Result<TypeShape>) -> Result<Self> {
@@ -36,25 +29,8 @@ impl EnumShape {
 
     pub fn define(self) -> Result<EnumDef> {
         let variants = self.variants.clone().try_map(|x| x.define())?;
-        let macro_impls = self.find_macro_impl(variants.clone());
-        let def = EnumDef::new(self.header.define(), variants, macro_impls);
+        let def = EnumDef::new(self.header.define(), variants, self.macro_impl);
         Ok(def)
-    }
-
-    fn find_macro_impl(&self, variants: Vec<EnumVariant>) -> Option<EnumMacroImpl> {
-        let need_macros = {
-            let all_string = self.variants.iter().all(|x| x.is_string());
-            let all_tuple = self.variants.iter().all(|x| x.is_tuple());
-            !all_string && !all_tuple
-        };
-        if need_macros {
-            Some(EnumMacroImpl::from_variants(
-                self.header.name.clone(),
-                variants,
-            ))
-        } else {
-            None
-        }
     }
 }
 

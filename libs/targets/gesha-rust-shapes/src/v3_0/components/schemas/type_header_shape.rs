@@ -49,6 +49,21 @@ impl TypeHeaderShape {
             self.derive_attrs,
         )
     }
+
+    pub fn remove_derive_attrs(&mut self, attrs: &[DeriveAttribute]) {
+        let indexes = self
+            .derive_attrs
+            .iter()
+            .enumerate()
+            .filter(|(_, attr)| attrs.contains(attr))
+            .map(|(index, _)| index)
+            .rev()
+            .collect::<Vec<_>>();
+
+        for index in indexes {
+            self.derive_attrs.remove(index);
+        }
+    }
 }
 
 fn to_doc_comments(title: Option<&str>, description: Option<&str>) -> Option<DocComments> {
