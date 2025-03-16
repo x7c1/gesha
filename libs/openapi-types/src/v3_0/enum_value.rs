@@ -31,16 +31,22 @@ impl TryFrom<YamlValue> for EnumValue {
             YamlValue::Integer(x) => Self::Integer(x),
             YamlValue::Boolean(x) => Self::Boolean(x),
             YamlValue::Array(_) => {
-                return Err(crate::Error::UnknownDataType {
+                return Err(crate::Error::TypeMismatch {
+                    expected: expected(),
                     found: "<array>".to_string(),
                 })
             }
             YamlValue::Map(_) => {
-                return Err(crate::Error::UnknownDataType {
+                return Err(crate::Error::TypeMismatch {
+                    expected: expected(),
                     found: "<object>".to_string(),
                 })
             }
         };
         Ok(this)
     }
+}
+
+fn expected() -> String {
+    "<string>|<integer>|<boolean>|<null>".to_string()
 }
