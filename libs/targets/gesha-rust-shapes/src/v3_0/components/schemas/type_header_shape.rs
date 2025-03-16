@@ -23,7 +23,6 @@ impl TypeHeaderShape {
             doc_comments: to_doc_comments(body.title.as_deref(), body.description.as_deref()),
             is_nullable: body.nullable.unwrap_or(false),
             serde_attrs,
-            // TODO
             derive_attrs: DeriveAttribute::all(),
             _hide_default_constructor: true,
         }
@@ -35,7 +34,6 @@ impl TypeHeaderShape {
             doc_comments: None,
             is_nullable: false,
             serde_attrs: vec![],
-            // TODO
             derive_attrs: DeriveAttribute::all(),
             _hide_default_constructor: true,
         }
