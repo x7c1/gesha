@@ -51,18 +51,7 @@ impl TypeHeaderShape {
     }
 
     pub fn remove_derive_attrs(&mut self, attrs: &[DeriveAttribute]) {
-        let indexes = self
-            .derive_attrs
-            .iter()
-            .enumerate()
-            .filter(|(_, attr)| attrs.contains(attr))
-            .map(|(index, _)| index)
-            .rev()
-            .collect::<Vec<_>>();
-
-        for index in indexes {
-            self.derive_attrs.remove(index);
-        }
+        self.derive_attrs.retain(|attr| !attrs.contains(attr));
     }
 }
 

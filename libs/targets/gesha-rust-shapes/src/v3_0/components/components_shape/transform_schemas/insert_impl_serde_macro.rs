@@ -23,7 +23,7 @@ fn transform_mod(mut shape: ModShape) -> Result<ModShape> {
     if !is_serde_derive_used {
         shape
             .imports
-            .retain(|x| !matches!(x, Package::Deserialize | Package::Serialize));
+            .retain(|x| !matches!(x, Package::Serialize | Package::Deserialize));
     }
     Ok(shape)
 }
