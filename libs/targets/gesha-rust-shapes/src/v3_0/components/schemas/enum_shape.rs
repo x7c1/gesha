@@ -35,22 +35,26 @@ impl EnumShape {
     }
 
     pub fn define(self) -> Result<EnumDef> {
+        let variants = self.variants.clone().try_map(|x| x.define())?;
+        let macro_impls = self.find_macro_impl(variants.clone());
+        let def = EnumDef::new(self.header.define(), variants, macro_impls);
+        Ok(def)
+    }
+
+    fn find_macro_impl(&self, variants: Vec<EnumVariant>) -> Option<EnumMacroImpl> {
         let need_macros = {
             let all_string = self.variants.iter().all(|x| x.is_string());
             let all_tuple = self.variants.iter().all(|x| x.is_tuple());
             !all_string && !all_tuple
         };
-        let variants = self.variants.try_map(|x| x.define())?;
-        let macro_impls = if need_macros {
+        if need_macros {
             Some(EnumMacroImpl::from_variants(
                 self.header.name.clone(),
-                variants.clone(),
+                variants,
             ))
         } else {
             None
-        };
-        let def = EnumDef::new(self.header.define(), variants, macro_impls);
-        Ok(def)
+        }
     }
 }
 
