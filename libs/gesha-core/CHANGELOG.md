@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.8](https://github.com/x7c1/gesha/compare/gesha-core-v0.0.7...gesha-core-v0.0.8) - 2025-03-16
+
+### Added
+
+- collapse single-item oneOf ([#129](https://github.com/x7c1/gesha/pull/129))
+
+### Fixed
+
+- show errors when gesha-verify fails during conversion ([#131](https://github.com/x7c1/gesha/pull/131))
+
 ## [0.0.7](https://github.com/x7c1/gesha/compare/gesha-core-v0.0.6...gesha-core-v0.0.7) - 2025-03-08
 
 ### Added
