@@ -1,4 +1,5 @@
-use heck::ToUpperCamelCase;
+use crate::ModuleName;
+use heck::{ToSnakeCase, ToUpperCamelCase};
 use std::fmt::{Display, Formatter};
 use syn::parse_str;
 use syn::Ident;
@@ -7,6 +8,7 @@ use syn::Ident;
 pub struct TypeIdentifier(String);
 
 impl TypeIdentifier {
+    // TODO: rename to `parse`
     pub fn generate<A: AsRef<str>>(a: A) -> Self {
         let a = a.as_ref();
         let converted = a.to_upper_camel_case();
@@ -26,6 +28,10 @@ impl TypeIdentifier {
         }
         // TODO: return error if incompatible chars found
         Self(converted)
+    }
+
+    pub fn to_mod_name(&self) -> ModuleName {
+        ModuleName::new(self.0.to_snake_case())
     }
 }
 

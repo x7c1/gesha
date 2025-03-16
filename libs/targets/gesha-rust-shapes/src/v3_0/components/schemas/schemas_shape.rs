@@ -3,7 +3,7 @@ use crate::v3_0::components::schemas::{
     OneOfItemShapes, OneOfShape, RefShape, StructShape, TypeHeaderShape, TypeShape,
 };
 use gesha_core::conversions::{by_key, Output, Result};
-use gesha_rust_types::ModDef;
+use gesha_rust_types::{ModDef, ModuleName, TypeIdentifier};
 use openapi_types::core::OutputMergeOps;
 use openapi_types::v3_0::{ComponentName, EnumValues, SchemaCase, SchemaObject, SchemasObject};
 use std::ops::Not;
@@ -26,7 +26,7 @@ impl SchemasShape {
             Default::default()
         };
         let this = Self {
-            root: ModShape::new(ComponentName::new("schemas"), defs),
+            root: ModShape::new(ModuleName::new("schemas"), defs),
         };
         Output::new(this, errors)
     }
@@ -40,7 +40,7 @@ impl SchemasShape {
         self.root.defs.iter().any(|x| x.any_type(f))
     }
 
-    pub fn find_type_name(&self, target: &RefShape) -> Option<&ComponentName> {
+    pub fn find_type_name(&self, target: &RefShape) -> Option<&TypeIdentifier> {
         self.find_header(target).map(|x| &x.name)
     }
 
@@ -79,11 +79,13 @@ fn new(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
     match schema_case {
         SchemaCase::Schema(obj) => {
             let (name, object) = (field_name.clone(), *obj);
+            let name = TypeIdentifier::generate(&name);
             Shaper { name, object }.run().map_err(by_key(field_name))
         }
         SchemaCase::Reference(obj) => {
             let type_shape = RefShape::new(obj, /* is_required */ true)?;
-            let header = TypeHeaderShape::from_name(field_name);
+            let type_name = TypeIdentifier::generate(&field_name);
+            let header = TypeHeaderShape::from_name(type_name);
             let shape = NewTypeShape::new(header, type_shape.into());
             Ok(shape.into())
         }
@@ -91,7 +93,7 @@ fn new(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
 }
 
 struct Shaper {
-    name: ComponentName,
+    name: TypeIdentifier,
     object: SchemaObject,
 }
 

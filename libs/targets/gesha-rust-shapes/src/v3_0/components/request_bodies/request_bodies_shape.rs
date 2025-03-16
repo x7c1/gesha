@@ -2,7 +2,7 @@ use crate::v3_0::components::request_bodies::{
     ContentShape, DefinitionShape, MediaTypeShape, ModShape,
 };
 use gesha_core::conversions::{Output, Result};
-use gesha_rust_types::{DocComments, EnumVariantName, MediaTypeDef, ModDef};
+use gesha_rust_types::{DocComments, EnumVariantName, MediaTypeDef, ModDef, TypeIdentifier};
 use indexmap::IndexMap;
 use openapi_types::core::OutputMergeOps;
 use openapi_types::v3_0::{ComponentName, RequestBodiesObject, RequestBodyCase, RequestBodyObject};
@@ -75,7 +75,7 @@ fn shape(name: ComponentName, object: RequestBodyObject) -> Result<DefinitionSha
         .collect();
 
     Ok(DefinitionShape {
-        name,
+        name: TypeIdentifier::generate(name),
         doc_comments: DocComments::wrap(object.description),
         is_required: object.required,
         contents,

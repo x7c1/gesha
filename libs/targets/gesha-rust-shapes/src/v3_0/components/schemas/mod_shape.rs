@@ -2,17 +2,16 @@ use crate::misc::TryMap;
 use crate::v3_0::components::schemas::{DefinitionShape, TypeShape};
 use gesha_core::conversions::Result;
 use gesha_rust_types::{Definitions, ModDef, ModuleName, Package};
-use openapi_types::v3_0::ComponentName;
 
 #[derive(Clone, Debug)]
 pub struct ModShape {
     pub imports: Vec<Package>,
-    pub name: ComponentName,
+    pub name: ModuleName,
     pub defs: Vec<DefinitionShape>,
 }
 
 impl ModShape {
-    pub fn new(name: ComponentName, defs: Vec<DefinitionShape>) -> Self {
+    pub fn new(name: ModuleName, defs: Vec<DefinitionShape>) -> Self {
         Self {
             name,
             defs,

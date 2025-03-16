@@ -1,10 +1,9 @@
-use gesha_rust_types::{DeriveAttribute, DocComments, SerdeAttribute, TypeHeader};
-use heck::ToUpperCamelCase;
-use openapi_types::v3_0::{ComponentName, SchemaObject};
+use gesha_rust_types::{DeriveAttribute, DocComments, SerdeAttribute, TypeHeader, TypeIdentifier};
+use openapi_types::v3_0::SchemaObject;
 
 #[derive(Clone, Debug)]
 pub struct TypeHeaderShape {
-    pub name: ComponentName,
+    pub name: TypeIdentifier,
     pub doc_comments: Option<DocComments>,
     pub is_nullable: bool,
     pub serde_attrs: Vec<SerdeAttribute>,
@@ -14,14 +13,10 @@ pub struct TypeHeaderShape {
 
 impl TypeHeaderShape {
     pub fn new(
-        name: impl Into<String>,
+        name: TypeIdentifier,
         body: impl Into<HeaderBody>,
         serde_attrs: Vec<SerdeAttribute>,
     ) -> Self {
-        let name = {
-            let camel_cased = name.into().to_upper_camel_case();
-            ComponentName::new(camel_cased)
-        };
         let body = body.into();
         Self {
             name,
@@ -34,11 +29,7 @@ impl TypeHeaderShape {
         }
     }
 
-    pub fn from_name(name: impl Into<String>) -> Self {
-        let name = {
-            let camel_cased = name.into().to_upper_camel_case();
-            ComponentName::new(camel_cased)
-        };
+    pub fn from_name(name: TypeIdentifier) -> Self {
         Self {
             name,
             doc_comments: None,
