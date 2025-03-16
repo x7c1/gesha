@@ -1,0 +1,17 @@
+schemas:
+  Sample1:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+        sample1_nested1:
+          type: object
+          required:
+            - sample1_nested2
+          properties:
+            sample1_nested2:
+              enum:
+                - 300
+                - -400
