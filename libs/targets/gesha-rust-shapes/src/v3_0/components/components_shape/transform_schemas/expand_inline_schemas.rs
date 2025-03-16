@@ -131,7 +131,7 @@ fn expand_field(
     mod_path: TypePath,
     field: FieldShape,
 ) -> Result<(FieldShape, Vec<DefinitionShape>)> {
-    let type_name = TypeIdentifier::generate(&field.name);
+    let type_name = TypeIdentifier::parse(&field.name);
     let (type_shape, defs) = expand_type_shape(mod_path, type_name, field.type_shape)?;
     let field_shape = FieldShape {
         name: field.name,
@@ -215,7 +215,7 @@ fn expand_array_type_shape(
     type_shape: TypeShape,
     optionality: Optionality,
 ) -> Result<(TypeShape, Vec<DefinitionShape>)> {
-    let item_name = TypeIdentifier::generate(mod_name.append("_item"));
+    let item_name = TypeIdentifier::parse(mod_name.append("_item"));
     let (expanded, defs) = expand_type_shape(mod_path, item_name, type_shape)?;
     let shape = TypeShape::Array {
         type_shape: Box::new(expanded),

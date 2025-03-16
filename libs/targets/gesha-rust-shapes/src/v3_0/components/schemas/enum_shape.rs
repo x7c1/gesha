@@ -3,7 +3,6 @@ use crate::v3_0::components::schemas::{DefinitionShape, RefShape, TypeHeaderShap
 use gesha_core::conversions::Result;
 use gesha_rust_types::{
     EnumConstant, EnumDef, EnumMacroImpl, EnumVariant, EnumVariantAttribute, EnumVariantName,
-    TypeIdentifier,
 };
 use openapi_types::v3_0::{EnumValue, EnumValues};
 
@@ -43,9 +42,10 @@ impl EnumShape {
         };
         let variants = self.variants.try_map(|x| x.define())?;
         let macro_impls = if need_macros {
-            // TODO: use header.name as it is after TypeHeader is refactored
-            let ident = TypeIdentifier::generate(&self.header.name);
-            Some(EnumMacroImpl::from_variants(ident, variants.clone()))
+            Some(EnumMacroImpl::from_variants(
+                self.header.name.clone(),
+                variants.clone(),
+            ))
         } else {
             None
         };
