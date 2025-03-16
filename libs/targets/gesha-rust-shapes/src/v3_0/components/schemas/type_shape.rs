@@ -52,7 +52,12 @@ impl TypeShape {
             .clone()
             .or_else(|| object.all_of.is_some().then_some(OpenApiDataType::Object))
             .or_else(|| object.one_of.is_some().then_some(OpenApiDataType::Object))
-            .or_else(|| object.enum_values.is_some().then_some(OpenApiDataType::Object))
+            .or_else(|| {
+                object
+                    .enum_values
+                    .is_some()
+                    .then_some(OpenApiDataType::Object)
+            })
             .ok_or_else(|| {
                 error!(
                     "type unspecified:\n{object:#?}\n  at {file}:{line}",
