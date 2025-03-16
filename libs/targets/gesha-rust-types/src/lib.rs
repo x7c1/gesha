@@ -2,7 +2,7 @@ mod data_type;
 pub use data_type::DataType;
 
 mod definition;
-pub use definition::{Definition, EnumDef, ModDef, NewTypeDef, PresetDef, StructDef};
+pub use definition::{Definition, ModDef, NewTypeDef, PresetDef, StructDef};
 
 mod definitions;
 pub use definitions::Definitions;
@@ -12,6 +12,9 @@ pub use derive_attribute::DeriveAttribute;
 
 mod doc_comments;
 pub use doc_comments::DocComments;
+
+mod enum_def;
+pub use enum_def::EnumDef;
 
 mod enum_variant;
 pub use enum_variant::{EnumCase, EnumVariant, EnumVariantAttribute};
