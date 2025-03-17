@@ -52,6 +52,12 @@ impl TypeShape {
             .clone()
             .or_else(|| object.all_of.is_some().then_some(OpenApiDataType::Object))
             .or_else(|| object.one_of.is_some().then_some(OpenApiDataType::Object))
+            .or_else(|| {
+                object
+                    .enum_values
+                    .is_some()
+                    .then_some(OpenApiDataType::Object)
+            })
             .ok_or_else(|| {
                 error!(
                     "type unspecified:\n{object:#?}\n  at {file}:{line}",
@@ -185,6 +191,10 @@ impl TypeFactory {
             is_required: self.is_required,
             is_nullable: self.object.nullable.unwrap_or(false),
         };
+        if self.object.enum_values.is_some() {
+            let inline = InlineShape::Enum(InlineSchema::new(self.object, optionality)?);
+            return Ok(inline.into());
+        }
         match (&data_type, &self.object.format) {
             (ot::Array, _) => self.items_to_shape(),
             (ot::Boolean, _) => Ok(Proper {
@@ -207,10 +217,6 @@ impl TypeFactory {
                 data_type: tp::Float64,
                 optionality,
             }),
-            (ot::String, _) if self.object.enum_values.is_some() => {
-                let inline = InlineShape::Enum(InlineSchema::new(self.object, optionality)?);
-                Ok(inline.into())
-            }
             (ot::String, _) => Ok(Proper {
                 data_type: tp::String,
                 optionality,

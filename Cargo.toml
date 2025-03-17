@@ -10,6 +10,7 @@ resolver = "2"
 [workspace.dependencies]
 openapi-types = { version = "0.0.5", path = "libs/openapi-types" }
 gesha-core = { version = "0.0.8", path = "libs/gesha-core" }
+gesha-macros = { version = "0.0.1", path = "libs/gesha-macros" }
 gesha-rust-shapes = { version = "0.0.8", path = "libs/targets/gesha-rust-shapes" }
 gesha-rust-types = { version = "0.0.2", path = "libs/targets/gesha-rust-types" }
 

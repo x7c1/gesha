@@ -4,7 +4,7 @@ use crate::v3_0::components::schemas::{
 };
 use gesha_core::broken;
 use gesha_core::conversions::Result;
-use gesha_rust_types::{Definition, NewTypeDef, StructDef, StructField};
+use gesha_rust_types::{Definition, DeriveAttribute, NewTypeDef, StructDef, StructField};
 
 #[derive(Clone, Debug)]
 pub enum DefinitionShape {
@@ -48,6 +48,18 @@ impl DefinitionShape {
             Self::Enum { .. } => false,
             Self::Mod(_) => false,
         }
+    }
+
+    pub fn any_derive_directly(&self, f: impl FnMut(&DeriveAttribute) -> bool) -> bool {
+        let header = match self {
+            Self::AllOf(x) => &x.header,
+            Self::Struct(x) => &x.header,
+            Self::NewType(x) => &x.header,
+            Self::OneOf(x) => &x.header,
+            Self::Enum(x) => &x.header,
+            Self::Mod(_) => return false,
+        };
+        header.derive_attrs.iter().any(f)
     }
 
     pub fn collect_fields(

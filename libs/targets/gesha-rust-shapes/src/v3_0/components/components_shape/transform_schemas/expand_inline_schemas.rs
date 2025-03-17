@@ -5,6 +5,7 @@ use crate::v3_0::components::schemas::{
 };
 use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions::{by_key, Result};
+use gesha_rust_types::{ModuleName, TypeIdentifier};
 use std::ops::Not;
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
@@ -48,7 +49,7 @@ fn expand(def: DefinitionShape) -> Result<Vec<DefinitionShape>> {
 
 // return (struct-shape, mod-shape)
 fn expand_struct_fields(path: TypePath, mut shape: StructShape) -> Result<Vec<DefinitionShape>> {
-    let mod_name = shape.header.name.to_snake_case();
+    let mod_name = shape.header.name.to_mod_name();
     let path = path.add(mod_name.clone());
     let expanded = shape
         .fields
@@ -67,7 +68,7 @@ fn expand_struct_fields(path: TypePath, mut shape: StructShape) -> Result<Vec<De
 
 // return (all-of-shape, mod-shape)
 fn expand_all_of_fields(path: TypePath, mut shape: AllOfShape) -> Result<Vec<DefinitionShape>> {
-    let mod_name = shape.header.name.to_snake_case();
+    let mod_name = shape.header.name.to_mod_name();
     let path = path.add(mod_name.clone());
     let expanded = shape
         .items
@@ -87,7 +88,7 @@ fn expand_all_of_fields(path: TypePath, mut shape: AllOfShape) -> Result<Vec<Def
 
 // return (newtype-shape, mod-shape)
 fn expand_newtype_field(path: TypePath, mut shape: NewTypeShape) -> Result<Vec<DefinitionShape>> {
-    let mod_name = shape.header.name.to_snake_case();
+    let mod_name = shape.header.name.to_mod_name();
     let path = path.add(mod_name.clone());
 
     let (type_shape, defs) = match shape.type_shape {
@@ -130,7 +131,8 @@ fn expand_field(
     mod_path: TypePath,
     field: FieldShape,
 ) -> Result<(FieldShape, Vec<DefinitionShape>)> {
-    let (type_shape, defs) = expand_type_shape(mod_path, field.name.clone(), field.type_shape)?;
+    let type_name = TypeIdentifier::parse(&field.name);
+    let (type_shape, defs) = expand_type_shape(mod_path, type_name, field.type_shape)?;
     let field_shape = FieldShape {
         name: field.name,
         type_shape,
@@ -140,7 +142,7 @@ fn expand_field(
 
 fn expand_type_shape(
     mod_path: TypePath,
-    type_name: impl Into<String>,
+    type_name: TypeIdentifier,
     type_shape: TypeShape,
 ) -> Result<(TypeShape, Vec<DefinitionShape>)> {
     match type_shape {
@@ -149,7 +151,7 @@ fn expand_type_shape(
         TypeShape::Array {
             type_shape,
             optionality,
-        } => expand_array_type_shape(mod_path, type_name, *type_shape, optionality),
+        } => expand_array_type_shape(mod_path, type_name.to_mod_name(), *type_shape, optionality),
 
         TypeShape::Proper { .. }
         | TypeShape::Ref { .. }
@@ -165,12 +167,11 @@ fn expand_type_shape(
 
 fn expand_inline_type_shape(
     mod_path: TypePath,
-    type_name: impl Into<String>,
+    type_name: TypeIdentifier,
     object: InlineShape,
 ) -> Result<(TypeShape, Vec<DefinitionShape>)> {
     let optionality = object.get_optionality().clone();
-    let header = TypeHeaderShape::new(type_name, &object, vec![]);
-    let type_name = header.name.clone();
+    let header = TypeHeaderShape::new(type_name.clone(), &object, vec![]);
 
     let defs = match object {
         InlineShape::Struct(inline) => {
@@ -210,12 +211,11 @@ fn expand_inline_type_shape(
 
 fn expand_array_type_shape(
     mod_path: TypePath,
-    type_name: impl Into<String>,
+    mod_name: ModuleName,
     type_shape: TypeShape,
     optionality: Optionality,
 ) -> Result<(TypeShape, Vec<DefinitionShape>)> {
-    let mod_name = type_name.into();
-    let item_name = mod_name.clone() + "_item";
+    let item_name = TypeIdentifier::parse(mod_name.append("_item"));
     let (expanded, defs) = expand_type_shape(mod_path, item_name, type_shape)?;
     let shape = TypeShape::Array {
         type_shape: Box::new(expanded),

@@ -1,0 +1,8 @@
+schemas:
+  MixedTypeEnum:
+    enum:
+      - 1000
+      - "2000"
+      - "2001"
+      - "2002"
+      - -42

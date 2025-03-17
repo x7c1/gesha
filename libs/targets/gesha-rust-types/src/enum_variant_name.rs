@@ -1,3 +1,4 @@
+use crate::TypeIdentifier;
 use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
@@ -5,7 +6,7 @@ pub struct EnumVariantName(TypeIdentifier);
 
 impl EnumVariantName {
     pub fn new<A: AsRef<str>>(x: A) -> Self {
-        let identifier = TypeIdentifier::generate(x);
+        let identifier = TypeIdentifier::parse(x);
         Self(identifier)
     }
     pub fn as_str(&self) -> &str {
@@ -24,5 +25,3 @@ impl From<EnumVariantName> for String {
         String::from(this.0)
     }
 }
-
-use crate::TypeIdentifier;

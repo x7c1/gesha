@@ -1,8 +1,8 @@
-use crate::{DeriveAttribute, DocComments, SerdeAttribute};
+use crate::{DeriveAttribute, DocComments, SerdeAttribute, TypeIdentifier};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct TypeHeader {
-    pub name: String,
+    pub name: TypeIdentifier,
     pub derive_attrs: Vec<DeriveAttribute>,
     pub serde_attrs: Vec<SerdeAttribute>,
     pub doc_comments: Option<DocComments>,
@@ -10,14 +10,15 @@ pub struct TypeHeader {
 }
 
 impl TypeHeader {
-    pub fn new<A: Into<String>>(
-        name: A,
+    pub fn new(
+        name: TypeIdentifier,
         doc_comments: Option<DocComments>,
         serde_attrs: Vec<SerdeAttribute>,
+        derive_attrs: Vec<DeriveAttribute>,
     ) -> Self {
         Self {
-            name: name.into(),
-            derive_attrs: DeriveAttribute::all(),
+            name,
+            derive_attrs,
             serde_attrs,
             doc_comments,
             _hide_default_constructor: true,

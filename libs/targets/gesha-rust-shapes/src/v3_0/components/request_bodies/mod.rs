@@ -10,14 +10,14 @@ pub use request_bodies_shape::RequestBodiesShape;
 use gesha_core::broken;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{
-    Definition, DocComments, EnumVariantName, MediaTypeVariant, RequestBodyDef, SerdeAttribute,
-    TypeHeader,
+    Definition, DeriveAttribute, DocComments, EnumVariantName, MediaTypeVariant, RequestBodyDef,
+    SerdeAttribute, TypeHeader, TypeIdentifier,
 };
-use openapi_types::v3_0::{ComponentName, SchemaCase};
+use openapi_types::v3_0::SchemaCase;
 
 #[derive(Clone, Debug)]
 pub struct DefinitionShape {
-    pub name: ComponentName,
+    pub name: TypeIdentifier,
     pub doc_comments: Option<DocComments>,
     pub is_required: bool,
     pub contents: Vec<ContentShape>,
@@ -35,9 +35,10 @@ impl DefinitionShape {
 
     pub fn define(self) -> Result<Definition> {
         let header = TypeHeader::new(
-            self.name.to_string(),
+            self.name,
             self.doc_comments,
             vec![SerdeAttribute::Untagged],
+            DeriveAttribute::all(),
         );
         let variants = self
             .contents

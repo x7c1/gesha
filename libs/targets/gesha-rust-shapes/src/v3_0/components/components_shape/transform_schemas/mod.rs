@@ -15,6 +15,9 @@ mod definition_transformer;
 mod expand_inline_schemas;
 use expand_inline_schemas::expand_inline_schemas;
 
+mod insert_impl_serde_macro;
+use insert_impl_serde_macro::insert_impl_serde_macro;
+
 mod insert_imports;
 use insert_imports::insert_imports;
 
@@ -36,5 +39,6 @@ pub fn transform_schemas(mut shape: ComponentsShape) -> Result<ComponentsShape> 
     shape = resolve_type_path(shape).map_err(by_key("#(resolve_type_path)"))?;
     shape = resolve_optionality(shape).map_err(by_key("#(resolve_optionality)"))?;
     shape = insert_imports(shape).map_err(by_key("#(insert_imports)"))?;
+    shape = insert_impl_serde_macro(shape).map_err(by_key("#(insert_impl_serde_macro)"))?;
     Ok(shape)
 }
