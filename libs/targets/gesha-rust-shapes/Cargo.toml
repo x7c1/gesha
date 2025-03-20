@@ -4,7 +4,7 @@ version = "0.0.8"
 description = "Rust types for intermediate representation in the Gesha project"
 repository = "https://github.com/x7c1/gesha/tree/main/libs/targets/gesha-rust-types"
 license = "MIT"
-edition = "2021"
+edition = "2024"
 
 [features]
 testing = ["gesha-core/testing"]
