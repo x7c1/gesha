@@ -10,7 +10,7 @@ use transform_schemas::transform_schemas;
 use crate::v3_0::components::core::CoreShape;
 use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::{SchemasShape, TypeShape};
-use gesha_core::conversions::{with_key, Output, Result};
+use gesha_core::conversions::{Output, Result, with_key};
 use gesha_rust_types::ModDef;
 use openapi_types::core::OutputOptionOps;
 

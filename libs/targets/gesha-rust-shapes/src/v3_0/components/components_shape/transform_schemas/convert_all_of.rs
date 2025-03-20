@@ -1,8 +1,8 @@
 use crate::misc::MapOutput;
-use crate::v3_0::components::schemas::{DefinitionShape, FieldShape, StructShape};
 use crate::v3_0::components::ComponentsShape;
-use gesha_core::conversions::Result;
+use crate::v3_0::components::schemas::{DefinitionShape, FieldShape, StructShape};
 use DefinitionShape::{AllOf, Mod};
+use gesha_core::conversions::Result;
 
 pub fn convert_all_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let transformer = Transformer {

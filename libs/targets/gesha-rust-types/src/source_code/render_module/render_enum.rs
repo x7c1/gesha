@@ -1,7 +1,7 @@
 use super::{render_data_types, render_header};
 use crate::{
-    render, EnumCase, EnumDef, EnumMacroImpl, EnumMacroType, EnumMacroVariants, EnumVariant,
-    EnumVariantAttribute,
+    EnumCase, EnumDef, EnumMacroImpl, EnumMacroType, EnumMacroVariants, EnumVariant,
+    EnumVariantAttribute, render,
 };
 use indexmap::IndexMap;
 use std::fmt;

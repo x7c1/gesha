@@ -1,6 +1,6 @@
 use crate::conversions::Generator;
 use crate::io::Writer;
-use crate::testing::{detect_diff, run_parallel, TestCase, TestCaseIndex, TestDefinition};
+use crate::testing::{TestCase, TestCaseIndex, TestDefinition, detect_diff, run_parallel};
 use crate::{Error, ErrorTheme, Result};
 use std::fmt::Debug;
 use tracing::{info, instrument};

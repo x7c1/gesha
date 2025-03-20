@@ -1,8 +1,8 @@
 #[cfg(test)]
 mod invalid_specs {
+    use gesha_core::Result;
     use gesha_core::conversions::format_errors;
     use gesha_core::io::Reader;
-    use gesha_core::Result;
     use gesha_rust_shapes::v3_0;
     use pretty_assertions::assert_eq;
 

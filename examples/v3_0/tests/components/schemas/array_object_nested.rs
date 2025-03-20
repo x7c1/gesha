@@ -1,7 +1,7 @@
 mod to_json {
     use crate::components::flatten;
-    use examples_v3_0::components::schemas::array_object_nested::schemas::number_list::NumberListItemItem;
     use examples_v3_0::components::schemas::array_object_nested::schemas::NumberList;
+    use examples_v3_0::components::schemas::array_object_nested::schemas::number_list::NumberListItemItem;
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -28,8 +28,8 @@ mod to_json {
 }
 
 mod from_json {
-    use examples_v3_0::components::schemas::array_object_nested::schemas::number_list::NumberListItemItem;
     use examples_v3_0::components::schemas::array_object_nested::schemas::NumberList;
+    use examples_v3_0::components::schemas::array_object_nested::schemas::number_list::NumberListItemItem;
     use pretty_assertions::assert_eq;
 
     #[test]

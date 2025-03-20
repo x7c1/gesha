@@ -3,9 +3,11 @@
   "extends": [
     "config:base",
     "schedule:weekends",
-    "rangeStrategy:bump",
     ":semanticCommitTypeAll(chore)",
     "group:allNonMajor"
   ],
-  "labels": ["dependencies"]
+  "rangeStrategy": "bump",
+  "labels": [
+    "dependencies"
+  ]
 }

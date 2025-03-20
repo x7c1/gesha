@@ -1,7 +1,7 @@
+use Cow::{Borrowed, Owned};
 use indexmap::IndexSet;
 use std::borrow::Cow;
 use std::fmt::{Display, Formatter};
-use Cow::{Borrowed, Owned};
 
 #[derive(Clone, Debug, PartialEq, Default)]
 pub struct Imports(IndexSet<Package>);

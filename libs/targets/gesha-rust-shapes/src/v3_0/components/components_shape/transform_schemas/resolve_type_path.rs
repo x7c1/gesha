@@ -1,13 +1,13 @@
 use crate::misc::MapOutput;
+use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::schemas::{
     DefinitionShape, FieldShape, Optionality, TypePath, TypeShape,
 };
-use crate::v3_0::components::ComponentsShape;
+use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 use gesha_core::broken;
 use gesha_core::conversions::Error::Unimplemented;
-use gesha_core::conversions::{by_key, Result};
+use gesha_core::conversions::{Result, by_key};
 use tracing::error;
-use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let transformer = Transformer {

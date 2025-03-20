@@ -1,13 +1,13 @@
 use crate::misc::{MapOutput, TryMap};
+use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::schemas::DefinitionShape::{Mod, OneOf};
 use crate::v3_0::components::schemas::{
     DefinitionShape, EnumShape, EnumVariantShape, OneOfItemShape, OneOfShape,
 };
-use crate::v3_0::components::ComponentsShape;
+use SerdeAttribute::Untagged;
 use gesha_core::conversions::Error::ReferenceObjectNotFound;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{EnumVariantName, SerdeAttribute};
-use SerdeAttribute::Untagged;
 
 pub fn convert_one_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     let transformer = Transformer {

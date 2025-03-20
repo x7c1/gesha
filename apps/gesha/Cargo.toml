@@ -4,7 +4,7 @@ version = "0.0.8"
 description = "Generates code based on OpenAPI specs"
 repository = "https://github.com/x7c1/gesha/tree/main/apps/gesha"
 license = "MIT"
-edition = "2021"
+edition = "2024"
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

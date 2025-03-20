@@ -2,7 +2,7 @@ mod generate;
 
 use crate::generate::Args;
 use clap::Parser;
-use gesha_core::{trace, Result};
+use gesha_core::{Result, trace};
 use std::process::ExitCode;
 use tracing::{error, info};
 

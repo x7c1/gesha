@@ -10,7 +10,7 @@ mod test_case;
 pub use test_case::TestCase;
 
 mod run_parallel;
-pub use run_parallel::{run_parallel, Joiner};
+pub use run_parallel::{Joiner, run_parallel};
 
 mod test_case_index;
 pub use test_case_index::TestCaseIndex;

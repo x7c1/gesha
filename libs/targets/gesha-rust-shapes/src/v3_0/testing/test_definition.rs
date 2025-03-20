@@ -1,6 +1,6 @@
 use crate::v3_0::converter::new_code;
 use crate::v3_0::testing::ComponentsConverter;
-use gesha_core::testing::v3_0::{request_bodies_files, schemas_files, COMPONENTS_PATH};
+use gesha_core::testing::v3_0::{COMPONENTS_PATH, request_bodies_files, schemas_files};
 use gesha_core::testing::{TestCase, TestCaseIndex, TestDefinition};
 use gesha_rust_types::{ModuleDeclarations, ModuleName};
 

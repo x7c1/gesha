@@ -1,4 +1,4 @@
-use crate::{render, ErrorDef, ErrorVariant};
+use crate::{ErrorDef, ErrorVariant, render};
 use std::fmt;
 use std::fmt::Write;
 

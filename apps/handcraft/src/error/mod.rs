@@ -1,5 +1,5 @@
-use actix_web::http::StatusCode;
 use actix_web::ResponseError;
+use actix_web::http::StatusCode;
 use handcraft_models::errors::RequestError;
 use std::fmt::{Debug, Display, Formatter};
 

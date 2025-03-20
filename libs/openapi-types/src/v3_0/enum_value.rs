@@ -34,13 +34,13 @@ impl TryFrom<YamlValue> for EnumValue {
                 return Err(crate::Error::TypeMismatch {
                     expected: expected(),
                     found: "<array>".to_string(),
-                })
+                });
             }
             YamlValue::Map(_) => {
                 return Err(crate::Error::TypeMismatch {
                     expected: expected(),
                     found: "<object>".to_string(),
-                })
+                });
             }
         };
         Ok(this)

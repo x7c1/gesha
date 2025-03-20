@@ -1,7 +1,7 @@
 mod to_json {
     use crate::components::flatten;
-    use examples_v3_0::components::schemas::object_inline::schemas::sample_pet::RegisteredProfile;
     use examples_v3_0::components::schemas::object_inline::schemas::SamplePet;
+    use examples_v3_0::components::schemas::object_inline::schemas::sample_pet::RegisteredProfile;
 
     #[test]
     fn ok() {
@@ -27,8 +27,8 @@ mod to_json {
 }
 
 mod from_json {
-    use examples_v3_0::components::schemas::object_inline::schemas::sample_pet::RegisteredProfile;
     use examples_v3_0::components::schemas::object_inline::schemas::SamplePet;
+    use examples_v3_0::components::schemas::object_inline::schemas::sample_pet::RegisteredProfile;
     use pretty_assertions::assert_eq;
 
     #[test]

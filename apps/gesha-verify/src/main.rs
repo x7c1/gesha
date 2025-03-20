@@ -1,6 +1,6 @@
 use crate::verify::Args;
 use clap::Parser;
-use gesha_core::{testing, trace, Result};
+use gesha_core::{Result, testing, trace};
 use std::process::ExitCode;
 use tracing::{error, info};
 

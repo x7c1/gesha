@@ -1,9 +1,9 @@
 use crate::misc::MapOutput;
+use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::components_shape::transform_schemas::definition_transformer::DefinitionTransformer;
 use crate::v3_0::components::schemas::{
     DefinitionShape, InlineSchema, InlineShape, OneOfShape, TypeShape,
 };
-use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions::Result;
 
 /// If `oneOf` has only one $ref,

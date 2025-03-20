@@ -1,13 +1,13 @@
 use crate::misc::{MapOutput, TryMap};
+use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::schemas::{
     AllOfItemShapes, AllOfShape, DefinitionShape, EnumShape, FieldShape, InlineShape, ModShape,
     NewTypeShape, OneOfShape, Optionality, StructShape, TypeHeaderShape, TypePath, TypeShape,
 };
-use crate::v3_0::components::ComponentsShape;
-use gesha_core::conversions::{by_key, Result};
+use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
+use gesha_core::conversions::{Result, by_key};
 use gesha_rust_types::{ModuleName, TypeIdentifier};
 use std::ops::Not;
-use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 
 pub fn expand_inline_schemas(mut shape: ComponentsShape) -> Result<ComponentsShape> {
     let defs = shape.schemas.root.defs;

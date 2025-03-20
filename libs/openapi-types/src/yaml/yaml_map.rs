@@ -1,5 +1,5 @@
-use crate::yaml::YamlValue;
 use crate::Error::FieldNotExist;
+use crate::yaml::YamlValue;
 use crate::{Error, Result};
 
 #[derive(Clone, Debug)]
