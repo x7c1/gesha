@@ -1,6 +1,6 @@
 use clap::Parser;
-use gesha_core::conversions::{format_errors, Generator};
 use gesha_core::Result;
+use gesha_core::conversions::{Generator, format_errors};
 use gesha_rust_shapes::v3_0;
 use tracing::{error, instrument};
 

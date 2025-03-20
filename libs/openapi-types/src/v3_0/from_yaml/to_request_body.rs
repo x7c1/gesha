@@ -2,8 +2,8 @@ use crate::v3_0::from_yaml::to_schema_case;
 use crate::v3_0::{
     ComponentName, MediaTypeKey, MediaTypeObject, RequestBodyCase, RequestBodyObject,
 };
-use crate::yaml::{collect, YamlMap};
-use crate::{by_key, with_key, Error, Output, Result};
+use crate::yaml::{YamlMap, collect};
+use crate::{Error, Output, Result, by_key, with_key};
 
 pub(super) fn to_request_body_pair(
     kv: (String, YamlMap),

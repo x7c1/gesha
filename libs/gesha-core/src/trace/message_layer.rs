@@ -4,10 +4,10 @@ use std::fmt::Debug;
 use std::io::Write;
 use tracing::field::{Field, Visit};
 use tracing::{Event, Level, Subscriber};
+use tracing_subscriber::Layer;
 use tracing_subscriber::fmt::MakeWriter;
 use tracing_subscriber::layer::Context;
 use tracing_subscriber::registry::LookupSpan;
-use tracing_subscriber::Layer;
 
 pub struct MessageLayer<W> {
     writer: W,

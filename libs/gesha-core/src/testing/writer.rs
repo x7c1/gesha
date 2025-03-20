@@ -1,6 +1,6 @@
-use crate::io::Writer;
 use crate::Error::CannotCopyFile;
 use crate::Result;
+use crate::io::Writer;
 use std::path::Path;
 
 impl Writer {

@@ -1,9 +1,9 @@
 use crate::core::OutputOptionOps;
+use crate::v3_0::ComponentsObject;
 use crate::v3_0::from_yaml::to_request_body_pair;
 use crate::v3_0::from_yaml::to_schema_pair;
-use crate::v3_0::ComponentsObject;
-use crate::yaml::{collect, ToOpenApi, YamlMap};
-use crate::{with_key, Output, Result};
+use crate::yaml::{ToOpenApi, YamlMap, collect};
+use crate::{Output, Result, with_key};
 
 impl ToOpenApi for ComponentsObject {
     fn apply(mut map: YamlMap) -> Result<Output<Self>> {

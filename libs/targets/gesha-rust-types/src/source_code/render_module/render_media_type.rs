@@ -1,5 +1,5 @@
-use crate::render;
 use crate::MediaTypeDef;
+use crate::render;
 use std::fmt;
 use std::fmt::Write;
 

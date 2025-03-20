@@ -56,7 +56,7 @@ fn from_query_string(query_string: &str) -> Result<Query, RequestError> {
 #[cfg(test)]
 mod tests {
     use crate::errors::RequestError;
-    use crate::inline::find_pets::{from_query_string, Query};
+    use crate::inline::find_pets::{Query, from_query_string};
 
     #[test]
     fn test_from_query_string() {

@@ -4,8 +4,8 @@ use crate::v3_0::{
     HttpStatusCode, OperationObject, PathFieldName, PathItemObject, PathsObject, ResponseCase,
     ResponseObject, ResponsesObject,
 };
-use crate::yaml::{collect, YamlMap};
-use crate::{with_key, Error, Output, Result};
+use crate::yaml::{YamlMap, collect};
+use crate::{Error, Output, Result, with_key};
 
 pub(super) fn to_paths_object(map: YamlMap) -> Output<PathsObject> {
     collect(Output::by(to_path_pair))(map).map(PathsObject::new)

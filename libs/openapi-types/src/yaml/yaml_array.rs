@@ -1,5 +1,5 @@
-use crate::yaml::YamlValue;
 use crate::Result;
+use crate::yaml::YamlValue;
 
 #[derive(Clone, Debug)]
 pub struct YamlArray(pub(super) yaml_rust::yaml::Array);

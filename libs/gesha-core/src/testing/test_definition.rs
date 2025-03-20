@@ -1,6 +1,6 @@
+use crate::Error::UnknownTestCase;
 use crate::conversions::Converter;
 use crate::testing::{TestCase, TestCaseIndex};
-use crate::Error::UnknownTestCase;
 
 pub trait TestDefinition: Converter {
     /// List all test cases for this definition.

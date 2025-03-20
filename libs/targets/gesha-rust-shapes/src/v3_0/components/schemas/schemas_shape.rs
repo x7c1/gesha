@@ -2,7 +2,7 @@ use crate::v3_0::components::schemas::{
     AllOfItemShapes, AllOfShape, DefinitionShape, EnumShape, FieldShape, ModShape, NewTypeShape,
     OneOfItemShapes, OneOfShape, RefShape, StructShape, TypeHeaderShape, TypeShape,
 };
-use gesha_core::conversions::{by_key, Output, Result};
+use gesha_core::conversions::{Output, Result, by_key};
 use gesha_rust_types::{ModDef, ModuleName, TypeIdentifier};
 use openapi_types::core::OutputMergeOps;
 use openapi_types::v3_0::{ComponentName, EnumValues, SchemaCase, SchemaObject, SchemasObject};

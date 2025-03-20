@@ -2,11 +2,11 @@ use crate::trace::stdout_layer;
 
 use opentelemetry::trace::TracerProvider;
 use opentelemetry_otlp::WithExportConfig;
-use opentelemetry_sdk::trace::{BatchConfigBuilder, BatchSpanProcessor, SdkTracerProvider};
 use opentelemetry_sdk::Resource;
+use opentelemetry_sdk::trace::{BatchConfigBuilder, BatchSpanProcessor, SdkTracerProvider};
 use std::fs::File;
-use tracing::metadata::LevelFilter;
 use tracing::Subscriber;
+use tracing::metadata::LevelFilter;
 use tracing_subscriber::filter::filter_fn;
 use tracing_subscriber::fmt::layer;
 use tracing_subscriber::layer::SubscriberExt;

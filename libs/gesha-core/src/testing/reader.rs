@@ -1,5 +1,5 @@
-use crate::io::Reader;
 use crate::Result;
+use crate::io::Reader;
 use std::path::Path;
 
 impl Reader {

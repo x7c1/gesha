@@ -4,8 +4,8 @@ use actix_multipart::Multipart;
 use actix_web::body::BoxBody;
 use actix_web::dev::Payload;
 use actix_web::{FromRequest, HttpRequest, HttpResponse, Responder};
-use futures_util::future::LocalBoxFuture;
 use futures_util::FutureExt;
+use futures_util::future::LocalBoxFuture;
 
 #[derive(Debug)]
 pub struct Request {

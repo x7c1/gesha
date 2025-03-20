@@ -1,7 +1,7 @@
 use crate::core::OutputMergeOps;
 use crate::yaml::YamlMap;
 use crate::yaml::YamlValue;
-use crate::{by_key, Error, Output, Result};
+use crate::{Error, Output, Result, by_key};
 use std::fmt::Display;
 
 pub fn reify_value<A>(v: Result<YamlValue>) -> Result<A>

@@ -1,5 +1,5 @@
 use super::{render_enum_variants, render_header};
-use crate::{render, MediaTypeVariant, MediaTypeVariants, RequestBodyDef};
+use crate::{MediaTypeVariant, MediaTypeVariants, RequestBodyDef, render};
 use std::fmt;
 use std::fmt::Write;
 

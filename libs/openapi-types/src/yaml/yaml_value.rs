@@ -1,5 +1,5 @@
-use crate::yaml::{YamlArray, YamlMap};
 use crate::Error::TypeMismatch;
+use crate::yaml::{YamlArray, YamlMap};
 use crate::{Error, Result};
 
 #[derive(Clone, Debug)]

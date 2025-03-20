@@ -1,6 +1,6 @@
-use crate::io::Reader;
 use crate::Error::DiffDetected;
 use crate::Result;
+use crate::io::Reader;
 use console::Style;
 use similar::{Change, ChangeTag, TextDiff};
 use std::fmt::Debug;

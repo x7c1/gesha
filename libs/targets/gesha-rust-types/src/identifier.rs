@@ -1,8 +1,8 @@
 use crate::ModuleName;
 use heck::{ToSnakeCase, ToUpperCamelCase};
 use std::fmt::{Display, Formatter};
-use syn::parse_str;
 use syn::Ident;
+use syn::parse_str;
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct TypeIdentifier(String);

@@ -28,7 +28,7 @@ mod resolve_type_path;
 use resolve_type_path::resolve_type_path;
 
 use crate::v3_0::components::ComponentsShape;
-use gesha_core::conversions::{by_key, Result};
+use gesha_core::conversions::{Result, by_key};
 
 pub fn transform_schemas(mut shape: ComponentsShape) -> Result<ComponentsShape> {
     shape = collapse_single_all_of(shape).map_err(by_key("#(collapse_single_all_of)"))?;

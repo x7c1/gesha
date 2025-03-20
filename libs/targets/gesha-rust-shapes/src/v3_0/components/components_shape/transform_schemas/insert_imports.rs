@@ -1,9 +1,9 @@
 use crate::misc::TryMap;
-use crate::v3_0::components::schemas::{DefinitionShape, ModShape, TypeShape};
 use crate::v3_0::components::ComponentsShape;
+use crate::v3_0::components::schemas::{DefinitionShape, ModShape, TypeShape};
+use DefinitionShape::Mod;
 use gesha_core::conversions::Result;
 use gesha_rust_types::Package;
-use DefinitionShape::Mod;
 
 pub fn insert_imports(mut shape: ComponentsShape) -> Result<ComponentsShape> {
     shape.schemas.root = insert_patch(shape.schemas.root, 1)?;

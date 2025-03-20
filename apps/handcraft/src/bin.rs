@@ -1,7 +1,7 @@
 use actix_web::web::Data;
 use actix_web::{App, HttpServer};
-use handcraft::multipart::post_multipart_form_data;
 use handcraft::Handlers;
+use handcraft::multipart::post_multipart_form_data;
 use handcraft_server::register_services;
 
 #[actix_web::main]
