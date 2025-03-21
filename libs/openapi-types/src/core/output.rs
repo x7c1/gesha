@@ -84,16 +84,8 @@ impl<A, E> Output<Option<A>, E> {
     where
         F: FnOnce(A) -> Result<B, E>,
     {
-        let Output(Some(a), mut errors) = self else {
-            return Output(None, self.1);
-        };
-        match f(a) {
-            Ok(b) => Output(Some(b), errors),
-            Err(e) => {
-                errors.push(e);
-                Output(None, errors)
-            }
-        }
+        let Output(output, errors) = self.map(|a| a.map(f).maybe());
+        output.append(errors)
     }
 }
 
