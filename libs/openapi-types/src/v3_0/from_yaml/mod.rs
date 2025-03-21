@@ -1,6 +1,3 @@
-mod to_schema_case;
-pub(crate) use to_schema_case::to_schema_pair;
-
 use crate::Error::IncompatibleVersion;
 use crate::core::OutputOptionOps;
 use crate::v3_0::{Document, InfoObject, PathsObject};

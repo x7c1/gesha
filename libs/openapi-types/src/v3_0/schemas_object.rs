@@ -1,5 +1,4 @@
 use crate::Output;
-use crate::v3_0::from_yaml::to_schema_pair;
 use crate::v3_0::{ComponentName, SchemaCase};
 use crate::yaml::{YamlMap, collect};
 use indexmap::IndexMap;
@@ -9,7 +8,7 @@ pub struct SchemasObject(IndexMap<ComponentName, SchemaCase>);
 
 impl SchemasObject {
     pub fn from_yaml_map(map: YamlMap) -> Output<SchemasObject> {
-        let inner = collect(Output::by(to_schema_pair))(map);
+        let inner = collect(Output::by(SchemaCase::with_name))(map);
         inner.map(Self)
     }
 }
