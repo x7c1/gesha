@@ -15,9 +15,9 @@ use crate::{Output, Result};
 pub struct OneOf(Vec<SchemaCase>);
 
 impl OneOf {
-    pub fn new(xs: Vec<SchemaCase>) -> Result<Self> {
-        // TODO: check xs length
-        Ok(Self(xs))
+    pub fn new(cases: Vec<SchemaCase>) -> Result<Self> {
+        // TODO: check cases length
+        Ok(Self(cases))
     }
 
     pub fn from_yaml_array(array: YamlArray) -> Output<Option<Self>> {
@@ -26,7 +26,7 @@ impl OneOf {
 }
 
 impl From<OneOf> for Vec<SchemaCase> {
-    fn from(xs: OneOf) -> Self {
-        xs.0
+    fn from(this: OneOf) -> Self {
+        this.0
     }
 }

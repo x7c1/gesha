@@ -15,9 +15,9 @@ use crate::{Output, Result};
 pub struct AllOf(Vec<SchemaCase>);
 
 impl AllOf {
-    pub fn new(xs: Vec<SchemaCase>) -> Result<Self> {
-        // TODO: check xs length
-        Ok(Self(xs))
+    pub fn new(cases: Vec<SchemaCase>) -> Result<Self> {
+        // TODO: check cases length
+        Ok(Self(cases))
     }
 
     pub fn from_yaml_array(array: YamlArray) -> Output<Option<Self>> {
@@ -26,7 +26,7 @@ impl AllOf {
 }
 
 impl From<AllOf> for Vec<SchemaCase> {
-    fn from(xs: AllOf) -> Self {
-        xs.0
+    fn from(this: AllOf) -> Self {
+        this.0
     }
 }

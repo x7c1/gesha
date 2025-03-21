@@ -6,7 +6,20 @@ use indexmap::IndexSet;
 /// > The value of this keyword MUST be an array. This array SHOULD have
 /// > at least one element.  Elements in the array SHOULD be unique.
 /// > Elements in the array MAY be of any type, including null.
-pub type EnumValues = IndexSet<EnumValue>;
+#[derive(Clone, Debug, Default)]
+pub struct EnumValues(IndexSet<EnumValue>);
+
+impl EnumValues {
+    pub fn from_yaml_array(array: YamlArray) -> Result<Self> {
+        // TODO: check array length
+        let values = array.into_iter().map(reify_value).collect::<Result<_>>()?;
+        Ok(EnumValues(values))
+    }
+
+    pub fn into_iter(self) -> impl Iterator<Item = EnumValue> {
+        self.0.into_iter()
+    }
+}
 
 /**
     OpenAPI allows "any type", but this library does not support some of them.
@@ -21,12 +34,6 @@ pub enum EnumValue {
     Integer(i64),
     Boolean(bool),
     Null,
-}
-
-impl EnumValue {
-    pub fn from_yaml_array(array: YamlArray) -> Result<EnumValues> {
-        array.into_iter().map(reify_value).collect()
-    }
 }
 
 impl TryFrom<YamlValue> for EnumValue {

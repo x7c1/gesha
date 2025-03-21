@@ -1,6 +1,6 @@
 use crate::core::OutputMergeOps;
 use crate::v3_0::{
-    AllOf, ArrayItems, ComponentName, EnumValue, FormatModifier, OneOf, OpenApiDataType,
+    AllOf, ArrayItems, ComponentName, EnumValues, FormatModifier, OneOf, OpenApiDataType,
     ReferenceObject, RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
 };
 use crate::yaml::{YamlArray, YamlMap, collect, reify_value};
@@ -50,7 +50,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         .into_tuple();
 
     let (enum_values, errors_of_enum) = map
-        .try_extract_if_exists("enum", EnumValue::from_yaml_array)
+        .try_extract_if_exists("enum", EnumValues::from_yaml_array)
         .into_tuple();
 
     let (all_of, errors_all_of) = map

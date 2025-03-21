@@ -26,12 +26,7 @@ impl InlineShape {
             return InlineSchema::new(object, optionality).map(Self::OneOf);
         }
 
-        let has_enum = object
-            .enum_values
-            .as_ref()
-            .map(|x| !x.is_empty())
-            .unwrap_or(false);
-
+        let has_enum = object.enum_values.is_some();
         if has_enum {
             return InlineSchema::new(object, optionality).map(Self::Enum);
         }
