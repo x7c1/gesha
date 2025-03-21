@@ -1,6 +1,5 @@
 use crate::Result;
 use crate::v3_0::SchemaCase;
-use crate::v3_0::from_yaml::to_schema_case;
 use crate::yaml::YamlMap;
 
 /// > Value MUST be an object and not an array.
@@ -20,7 +19,7 @@ impl ArrayItems {
     }
 
     pub fn from_yaml_map(map: YamlMap) -> Result<Self> {
-        let case = to_schema_case(map)?;
+        let case = SchemaCase::from_yaml_map(map)?;
         let items = ArrayItems::new(case);
         Ok(items)
     }

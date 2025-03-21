@@ -1,6 +1,5 @@
-use crate::v3_0::from_yaml::to_schema_case;
 use crate::v3_0::{
-    ComponentName, MediaTypeKey, MediaTypeObject, RequestBodyCase, RequestBodyObject,
+    ComponentName, MediaTypeKey, MediaTypeObject, RequestBodyCase, RequestBodyObject, SchemaCase,
 };
 use crate::yaml::{YamlMap, collect};
 use crate::{Error, Output, Result, by_key, with_key};
@@ -48,6 +47,6 @@ fn to_request_body_content_pair(kv: (String, YamlMap)) -> Result<(MediaTypeKey, 
 }
 
 fn to_media_type_object(mut map: YamlMap) -> Result<MediaTypeObject> {
-    let schema = map.remove("schema").map(to_schema_case)?;
+    let schema = map.remove("schema").map(SchemaCase::from_yaml_map)?;
     schema.map(|schema| MediaTypeObject { schema })
 }
