@@ -42,7 +42,7 @@ impl TryFrom<yaml_rust::Yaml> for YamlValue {
             yaml_rust::Yaml::Hash(x) => Ok(YamlValue::Map(YamlMap(x))),
             yaml_rust::Yaml::Boolean(x) => Ok(YamlValue::Boolean(x)),
             yaml_rust::Yaml::Integer(x) => Ok(YamlValue::Integer(x)),
-            unknown => Err(Error::UnknownDataType {
+            unknown => Err(Error::UnknownYamlType {
                 found: format!("{unknown:?}"),
             }),
         }

@@ -1,3 +1,6 @@
+use crate::Result;
+use crate::v3_0::SpecViolation::UnknownDataType;
+
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#dataTypes
 #[derive(Clone, Debug)]
 pub enum OpenApiDataType {
@@ -10,6 +13,9 @@ pub enum OpenApiDataType {
 }
 
 impl OpenApiDataType {
+    pub fn new(found: String) -> Result<Self> {
+        Self::find(&found).ok_or_else(|| UnknownDataType { found }.into())
+    }
     pub fn find(target: &str) -> Option<OpenApiDataType> {
         [
             Self::Array,

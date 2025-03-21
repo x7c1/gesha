@@ -1,5 +1,8 @@
-use crate::v3_0::{ComponentName, EnumValues, FormatModifier, OpenApiDataType, ReferenceObject};
-use indexmap::{IndexMap, IndexSet};
+use crate::v3_0::{
+    ComponentName, EnumValues, FormatModifier, OpenApiDataType, ReferenceObject,
+    RequiredSchemaFields,
+};
+use indexmap::IndexMap;
 
 /// Schema Object | Reference Object
 #[derive(Clone, Debug)]
@@ -101,23 +104,6 @@ impl From<SchemaObject> for SchemaCase {
 ///
 /// see also: https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.16
 pub type SchemaProperties = IndexMap<ComponentName, SchemaCase>;
-
-/// https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.15
-/// >The value of this keyword MUST be an array.  This array MUST have at
-/// >least one element. Elements of this array MUST be strings, and MUST
-/// >be unique.
-#[derive(Clone, Debug)]
-pub struct RequiredSchemaFields(IndexSet<String>);
-
-impl RequiredSchemaFields {
-    pub fn new(fields: IndexSet<String>) -> Self {
-        // TODO: check fields length
-        Self(fields)
-    }
-    pub fn contains(&self, field_name: &str) -> bool {
-        self.0.contains(field_name)
-    }
-}
 
 /// > Value MUST be an object and not an array.
 /// > Inline or referenced schema MUST be of a Schema Object and

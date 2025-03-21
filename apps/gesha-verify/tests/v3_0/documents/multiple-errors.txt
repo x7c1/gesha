@@ -6,7 +6,11 @@ path: ./examples/v3_0/invalid/multiple-errors.yaml
         found: "Array",
     }
 
-    @ components > schemas > Foo
-    UnknownDataType {
-        found: "int",
-    }
+    @ components > schemas > Foo > type
+    SpecViolation(
+        V3_0(
+            UnknownDataType {
+                found: "int",
+            },
+        ),
+    )

@@ -1,0 +1,7 @@
+path: ./examples/v3_0/invalid/invalid-type.yaml
+
+    @ components > schemas > Foo > required
+    TypeMismatch {
+        expected: "Array",
+        found: "Integer",
+    }

@@ -38,7 +38,11 @@ pub use request_body_content::RequestBodyContent;
 mod request_body_object;
 pub use request_body_object::{RequestBodiesObject, RequestBodyCase, RequestBodyObject};
 
+mod required_schema_fields;
+pub use required_schema_fields::RequiredSchemaFields;
+
 mod schema_case;
-pub use schema_case::{
-    AllOf, ArrayItems, OneOf, RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
-};
+pub use schema_case::{AllOf, ArrayItems, OneOf, SchemaCase, SchemaObject, SchemaProperties};
+
+mod spec_violation;
+pub use spec_violation::SpecViolation;

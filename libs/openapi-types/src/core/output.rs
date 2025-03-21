@@ -71,6 +71,22 @@ impl<A, E> Output<Option<A>, E> {
         let Output(maybe_a, errors) = self;
         maybe_a.ok_or(errors)
     }
+
+    pub fn map_if_exists<B, F>(self, f: F) -> Output<Option<B>, E>
+    where
+        F: FnOnce(A) -> Result<B, E>,
+    {
+        let Output(Some(a), mut errors) = self else {
+            return Output(None, self.1);
+        };
+        match f(a) {
+            Ok(b) => Output(Some(b), errors),
+            Err(e) => {
+                errors.push(e);
+                Output(None, errors)
+            }
+        }
+    }
 }
 
 pub trait OutputOptionOps<A, E> {

@@ -1,0 +1,8 @@
+path: ./examples/v3_0/invalid/empty-required.yaml
+
+    @ components > schemas > Foo > required
+    SpecViolation(
+        JsonSchema(
+            EmptyRequiredField,
+        ),
+    )

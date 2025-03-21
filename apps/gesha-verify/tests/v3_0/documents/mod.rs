@@ -44,4 +44,30 @@ mod invalid_specs {
         assert_eq!(actual, expected);
         Ok(())
     }
+
+    #[test]
+    fn empty_required() -> Result<()> {
+        let converter = v3_0::DocumentConverter::default();
+        let schema = "./examples/v3_0/invalid/empty-required.yaml";
+        let output = Reader::new(schema).open_target_type(&converter)?;
+
+        let actual = format_errors(output).unwrap();
+        let expected = include_str!("empty-required.txt");
+
+        assert_eq!(actual, expected);
+        Ok(())
+    }
+
+    #[test]
+    fn invalid_type() -> Result<()> {
+        let converter = v3_0::DocumentConverter::default();
+        let schema = "./examples/v3_0/invalid/invalid-type.yaml";
+        let output = Reader::new(schema).open_target_type(&converter)?;
+
+        let actual = format_errors(output).unwrap();
+        let expected = include_str!("invalid-type.txt");
+
+        assert_eq!(actual, expected);
+        Ok(())
+    }
 }

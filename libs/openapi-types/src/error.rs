@@ -1,14 +1,18 @@
+use crate::{json_schema, v3_0};
+
 pub type Result<A> = std::result::Result<A, Error>;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum Error {
+    Enclosed { key: String, causes: Vec<Error> },
     FieldNotExist { field: String },
     CannotScanYaml { detail: String },
     IncompatibleVersion { version: String },
-    TypeMismatch { expected: String, found: String },
-    UnknownDataType { found: String },
-    Enclosed { key: String, causes: Vec<Error> },
     Multiple { causes: Vec<Error> },
+    SpecViolation(SpecViolation),
+    TypeMismatch { expected: String, found: String },
+    UnknownYamlType { found: String },
+    UnsupportedEnumType { expected: String, found: String },
 }
 
 impl Error {
@@ -36,3 +40,9 @@ pub fn with_key(key: impl Into<String>) -> impl FnOnce(Vec<Error>) -> Error {
 }
 
 pub type Output<A> = crate::core::Output<A, Error>;
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum SpecViolation {
+    V3_0(v3_0::SpecViolation),
+    JsonSchema(json_schema::SpecViolation),
+}

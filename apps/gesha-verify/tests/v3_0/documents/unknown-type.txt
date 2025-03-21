@@ -1,11 +1,19 @@
 path: ./examples/v3_0/invalid/unknown-type.yaml
 
-    @ components > schemas > Foo > properties > x1
-    UnknownDataType {
-        found: "unknown-type1",
-    }
+    @ components > schemas > Foo > properties > x1 > type
+    SpecViolation(
+        V3_0(
+            UnknownDataType {
+                found: "unknown-type1",
+            },
+        ),
+    )
 
-    @ components > schemas > Foo > properties > x2
-    UnknownDataType {
-        found: "unknown-type2",
-    }
+    @ components > schemas > Foo > properties > x2 > type
+    SpecViolation(
+        V3_0(
+            UnknownDataType {
+                found: "unknown-type2",
+            },
+        ),
+    )
