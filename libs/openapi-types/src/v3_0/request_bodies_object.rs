@@ -1,12 +1,46 @@
+use crate::Output;
 use crate::v3_0::{
     ComponentName, MediaTypeKey, MediaTypeObject, RequestBodyCase, RequestBodyObject, SchemaCase,
 };
 use crate::yaml::{YamlMap, collect};
-use crate::{Error, Output, Result, by_key, with_key};
+use crate::{Error, Result, by_key, with_key};
+use indexmap::IndexMap;
 
-pub(super) fn to_request_body_pair(
-    kv: (String, YamlMap),
-) -> Result<(ComponentName, RequestBodyCase)> {
+type InnerMap = IndexMap<ComponentName, RequestBodyCase>;
+type InnerEntry = (ComponentName, RequestBodyCase);
+
+/// rf. https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#componentsObject
+#[derive(Debug)]
+pub struct RequestBodiesObject(InnerMap);
+
+impl RequestBodiesObject {
+    pub fn new(map: InnerMap) -> Self {
+        Self(map)
+    }
+
+    pub fn from_yaml_map(map: YamlMap) -> Output<RequestBodiesObject> {
+        let inner = collect(Output::by(to_request_body_pair))(map);
+        inner.map(Self)
+    }
+}
+
+impl FromIterator<InnerEntry> for RequestBodiesObject {
+    fn from_iter<T: IntoIterator<Item = InnerEntry>>(iter: T) -> Self {
+        let map = iter.into_iter().collect();
+        Self::new(map)
+    }
+}
+
+impl IntoIterator for RequestBodiesObject {
+    type Item = InnerEntry;
+    type IntoIter = <InnerMap as IntoIterator>::IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
+fn to_request_body_pair(kv: (String, YamlMap)) -> Result<(ComponentName, RequestBodyCase)> {
     let (name, map) = kv;
     let pair = (ComponentName::new(name), to_request_body_case(map)?);
     Ok(pair)

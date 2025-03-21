@@ -1,7 +1,6 @@
 use crate::core::OutputOptionOps;
-use crate::v3_0::{ComponentsObject, SchemasObject};
-use crate::v3_0::from_yaml::to_request_body_pair;
-use crate::yaml::{ToOpenApi, YamlMap, collect};
+use crate::v3_0::{ComponentsObject, RequestBodiesObject, SchemasObject};
+use crate::yaml::{ToOpenApi, YamlMap};
 use crate::{Output, Result, with_key};
 
 impl ToOpenApi for ComponentsObject {
@@ -15,7 +14,7 @@ impl ToOpenApi for ComponentsObject {
 
         let (request_bodies, request_bodies_errors) = map
             .remove_if_exists("requestBodies")?
-            .map(collect(Output::by(to_request_body_pair)))
+            .map(RequestBodiesObject::from_yaml_map)
             .maybe()
             .bind_errors(with_key("requestBodies"))
             .into_tuple();

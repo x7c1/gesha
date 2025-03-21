@@ -41,11 +41,14 @@ pub use paths_object::{PathFieldName, PathItemObject, PathsObject};
 mod reference_object;
 pub use reference_object::ReferenceObject;
 
+mod request_bodies_object;
+pub use request_bodies_object::RequestBodiesObject;
+
 mod request_body_content;
 pub use request_body_content::RequestBodyContent;
 
 mod request_body_object;
-pub use request_body_object::{RequestBodiesObject, RequestBodyCase, RequestBodyObject};
+pub use request_body_object::{RequestBodyCase, RequestBodyObject};
 
 mod required_schema_fields;
 pub use required_schema_fields::RequiredSchemaFields;
