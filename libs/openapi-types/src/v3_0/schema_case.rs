@@ -1,10 +1,9 @@
 use crate::v3_0::all_of::AllOf;
 use crate::v3_0::array_items::ArrayItems;
 use crate::v3_0::{
-    ComponentName, EnumValues, FormatModifier, OneOf, OpenApiDataType, ReferenceObject,
-    RequiredSchemaFields,
+    EnumValues, FormatModifier, OneOf, OpenApiDataType, ReferenceObject, RequiredSchemaFields,
+    SchemaProperties,
 };
-use indexmap::IndexMap;
 
 /// Schema Object | Reference Object
 #[derive(Clone, Debug)]
@@ -100,9 +99,3 @@ impl From<SchemaObject> for SchemaCase {
         Self::Schema(Box::new(this))
     }
 }
-
-/// > properties - Property definitions MUST be a Schema Object
-/// > and not a standard JSON Schema (inline or referenced).
-///
-/// see also: https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.16
-pub type SchemaProperties = IndexMap<ComponentName, SchemaCase>;

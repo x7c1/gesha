@@ -3,7 +3,7 @@ use crate::v3_0::{
     AllOf, ArrayItems, ComponentName, EnumValues, FormatModifier, OneOf, OpenApiDataType,
     ReferenceObject, RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
 };
-use crate::yaml::{YamlArray, YamlMap, collect, reify_value};
+use crate::yaml::{YamlArray, YamlMap, reify_value};
 use crate::{Error, Output, Result, by_key};
 
 pub fn to_schema_pair(kv: (String, YamlMap)) -> Result<(ComponentName, SchemaCase)> {
@@ -28,7 +28,7 @@ pub fn to_schema_case(mut map: YamlMap) -> Result<SchemaCase> {
 
 fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
     let (properties, errors_of_properties) = map
-        .flat_extract_if_exists("properties", to_properties)
+        .flat_extract_if_exists("properties", SchemaProperties::from_yaml_map)
         .into_tuple();
 
     let (required, errors_of_required) = map
@@ -86,10 +86,6 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         .append(errors_one_of);
 
     output.to_result().map_err(Error::multiple)
-}
-
-fn to_properties(map: YamlMap) -> Output<SchemaProperties> {
-    collect(Output::by(to_schema_pair))(map)
 }
 
 pub fn to_schema_cases(array: YamlArray) -> Output<Vec<SchemaCase>> {

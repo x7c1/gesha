@@ -51,7 +51,10 @@ mod required_schema_fields;
 pub use required_schema_fields::RequiredSchemaFields;
 
 mod schema_case;
-pub use schema_case::{SchemaCase, SchemaObject, SchemaProperties};
+pub use schema_case::{SchemaCase, SchemaObject};
+
+mod schema_properties;
+pub use schema_properties::SchemaProperties;
 
 mod spec_violation;
 pub use spec_violation::SpecViolation;
