@@ -51,7 +51,10 @@ mod required_schema_fields;
 pub use required_schema_fields::RequiredSchemaFields;
 
 mod schema_case;
-pub use schema_case::{SchemaCase, SchemaObject};
+pub use schema_case::SchemaCase;
+
+mod schema_object;
+pub use schema_object::SchemaObject;
 
 mod schema_properties;
 pub use schema_properties::SchemaProperties;
