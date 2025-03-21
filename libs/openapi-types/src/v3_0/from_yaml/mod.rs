@@ -1,4 +1,3 @@
-mod to_components_object;
 mod to_paths_object;
 use to_paths_object::to_paths_object;
 
