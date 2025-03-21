@@ -1,7 +1,6 @@
 use crate::core::OutputOptionOps;
 use crate::json_schema::SpecViolation::EmptyOneOf;
 use crate::v3_0::SchemaCase;
-use crate::v3_0::from_yaml::to_schema_cases;
 use crate::yaml::YamlArray;
 use crate::{Output, Result};
 
@@ -24,7 +23,7 @@ impl OneOf {
     }
 
     pub fn from_yaml_array(array: YamlArray) -> Output<Option<Self>> {
-        to_schema_cases(array).map(Self::new).maybe()
+        SchemaCase::from_yaml_array(array).map(Self::new).maybe()
     }
 }
 
