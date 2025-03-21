@@ -44,7 +44,11 @@ impl ToOpenApi for Document {
             paths,
             components,
         };
-        let output = Output::new(document, components_errors).append(paths_errors);
+
+        let output = Output::ok(document)
+            .append(components_errors)
+            .append(paths_errors);
+
         Ok(output)
     }
 }

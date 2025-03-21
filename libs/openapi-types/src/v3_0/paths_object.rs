@@ -67,7 +67,7 @@ fn to_path_item_object(mut map: YamlMap) -> Result<PathItemObject> {
         .into_tuple();
 
     let object = PathItemObject { get, post };
-    let output = Output::new(object, get_errors).append(post_errors);
+    let output = Output::ok(object).append(get_errors).append(post_errors);
     output.to_result().map_err(Error::multiple)
 }
 
