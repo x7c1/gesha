@@ -10,7 +10,7 @@ mod component_name;
 pub use component_name::ComponentName;
 
 mod components_object;
-pub use components_object::{ComponentsObject, SchemasObject};
+pub use components_object::ComponentsObject;
 
 mod document;
 pub use document::{Document, InfoObject};
@@ -58,6 +58,9 @@ pub use schema_object::SchemaObject;
 
 mod schema_properties;
 pub use schema_properties::SchemaProperties;
+
+mod schemas_object;
+pub use schemas_object::SchemasObject;
 
 mod spec_violation;
 pub use spec_violation::SpecViolation;
