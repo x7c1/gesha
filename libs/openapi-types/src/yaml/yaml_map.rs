@@ -1,6 +1,8 @@
 use crate::Error::FieldNotExist;
+use crate::core::OutputOptionOps;
+use crate::error::with_key;
 use crate::yaml::YamlValue;
-use crate::{Error, Result};
+use crate::{Error, Output, Result};
 
 #[derive(Clone, Debug)]
 pub struct YamlMap(pub(super) yaml_rust::yaml::Hash);
@@ -22,6 +24,37 @@ impl YamlMap {
         let yaml = self.0.remove(&yaml_rust::Yaml::from_str(key));
         let value: Option<YamlValue> = yaml.map(|x| x.try_into()).transpose()?;
         value.map(|x| x.try_into()).transpose()
+    }
+
+    pub fn extract_if_exists<A>(&mut self, key: &str) -> Output<Option<A>>
+    where
+        A: TryFrom<YamlValue, Error = Error>,
+    {
+        self.remove_if_exists::<A>(key)
+            .maybe()
+            .bind_errors(with_key(key))
+    }
+
+    pub fn flat_extract_if_exists<F, A, B>(&mut self, key: &str, f: F) -> Output<Option<B>>
+    where
+        F: FnOnce(A) -> Output<B>,
+        A: TryFrom<YamlValue, Error = Error>,
+    {
+        self.remove_if_exists::<A>(key)
+            .maybe()
+            .flat_map_if_some(f)
+            .bind_errors(with_key(key))
+    }
+
+    pub fn try_extract_if_exists<F, A, B>(&mut self, key: &str, f: F) -> Output<Option<B>>
+    where
+        F: FnOnce(A) -> Result<B>,
+        A: TryFrom<YamlValue, Error = Error>,
+    {
+        self.remove_if_exists::<A>(key)
+            .maybe()
+            .try_map_if_some(f)
+            .bind_errors(with_key(key))
     }
 }
 

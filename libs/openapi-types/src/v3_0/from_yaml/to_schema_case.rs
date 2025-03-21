@@ -1,10 +1,10 @@
-use crate::core::{OutputMergeOps, OutputOptionOps};
+use crate::core::OutputMergeOps;
 use crate::v3_0::{
     ArrayItems, ComponentName, EnumValue, FormatModifier, OpenApiDataType, ReferenceObject,
     RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
 };
 use crate::yaml::{YamlArray, YamlMap, collect, reify_value};
-use crate::{Error, Output, Result, by_key, with_key};
+use crate::{Error, Output, Result, by_key};
 
 pub fn to_schema_pair(kv: (String, YamlMap)) -> Result<(ComponentName, SchemaCase)> {
     let (name, map) = kv;
@@ -28,65 +28,37 @@ pub fn to_schema_case(mut map: YamlMap) -> Result<SchemaCase> {
 
 fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
     let (properties, errors_of_properties) = map
-        .remove_if_exists::<YamlMap>("properties")
-        .maybe()
-        .flat_map_if_some(to_properties)
-        .bind_errors(with_key("properties"))
+        .flat_extract_if_exists("properties", to_properties)
         .into_tuple();
 
     let (required, errors_of_required) = map
-        .remove_if_exists::<YamlArray>("required")
-        .maybe()
-        .try_map_if_some(RequiredSchemaFields::from_yaml_array)
-        .bind_errors(with_key("required"))
+        .try_extract_if_exists("required", RequiredSchemaFields::from_yaml_array)
         .into_tuple();
 
     let (data_type, errors_of_data_type) = map
-        .remove_if_exists::<String>("type")
-        .maybe()
-        .try_map_if_some(OpenApiDataType::new)
-        .bind_errors(with_key("type"))
+        .try_extract_if_exists("type", OpenApiDataType::new)
         .into_tuple();
 
     let (format, errors_of_format) = map
-        .remove_if_exists::<String>("format")
-        .maybe()
-        .try_map_if_some(to_format_modifier)
-        .bind_errors(with_key("format"))
+        .try_extract_if_exists("format", to_format_modifier)
         .into_tuple();
 
-    let (nullable, errors_of_nullable) = map
-        .remove_if_exists::<bool>("nullable")
-        .maybe()
-        .bind_errors(with_key("nullable"))
-        .into_tuple();
+    let (nullable, errors_of_nullable) = map.extract_if_exists("nullable").into_tuple();
 
     let (items, errors_of_items) = map
-        .remove_if_exists::<YamlMap>("items")
-        .maybe()
-        .try_map_if_some(to_array_items)
-        .bind_errors(with_key("items"))
+        .try_extract_if_exists("items", to_array_items)
         .into_tuple();
 
     let (enum_values, errors_of_enum) = map
-        .remove_if_exists::<YamlArray>("enum")
-        .maybe()
-        .try_map_if_some(EnumValue::from_yaml_array)
-        .bind_errors(with_key("enum"))
+        .try_extract_if_exists("enum", EnumValue::from_yaml_array)
         .into_tuple();
 
     let (all_of, errors_all_of) = map
-        .remove_if_exists::<YamlArray>("allOf")
-        .maybe()
-        .flat_map_if_some(to_schema_cases)
-        .bind_errors(with_key("allOf"))
+        .flat_extract_if_exists("allOf", to_schema_cases)
         .into_tuple();
 
     let (one_of, errors_one_of) = map
-        .remove_if_exists::<YamlArray>("oneOf")
-        .maybe()
-        .flat_map_if_some(to_schema_cases)
-        .bind_errors(with_key("oneOf"))
+        .flat_extract_if_exists("oneOf", to_schema_cases)
         .into_tuple();
 
     let object = SchemaObject {
