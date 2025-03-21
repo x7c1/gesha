@@ -1,5 +1,3 @@
-mod from_yaml;
-
 mod array_items;
 pub use array_items::ArrayItems;
 
