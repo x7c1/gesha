@@ -40,7 +40,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         .into_tuple();
 
     let (format, errors_of_format) = map
-        .try_extract_if_exists("format", to_format_modifier)
+        .try_extract_if_exists("format", FormatModifier::from_string)
         .into_tuple();
 
     let (nullable, errors_of_nullable) = map.extract_if_exists("nullable").into_tuple();
@@ -90,10 +90,6 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
 
 fn to_properties(map: YamlMap) -> Output<SchemaProperties> {
     collect(Output::by(to_schema_pair))(map)
-}
-
-fn to_format_modifier(x: String) -> Result<FormatModifier> {
-    Ok(FormatModifier::find(&x).unwrap_or(FormatModifier::Custom(x)))
 }
 
 pub fn to_schema_cases(array: YamlArray) -> Output<Vec<SchemaCase>> {

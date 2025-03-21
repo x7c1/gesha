@@ -1,3 +1,4 @@
+use crate::Result;
 use std::fmt::{Display, Formatter};
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#dataTypes
@@ -27,6 +28,10 @@ impl FormatModifier {
         [Self::Int32, Self::Int64, Self::Float, Self::Double]
             .into_iter()
             .find(|x| x.as_ref() == target)
+    }
+
+    pub fn from_string(x: String) -> Result<Self> {
+        Ok(FormatModifier::find(&x).unwrap_or(FormatModifier::Custom(x)))
     }
 }
 
