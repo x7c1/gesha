@@ -11,7 +11,7 @@ pub struct EnumValues(IndexSet<EnumValue>);
 
 impl EnumValues {
     pub fn from_yaml_array(array: YamlArray) -> Result<Self> {
-        // TODO: check array length
+        // No need to check for an empty array because the specs say it SHOULD, not MUST.
         let values = array.into_iter().map(reify_value).collect::<Result<_>>()?;
         Ok(EnumValues(values))
     }

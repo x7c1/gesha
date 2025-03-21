@@ -1,4 +1,5 @@
 use crate::core::OutputOptionOps;
+use crate::json_schema::SpecViolation::EmptyAllOf;
 use crate::v3_0::SchemaCase;
 use crate::v3_0::from_yaml::to_schema_cases;
 use crate::yaml::YamlArray;
@@ -16,7 +17,9 @@ pub struct AllOf(Vec<SchemaCase>);
 
 impl AllOf {
     pub fn new(cases: Vec<SchemaCase>) -> Result<Self> {
-        // TODO: check cases length
+        if cases.is_empty() {
+            Err(EmptyAllOf)?;
+        }
         Ok(Self(cases))
     }
 

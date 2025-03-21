@@ -1,5 +1,5 @@
 use crate::Result;
-use crate::json_schema::SpecViolation::EmptyRequiredField;
+use crate::json_schema::SpecViolation::EmptyRequired;
 use crate::yaml::{YamlArray, reify_value};
 use indexmap::IndexSet;
 
@@ -13,7 +13,7 @@ pub struct RequiredSchemaFields(IndexSet<String>);
 impl RequiredSchemaFields {
     pub fn new(fields: IndexSet<String>) -> Result<Self> {
         if fields.is_empty() {
-            Err(EmptyRequiredField)?;
+            Err(EmptyRequired)?;
         }
         Ok(Self(fields))
     }
@@ -42,7 +42,7 @@ mod tests {
         let set = IndexSet::new();
         let err = RequiredSchemaFields::new(set).unwrap_err();
         let violation = spec_violation(err);
-        assert_eq!(violation, EmptyRequiredField.into());
+        assert_eq!(violation, EmptyRequired.into());
     }
 
     fn spec_violation(e: Error) -> SpecViolation {
