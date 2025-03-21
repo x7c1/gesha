@@ -1,12 +1,9 @@
-mod to_paths_object;
-use to_paths_object::to_paths_object;
-
 mod to_schema_case;
 pub(crate) use to_schema_case::to_schema_pair;
 
 use crate::Error::IncompatibleVersion;
 use crate::core::OutputOptionOps;
-use crate::v3_0::{Document, InfoObject};
+use crate::v3_0::{Document, InfoObject, PathsObject};
 use crate::yaml::{ToOpenApi, YamlMap};
 use crate::{Output, Result, with_key};
 
@@ -23,7 +20,7 @@ impl ToOpenApi for Document {
 
         let (paths, paths_errors) = {
             let map = map.remove("paths")?;
-            to_paths_object(map)
+            PathsObject::from_yaml_map(map)
                 .bind_errors(with_key("paths"))
                 .into_tuple()
         };
