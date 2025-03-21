@@ -6,7 +6,7 @@ mod to_request_body;
 use to_request_body::to_request_body_pair;
 
 mod to_schema_case;
-use to_schema_case::{to_schema_case, to_schema_pair};
+pub(crate) use to_schema_case::{to_schema_case, to_schema_cases, to_schema_pair};
 
 use crate::Error::IncompatibleVersion;
 use crate::core::OutputOptionOps;

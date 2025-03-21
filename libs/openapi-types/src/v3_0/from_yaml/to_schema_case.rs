@@ -1,7 +1,7 @@
 use crate::core::OutputMergeOps;
 use crate::v3_0::{
-    ArrayItems, ComponentName, EnumValue, FormatModifier, OpenApiDataType, ReferenceObject,
-    RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
+    AllOf, ArrayItems, ComponentName, EnumValue, FormatModifier, OneOf, OpenApiDataType,
+    ReferenceObject, RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
 };
 use crate::yaml::{YamlArray, YamlMap, collect, reify_value};
 use crate::{Error, Output, Result, by_key};
@@ -46,7 +46,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
     let (nullable, errors_of_nullable) = map.extract_if_exists("nullable").into_tuple();
 
     let (items, errors_of_items) = map
-        .try_extract_if_exists("items", to_array_items)
+        .try_extract_if_exists("items", ArrayItems::from_yaml_map)
         .into_tuple();
 
     let (enum_values, errors_of_enum) = map
@@ -54,11 +54,11 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         .into_tuple();
 
     let (all_of, errors_all_of) = map
-        .flat_extract_if_exists("allOf", to_schema_cases)
+        .flat_extract_if_exists("allOf", AllOf::from_yaml_array)
         .into_tuple();
 
     let (one_of, errors_one_of) = map
-        .flat_extract_if_exists("oneOf", to_schema_cases)
+        .flat_extract_if_exists("oneOf", OneOf::from_yaml_array)
         .into_tuple();
 
     let object = SchemaObject {
@@ -71,8 +71,8 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         required,
         items,
         enum_values,
-        all_of,
-        one_of,
+        all_of: all_of.flatten(),
+        one_of: one_of.flatten(),
     };
     let output = Output::ok(object)
         .append(errors_of_properties)
@@ -96,13 +96,7 @@ fn to_format_modifier(x: String) -> Result<FormatModifier> {
     Ok(FormatModifier::find(&x).unwrap_or(FormatModifier::Custom(x)))
 }
 
-fn to_array_items(map: YamlMap) -> Result<ArrayItems> {
-    let case = to_schema_case(map)?;
-    let items = ArrayItems::new(case);
-    Ok(items)
-}
-
-fn to_schema_cases(array: YamlArray) -> Output<Vec<SchemaCase>> {
+pub fn to_schema_cases(array: YamlArray) -> Output<Vec<SchemaCase>> {
     array
         .into_iter()
         .map(reify_value)

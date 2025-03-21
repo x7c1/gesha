@@ -1,5 +1,7 @@
+use crate::v3_0::all_of::AllOf;
+use crate::v3_0::array_items::ArrayItems;
 use crate::v3_0::{
-    ComponentName, EnumValues, FormatModifier, OpenApiDataType, ReferenceObject,
+    ComponentName, EnumValues, FormatModifier, OneOf, OpenApiDataType, ReferenceObject,
     RequiredSchemaFields,
 };
 use indexmap::IndexMap;
@@ -104,44 +106,3 @@ impl From<SchemaObject> for SchemaCase {
 ///
 /// see also: https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.16
 pub type SchemaProperties = IndexMap<ComponentName, SchemaCase>;
-
-/// > Value MUST be an object and not an array.
-/// > Inline or referenced schema MUST be of a Schema Object and
-/// > not a standard JSON Schema. items MUST be present if the type is array.
-///
-/// ---
-///
-/// see also: https://swagger.io/docs/specification/data-models/data-types/
-///
-#[derive(Clone, Debug)]
-pub struct ArrayItems(Box<SchemaCase>);
-
-impl ArrayItems {
-    pub fn new(case: SchemaCase) -> Self {
-        Self(Box::new(case))
-    }
-}
-
-impl From<ArrayItems> for SchemaCase {
-    fn from(xs: ArrayItems) -> Self {
-        *xs.0
-    }
-}
-
-/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schema-object
-/// > Inline or referenced schema MUST be of a Schema Object and not a standard JSON Schema.
-///
-/// https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.22
-/// > This keyword's value MUST be an array.  This array MUST have at least one element.
-///
-/// > Elements of the array MUST be objects.  Each object MUST be a valid JSON Schema.
-pub type AllOf = Vec<SchemaCase>;
-
-/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schema-object
-/// > Inline or referenced schema MUST be of a Schema Object and not a standard JSON Schema.
-///
-/// https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.24
-/// > This keyword's value MUST be an array.  This array MUST have at least one element.
-///
-/// > Elements of the array MUST be objects.  Each object MUST be a valid JSON Schema.
-pub type OneOf = Vec<SchemaCase>;

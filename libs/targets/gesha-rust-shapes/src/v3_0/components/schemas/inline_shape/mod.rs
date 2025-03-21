@@ -16,22 +16,12 @@ pub enum InlineShape {
 
 impl InlineShape {
     pub fn new(object: SchemaObject, optionality: Optionality) -> Result<Self> {
-        let has_all_of = object
-            .all_of
-            .as_ref()
-            .map(|x| !x.is_empty())
-            .unwrap_or(false);
-
+        let has_all_of = object.all_of.is_some();
         if has_all_of {
             return InlineSchema::new(object, optionality).map(Self::AllOf);
         }
 
-        let has_one_of = object
-            .one_of
-            .as_ref()
-            .map(|x| !x.is_empty())
-            .unwrap_or(false);
-
+        let has_one_of = object.one_of.is_some();
         if has_one_of {
             return InlineSchema::new(object, optionality).map(Self::OneOf);
         }

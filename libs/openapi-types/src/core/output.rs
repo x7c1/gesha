@@ -131,6 +131,18 @@ impl<A, E> OutputOptionOps<A, E> for Result<A, E> {
     }
 }
 
+impl<A, E> OutputOptionOps<A, E> for Output<Result<A, E>, E> {
+    fn maybe(self) -> Output<Option<A>, E> {
+        match self {
+            Output(Ok(a), errors) => Output(Some(a), errors),
+            Output(Err(e), mut errors) => {
+                errors.push(e);
+                Output(None, errors)
+            }
+        }
+    }
+}
+
 pub trait OutputPairOps<A, B, E> {
     fn lift(self) -> Output<(A, B), E>;
 }

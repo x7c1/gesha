@@ -1,5 +1,11 @@
 mod from_yaml;
 
+mod array_items;
+pub use array_items::ArrayItems;
+
+mod all_of;
+pub use all_of::AllOf;
+
 mod component_name;
 pub use component_name::ComponentName;
 
@@ -17,6 +23,9 @@ pub use format_modifier::FormatModifier;
 
 mod media_type;
 pub use media_type::{MediaTypeKey, MediaTypeObject};
+
+mod one_of;
+pub use one_of::OneOf;
 
 mod openapi_data_type;
 pub use openapi_data_type::OpenApiDataType;
@@ -42,7 +51,7 @@ mod required_schema_fields;
 pub use required_schema_fields::RequiredSchemaFields;
 
 mod schema_case;
-pub use schema_case::{AllOf, ArrayItems, OneOf, SchemaCase, SchemaObject, SchemaProperties};
+pub use schema_case::{SchemaCase, SchemaObject, SchemaProperties};
 
 mod spec_violation;
 pub use spec_violation::SpecViolation;
