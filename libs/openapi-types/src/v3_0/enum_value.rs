@@ -15,8 +15,13 @@ impl EnumValues {
         let values = array.into_iter().map(reify_value).collect::<Result<_>>()?;
         Ok(EnumValues(values))
     }
+}
 
-    pub fn into_iter(self) -> impl Iterator<Item = EnumValue> {
+impl IntoIterator for EnumValues {
+    type Item = EnumValue;
+    type IntoIter = <IndexSet<EnumValue> as IntoIterator>::IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
     }
 }
