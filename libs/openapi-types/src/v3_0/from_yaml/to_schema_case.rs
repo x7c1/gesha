@@ -28,60 +28,64 @@ pub fn to_schema_case(mut map: YamlMap) -> Result<SchemaCase> {
 
 fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
     let (properties, errors_of_properties) = map
-        .remove_if_exists("properties")?
-        .map(to_properties)
+        .remove_if_exists::<YamlMap>("properties")
         .maybe()
+        .flat_map_if_some(to_properties)
         .bind_errors(with_key("properties"))
         .into_tuple();
 
     let (required, errors_of_required) = map
         .remove_if_exists::<YamlArray>("required")
         .maybe()
-        .map_if_exists(RequiredSchemaFields::from_yaml_array)
+        .try_map_if_some(RequiredSchemaFields::from_yaml_array)
         .bind_errors(with_key("required"))
         .into_tuple();
 
     let (data_type, errors_of_data_type) = map
-        .remove_if_exists::<String>("type")?
-        .map(OpenApiDataType::new)
+        .remove_if_exists::<String>("type")
         .maybe()
+        .try_map_if_some(OpenApiDataType::new)
         .bind_errors(with_key("type"))
         .into_tuple();
 
     let (format, errors_of_format) = map
-        .remove_if_exists::<String>("format")?
-        .map(to_format_modifier)
+        .remove_if_exists::<String>("format")
         .maybe()
+        .try_map_if_some(to_format_modifier)
         .bind_errors(with_key("format"))
         .into_tuple();
 
-    let nullable = map.remove_if_exists::<bool>("nullable")?;
+    let (nullable, errors_of_nullable) = map
+        .remove_if_exists::<bool>("nullable")
+        .maybe()
+        .bind_errors(with_key("nullable"))
+        .into_tuple();
 
     let (items, errors_of_items) = map
-        .remove_if_exists::<YamlMap>("items")?
-        .map(to_array_items)
+        .remove_if_exists::<YamlMap>("items")
         .maybe()
+        .try_map_if_some(to_array_items)
         .bind_errors(with_key("items"))
         .into_tuple();
 
     let (enum_values, errors_of_enum) = map
-        .remove_if_exists::<YamlArray>("enum")?
-        .map(EnumValue::from_yaml_array)
+        .remove_if_exists::<YamlArray>("enum")
         .maybe()
+        .try_map_if_some(EnumValue::from_yaml_array)
         .bind_errors(with_key("enum"))
         .into_tuple();
 
     let (all_of, errors_all_of) = map
-        .remove_if_exists::<YamlArray>("allOf")?
-        .map(to_schema_cases)
+        .remove_if_exists::<YamlArray>("allOf")
         .maybe()
+        .flat_map_if_some(to_schema_cases)
         .bind_errors(with_key("allOf"))
         .into_tuple();
 
     let (one_of, errors_one_of) = map
-        .remove_if_exists::<YamlArray>("oneOf")?
-        .map(to_schema_cases)
+        .remove_if_exists::<YamlArray>("oneOf")
         .maybe()
+        .flat_map_if_some(to_schema_cases)
         .bind_errors(with_key("oneOf"))
         .into_tuple();
 
@@ -103,6 +107,7 @@ fn to_schema_object(mut map: YamlMap) -> Result<SchemaObject> {
         .append(errors_of_required)
         .append(errors_of_data_type)
         .append(errors_of_format)
+        .append(errors_of_nullable)
         .append(errors_of_items)
         .append(errors_of_enum)
         .append(errors_all_of)

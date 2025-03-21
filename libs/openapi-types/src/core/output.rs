@@ -72,7 +72,15 @@ impl<A, E> Output<Option<A>, E> {
         maybe_a.ok_or(errors)
     }
 
-    pub fn map_if_exists<B, F>(self, f: F) -> Output<Option<B>, E>
+    pub fn flat_map_if_some<B, F>(self, f: F) -> Output<Option<B>, E>
+    where
+        F: FnOnce(A) -> Output<B, E>,
+    {
+        let Output(output, errors) = self.map(|a| a.map(f).maybe());
+        output.append(errors)
+    }
+
+    pub fn try_map_if_some<B, F>(self, f: F) -> Output<Option<B>, E>
     where
         F: FnOnce(A) -> Result<B, E>,
     {
