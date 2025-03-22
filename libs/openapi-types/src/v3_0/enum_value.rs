@@ -1,5 +1,6 @@
-use crate::yaml::{YamlArray, YamlValue, reify_value};
-use crate::{Error, Result};
+use crate::Result;
+use crate::v3_0::yaml_extractor::reify_value;
+use crate::yaml::{YamlArray, YamlError, YamlValue};
 use indexmap::IndexSet;
 
 /// https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.20
@@ -42,23 +43,20 @@ pub enum EnumValue {
 }
 
 impl TryFrom<YamlValue> for EnumValue {
-    type Error = Error;
+    type Error = YamlError;
 
-    fn try_from(value: YamlValue) -> Result<Self> {
+    fn try_from(value: YamlValue) -> std::result::Result<Self, YamlError> {
         let this = match value {
             YamlValue::String(x) => Self::String(x),
             YamlValue::Integer(x) => Self::Integer(x),
             YamlValue::Boolean(x) => Self::Boolean(x),
-            YamlValue::Array(_) => Err(unsupported("<array>"))?,
-            YamlValue::Map(_) => Err(unsupported("<object>"))?,
+            YamlValue::Array(_) => Err(YamlError::UnknownType {
+                found: "<array>".to_string(),
+            })?,
+            YamlValue::Map(_) => Err(YamlError::UnknownType {
+                found: "<object>".to_string(),
+            })?,
         };
         Ok(this)
-    }
-}
-
-fn unsupported(found: impl Into<String>) -> Error {
-    Error::UnsupportedEnumType {
-        expected: "<string>|<integer>|<boolean>|<null>".to_string(),
-        found: found.into(),
     }
 }

@@ -1,7 +1,10 @@
 use crate::core::OutputOptionOps;
 use crate::error::by_key;
-use crate::v3_0::{HttpStatusCode, OperationObject, ResponseCase, ResponseObject, ResponsesObject};
-use crate::yaml::{YamlMap, collect};
+use crate::v3_0::yaml_extractor::collect;
+use crate::v3_0::{
+    HttpStatusCode, OperationObject, ResponseCase, ResponseObject, ResponsesObject, YamlExtractor,
+};
+use crate::yaml::YamlMap;
 use crate::{Error, Output, Result, with_key};
 
 #[allow(dead_code)]
@@ -51,19 +54,15 @@ fn to_path_pair(kv: (String, YamlMap)) -> Result<(PathFieldName, PathItemObject)
 
 fn to_path_item_object(mut map: YamlMap) -> Result<PathItemObject> {
     let (get, get_errors) = map
-        .remove_if_exists("get")?
-        .map(to_operation_object)
-        .transpose()?
-        .maybe()
-        .bind_errors(with_key("get"))
+        .try_extract_if_exists("get", to_operation_object)
+        .map(|x| x.maybe())
+        .flatten()
         .into_tuple();
 
     let (post, post_errors) = map
-        .remove_if_exists("post")?
-        .map(to_operation_object)
-        .transpose()?
-        .maybe()
-        .bind_errors(with_key("post"))
+        .try_extract_if_exists("post", to_operation_object)
+        .map(|x| x.maybe())
+        .flatten()
         .into_tuple();
 
     let object = PathItemObject { get, post };
@@ -72,7 +71,7 @@ fn to_path_item_object(mut map: YamlMap) -> Result<PathItemObject> {
 }
 
 fn to_operation_object(mut map: YamlMap) -> Result<Output<OperationObject>> {
-    let responses = map.remove("responses")?;
+    let responses = map.extract("responses")?;
     let (responses, errors) = to_responses_object(responses)
         .bind_errors(with_key("responses"))
         .into_tuple();

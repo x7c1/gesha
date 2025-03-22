@@ -1,6 +1,6 @@
-use crate::v3_0::{RequestBodiesObject, SchemasObject};
+use crate::Output;
+use crate::v3_0::{RequestBodiesObject, SchemasObject, YamlExtractor};
 use crate::yaml::{ToOpenApi, YamlMap};
-use crate::{Output, Result};
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#componentsObject
 #[derive(Debug)]
@@ -10,7 +10,7 @@ pub struct ComponentsObject {
 }
 
 impl ToOpenApi for ComponentsObject {
-    fn apply(mut map: YamlMap) -> Result<Output<Self>> {
+    fn apply(mut map: YamlMap) -> Output<Self> {
         let (schemas, schemas_errors) = map
             .flat_extract_if_exists("schemas", SchemasObject::from_yaml_map)
             .into_tuple();
@@ -24,10 +24,8 @@ impl ToOpenApi for ComponentsObject {
             schemas,
         };
 
-        let output = Output::ok(object)
+        Output::ok(object)
             .append(schemas_errors)
-            .append(request_bodies_errors);
-
-        Ok(output)
+            .append(request_bodies_errors)
     }
 }

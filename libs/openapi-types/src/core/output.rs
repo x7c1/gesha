@@ -40,6 +40,11 @@ impl<A, E> Output<A, E> {
         }
     }
 
+    pub fn tap(self, f: impl Fn(&Self)) -> Self {
+        f(&self);
+        self
+    }
+
     pub fn to_result(self) -> Result<A, Vec<E>> {
         if self.1.is_empty() {
             Ok(self.0)
@@ -86,6 +91,15 @@ impl<A, E> Output<Option<A>, E> {
     {
         let Output(output, errors) = self.map(|a| a.map(f).maybe());
         output.append(errors)
+    }
+}
+
+impl<A, E> Output<Output<A, E>, E> {
+    pub fn flatten(self) -> Output<A, E> {
+        let Output(output, mut errors1) = self;
+        let Output(a, mut errors2) = output;
+        errors1.append(&mut errors2);
+        Output(a, errors1)
     }
 }
 

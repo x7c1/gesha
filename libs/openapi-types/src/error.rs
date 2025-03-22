@@ -1,19 +1,17 @@
 use crate::{json_schema, v3_0};
+use std::fmt::Debug;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub enum Error {
+    CannotScanYaml { detail: Box<dyn Debug + Send> },
     Enclosed { key: String, causes: Vec<Error> },
-    FieldNotExist { field: String },
-    CannotScanYaml { detail: String },
     IncompatibleVersion { version: String },
     Multiple { causes: Vec<Error> },
     SpecViolation(SpecViolation),
-    TypeMismatch { expected: String, found: String },
-    UnknownYamlType { found: String },
-    UnsupportedEnumType { expected: String, found: String },
     Unsupported(Unsupported),
+    Yaml(crate::yaml::YamlError),
 }
 
 impl Error {
@@ -22,6 +20,16 @@ impl Error {
             causes.remove(0)
         } else {
             Self::Multiple { causes }
+        }
+    }
+}
+
+impl From<Vec<Error>> for Error {
+    fn from(mut causes: Vec<Error>) -> Self {
+        if causes.len() == 1 {
+            causes.remove(0)
+        } else {
+            Error::Multiple { causes }
         }
     }
 }

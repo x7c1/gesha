@@ -1,7 +1,8 @@
 use crate::core::OutputMergeOps;
 use crate::error::by_key;
-use crate::v3_0::{ComponentName, ReferenceObject, SchemaObject};
-use crate::yaml::{YamlArray, YamlMap, reify_value};
+use crate::v3_0::yaml_extractor::reify_value;
+use crate::v3_0::{ComponentName, ReferenceObject, SchemaObject, YamlExtractor};
+use crate::yaml::{YamlArray, YamlMap};
 use crate::{Output, Result};
 
 pub type NamedSchemaCase = (ComponentName, SchemaCase);
@@ -15,7 +16,7 @@ pub enum SchemaCase {
 
 impl SchemaCase {
     pub fn from_yaml_map(mut map: YamlMap) -> Result<SchemaCase> {
-        let case = match map.remove_if_exists::<String>("$ref")? {
+        let case = match map.extract_if_exists::<String>("$ref").to_result()? {
             Some(rf) => {
                 let reference = ReferenceObject::new(rf);
                 SchemaCase::Reference(reference)

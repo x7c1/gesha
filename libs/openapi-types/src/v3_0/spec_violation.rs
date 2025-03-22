@@ -1,5 +1,9 @@
 #[derive(Debug, Clone, PartialEq)]
 pub enum SpecViolation {
+    FieldNotExist {
+        field: String,
+    },
+
     /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#data-types
     UnknownDataType {
         found: String,

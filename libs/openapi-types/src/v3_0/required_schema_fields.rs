@@ -1,6 +1,7 @@
 use crate::Result;
 use crate::json_schema::SpecViolation::EmptyRequired;
-use crate::yaml::{YamlArray, reify_value};
+use crate::v3_0::yaml_extractor::reify_value;
+use crate::yaml::YamlArray;
 use indexmap::IndexSet;
 
 /// https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.15

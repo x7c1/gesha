@@ -1,10 +1,11 @@
 use crate::Output;
+use crate::v3_0::yaml_extractor::collect;
 use crate::v3_0::{
     ComponentName, MediaTypeKey, MediaTypeObject, RequestBodyCase, RequestBodyObject, SchemaCase,
     YamlExtractor,
 };
-use crate::yaml::{YamlMap, collect};
-use crate::{Error, Result, by_key, with_key};
+use crate::yaml::YamlMap;
+use crate::{Error, Result, by_key};
 use indexmap::IndexMap;
 
 type InnerMap = IndexMap<ComponentName, RequestBodyCase>;
@@ -48,7 +49,7 @@ fn to_request_body_pair(kv: (String, YamlMap)) -> Result<(ComponentName, Request
 }
 
 fn to_request_body_case(mut map: YamlMap) -> Result<RequestBodyCase> {
-    let case = match map.remove_if_exists::<String>("$ref")? {
+    let case = match map.extract_if_exists::<String>("$ref").to_result()? {
         Some(_reference) => unimplemented!(),
         None => {
             let object = to_request_body_object(map)?;
@@ -60,24 +61,25 @@ fn to_request_body_case(mut map: YamlMap) -> Result<RequestBodyCase> {
 
 fn to_request_body_object(mut map: YamlMap) -> Result<RequestBodyObject> {
     let (content, errors_of_content) = map
-        .remove("content")
-        .map(collect(Output::by(to_request_body_content_pair)))?
-        .bind_errors(with_key("content"))
+        .flat_extract("content", collect(Output::by(to_request_body_content_pair)))?
         .into_tuple();
 
     let (required, errors_of_required) = map
-        .extract_if_exists2("required")
+        .extract_if_exists("required")
         .map(|maybe| maybe.unwrap_or(false))
         .into_tuple();
 
+    let (description, errors_of_description) = map.extract_if_exists("description").into_tuple();
+
     let object = RequestBodyObject {
-        description: map.remove_if_exists("description")?,
+        description,
         content,
         required,
     };
     let output = Output::ok(object)
         .append(errors_of_content)
-        .append(errors_of_required);
+        .append(errors_of_required)
+        .append(errors_of_description);
 
     output.to_result().map_err(Error::multiple)
 }
@@ -90,6 +92,6 @@ fn to_request_body_content_pair(kv: (String, YamlMap)) -> Result<(MediaTypeKey, 
 }
 
 fn to_media_type_object(mut map: YamlMap) -> Result<MediaTypeObject> {
-    let schema = map.remove("schema").map(SchemaCase::from_yaml_map)?;
+    let schema = map.extract("schema").map(SchemaCase::from_yaml_map)?;
     schema.map(|schema| MediaTypeObject { schema })
 }

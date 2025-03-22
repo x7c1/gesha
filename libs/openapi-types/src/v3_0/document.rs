@@ -1,6 +1,6 @@
 use crate::Error::IncompatibleVersion;
 use crate::core::OutputOptionOps;
-use crate::v3_0::{ComponentsObject, PathsObject};
+use crate::v3_0::{ComponentsObject, PathsObject, YamlExtractor};
 use crate::yaml::{ToOpenApi, YamlMap};
 use crate::{Output, Result, with_key};
 
@@ -22,34 +22,27 @@ pub struct InfoObject {
 
 impl ToOpenApi for Document {
     /// return Error::IncompatibleVersion if not supported version.
-    fn apply(mut map: YamlMap) -> Result<Output<Self>> {
-        let (components, components_errors) = map
-            .remove_if_exists("components")?
-            .map(ToOpenApi::apply)
-            .transpose()?
-            .maybe()
-            .bind_errors(with_key("components"))
+    fn apply(mut map: YamlMap) -> Output<Self> {
+        let (components, errors_of_components) = map
+            .flat_extract_if_exists("components", ToOpenApi::apply)
             .into_tuple();
 
-        let (paths, paths_errors) = {
-            let map = map.remove("paths")?;
-            PathsObject::from_yaml_map(map)
-                .bind_errors(with_key("paths"))
-                .into_tuple()
-        };
+        let (paths, errors_of_paths) = to_paths(&mut map).into_tuple();
+        let (openapi, errors_of_openapi) = to_openapi(&mut map).into_tuple();
+        let (info, errors_of_info) = to_info(&mut map).into_tuple();
 
         let document = Document {
-            openapi: to_openapi_version(map.remove("openapi")?)?,
-            info: to_info(map.remove("info")?)?,
+            openapi,
+            info,
             paths,
             components,
         };
 
-        let output = Output::ok(document)
-            .append(components_errors)
-            .append(paths_errors);
-
-        Ok(output)
+        Output::ok(document)
+            .append(errors_of_openapi)
+            .append(errors_of_info)
+            .append(errors_of_paths)
+            .append(errors_of_components)
     }
 }
 
@@ -60,9 +53,51 @@ fn to_openapi_version(version: String) -> Result<String> {
     Ok(version)
 }
 
-fn to_info(mut map: YamlMap) -> Result<InfoObject> {
-    let info = InfoObject {
-        title: map.remove("title")?,
-    };
-    Ok(info)
+fn to_info(map: &mut YamlMap) -> Output<InfoObject> {
+    let (mut map, errors_of_info) = map
+        .extract::<YamlMap>("info")
+        .maybe()
+        .map(|maybe| maybe.unwrap_or_default())
+        .into_tuple();
+
+    let (title, errors_of_title) = map
+        .extract::<String>("title")
+        .maybe()
+        .map(|maybe| maybe.unwrap_or_default())
+        .into_tuple();
+
+    let info = InfoObject { title };
+
+    Output::ok(info)
+        .append(errors_of_info)
+        .append(errors_of_title)
+        .bind_errors(with_key("info"))
+}
+
+fn to_paths(map: &mut YamlMap) -> Output<PathsObject> {
+    let (map, errors1) = map
+        .extract::<YamlMap>("paths")
+        .maybe()
+        .map(|maybe| maybe.unwrap_or_default())
+        .into_tuple();
+
+    let (paths, errors2) = PathsObject::from_yaml_map(map).into_tuple();
+
+    Output::ok(paths)
+        .append(errors1)
+        .append(errors2)
+        .bind_errors(with_key("paths"))
+}
+
+fn to_openapi(map: &mut YamlMap) -> Output<String> {
+    let output = map
+        .extract::<String>("openapi")
+        .maybe()
+        .map(|maybe| maybe.unwrap_or_default());
+
+    output
+        .map(to_openapi_version)
+        .maybe()
+        .map(|maybe| maybe.unwrap_or_default())
+        .bind_errors(with_key("openapi"))
 }

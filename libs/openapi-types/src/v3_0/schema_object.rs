@@ -89,13 +89,10 @@ pub struct SchemaObject {
 
 impl SchemaObject {
     pub fn from_yaml_map(mut map: YamlMap) -> Result<SchemaObject> {
-        let (properties, errors_of_properties) = map
-            .flat_extract_if_exists("properties", SchemaProperties::from_yaml_map)
-            .into_tuple();
+        let (title, errors_of_title) = map.extract_if_exists::<String>("title").into_tuple();
 
-        let (required, errors_of_required) = map
-            .try_extract_if_exists("required", RequiredSchemaFields::from_yaml_array)
-            .into_tuple();
+        let (description, errors_of_description) =
+            map.extract_if_exists::<String>("description").into_tuple();
 
         let (data_type, errors_of_data_type) = map
             .try_extract_if_exists("type", OpenApiDataType::new)
@@ -105,7 +102,15 @@ impl SchemaObject {
             .try_extract_if_exists("format", FormatModifier::from_string)
             .into_tuple();
 
-        let (nullable, errors_of_nullable) = map.extract_if_exists2("nullable").into_tuple();
+        let (nullable, errors_of_nullable) = map.extract_if_exists("nullable").into_tuple();
+
+        let (properties, errors_of_properties) = map
+            .flat_extract_if_exists("properties", SchemaProperties::from_yaml_map)
+            .into_tuple();
+
+        let (required, errors_of_required) = map
+            .try_extract_if_exists("required", RequiredSchemaFields::from_yaml_array)
+            .into_tuple();
 
         let (items, errors_of_items) = map
             .try_extract_if_exists("items", ArrayItems::from_yaml_map)
@@ -124,8 +129,8 @@ impl SchemaObject {
             .into_tuple();
 
         let object = SchemaObject {
-            title: map.remove_if_exists::<String>("title")?,
-            description: map.remove_if_exists::<String>("description")?,
+            title,
+            description,
             data_type,
             format,
             nullable,
@@ -137,11 +142,13 @@ impl SchemaObject {
             one_of: one_of.flatten(),
         };
         let output = Output::ok(object)
-            .append(errors_of_properties)
-            .append(errors_of_required)
+            .append(errors_of_title)
+            .append(errors_of_description)
             .append(errors_of_data_type)
             .append(errors_of_format)
             .append(errors_of_nullable)
+            .append(errors_of_properties)
+            .append(errors_of_required)
             .append(errors_of_items)
             .append(errors_of_enum)
             .append(errors_all_of)
