@@ -1,4 +1,4 @@
-use crate::Error::IncompatibleVersion;
+use crate::Unsupported::IncompatibleVersion;
 use crate::core::OutputOptionOps;
 use crate::v3_0::{ComponentsObject, PathsObject, YamlExtractor};
 use crate::yaml::{ToOpenApi, YamlMap};
@@ -48,7 +48,9 @@ impl ToOpenApi for Document {
 
 fn to_openapi_version(version: String) -> Result<String> {
     if !version.starts_with("3.0.") {
-        return Err(IncompatibleVersion { version });
+        Err(IncompatibleVersion {
+            version: version.clone(),
+        })?;
     }
     Ok(version)
 }

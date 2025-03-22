@@ -11,7 +11,7 @@ mod yaml_value;
 pub use yaml_value::YamlValue;
 
 mod loader;
-pub use loader::load_from_str;
+pub use loader::{YamlLoaderError, load_from_str};
 
 mod to_openapi;
 pub use to_openapi::ToOpenApi;

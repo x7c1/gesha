@@ -1,3 +1,4 @@
+use crate::yaml::YamlLoaderError;
 use crate::{json_schema, v3_0};
 use std::fmt::Debug;
 
@@ -5,13 +6,11 @@ pub type Result<A> = std::result::Result<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {
-    CannotScanYaml { detail: Box<dyn Debug + Send> },
     Enclosed { key: String, causes: Vec<Error> },
-    IncompatibleVersion { version: String },
     Multiple { causes: Vec<Error> },
     SpecViolation(SpecViolation),
     Unsupported(Unsupported),
-    Yaml(crate::yaml::YamlError),
+    YamlLoader(YamlLoaderError),
 }
 
 impl Error {
@@ -58,5 +57,12 @@ pub enum SpecViolation {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Unsupported {
+    IncompatibleVersion { version: String },
     UnknownType { found: String },
+}
+
+impl From<Unsupported> for Error {
+    fn from(unsupported: Unsupported) -> Self {
+        Error::Unsupported(unsupported)
+    }
 }
