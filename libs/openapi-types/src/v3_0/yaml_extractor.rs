@@ -6,7 +6,6 @@ use std::fmt::{Debug, Display};
 use v3_0::SpecViolation::{FieldNotExist, TypeMismatch};
 
 pub trait YamlExtractor {
-    // TODO: rename after original ones are removed
     fn extract<A>(&mut self, key: &str) -> Result<A>
     where
         A: TryFrom<YamlValue, Error = YamlError>;
