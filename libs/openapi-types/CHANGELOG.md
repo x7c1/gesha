@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.6](https://github.com/x7c1/gesha/compare/openapi-types-v0.0.5...openapi-types-v0.0.6) - 2025-03-22
+
+### Added
+
+- support numeric enum values ([#132](https://github.com/x7c1/gesha/pull/132))
+
+### Other
+
+- refactor error categories ([#136](https://github.com/x7c1/gesha/pull/136))
+- migrate to Rust 2024 edition ([#135](https://github.com/x7c1/gesha/pull/135))
+
 ## [0.0.5](https://github.com/x7c1/gesha/compare/openapi-types-v0.0.4...openapi-types-v0.0.5) - 2025-03-01
 
 ### Added
