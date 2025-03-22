@@ -14,14 +14,14 @@ testing = []
 [dependencies]
 openapi-types = { workspace = true }
 
-chrono = "0.4.31"
-console = "0.15.8"
-futures = "0.3"
-nu-ansi-term = "0.50.0"
+chrono = "0.4.40"
+console = "0.15.11"
+futures = "0.3.31"
+nu-ansi-term = "0.50.1"
 opentelemetry = { workspace = true }
 opentelemetry-otlp = { version = "0.28.0", features = ["metrics", "grpc-tonic"] }
 opentelemetry_sdk = { version = "0.28.0", features = ["rt-tokio"] }
-similar = "2.4.0"
+similar = "2.7.0"
 tokio = { workspace = true }
 tracing = { workspace = true }
 tracing-opentelemetry = { version = "0.29", features = ["metrics"] }

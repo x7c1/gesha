@@ -6,7 +6,7 @@ edition = "2024"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-web = "4.4.1"
+actix-web = "4.10.2"
 actix-multipart = "0.7.0"
 futures-util = "0.3"
 serde = { workspace = true }

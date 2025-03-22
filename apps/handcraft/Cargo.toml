@@ -17,6 +17,6 @@ path = "src/bin.rs"
 handcraft-server = { path = "../../libs/handcraft/handcraft-server" }
 handcraft-server-derive = { path = "../../libs/handcraft/handcraft-server-derive" }
 handcraft-models = { path = "../../libs/handcraft/handcraft-models" }
-actix-web = "4.4.1"
+actix-web = "4.10.2"
 async-trait = { workspace = true }
 futures-util = "0.3"

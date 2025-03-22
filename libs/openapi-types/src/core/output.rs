@@ -40,6 +40,11 @@ impl<A, E> Output<A, E> {
         }
     }
 
+    pub fn tap(self, f: impl Fn(&Self)) -> Self {
+        f(&self);
+        self
+    }
+
     pub fn to_result(self) -> Result<A, Vec<E>> {
         if self.1.is_empty() {
             Ok(self.0)
@@ -70,6 +75,31 @@ impl<A, E> Output<Option<A>, E> {
     pub fn ok_or_errors(self) -> Result<A, Vec<E>> {
         let Output(maybe_a, errors) = self;
         maybe_a.ok_or(errors)
+    }
+
+    pub fn flat_map_if_some<B, F>(self, f: F) -> Output<Option<B>, E>
+    where
+        F: FnOnce(A) -> Output<B, E>,
+    {
+        let Output(output, errors) = self.map(|a| a.map(f).maybe());
+        output.append(errors)
+    }
+
+    pub fn try_map_if_some<B, F>(self, f: F) -> Output<Option<B>, E>
+    where
+        F: FnOnce(A) -> Result<B, E>,
+    {
+        let Output(output, errors) = self.map(|a| a.map(f).maybe());
+        output.append(errors)
+    }
+}
+
+impl<A, E> Output<Output<A, E>, E> {
+    pub fn flatten(self) -> Output<A, E> {
+        let Output(output, mut errors1) = self;
+        let Output(a, mut errors2) = output;
+        errors1.append(&mut errors2);
+        Output(a, errors1)
     }
 }
 
@@ -111,6 +141,18 @@ impl<A, E> OutputOptionOps<A, E> for Result<A, E> {
         match self {
             Ok(a) => Output(Some(a), vec![]),
             Err(e) => Output(None, vec![e]),
+        }
+    }
+}
+
+impl<A, E> OutputOptionOps<A, E> for Output<Result<A, E>, E> {
+    fn maybe(self) -> Output<Option<A>, E> {
+        match self {
+            Output(Ok(a), errors) => Output(Some(a), errors),
+            Output(Err(e), mut errors) => {
+                errors.push(e);
+                Output(None, errors)
+            }
         }
     }
 }

@@ -1,6 +1,4 @@
-use crate::Error::TypeMismatch;
-use crate::yaml::{YamlArray, YamlMap};
-use crate::{Error, Result};
+use crate::yaml::{YamlArray, YamlError, YamlMap};
 
 #[derive(Clone, Debug)]
 pub enum YamlValue {
@@ -33,16 +31,16 @@ impl YamlValue {
 }
 
 impl TryFrom<yaml_rust::Yaml> for YamlValue {
-    type Error = Error;
+    type Error = YamlError;
 
-    fn try_from(yaml: yaml_rust::Yaml) -> Result<Self> {
+    fn try_from(yaml: yaml_rust::Yaml) -> std::result::Result<Self, YamlError> {
         match yaml {
             yaml_rust::Yaml::Array(x) => Ok(YamlValue::Array(YamlArray(x))),
             yaml_rust::Yaml::String(x) => Ok(YamlValue::String(x)),
             yaml_rust::Yaml::Hash(x) => Ok(YamlValue::Map(YamlMap(x))),
             yaml_rust::Yaml::Boolean(x) => Ok(YamlValue::Boolean(x)),
             yaml_rust::Yaml::Integer(x) => Ok(YamlValue::Integer(x)),
-            unknown => Err(Error::UnknownDataType {
+            unknown => Err(YamlError::UnknownType {
                 found: format!("{unknown:?}"),
             }),
         }
@@ -50,12 +48,12 @@ impl TryFrom<yaml_rust::Yaml> for YamlValue {
 }
 
 impl TryFrom<YamlValue> for YamlArray {
-    type Error = Error;
+    type Error = YamlError;
 
-    fn try_from(value: YamlValue) -> Result<Self> {
+    fn try_from(value: YamlValue) -> std::result::Result<Self, YamlError> {
         match value {
             YamlValue::Array(x) => Ok(x),
-            _ => Err(TypeMismatch {
+            _ => Err(YamlError::TypeMismatch {
                 expected: "Array".to_string(),
                 found: value.kind().to_string(),
             }),
@@ -64,12 +62,12 @@ impl TryFrom<YamlValue> for YamlArray {
 }
 
 impl TryFrom<YamlValue> for String {
-    type Error = Error;
+    type Error = YamlError;
 
-    fn try_from(value: YamlValue) -> Result<Self> {
+    fn try_from(value: YamlValue) -> std::result::Result<Self, YamlError> {
         match value {
             YamlValue::String(x) => Ok(x),
-            _ => Err(TypeMismatch {
+            _ => Err(YamlError::TypeMismatch {
                 expected: "String".to_string(),
                 found: value.kind().to_string(),
             }),
@@ -78,12 +76,12 @@ impl TryFrom<YamlValue> for String {
 }
 
 impl TryFrom<YamlValue> for bool {
-    type Error = Error;
+    type Error = YamlError;
 
-    fn try_from(value: YamlValue) -> Result<Self> {
+    fn try_from(value: YamlValue) -> std::result::Result<Self, YamlError> {
         match value {
             YamlValue::Boolean(x) => Ok(x),
-            _ => Err(TypeMismatch {
+            _ => Err(YamlError::TypeMismatch {
                 expected: "Boolean".to_string(),
                 found: value.kind().to_string(),
             }),
@@ -92,12 +90,12 @@ impl TryFrom<YamlValue> for bool {
 }
 
 impl TryFrom<YamlValue> for YamlMap {
-    type Error = Error;
+    type Error = YamlError;
 
-    fn try_from(value: YamlValue) -> Result<Self> {
+    fn try_from(value: YamlValue) -> std::result::Result<Self, YamlError> {
         match value {
             YamlValue::Map(x) => Ok(x),
-            _ => Err(TypeMismatch {
+            _ => Err(YamlError::TypeMismatch {
                 expected: "Map".to_string(),
                 found: value.kind().to_string(),
             }),

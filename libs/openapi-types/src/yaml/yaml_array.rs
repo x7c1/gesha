@@ -1,11 +1,10 @@
-use crate::Result;
-use crate::yaml::YamlValue;
+use crate::yaml::{YamlError, YamlValue};
 
 #[derive(Clone, Debug)]
 pub struct YamlArray(pub(super) yaml_rust::yaml::Array);
 
 impl IntoIterator for YamlArray {
-    type Item = Result<YamlValue>;
+    type Item = Result<YamlValue, YamlError>;
     type IntoIter = Box<dyn Iterator<Item = Self::Item>>;
 
     fn into_iter(self) -> Self::IntoIter {

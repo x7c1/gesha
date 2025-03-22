@@ -9,8 +9,9 @@ use openapi_types::v3_0::SchemaCase;
 pub struct CaseItemShapes<A: CaseItem>(Vec<A>);
 
 impl<A: CaseItem> CaseItemShapes<A> {
-    pub fn from_schema_cases(cases: Vec<SchemaCase>) -> Output<Self> {
+    pub fn from_schema_cases(cases: impl Into<Vec<SchemaCase>>) -> Output<Self> {
         let inner = cases
+            .into()
             .into_iter()
             .map(A::from_schema_case)
             .collect::<Vec<_>>()

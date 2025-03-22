@@ -1,4 +1,7 @@
-use crate::v3_0::OperationObject;
+use crate::Output;
+use crate::v3_0::PathItemObject;
+use crate::v3_0::yaml_extractor::collect;
+use crate::yaml::YamlMap;
 
 #[allow(dead_code)]
 #[derive(Debug)]
@@ -10,6 +13,10 @@ impl PathsObject {
     pub fn new(paths: Vec<(PathFieldName, PathItemObject)>) -> Self {
         // TODO: check if each PathFieldName is unique in paths
         PathsObject(paths)
+    }
+
+    pub fn from_yaml_map(map: YamlMap) -> Output<PathsObject> {
+        collect(Output::by(PathItemObject::with_name))(map).map(PathsObject::new)
     }
 }
 
@@ -24,10 +31,4 @@ impl PathFieldName {
         // TODO: check field pattern
         PathFieldName(a.into())
     }
-}
-
-#[derive(Debug)]
-pub struct PathItemObject {
-    pub get: Option<OperationObject>,
-    pub post: Option<OperationObject>,
 }
