@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.3](https://github.com/x7c1/gesha/compare/gesha-rust-types-v0.0.2...gesha-rust-types-v0.0.3) - 2025-03-22
+
+### Added
+
+- support numeric enum values ([#132](https://github.com/x7c1/gesha/pull/132))
+
+### Other
+
+- migrate to Rust 2024 edition ([#135](https://github.com/x7c1/gesha/pull/135))
+
 ## [0.0.2](https://github.com/x7c1/gesha/compare/gesha-rust-types-v0.0.1...gesha-rust-types-v0.0.2) - 2025-03-08
 
 ### Fixed
