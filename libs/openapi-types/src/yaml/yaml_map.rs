@@ -19,7 +19,7 @@ impl YamlMap {
         A: TryFrom<YamlValue, Error = YamlError>,
     {
         let yaml = self.0.remove(&yaml_rust::Yaml::from_str(key));
-        let value: Option<YamlValue> = yaml.map(YamlValue::from_yaml).transpose()?;
+        let value: Option<YamlValue> = yaml.map(YamlValue::try_from).transpose()?;
         value.map(|x| x.try_into()).transpose()
     }
 }

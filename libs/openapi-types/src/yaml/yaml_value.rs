@@ -28,19 +28,6 @@ impl YamlValue {
             YamlValue::Map(_) => "<map>".to_string(),
         }
     }
-
-    pub(crate) fn from_yaml(yaml: yaml_rust::Yaml) -> std::result::Result<Self, YamlError> {
-        match yaml {
-            yaml_rust::Yaml::Array(x) => Ok(YamlValue::Array(YamlArray(x))),
-            yaml_rust::Yaml::String(x) => Ok(YamlValue::String(x)),
-            yaml_rust::Yaml::Hash(x) => Ok(YamlValue::Map(YamlMap(x))),
-            yaml_rust::Yaml::Boolean(x) => Ok(YamlValue::Boolean(x)),
-            yaml_rust::Yaml::Integer(x) => Ok(YamlValue::Integer(x)),
-            unknown => Err(YamlError::UnknownType {
-                found: format!("{unknown:?}"),
-            }),
-        }
-    }
 }
 
 impl TryFrom<yaml_rust::Yaml> for YamlValue {
