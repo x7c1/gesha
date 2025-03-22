@@ -1,6 +1,6 @@
 use crate::v3_0::{
     AllOf, ArrayItems, EnumValues, FormatModifier, OneOf, OpenApiDataType, RequiredSchemaFields,
-    SchemaCase, SchemaProperties,
+    SchemaCase, SchemaProperties, YamlExtractor,
 };
 use crate::yaml::YamlMap;
 use crate::{Error, Output, Result};
@@ -105,7 +105,7 @@ impl SchemaObject {
             .try_extract_if_exists("format", FormatModifier::from_string)
             .into_tuple();
 
-        let (nullable, errors_of_nullable) = map.extract_if_exists("nullable").into_tuple();
+        let (nullable, errors_of_nullable) = map.extract_if_exists2("nullable").into_tuple();
 
         let (items, errors_of_items) = map
             .try_extract_if_exists("items", ArrayItems::from_yaml_map)

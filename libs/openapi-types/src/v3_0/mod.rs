@@ -65,3 +65,6 @@ pub use schemas_object::SchemasObject;
 
 mod spec_violation;
 pub use spec_violation::SpecViolation;
+
+mod yaml_extractor;
+pub use yaml_extractor::YamlExtractor;

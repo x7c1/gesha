@@ -1,6 +1,7 @@
 use crate::Output;
 use crate::v3_0::{
     ComponentName, MediaTypeKey, MediaTypeObject, RequestBodyCase, RequestBodyObject, SchemaCase,
+    YamlExtractor,
 };
 use crate::yaml::{YamlMap, collect};
 use crate::{Error, Result, by_key, with_key};
@@ -58,18 +59,26 @@ fn to_request_body_case(mut map: YamlMap) -> Result<RequestBodyCase> {
 }
 
 fn to_request_body_object(mut map: YamlMap) -> Result<RequestBodyObject> {
-    let (content, errors) = map
+    let (content, errors_of_content) = map
         .remove("content")
         .map(collect(Output::by(to_request_body_content_pair)))?
         .bind_errors(with_key("content"))
         .into_tuple();
 
+    let (required, errors_of_required) = map
+        .extract_if_exists2("required")
+        .map(|maybe| maybe.unwrap_or(false))
+        .into_tuple();
+
     let object = RequestBodyObject {
         description: map.remove_if_exists("description")?,
         content,
-        required: map.remove_if_exists("required")?.unwrap_or(false),
+        required,
     };
-    let output = Output::new(object, errors);
+    let output = Output::ok(object)
+        .append(errors_of_content)
+        .append(errors_of_required);
+
     output.to_result().map_err(Error::multiple)
 }
 

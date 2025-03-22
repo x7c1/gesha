@@ -1,7 +1,7 @@
 use crate::Error::FieldNotExist;
 use crate::core::OutputOptionOps;
 use crate::error::with_key;
-use crate::yaml::YamlValue;
+use crate::yaml::{YamlError, YamlValue};
 use crate::{Error, Output, Result};
 
 #[derive(Clone, Debug)]
@@ -15,6 +15,15 @@ impl YamlMap {
         self.remove_if_exists(key)?.ok_or_else(|| FieldNotExist {
             field: key.to_string(),
         })
+    }
+
+    pub fn remove_if_exists2<A>(&mut self, key: &str) -> std::result::Result<Option<A>, YamlError>
+    where
+        A: TryFrom<YamlValue, Error = YamlError>,
+    {
+        let yaml = self.0.remove(&yaml_rust::Yaml::from_str(key));
+        let value: Option<YamlValue> = yaml.map(YamlValue::from_yaml).transpose()?;
+        value.map(|x| x.try_into()).transpose()
     }
 
     pub fn remove_if_exists<A>(&mut self, key: &str) -> Result<Option<A>>

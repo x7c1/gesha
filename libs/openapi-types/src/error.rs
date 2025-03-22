@@ -13,6 +13,7 @@ pub enum Error {
     TypeMismatch { expected: String, found: String },
     UnknownYamlType { found: String },
     UnsupportedEnumType { expected: String, found: String },
+    Unsupported(Unsupported),
 }
 
 impl Error {
@@ -45,4 +46,9 @@ pub type Output<A> = crate::core::Output<A, Error>;
 pub enum SpecViolation {
     V3_0(v3_0::SpecViolation),
     JsonSchema(json_schema::SpecViolation),
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum Unsupported {
+    UnknownType { found: String },
 }
