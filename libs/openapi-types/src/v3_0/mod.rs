@@ -29,12 +29,13 @@ mod openapi_data_type;
 pub use openapi_data_type::OpenApiDataType;
 
 mod operation_object;
-pub use operation_object::{
-    HttpStatusCode, OperationObject, ResponseCase, ResponseObject, ResponsesObject,
-};
+pub use operation_object::OperationObject;
+
+mod path_item_object;
+pub use path_item_object::PathItemObject;
 
 mod paths_object;
-pub use paths_object::{PathFieldName, PathItemObject, PathsObject};
+pub use paths_object::{PathFieldName, PathsObject};
 
 mod reference_object;
 pub use reference_object::ReferenceObject;
@@ -50,6 +51,9 @@ pub use request_body_object::{RequestBodyCase, RequestBodyObject};
 
 mod required_schema_fields;
 pub use required_schema_fields::RequiredSchemaFields;
+
+mod responses_object;
+pub use responses_object::{HttpStatusCode, ResponseCase, ResponseObject, ResponsesObject};
 
 mod schema_case;
 pub use schema_case::SchemaCase;
