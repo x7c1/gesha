@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Example1 {
+    pub x0: MixedTypeEnum,
     pub x1: MixedTypeEnum,
     pub x2: MixedTypeEnum,
 }
@@ -21,6 +22,7 @@ mod to_json {
     #[test]
     fn ok_1() {
         let target = Example1 {
+            x0: MixedTypeEnum::True,
             x1: MixedTypeEnum::_2000,
             x2: MixedTypeEnum::Minus42,
         };
@@ -28,6 +30,7 @@ mod to_json {
         let expected = flatten(
             r#"
             {
+                "x0": true,
                 "x1": "2000",
                 "x2": -42
             }
@@ -39,6 +42,7 @@ mod to_json {
     #[test]
     fn ok_2() {
         let target = Example1 {
+            x0: MixedTypeEnum::False,
             x1: MixedTypeEnum::_1000,
             x2: MixedTypeEnum::_2002,
         };
@@ -46,6 +50,7 @@ mod to_json {
         let expected = flatten(
             r#"
             {
+                "x0": false,
                 "x1": 1000,
                 "x2": "2002"
             }
@@ -89,6 +94,7 @@ mod from_json {
         let actual = serde_json::from_str::<Example1>(
             r#"
             {
+                "x0": true,
                 "x1": "2000",
                 "x2": -42
             }
@@ -97,6 +103,7 @@ mod from_json {
         .unwrap();
 
         let expected = Example1 {
+            x0: MixedTypeEnum::True,
             x1: MixedTypeEnum::_2000,
             x2: MixedTypeEnum::Minus42,
         };
@@ -108,6 +115,7 @@ mod from_json {
         let actual = serde_json::from_str::<Example1>(
             r#"
             {
+                "x0": false,
                 "x1": 1000,
                 "x2": "2002"
             }"#,
@@ -115,6 +123,7 @@ mod from_json {
         .unwrap();
 
         let expected = Example1 {
+            x0: MixedTypeEnum::False,
             x1: MixedTypeEnum::_1000,
             x2: MixedTypeEnum::_2002,
         };
@@ -126,6 +135,7 @@ mod from_json {
             r#"
             {
                 "values": [
+                    true,
                     1000,
                     "2000",
                     -42
@@ -137,6 +147,7 @@ mod from_json {
 
         let expected = Example2 {
             values: vec![
+                MixedTypeEnum::True,
                 MixedTypeEnum::_1000,
                 MixedTypeEnum::_2000,
                 MixedTypeEnum::Minus42,

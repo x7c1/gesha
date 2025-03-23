@@ -6,3 +6,5 @@ schemas:
       - "2001"
       - "2002"
       - -42
+      - true
+      - false
