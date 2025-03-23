@@ -70,6 +70,8 @@ mod to_json {
             values: vec![
                 MixedTypeEnum::_1000,
                 MixedTypeEnum::_2000,
+                MixedTypeEnum::Null,
+                MixedTypeEnum::False,
                 MixedTypeEnum::Minus42,
             ],
         };
@@ -80,6 +82,8 @@ mod to_json {
                 "values": [
                     1000,
                     "2000",
+                    null,
+                    false,
                     -42
                 ]
             }
@@ -147,6 +151,8 @@ mod from_json {
                     true,
                     1000,
                     "2000",
+                    null,
+                    false,
                     -42
                 ]
             }
@@ -159,6 +165,8 @@ mod from_json {
                 MixedTypeEnum::True,
                 MixedTypeEnum::_1000,
                 MixedTypeEnum::_2000,
+                MixedTypeEnum::Null,
+                MixedTypeEnum::False,
                 MixedTypeEnum::Minus42,
             ],
         };
