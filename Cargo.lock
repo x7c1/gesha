@@ -1136,7 +1136,6 @@ dependencies = [
  "actix-multipart",
  "actix-web",
  "futures-util",
- "sanitize-filename",
  "serde",
  "serde_json",
  "serde_urlencoded",
@@ -2176,15 +2175,6 @@ name = "ryu"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f3cb5ba0dc43242ce17de99c180e96db90b235b8a9fdc9543c96d2209116bd9f"
-
-[[package]]
-name = "sanitize-filename"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc984f4f9ceb736a7bb755c3e3bd17dc56370af2600c9780dcc48c66453da34d"
-dependencies = [
- "regex",
-]
 
 [[package]]
 name = "scopeguard"
