@@ -12,6 +12,7 @@ pub mod schemas {
         Minus42,
         True,
         False,
+        Null,
     }
 
     gesha_macros::impl_enum_serde!(MixedTypeEnum {
@@ -19,5 +20,6 @@ pub mod schemas {
         str: [(_2000, "2000"), (_2001, "2001"), (_2002, "2002")],
         i64: [(Minus42, -42)],
         bool: [(True, true), (False, false)],
+        null: [(Null, null)],
     });
 }

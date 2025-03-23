@@ -56,6 +56,7 @@ impl TryFrom<YamlValue> for EnumValue {
             YamlValue::Map(_) => Err(YamlError::UnknownType {
                 found: "<object>".to_string(),
             })?,
+            YamlValue::Null => Self::Null,
         };
         Ok(this)
     }

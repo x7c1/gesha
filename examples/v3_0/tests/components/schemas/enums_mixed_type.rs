@@ -6,6 +6,7 @@ pub struct Example1 {
     pub x0: MixedTypeEnum,
     pub x1: MixedTypeEnum,
     pub x2: MixedTypeEnum,
+    pub x3: MixedTypeEnum,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -25,6 +26,7 @@ mod to_json {
             x0: MixedTypeEnum::True,
             x1: MixedTypeEnum::_2000,
             x2: MixedTypeEnum::Minus42,
+            x3: MixedTypeEnum::Null,
         };
         let actual = serde_json::to_string(&target).unwrap();
         let expected = flatten(
@@ -32,7 +34,8 @@ mod to_json {
             {
                 "x0": true,
                 "x1": "2000",
-                "x2": -42
+                "x2": -42,
+                "x3": null
             }
             "#,
         );
@@ -45,6 +48,7 @@ mod to_json {
             x0: MixedTypeEnum::False,
             x1: MixedTypeEnum::_1000,
             x2: MixedTypeEnum::_2002,
+            x3: MixedTypeEnum::Null,
         };
         let actual = serde_json::to_string(&target).unwrap();
         let expected = flatten(
@@ -52,7 +56,8 @@ mod to_json {
             {
                 "x0": false,
                 "x1": 1000,
-                "x2": "2002"
+                "x2": "2002",
+                "x3": null
             }
             "#,
         );
@@ -96,7 +101,8 @@ mod from_json {
             {
                 "x0": true,
                 "x1": "2000",
-                "x2": -42
+                "x2": -42,
+                "x3": null
             }
             "#,
         )
@@ -106,6 +112,7 @@ mod from_json {
             x0: MixedTypeEnum::True,
             x1: MixedTypeEnum::_2000,
             x2: MixedTypeEnum::Minus42,
+            x3: MixedTypeEnum::Null,
         };
         assert_eq!(actual, expected)
     }
@@ -117,7 +124,8 @@ mod from_json {
             {
                 "x0": false,
                 "x1": 1000,
-                "x2": "2002"
+                "x2": "2002",
+                "x3": null
             }"#,
         )
         .unwrap();
@@ -126,6 +134,7 @@ mod from_json {
             x0: MixedTypeEnum::False,
             x1: MixedTypeEnum::_1000,
             x2: MixedTypeEnum::_2002,
+            x3: MixedTypeEnum::Null,
         };
         assert_eq!(actual, expected)
     }

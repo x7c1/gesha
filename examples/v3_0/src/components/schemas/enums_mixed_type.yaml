@@ -8,3 +8,4 @@ schemas:
       - -42
       - true
       - false
+      - null
