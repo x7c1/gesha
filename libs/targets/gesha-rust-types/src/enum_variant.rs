@@ -48,6 +48,7 @@ pub enum EnumConstant {
     U64(u64),
     I64(i64),
     Str(String),
+    Bool(bool),
 }
 
 impl Display for EnumConstant {
@@ -56,6 +57,7 @@ impl Display for EnumConstant {
             EnumConstant::U64(x) => Display::fmt(x, f),
             EnumConstant::I64(x) => Display::fmt(x, f),
             EnumConstant::Str(x) => Display::fmt(&format!(r#""{x}""#), f),
+            EnumConstant::Bool(x) => Display::fmt(x, f),
         }
     }
 }

@@ -55,6 +55,7 @@ pub enum EnumMacroType {
     U64,
     Str,
     I64,
+    Bool,
 }
 
 impl From<&EnumConstant> for EnumMacroType {
@@ -63,6 +64,7 @@ impl From<&EnumConstant> for EnumMacroType {
             EnumConstant::U64(_) => Self::U64,
             EnumConstant::I64(_) => Self::I64,
             EnumConstant::Str(_) => Self::Str,
+            EnumConstant::Bool(_) => Self::Bool,
         }
     }
 }
@@ -73,6 +75,7 @@ impl Display for EnumMacroType {
             Self::U64 => write!(f, "u64"),
             Self::Str => write!(f, "str"),
             Self::I64 => write!(f, "i64"),
+            Self::Bool => write!(f, "bool"),
         }
     }
 }

@@ -59,7 +59,9 @@ macro_rules! impl_deserialize_variant {
     ($enum_name:ident, str [ $($value:literal => $variant:ident),* ]) => {
         $crate::impl_deserialize_variant! { $enum_name, visit_str, &str [$($value => $variant),*] }
     };
-
+    ($enum_name:ident, bool [ $($value:literal => $variant:ident),* ]) => {
+        $crate::impl_deserialize_variant! { $enum_name, visit_bool, bool [$($value => $variant),*] }
+    };
     (
         $enum_name:ident,
         $fn_name:ident,
@@ -91,5 +93,8 @@ macro_rules! impl_serialize_variant {
     };
     (str [$serializer:ident, $value:literal]) => {
         $serializer.serialize_str($value)
+    };
+    (bool [$serializer:ident, $value:literal]) => {
+        $serializer.serialize_bool($value)
     };
 }
