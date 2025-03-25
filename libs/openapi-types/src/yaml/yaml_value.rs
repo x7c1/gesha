@@ -4,9 +4,10 @@ use crate::yaml::{YamlArray, YamlError, YamlMap};
 pub enum YamlValue {
     Array(YamlArray),
     Boolean(bool),
-    String(String),
     Integer(i64),
     Map(YamlMap),
+    Null,
+    String(String),
 }
 
 impl YamlValue {
@@ -14,18 +15,20 @@ impl YamlValue {
         match self {
             YamlValue::Array(_) => "Array",
             YamlValue::Boolean(_) => "Boolean",
-            YamlValue::String(_) => "String",
             YamlValue::Integer(_) => "Integer",
             YamlValue::Map(_) => "Map",
+            YamlValue::Null => "Null",
+            YamlValue::String(_) => "String",
         }
     }
     pub fn outline(&self) -> String {
         match self {
-            YamlValue::Boolean(x) => x.to_string(),
-            YamlValue::String(x) => x.chars().take(50).collect(),
-            YamlValue::Integer(x) => x.to_string(),
             YamlValue::Array(_) => "<array>".to_string(),
+            YamlValue::Boolean(x) => x.to_string(),
+            YamlValue::Integer(x) => x.to_string(),
             YamlValue::Map(_) => "<map>".to_string(),
+            YamlValue::Null => "null".to_string(),
+            YamlValue::String(x) => x.chars().take(50).collect(),
         }
     }
 }
@@ -40,6 +43,7 @@ impl TryFrom<yaml_rust::Yaml> for YamlValue {
             yaml_rust::Yaml::Hash(x) => Ok(YamlValue::Map(YamlMap(x))),
             yaml_rust::Yaml::Boolean(x) => Ok(YamlValue::Boolean(x)),
             yaml_rust::Yaml::Integer(x) => Ok(YamlValue::Integer(x)),
+            yaml_rust::Yaml::Null => Ok(YamlValue::Null),
             unknown => Err(YamlError::UnknownType {
                 found: format!("{unknown:?}"),
             }),

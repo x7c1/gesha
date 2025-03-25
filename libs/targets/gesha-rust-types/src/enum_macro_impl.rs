@@ -52,17 +52,21 @@ impl EnumMacroImpl {
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum EnumMacroType {
-    U64,
-    Str,
+    Bool,
     I64,
+    Null,
+    Str,
+    U64,
 }
 
 impl From<&EnumConstant> for EnumMacroType {
     fn from(value: &EnumConstant) -> Self {
         match value {
-            EnumConstant::U64(_) => Self::U64,
+            EnumConstant::Bool(_) => Self::Bool,
             EnumConstant::I64(_) => Self::I64,
+            EnumConstant::Null => Self::Null,
             EnumConstant::Str(_) => Self::Str,
+            EnumConstant::U64(_) => Self::U64,
         }
     }
 }
@@ -70,9 +74,11 @@ impl From<&EnumConstant> for EnumMacroType {
 impl Display for EnumMacroType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::U64 => write!(f, "u64"),
-            Self::Str => write!(f, "str"),
+            Self::Bool => write!(f, "bool"),
             Self::I64 => write!(f, "i64"),
+            Self::Null => write!(f, "null"),
+            Self::Str => write!(f, "str"),
+            Self::U64 => write!(f, "u64"),
         }
     }
 }

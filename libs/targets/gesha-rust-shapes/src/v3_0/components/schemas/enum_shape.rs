@@ -61,8 +61,8 @@ fn to_enum_constant(value: EnumValue) -> EnumConstant {
         EnumValue::String(value) => EnumConstant::Str(value),
         EnumValue::Integer(value) if value > 0 => EnumConstant::U64(value as u64),
         EnumValue::Integer(value) => EnumConstant::I64(value),
-        EnumValue::Boolean(value) => todo!("<{value}>"),
-        EnumValue::Null => todo!("<null>"),
+        EnumValue::Boolean(value) => EnumConstant::Bool(value),
+        EnumValue::Null => EnumConstant::Null,
     }
 }
 
