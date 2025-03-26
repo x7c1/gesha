@@ -1,14 +1,14 @@
+use crate::v3_0::components::schemas::TypeShape::Proper;
 use crate::v3_0::components::schemas::{
     InlineSchema, InlineShape, Optionality, RefShape, TypePath,
 };
 use gesha_core::broken;
-use gesha_core::conversions::Error::UnknownFormat;
 use gesha_core::conversions::{Error, Result};
 use gesha_rust_types::DataType;
 use openapi_types::v3_0::SchemaCase;
 use openapi_types::v3_0::SchemaCase::{Reference, Schema};
 use openapi_types::v3_0::{FormatModifier, OpenApiDataType, SchemaObject};
-use tracing::error;
+use tracing::{error, warn};
 
 #[derive(Clone, Debug)]
 pub enum TypeShape {
@@ -225,10 +225,9 @@ impl TypeFactory {
                 let inline = InlineShape::new(self.object, optionality)?;
                 Ok(inline.into())
             }
-            (_, Some(x)) => Err(UnknownFormat {
-                data_type,
-                format: x.to_string(),
-            }),
+            // fall back to the default type if the format is unsupported.
+            (ot::Number, Some(x)) => Ok(to_default(x, ot::Number, tp::Float64, optionality)),
+            (ot::Integer, Some(x)) => Ok(to_default(x, ot::Integer, tp::Int64, optionality)),
         }
     }
 
@@ -247,5 +246,18 @@ impl TypeFactory {
             },
         };
         Ok(type_shape)
+    }
+}
+
+fn to_default(
+    format: &FormatModifier,
+    original: OpenApiDataType,
+    data_type: DataType,
+    optionality: Optionality,
+) -> TypeShape {
+    warn!("Unsupported format: {format} (type: {original}).");
+    Proper {
+        data_type,
+        optionality,
     }
 }

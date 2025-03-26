@@ -46,3 +46,4 @@ pub mod ref_single_one_of_inline_all_of;
 pub mod ref_single_one_of_inline_nested;
 pub mod reserved_keywords;
 pub mod title_description;
+pub mod unknown_format_integer;

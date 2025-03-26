@@ -1,5 +1,6 @@
 use crate::Result;
 use crate::v3_0::SpecViolation::UnknownDataType;
+use std::fmt::{Display, Formatter};
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#dataTypes
 #[derive(Clone, Debug)]
@@ -40,5 +41,11 @@ impl AsRef<str> for OpenApiDataType {
             Self::Object => "object",
             Self::String => "string",
         }
+    }
+}
+
+impl Display for OpenApiDataType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        Display::fmt(self.as_ref(), f)
     }
 }
