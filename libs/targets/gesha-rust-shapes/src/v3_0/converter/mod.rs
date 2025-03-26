@@ -1,7 +1,7 @@
-use crate::v3_0::components::core::CoreShape;
+use crate::v3_0::components::core::{ComponentsShape, CoreShape};
 use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::SchemasShape;
-use crate::v3_0::components::{ComponentsShape, transform};
+use crate::v3_0::components::transform;
 use gesha_core::Error::FormatFailed;
 use gesha_core::conversions;
 use gesha_core::conversions::{Output, Result, by_key, with_key};

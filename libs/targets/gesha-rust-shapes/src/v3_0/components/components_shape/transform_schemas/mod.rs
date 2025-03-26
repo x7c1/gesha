@@ -27,7 +27,7 @@ use resolve_optional_fields::resolve_optionality;
 mod resolve_type_path;
 use resolve_type_path::resolve_type_path;
 
-use crate::v3_0::components::ComponentsShape;
+use crate::v3_0::components::core::ComponentsShape;
 use gesha_core::conversions::{Result, by_key};
 
 pub fn transform_schemas(mut shape: ComponentsShape) -> Result<ComponentsShape> {

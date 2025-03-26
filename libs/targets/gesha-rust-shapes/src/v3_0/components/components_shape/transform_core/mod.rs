@@ -1,4 +1,4 @@
-use crate::v3_0::components::ComponentsShape;
+use crate::v3_0::components::core::ComponentsShape;
 use crate::v3_0::components::schemas::TypeShape;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{ErrorDef, ErrorVariant, Package, PresetDef};
