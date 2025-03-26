@@ -1,12 +1,11 @@
-use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::core::CoreShape;
 use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::SchemasShape;
+use crate::v3_0::components::{ComponentsShape, transform};
 use gesha_core::Error::FormatFailed;
 use gesha_core::conversions;
-use gesha_core::conversions::{Output, Result, with_key};
+use gesha_core::conversions::{Output, Result, by_key, with_key};
 use gesha_rust_types::NonDocComments;
-use openapi_types::core::OutputMergeOps;
 use openapi_types::v3_0;
 use openapi_types::v3_0::ComponentsObject;
 use std::path::Path;
@@ -57,10 +56,11 @@ pub(crate) fn generate_components_code(
         request_bodies,
         core: CoreShape::default(),
     };
-    let (mod_defs, errors_of_mods) = shapes
-        .into_mod_defs()
-        .merge()
-        .bind_errors(with_key("#(mod-defs)"))
+
+    let (mod_defs, errors_of_mods) = transform(shapes)
+        .map_err(by_key("#(transform)"))
+        .map(|shapes| shapes.define().bind_errors(with_key("#(define)")))
+        .unwrap_or_else(Output::err)
         .into_tuple();
 
     let code = new_code().set_mod_defs(mod_defs);

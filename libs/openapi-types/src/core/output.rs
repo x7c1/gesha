@@ -94,6 +94,12 @@ impl<A, E> Output<Option<A>, E> {
     }
 }
 
+impl<A, E> Output<Vec<A>, E> {
+    pub fn err(e: E) -> Self {
+        Output(vec![], vec![e])
+    }
+}
+
 impl<A, E> Output<Output<A, E>, E> {
     pub fn flatten(self) -> Output<A, E> {
         let Output(output, mut errors1) = self;

@@ -22,23 +22,22 @@ pub struct ComponentsShape {
 }
 
 impl ComponentsShape {
-    pub fn into_mod_defs(self) -> Result<Output<Vec<ModDef>>> {
-        let this = transform(self)?;
-        let (request_bodies, errors_of_request_bodies) = this
+    pub fn define(self) -> Output<Vec<ModDef>> {
+        let (request_bodies, errors_of_request_bodies) = self
             .request_bodies
             .define()
             .maybe()
             .bind_errors(with_key("request_bodies"))
             .into_tuple();
 
-        let (schemas, errors_of_schemas) = this
+        let (schemas, errors_of_schemas) = self
             .schemas
             .define()
             .maybe()
             .bind_errors(with_key("schemas"))
             .into_tuple();
 
-        let (core, errors_of_core) = this
+        let (core, errors_of_core) = self
             .core
             .define()
             .maybe()
@@ -50,12 +49,10 @@ impl ComponentsShape {
             .flatten()
             .collect();
 
-        let output = Output::ok(mod_defs)
+        Output::ok(mod_defs)
             .append(errors_of_request_bodies)
             .append(errors_of_schemas)
-            .append(errors_of_core);
-
-        Ok(output)
+            .append(errors_of_core)
     }
 
     pub fn any_type(&self, f: impl Fn(&TypeShape) -> bool) -> bool {
@@ -63,8 +60,8 @@ impl ComponentsShape {
     }
 }
 
-fn transform(shapes: ComponentsShape) -> Result<ComponentsShape> {
-    let maybe = Output::optionize(transform_schemas)(Some(shapes))
+pub fn transform(shape: ComponentsShape) -> Result<ComponentsShape> {
+    let maybe = Output::optionize(transform_schemas)(Some(shape))
         .bind_errors(with_key("schemas"))
         .to_result()?;
 
