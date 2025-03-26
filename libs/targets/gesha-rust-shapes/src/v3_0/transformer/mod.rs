@@ -7,7 +7,7 @@ use transform_request_bodies::transform_request_bodies;
 mod transform_schemas;
 use transform_schemas::transform_schemas;
 
-use crate::v3_0::components::core::ComponentsShape;
+use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions::{Output, Result, with_key};
 
 pub fn transform(shape: ComponentsShape) -> Result<ComponentsShape> {

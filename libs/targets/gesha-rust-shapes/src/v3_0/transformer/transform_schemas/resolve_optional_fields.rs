@@ -1,5 +1,5 @@
 use crate::misc::MapOutput;
-use crate::v3_0::components::core::ComponentsShape;
+use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::schemas::{DefinitionShape, FieldShape};
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 use gesha_core::broken;

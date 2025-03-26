@@ -1,5 +1,5 @@
 use crate::misc::TryMap;
-use crate::v3_0::components::core::ComponentsShape;
+use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::schemas::{DefinitionShape, ModShape, TypeShape};
 use DefinitionShape::Mod;
 use gesha_core::conversions::Result;

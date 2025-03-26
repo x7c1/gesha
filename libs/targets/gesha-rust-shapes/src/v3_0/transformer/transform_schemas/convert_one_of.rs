@@ -1,5 +1,5 @@
 use crate::misc::{MapOutput, TryMap};
-use crate::v3_0::components::core::ComponentsShape;
+use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::schemas::DefinitionShape::{Mod, OneOf};
 use crate::v3_0::components::schemas::{
     DefinitionShape, EnumShape, EnumVariantShape, OneOfItemShape, OneOfShape,

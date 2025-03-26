@@ -1,6 +1,3 @@
-mod components_shape;
-pub use components_shape::ComponentsShape;
-
 use gesha_core::conversions::Result;
 use gesha_rust_types::{Definitions, Imports, ModDef, ModuleName};
 use std::ops::Not;

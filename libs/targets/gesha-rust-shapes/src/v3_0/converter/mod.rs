@@ -1,4 +1,5 @@
-use crate::v3_0::components::core::{ComponentsShape, CoreShape};
+use crate::v3_0::components::ComponentsShape;
+use crate::v3_0::components::core::CoreShape;
 use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::SchemasShape;
 use crate::v3_0::transformer::transform;

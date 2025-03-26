@@ -1,6 +1,6 @@
 use super::DefinitionTransformer;
 use crate::misc::MapOutput;
-use crate::v3_0::components::core::ComponentsShape;
+use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::schemas::{
     DefinitionShape, InlineSchema, InlineShape, OneOfShape, TypeShape,
 };
