@@ -17,6 +17,7 @@ pub mod enums_inline;
 pub mod enums_inline_array;
 pub mod enums_mixed_type;
 pub mod enums_symbol;
+pub mod format_integer_unknown;
 pub mod newtype;
 pub mod newtype_numeric;
 pub mod newtype_ref;

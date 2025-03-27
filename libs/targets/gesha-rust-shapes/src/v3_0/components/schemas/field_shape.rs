@@ -1,5 +1,5 @@
 use crate::v3_0::components::schemas::{Optionality, TypeShape};
-use gesha_core::conversions::{Output, Result};
+use gesha_core::conversions::{Output, Result, by_key};
 use gesha_rust_types::{StructField, StructFieldAttribute, StructFieldName};
 use openapi_types::core::OutputMergeOps;
 use openapi_types::v3_0::{
@@ -99,7 +99,7 @@ impl ToFieldShapes {
         let is_required = self.is_required(&name);
         Ok(FieldShape {
             name: name.clone(),
-            type_shape: TypeShape::from_case(case, is_required)?,
+            type_shape: TypeShape::from_case(case, is_required).map_err(by_key(name))?,
         })
     }
 

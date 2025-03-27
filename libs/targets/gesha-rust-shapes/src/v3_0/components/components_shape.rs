@@ -1,16 +1,7 @@
-mod transform_core;
-use transform_core::transform_core;
-
-mod transform_request_bodies;
-use transform_request_bodies::transform_request_bodies;
-
-mod transform_schemas;
-use transform_schemas::transform_schemas;
-
 use crate::v3_0::components::core::CoreShape;
 use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::{SchemasShape, TypeShape};
-use gesha_core::conversions::{Output, Result, with_key};
+use gesha_core::conversions::{Output, with_key};
 use gesha_rust_types::ModDef;
 use openapi_types::core::OutputOptionOps;
 
@@ -22,23 +13,22 @@ pub struct ComponentsShape {
 }
 
 impl ComponentsShape {
-    pub fn into_mod_defs(self) -> Result<Output<Vec<ModDef>>> {
-        let this = transform(self)?;
-        let (request_bodies, errors_of_request_bodies) = this
+    pub fn define(self) -> Output<Vec<ModDef>> {
+        let (request_bodies, errors_of_request_bodies) = self
             .request_bodies
             .define()
             .maybe()
             .bind_errors(with_key("request_bodies"))
             .into_tuple();
 
-        let (schemas, errors_of_schemas) = this
+        let (schemas, errors_of_schemas) = self
             .schemas
             .define()
             .maybe()
             .bind_errors(with_key("schemas"))
             .into_tuple();
 
-        let (core, errors_of_core) = this
+        let (core, errors_of_core) = self
             .core
             .define()
             .maybe()
@@ -50,31 +40,13 @@ impl ComponentsShape {
             .flatten()
             .collect();
 
-        let output = Output::ok(mod_defs)
+        Output::ok(mod_defs)
             .append(errors_of_request_bodies)
             .append(errors_of_schemas)
-            .append(errors_of_core);
-
-        Ok(output)
+            .append(errors_of_core)
     }
 
     pub fn any_type(&self, f: impl Fn(&TypeShape) -> bool) -> bool {
         self.schemas.any_type(&f)
     }
-}
-
-fn transform(shapes: ComponentsShape) -> Result<ComponentsShape> {
-    let maybe = Output::optionize(transform_schemas)(Some(shapes))
-        .bind_errors(with_key("schemas"))
-        .to_result()?;
-
-    let maybe = Output::optionize(transform_request_bodies)(maybe)
-        .bind_errors(with_key("request_bodies"))
-        .to_result()?;
-
-    let shape = Output::optionize(transform_core)(maybe)
-        .bind_errors(with_key("core"))
-        .ok_or_errors()?;
-
-    Ok(shape)
 }

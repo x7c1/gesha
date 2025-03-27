@@ -1,6 +1,6 @@
 path: ./examples/v3_0/invalid/type-unspecified.yaml
 
-    @ #(convert) > components > schemas > Foo
+    @ #(convert) > components > schemas > Foo > x1
     Unimplemented {
         message: "type unspecified",
     }
