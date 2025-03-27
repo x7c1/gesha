@@ -4,8 +4,8 @@ const endpoint = "multipart_form_data";
 
 Deno.test("201", async () => {
   const [stream, boundary] = streamFromMultipart(async (writer) => {
-    const file = await Deno.open("README.md");
-    await writer.writeFile("binary_field", "README.md", file);
+    const file = await Deno.open("LICENSE");
+    await writer.writeFile("binary_field", "LICENSE", file);
     file.close();
 
     await writer.writeField("string_field", "abcde");
@@ -41,8 +41,8 @@ Deno.test("201", async () => {
       },
       binary_field: {
         name: "binary_field",
-        length: 8,
-        file_name: "README.md",
+        length: 1063,
+        file_name: "LICENSE",
       },
       optional_string_field: null,
       optional_object_field: {
