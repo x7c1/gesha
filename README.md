@@ -11,9 +11,9 @@ It helps developers quickly create Rust applications that adhere to OpenAPI stan
 ## Features
 
 - Supports OpenAPI v3.0.x.
-- Strongly typed Rust models derived from OpenAPI schemas.
 - Accurately expands inline-defined types.
 - Correctly interprets `required` and `nullable` attributes.
+- Includes comprehensive example tests.
 
 ## Installation
 
@@ -105,9 +105,15 @@ pub mod schemas {
 }
 ```
 
+## Further Examples
+
+For more detailed examples, check out the following directory:
+
+- [examples/v3_0/src/components/schemas](./examples/v3_0/src/components/schemas)
+
 ## Contributing
 
-Contributions are not yet fully accepted, as the project is still under development.
+Contributions are not yet fully accepted, as the project is still under development and far from complete.
 We really appreciate your interest in contributing, and please check back later!
 
 ## License
