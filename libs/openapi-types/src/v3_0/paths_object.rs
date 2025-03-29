@@ -2,7 +2,7 @@ use crate::Output;
 use crate::v3_0::yaml_extractor::collect;
 use crate::v3_0::{PathFieldName, PathItemObject};
 use crate::yaml::YamlMap;
-use indexmap::IndexSet;
+use indexmap::{IndexMap, IndexSet};
 use std::hash::Hash;
 
 #[allow(dead_code)]
@@ -13,10 +13,9 @@ pub struct PathsObject(Vec<(PathFieldName, PathItemObject)>);
 impl PathsObject {
     /// > The Paths MAY be empty, due to ACL constraints.
     pub fn new(paths: Vec<(PathFieldName, PathItemObject)>) -> Output<Self> {
-        // TODO: check if each PathFieldName is unique in paths
-
         let (paths, duplicated_names) = dedup_by_key(paths);
         println!("duplicated_names: {duplicated_names:#?}");
+
         // TODO contain `duplicated` as error
 
         Output::ok(PathsObject(paths))
@@ -29,25 +28,26 @@ impl PathsObject {
     }
 }
 
-/// Deduplicate key-value pairs by key.  
+/// Deduplicate key-value pairs by key.
+///
 /// Returns a list of unique pairs and a list of duplicated keys.
 /// If multiple pairs have the same key, the first occurrence is kept.
-fn dedup_by_key<K, V>(mut pairs: Vec<(K, V)>) -> (Vec<(K, V)>, Vec<K>)
+fn dedup_by_key<K, V>(pairs: Vec<(K, V)>) -> (Vec<(K, V)>, Vec<K>)
 where
-    K: PartialEq + Eq + Hash,
+    K: PartialEq + Eq + Hash + Clone,
 {
-    let mut duplicated = IndexSet::new();
-    let mut unique = vec![];
-    while !pairs.is_empty() {
-        let (name, object) = pairs.remove(0);
-        let is_unique = unique.iter().all(|(x, _)| x != &name);
-        if is_unique {
-            unique.push((name, object));
+    let separate = |(mut map, mut set): (IndexMap<K, V>, IndexSet<K>), (key, value)| {
+        if map.get(&key).is_none() {
+            map.insert(key, value);
         } else {
-            duplicated.insert(name);
+            set.insert(key);
         }
-    }
-    (unique, duplicated.into_iter().collect())
+        (map, set)
+    };
+    let (unique_map, duplicated_set) = pairs.into_iter().fold(Default::default(), separate);
+    let unique = unique_map.into_iter().collect();
+    let duplicated = duplicated_set.into_iter().collect();
+    (unique, duplicated)
 }
 
 #[cfg(test)]
