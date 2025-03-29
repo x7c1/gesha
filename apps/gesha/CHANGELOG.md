@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.10](https://github.com/x7c1/gesha/compare/gesha-v0.0.9...gesha-v0.0.10) - 2025-03-29
+
+### Added
+
+- support boolean enum values ([#138](https://github.com/x7c1/gesha/pull/138))
+
+### Fixed
+
+- skip unrecognized formats ([#140](https://github.com/x7c1/gesha/pull/140))
+
+### Other
+
+- update Cargo.toml dependencies
+- *(deps)* update all non-major dependencies ([#137](https://github.com/x7c1/gesha/pull/137))
+
 ## [0.0.9](https://github.com/x7c1/gesha/compare/gesha-v0.0.8...gesha-v0.0.9) - 2025-03-22
 
 ### Added
