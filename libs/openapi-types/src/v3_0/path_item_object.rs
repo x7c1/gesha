@@ -32,7 +32,7 @@ impl PathItemObject {
     pub fn with_name(kv: (String, YamlMap)) -> Result<(PathFieldName, PathItemObject)> {
         let (field, map) = kv;
         let pair = (
-            PathFieldName::new(&field),
+            PathFieldName::new(&field)?,
             PathItemObject::from_yaml_map(map).map_err(by_key(field))?,
         );
         Ok(pair)

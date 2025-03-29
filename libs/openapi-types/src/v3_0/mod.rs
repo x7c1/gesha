@@ -31,11 +31,14 @@ pub use openapi_data_type::OpenApiDataType;
 mod operation_object;
 pub use operation_object::OperationObject;
 
+mod path_field_name;
+pub use path_field_name::PathFieldName;
+
 mod path_item_object;
 pub use path_item_object::PathItemObject;
 
 mod paths_object;
-pub use paths_object::{PathFieldName, PathsObject};
+pub use paths_object::PathsObject;
 
 mod reference_object;
 pub use reference_object::ReferenceObject;
