@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.7](https://github.com/x7c1/gesha/compare/openapi-types-v0.0.6...openapi-types-v0.0.7) - 2025-03-29
+
+### Added
+
+- support boolean enum values ([#138](https://github.com/x7c1/gesha/pull/138))
+
+### Fixed
+
+- skip unrecognized formats ([#140](https://github.com/x7c1/gesha/pull/140))
+
 ## [0.0.6](https://github.com/x7c1/gesha/compare/openapi-types-v0.0.5...openapi-types-v0.0.6) - 2025-03-22
 
 ### Added

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.4](https://github.com/x7c1/gesha/compare/gesha-rust-types-v0.0.3...gesha-rust-types-v0.0.4) - 2025-03-29
+
+### Added
+
+- support boolean enum values ([#138](https://github.com/x7c1/gesha/pull/138))
+
 ## [0.0.3](https://github.com/x7c1/gesha/compare/gesha-rust-types-v0.0.2...gesha-rust-types-v0.0.3) - 2025-03-22
 
 ### Added
