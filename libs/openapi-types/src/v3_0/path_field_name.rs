@@ -3,7 +3,7 @@ use crate::v3_0::SpecViolation::InvalidPathFieldName;
 
 /// e.g. /pets
 #[allow(dead_code)]
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub struct PathFieldName(String);
 
 impl PathFieldName {

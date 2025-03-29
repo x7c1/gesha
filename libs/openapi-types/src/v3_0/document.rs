@@ -84,7 +84,6 @@ fn to_paths(map: &mut YamlMap) -> Output<PathsObject> {
         .into_tuple();
 
     let (paths, errors2) = PathsObject::from_yaml_map(map).into_tuple();
-
     Output::ok(paths)
         .append(errors1)
         .append(errors2)
