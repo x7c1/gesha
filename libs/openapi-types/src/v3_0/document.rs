@@ -23,14 +23,19 @@ pub struct Document {
 impl ToOpenApi for Document {
     /// return Error::IncompatibleVersion if not supported version.
     fn apply(mut map: YamlMap) -> Output<Self> {
-        let (components, errors_of_components) = map
-            .flat_extract_if_exists("components", ToOpenApi::apply)
-            .into_tuple();
-
-        let (paths, errors_of_paths) = to_paths(&mut map).into_tuple();
+        // TODO:
         let (openapi, errors_of_openapi) = to_openapi(&mut map).into_tuple();
+
         let (info, errors_of_info) = map
             .extract_or_by_default("info", InfoObject::from_yaml_map)
+            .into_tuple();
+
+        let (paths, errors_of_paths) = map
+            .extract_or_by_default("paths", PathsObject::from_yaml_map)
+            .into_tuple();
+
+        let (components, errors_of_components) = map
+            .flat_extract_if_exists("components", ToOpenApi::apply)
             .into_tuple();
 
         let document = Document {
@@ -55,20 +60,6 @@ fn to_openapi_version(version: String) -> Result<String> {
         })?;
     }
     Ok(version)
-}
-
-fn to_paths(map: &mut YamlMap) -> Output<PathsObject> {
-    let (map, errors1) = map
-        .extract::<YamlMap>("paths")
-        .maybe()
-        .map(|maybe| maybe.unwrap_or_default())
-        .into_tuple();
-
-    let (paths, errors2) = PathsObject::from_yaml_map(map).into_tuple();
-    Output::ok(paths)
-        .append(errors1)
-        .append(errors2)
-        .bind_errors(with_key("paths"))
 }
 
 fn to_openapi(map: &mut YamlMap) -> Output<String> {

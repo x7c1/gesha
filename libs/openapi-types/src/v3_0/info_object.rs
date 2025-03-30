@@ -1,6 +1,5 @@
 use crate::Output;
 use crate::core::OutputOptionOps;
-use crate::error::with_key;
 use crate::v3_0::YamlExtractor;
 use crate::yaml::YamlMap;
 
