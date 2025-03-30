@@ -10,6 +10,10 @@ pub enum SpecViolation {
         fields: Vec<PathFieldName>,
     },
 
+    /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#responses-object
+    /// > The Responses Object MUST contain at least one response code,
+    EmptyResponses,
+
     /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#paths-object
     InvalidPathFieldName {
         field: String,

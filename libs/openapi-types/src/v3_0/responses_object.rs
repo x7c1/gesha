@@ -1,13 +1,14 @@
-use crate::Output;
 use crate::v3_0::ReferenceObject;
+use crate::v3_0::SpecViolation::EmptyResponses;
 use crate::v3_0::yaml_extractor::collect;
 use crate::yaml::YamlMap;
+use crate::{Output, Result};
 
-/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#responsesObject
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#responses-object
 #[derive(Debug)]
 pub struct ResponsesObject {
-    _responses: Vec<(HttpStatusCode, ResponseCase)>,
-    _default: Option<ResponseCase>,
+    pub responses: Vec<(HttpStatusCode, ResponseCase)>,
+    pub default: Option<ResponseCase>,
 }
 
 impl ResponsesObject {
@@ -16,19 +17,18 @@ impl ResponsesObject {
     pub fn new(
         responses: Vec<(HttpStatusCode, ResponseCase)>,
         default: Option<ResponseCase>,
-    ) -> Self {
-        // TODO: check if arguments satisfy specifications
-        ResponsesObject {
-            _responses: responses,
-            _default: default,
+    ) -> Result<Self> {
+        if responses.is_empty() {
+            return Err(EmptyResponses)?;
         }
+        Ok(ResponsesObject { responses, default })
     }
 
-    pub fn from_yaml_map(map: YamlMap) -> Output<Self> {
+    pub fn from_yaml_map(map: YamlMap) -> Result<Output<Self>> {
         let (tuples, errors) = collect(to_response_pair)(map).into_tuple();
         let default = None;
-        let object = ResponsesObject::new(tuples, default);
-        Output::new(object, errors)
+        let object = ResponsesObject::new(tuples, default)?;
+        Ok(Output::new(object, errors))
     }
 }
 
