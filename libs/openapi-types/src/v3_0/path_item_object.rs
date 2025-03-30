@@ -11,11 +11,11 @@ pub struct PathItemObject {
 impl PathItemObject {
     pub fn from_yaml_map(mut map: YamlMap) -> Result<Self> {
         let (get, get_errors) = map
-            .transform_if_exists("get", OperationObject::from_yaml_map)
+            .extract_if_exists("get", OperationObject::from_yaml_map)
             .into_tuple();
 
         let (post, post_errors) = map
-            .transform_if_exists("post", OperationObject::from_yaml_map)
+            .extract_if_exists("post", OperationObject::from_yaml_map)
             .into_tuple();
 
         let object = PathItemObject { get, post };

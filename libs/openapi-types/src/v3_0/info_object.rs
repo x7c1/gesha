@@ -11,7 +11,7 @@ pub struct InfoObject {
 
 impl InfoObject {
     pub fn from_yaml_map(mut map: YamlMap) -> Output<InfoObject> {
-        let (title, errors_of_title) = map.extract_or_by_default("title", Output::ok).into_tuple();
+        let (title, errors_of_title) = map.extract_with_default("title", Output::ok).into_tuple();
         let info = InfoObject { title };
         Output::ok(info).append(errors_of_title)
     }

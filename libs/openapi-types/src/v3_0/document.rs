@@ -21,19 +21,19 @@ pub struct Document {
 impl ToOpenApi for Document {
     fn apply(mut map: YamlMap) -> Output<Self> {
         let (openapi, errors_of_openapi) = map
-            .extract_or_by_default("openapi", OpenApiVersion::from_string)
+            .extract_with_default("openapi", OpenApiVersion::from_string)
             .into_tuple();
 
         let (info, errors_of_info) = map
-            .extract_or_by_default("info", InfoObject::from_yaml_map)
+            .extract_with_default("info", InfoObject::from_yaml_map)
             .into_tuple();
 
         let (paths, errors_of_paths) = map
-            .extract_or_by_default("paths", PathsObject::from_yaml_map)
+            .extract_with_default("paths", PathsObject::from_yaml_map)
             .into_tuple();
 
         let (components, errors_of_components) = map
-            .transform_if_exists("components", ToOpenApi::apply)
+            .extract_if_exists("components", ToOpenApi::apply)
             .into_tuple();
 
         let document = Document {

@@ -5,23 +5,23 @@ use std::fmt::Display;
 use v3_0::SpecViolation::{FieldNotExist, TypeMismatch};
 
 pub trait YamlExtractor {
-    fn extract_or_by_default<F, A, B>(&mut self, key: &str, f: F) -> Output<B>
-    where
-        F: FnOnce(A) -> Output<B>,
-        A: TryFrom<YamlValue, Error = YamlError>,
-        A: Default;
-
-    fn transform<F, A, B, T>(&mut self, key: &str, f: F) -> Result<Output<B>>
+    fn extract<F, A, B, T>(&mut self, key: &str, f: F) -> Result<Output<B>>
     where
         F: FnOnce(A) -> T,
         A: TryFrom<YamlValue, Error = YamlError>,
         F: MayTransform<A, B, T>;
 
-    fn transform_if_exists<F, A, B, T>(&mut self, key: &str, f: F) -> Output<Option<B>>
+    fn extract_if_exists<F, A, B, T>(&mut self, key: &str, f: F) -> Output<Option<B>>
     where
         F: FnOnce(A) -> T,
         F: CanTransform<A, B, T>,
         A: TryFrom<YamlValue, Error = YamlError>;
+
+    fn extract_with_default<F, A, B>(&mut self, key: &str, f: F) -> Output<B>
+    where
+        F: FnOnce(A) -> Output<B>,
+        A: TryFrom<YamlValue, Error = YamlError>,
+        A: Default;
 
     fn error_if_exists<A, E, F>(&mut self, key: &str, f: F) -> Result<()>
     where
@@ -31,22 +31,7 @@ pub trait YamlExtractor {
 }
 
 impl YamlExtractor for YamlMap {
-    fn extract_or_by_default<F, A, B>(&mut self, key: &str, f: F) -> Output<B>
-    where
-        F: FnOnce(A) -> Output<B>,
-        A: TryFrom<YamlValue, Error = YamlError>,
-        A: Default,
-    {
-        self.remove::<A>(key)
-            .map_err(to_crate_error)
-            .maybe()
-            .map(|maybe| maybe.unwrap_or_default())
-            .map(f)
-            .flatten()
-            .bind_errors(with_key(key))
-    }
-
-    fn transform<F, A, B, T>(&mut self, key: &str, f: F) -> Result<Output<B>>
+    fn extract<F, A, B, T>(&mut self, key: &str, f: F) -> Result<Output<B>>
     where
         F: FnOnce(A) -> T,
         F: MayTransform<A, B, T>,
@@ -58,7 +43,7 @@ impl YamlExtractor for YamlMap {
             .map(|output| output.bind_errors(with_key(key)))
     }
 
-    fn transform_if_exists<F, A, B, T>(&mut self, key: &str, f: F) -> Output<Option<B>>
+    fn extract_if_exists<F, A, B, T>(&mut self, key: &str, f: F) -> Output<Option<B>>
     where
         F: FnOnce(A) -> T,
         F: CanTransform<A, B, T>,
@@ -68,6 +53,21 @@ impl YamlExtractor for YamlMap {
             .map_err(to_crate_error)
             .maybe()
             .map(|a| f.apply(a))
+            .flatten()
+            .bind_errors(with_key(key))
+    }
+
+    fn extract_with_default<F, A, B>(&mut self, key: &str, f: F) -> Output<B>
+    where
+        F: FnOnce(A) -> Output<B>,
+        A: TryFrom<YamlValue, Error = YamlError>,
+        A: Default,
+    {
+        self.remove::<A>(key)
+            .map_err(to_crate_error)
+            .maybe()
+            .map(|maybe| maybe.unwrap_or_default())
+            .map(f)
             .flatten()
             .bind_errors(with_key(key))
     }

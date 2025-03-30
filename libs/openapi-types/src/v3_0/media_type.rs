@@ -29,7 +29,7 @@ pub struct MediaTypeObject {
 
 impl MediaTypeObject {
     pub fn from_yaml_map(mut map: YamlMap) -> Result<Output<Self>> {
-        let output = map.transform("schema", SchemaCase::from_yaml_map)?;
+        let output = map.extract("schema", SchemaCase::from_yaml_map)?;
         Ok(output.map(|schema| Self { schema }))
     }
 }

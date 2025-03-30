@@ -18,15 +18,15 @@ pub struct RequestBodyObject {
 impl RequestBodyObject {
     pub fn from_yaml_map(mut map: YamlMap) -> Result<RequestBodyObject> {
         let (content, errors_of_content) = map
-            .transform("content", collect(RequestBodyContent::with_name))?
+            .extract("content", collect(RequestBodyContent::with_name))?
             .into_tuple();
 
         let (required, errors_of_required) = map
-            .extract_or_by_default("required", Output::ok)
+            .extract_with_default("required", Output::ok)
             .into_tuple();
 
         let (description, errors_of_description) = map
-            .transform_if_exists("description", Output::ok)
+            .extract_if_exists("description", Output::ok)
             .into_tuple();
 
         let object = RequestBodyObject {

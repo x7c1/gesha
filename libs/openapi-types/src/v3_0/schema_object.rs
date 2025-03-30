@@ -89,45 +89,45 @@ pub struct SchemaObject {
 
 impl SchemaObject {
     pub fn from_yaml_map(mut map: YamlMap) -> Result<SchemaObject> {
-        let (title, errors_of_title) = map.transform_if_exists("title", Output::ok).into_tuple();
+        let (title, errors_of_title) = map.extract_if_exists("title", Output::ok).into_tuple();
 
         let (description, errors_of_description) = map
-            .transform_if_exists("description", Output::ok)
+            .extract_if_exists("description", Output::ok)
             .into_tuple();
 
         let (data_type, errors_of_data_type) = map
-            .transform_if_exists("type", OpenApiDataType::new)
+            .extract_if_exists("type", OpenApiDataType::new)
             .into_tuple();
 
         let (format, errors_of_format) = map
-            .transform_if_exists("format", FormatModifier::from_string)
+            .extract_if_exists("format", FormatModifier::from_string)
             .into_tuple();
 
         let (nullable, errors_of_nullable) =
-            map.transform_if_exists("nullable", Output::ok).into_tuple();
+            map.extract_if_exists("nullable", Output::ok).into_tuple();
 
         let (properties, errors_of_properties) = map
-            .transform_if_exists("properties", SchemaProperties::from_yaml_map)
+            .extract_if_exists("properties", SchemaProperties::from_yaml_map)
             .into_tuple();
 
         let (required, errors_of_required) = map
-            .transform_if_exists("required", RequiredSchemaFields::from_yaml_array)
+            .extract_if_exists("required", RequiredSchemaFields::from_yaml_array)
             .into_tuple();
 
         let (items, errors_of_items) = map
-            .transform_if_exists("items", ArrayItems::from_yaml_map)
+            .extract_if_exists("items", ArrayItems::from_yaml_map)
             .into_tuple();
 
         let (enum_values, errors_of_enum) = map
-            .transform_if_exists("enum", EnumValues::from_yaml_array)
+            .extract_if_exists("enum", EnumValues::from_yaml_array)
             .into_tuple();
 
         let (all_of, errors_all_of) = map
-            .transform_if_exists("allOf", AllOf::from_yaml_array)
+            .extract_if_exists("allOf", AllOf::from_yaml_array)
             .into_tuple();
 
         let (one_of, errors_one_of) = map
-            .transform_if_exists("oneOf", OneOf::from_yaml_array)
+            .extract_if_exists("oneOf", OneOf::from_yaml_array)
             .into_tuple();
 
         let object = SchemaObject {
