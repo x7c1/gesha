@@ -4,6 +4,8 @@ use std::fmt::Debug;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
+pub type Output<A> = crate::core::Output<A, Error>;
+
 #[derive(Debug)]
 pub enum Error {
     Enclosed { key: String, causes: Vec<Error> },
@@ -46,8 +48,6 @@ pub fn with_key(key: impl Into<String>) -> impl FnOnce(Vec<Error>) -> Error {
         causes,
     }
 }
-
-pub type Output<A> = crate::core::Output<A, Error>;
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum SpecViolation {

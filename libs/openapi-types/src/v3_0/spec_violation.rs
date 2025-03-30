@@ -1,7 +1,13 @@
+use crate::v3_0::PathFieldName;
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum SpecViolation {
     FieldNotExist {
         field: String,
+    },
+
+    DuplicatedPathFieldName {
+        fields: Vec<PathFieldName>,
     },
 
     /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#paths-object
