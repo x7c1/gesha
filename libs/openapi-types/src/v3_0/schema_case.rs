@@ -15,9 +15,9 @@ pub enum SchemaCase {
 
 impl SchemaCase {
     pub fn from_yaml_map(mut map: YamlMap) -> Result<SchemaCase> {
-        let case = match map.extract_if_exists::<String>("$ref").to_result()? {
+        let case = match map.transform_if_exists("$ref", Output::ok).to_result()? {
             Some(rf) => {
-                let reference = ReferenceObject::new(rf);
+                let reference = ReferenceObject::new::<String>(rf);
                 SchemaCase::Reference(reference)
             }
             None => {

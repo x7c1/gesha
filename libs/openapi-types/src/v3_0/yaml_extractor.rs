@@ -23,10 +23,6 @@ pub trait YamlExtractor {
         F: CanTransform<A, B, T>,
         A: TryFrom<YamlValue, Error = YamlError>;
 
-    fn extract_if_exists<A>(&mut self, key: &str) -> Output<Option<A>>
-    where
-        A: TryFrom<YamlValue, Error = YamlError>;
-
     fn error_if_exists<A, E, F>(&mut self, key: &str, f: F) -> Result<()>
     where
         A: TryFrom<YamlValue, Error = YamlError>,
@@ -73,16 +69,6 @@ impl YamlExtractor for YamlMap {
             .maybe()
             .map(|a| f.apply(a))
             .flatten()
-            .bind_errors(with_key(key))
-    }
-
-    fn extract_if_exists<A>(&mut self, key: &str) -> Output<Option<A>>
-    where
-        A: TryFrom<YamlValue, Error = YamlError>,
-    {
-        self.remove_if_exists::<A>(key)
-            .map_err(to_crate_error)
-            .maybe()
             .bind_errors(with_key(key))
     }
 

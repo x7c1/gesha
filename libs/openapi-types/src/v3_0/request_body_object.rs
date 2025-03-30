@@ -22,12 +22,12 @@ impl RequestBodyObject {
             .into_tuple();
 
         let (required, errors_of_required) = map
-            .extract_if_exists("required")
-            .map(|maybe| maybe.unwrap_or(false))
+            .extract_or_by_default("required", Output::ok)
             .into_tuple();
 
-        let (description, errors_of_description) =
-            map.extract_if_exists("description").into_tuple();
+        let (description, errors_of_description) = map
+            .transform_if_exists("description", Output::ok)
+            .into_tuple();
 
         let object = RequestBodyObject {
             description,
