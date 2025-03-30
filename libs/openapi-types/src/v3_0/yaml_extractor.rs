@@ -5,10 +5,6 @@ use std::fmt::Display;
 use v3_0::SpecViolation::{FieldNotExist, TypeMismatch};
 
 pub trait YamlExtractor {
-    fn extract<A>(&mut self, key: &str) -> Result<A>
-    where
-        A: TryFrom<YamlValue, Error = YamlError>;
-
     fn extract_or_by_default<F, A, B>(&mut self, key: &str, f: F) -> Output<B>
     where
         F: FnOnce(A) -> Output<B>,
@@ -33,13 +29,6 @@ pub trait YamlExtractor {
 }
 
 impl YamlExtractor for YamlMap {
-    fn extract<A>(&mut self, key: &str) -> Result<A>
-    where
-        A: TryFrom<YamlValue, Error = YamlError>,
-    {
-        self.remove(key).map_err(to_crate_error)
-    }
-
     fn extract_or_by_default<F, A, B>(&mut self, key: &str, f: F) -> Output<B>
     where
         F: FnOnce(A) -> Output<B>,

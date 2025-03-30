@@ -14,10 +14,7 @@ pub struct RequestBodyObject {
 impl RequestBodyObject {
     pub fn from_yaml_map(mut map: YamlMap) -> Result<RequestBodyObject> {
         let (content, errors_of_content) = map
-            .transform(
-                "content",
-                collect(Output::by(RequestBodyContent::with_name)),
-            )?
+            .transform("content", collect(RequestBodyContent::with_name))?
             .into_tuple();
 
         let (required, errors_of_required) = map
