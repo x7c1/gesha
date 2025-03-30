@@ -1,8 +1,7 @@
 use crate::Result;
 use crate::v3_0::SpecViolation::InvalidPathFieldName;
 
-/// e.g. /pets
-#[allow(dead_code)]
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#paths-object
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct PathFieldName(String);
 
