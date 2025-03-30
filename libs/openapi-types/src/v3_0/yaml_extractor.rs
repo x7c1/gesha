@@ -56,11 +56,13 @@ impl YamlExtractor for YamlMap {
         A: TryFrom<YamlValue, Error = YamlError>,
         A: Default,
     {
-        self.extract::<A>(key)
+        self.remove::<A>(key)
+            .map_err(to_crate_error)
             .maybe()
             .map(|maybe| maybe.unwrap_or_default())
             .map(f)
             .flatten()
+            .bind_errors(with_key(key))
     }
 
     fn try_extract<F, A, B>(&mut self, key: &str, f: F) -> Result<Output<B>>

@@ -31,6 +31,9 @@ pub use one_of::OneOf;
 mod openapi_data_type;
 pub use openapi_data_type::OpenApiDataType;
 
+mod openapi_version;
+pub use openapi_version::OpenApiVersion;
+
 mod operation_object;
 pub use operation_object::OperationObject;
 

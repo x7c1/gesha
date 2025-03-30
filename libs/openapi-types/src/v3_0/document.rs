@@ -1,15 +1,13 @@
-use crate::Unsupported::IncompatibleVersion;
-use crate::core::OutputOptionOps;
-use crate::v3_0::{ComponentsObject, InfoObject, PathsObject, YamlExtractor};
+use crate::Output;
+use crate::v3_0::{ComponentsObject, InfoObject, OpenApiVersion, PathsObject, YamlExtractor};
 use crate::yaml::{ToOpenApi, YamlMap};
-use crate::{Output, Result, with_key};
 
 /// OpenAPI Object
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#openapi-object
 #[derive(Debug)]
 pub struct Document {
     /// > REQUIRED. This string MUST be the version number of the OpenAPI Specification that the OpenAPI Document uses.
-    pub openapi: String,
+    pub openapi: OpenApiVersion,
 
     /// > REQUIRED. Provides metadata about the API.
     pub info: InfoObject,
@@ -21,10 +19,10 @@ pub struct Document {
 }
 
 impl ToOpenApi for Document {
-    /// return Error::IncompatibleVersion if not supported version.
     fn apply(mut map: YamlMap) -> Output<Self> {
-        // TODO:
-        let (openapi, errors_of_openapi) = to_openapi(&mut map).into_tuple();
+        let (openapi, errors_of_openapi) = map
+            .extract_or_by_default("openapi", OpenApiVersion::from_string)
+            .into_tuple();
 
         let (info, errors_of_info) = map
             .extract_or_by_default("info", InfoObject::from_yaml_map)
@@ -51,26 +49,4 @@ impl ToOpenApi for Document {
             .append(errors_of_paths)
             .append(errors_of_components)
     }
-}
-
-fn to_openapi_version(version: String) -> Result<String> {
-    if !version.starts_with("3.0.") {
-        Err(IncompatibleVersion {
-            version: version.clone(),
-        })?;
-    }
-    Ok(version)
-}
-
-fn to_openapi(map: &mut YamlMap) -> Output<String> {
-    let output = map
-        .extract::<String>("openapi")
-        .maybe()
-        .map(|maybe| maybe.unwrap_or_default());
-
-    output
-        .map(to_openapi_version)
-        .maybe()
-        .map(|maybe| maybe.unwrap_or_default())
-        .bind_errors(with_key("openapi"))
 }
