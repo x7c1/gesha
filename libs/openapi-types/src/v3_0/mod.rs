@@ -11,13 +11,16 @@ mod components_object;
 pub use components_object::ComponentsObject;
 
 mod document;
-pub use document::{Document, InfoObject};
+pub use document::Document;
 
 mod enum_value;
 pub use enum_value::{EnumValue, EnumValues};
 
 mod format_modifier;
 pub use format_modifier::FormatModifier;
+
+mod info_object;
+pub use info_object::InfoObject;
 
 mod media_type;
 pub use media_type::{MediaTypeKey, MediaTypeObject};
