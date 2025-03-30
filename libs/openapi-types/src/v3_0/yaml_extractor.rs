@@ -26,6 +26,12 @@ pub trait YamlExtractor {
     fn extract_if_exists<A>(&mut self, key: &str) -> Output<Option<A>>
     where
         A: TryFrom<YamlValue, Error = YamlError>;
+
+    fn error_if_exists<A, E, F>(&mut self, key: &str, f: F) -> Result<()>
+    where
+        A: TryFrom<YamlValue, Error = YamlError>,
+        E: Into<Error>,
+        F: FnOnce(A) -> E;
 }
 
 impl YamlExtractor for YamlMap {
@@ -78,6 +84,19 @@ impl YamlExtractor for YamlMap {
             .map_err(to_crate_error)
             .maybe()
             .bind_errors(with_key(key))
+    }
+
+    fn error_if_exists<A, E, F>(&mut self, key: &str, f: F) -> Result<()>
+    where
+        A: TryFrom<YamlValue, Error = YamlError>,
+        E: Into<Error>,
+        F: FnOnce(A) -> E,
+    {
+        let maybe = self.remove_if_exists::<A>(key).map_err(to_crate_error)?;
+        let Some(a) = maybe else {
+            return Ok(());
+        };
+        Err(f(a).into())
     }
 }
 

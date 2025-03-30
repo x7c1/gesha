@@ -7,7 +7,7 @@ use indexmap::IndexMap;
 type InnerMap = IndexMap<ComponentName, RequestBodyCase>;
 type InnerEntry = (ComponentName, RequestBodyCase);
 
-/// rf. https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#componentsObject
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#components-object
 #[derive(Debug)]
 pub struct RequestBodiesObject(InnerMap);
 

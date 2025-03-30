@@ -3,11 +3,15 @@ use crate::v3_0::{RequestBodyContent, YamlExtractor};
 use crate::yaml::YamlMap;
 use crate::{Error, Output, Result};
 
-/// rf. https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#requestBodyObject
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#request-body-object
 #[derive(Clone, Debug)]
 pub struct RequestBodyObject {
     pub description: Option<String>,
+
+    /// > REQUIRED. The content of the request body.
     pub content: RequestBodyContent,
+
+    /// > Determines if the request body is required in the request. Defaults to false.
     pub required: bool,
 }
 

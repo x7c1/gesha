@@ -1,3 +1,4 @@
+use crate::Unsupported::Unimplemented;
 use crate::v3_0::{ComponentName, ReferenceObject, RequestBodyObject, YamlExtractor};
 use crate::yaml::YamlMap;
 use crate::{Result, by_key};
@@ -11,13 +12,11 @@ pub enum RequestBodyCase {
 
 impl RequestBodyCase {
     pub fn from_yaml_map(mut map: YamlMap) -> Result<RequestBodyCase> {
-        let case = match map.extract_if_exists::<String>("$ref").to_result()? {
-            Some(_reference) => unimplemented!(),
-            None => {
-                let object = RequestBodyObject::from_yaml_map(map)?;
-                RequestBodyCase::RequestBody(Box::new(object))
-            }
-        };
+        map.error_if_exists("$ref", |_: String| Unimplemented {
+            message: "$ref in requestBody is not supported.".into(),
+        })?;
+        let object = RequestBodyObject::from_yaml_map(map)?;
+        let case = RequestBodyCase::RequestBody(Box::new(object));
         Ok(case)
     }
 

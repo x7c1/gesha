@@ -59,6 +59,7 @@ pub enum SpecViolation {
 pub enum Unsupported {
     IncompatibleVersion { version: String },
     UnknownType { found: String },
+    Unimplemented { message: String },
 }
 
 impl From<Unsupported> for Error {
