@@ -61,7 +61,7 @@ fn to_request_body_case(mut map: YamlMap) -> Result<RequestBodyCase> {
 
 fn to_request_body_object(mut map: YamlMap) -> Result<RequestBodyObject> {
     let (content, errors_of_content) = map
-        .flat_extract("content", collect(Output::by(to_request_body_content_pair)))?
+        .transform("content", collect(Output::by(to_request_body_content_pair)))?
         .into_tuple();
 
     let (required, errors_of_required) = map

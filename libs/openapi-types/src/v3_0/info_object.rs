@@ -1,5 +1,4 @@
 use crate::Output;
-use crate::core::OutputOptionOps;
 use crate::v3_0::YamlExtractor;
 use crate::yaml::YamlMap;
 
@@ -12,12 +11,7 @@ pub struct InfoObject {
 
 impl InfoObject {
     pub fn from_yaml_map(mut map: YamlMap) -> Output<InfoObject> {
-        let (title, errors_of_title) = map
-            .extract::<String>("title")
-            .maybe()
-            .map(|maybe| maybe.unwrap_or_default())
-            .into_tuple();
-
+        let (title, errors_of_title) = map.extract_or_by_default("title", Output::ok).into_tuple();
         let info = InfoObject { title };
         Output::ok(info).append(errors_of_title)
     }

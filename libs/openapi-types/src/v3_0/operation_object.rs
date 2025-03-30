@@ -12,7 +12,7 @@ pub struct OperationObject {
 impl OperationObject {
     pub fn from_yaml_map(mut map: YamlMap) -> Result<Output<Self>> {
         let (responses, errors_of_responses) = map
-            .try_extract("responses", ResponsesObject::from_yaml_map)?
+            .transform("responses", ResponsesObject::from_yaml_map)?
             .into_tuple();
 
         let object = OperationObject { responses };

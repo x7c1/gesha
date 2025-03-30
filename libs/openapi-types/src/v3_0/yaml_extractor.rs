@@ -16,15 +16,11 @@ pub trait YamlExtractor {
         A: TryFrom<YamlValue, Error = YamlError>,
         A: Default;
 
-    fn try_extract<F, A, B>(&mut self, key: &str, f: F) -> Result<Output<B>>
+    fn transform<F, A, B, T>(&mut self, key: &str, f: F) -> Result<Output<B>>
     where
-        F: FnOnce(A) -> Result<Output<B>>,
-        A: TryFrom<YamlValue, Error = YamlError>;
-
-    fn flat_extract<F, A, B>(&mut self, key: &str, f: F) -> Result<Output<B>>
-    where
-        F: FnOnce(A) -> Output<B>,
-        A: TryFrom<YamlValue, Error = YamlError>;
+        F: FnOnce(A) -> T,
+        A: TryFrom<YamlValue, Error = YamlError>,
+        F: MayTransform<A, B, T>;
 
     fn transform_if_exists<F, A, B, T>(&mut self, key: &str, f: F) -> Output<Option<B>>
     where
@@ -60,36 +56,16 @@ impl YamlExtractor for YamlMap {
             .bind_errors(with_key(key))
     }
 
-    fn try_extract<F, A, B>(&mut self, key: &str, f: F) -> Result<Output<B>>
+    fn transform<F, A, B, T>(&mut self, key: &str, f: F) -> Result<Output<B>>
     where
-        F: FnOnce(A) -> Result<Output<B>>,
+        F: FnOnce(A) -> T,
+        F: MayTransform<A, B, T>,
         A: TryFrom<YamlValue, Error = YamlError>,
     {
         self.remove::<A>(key)
             .map_err(to_crate_error)
-            .and_then(f)
+            .and_then(|a| f.apply(a))
             .map(|output| output.bind_errors(with_key(key)))
-    }
-
-    fn flat_extract<F, A, B>(&mut self, key: &str, f: F) -> Result<Output<B>>
-    where
-        F: FnOnce(A) -> Output<B>,
-        A: TryFrom<YamlValue, Error = YamlError>,
-    {
-        self.remove::<A>(key)
-            .map_err(to_crate_error)
-            .map(f)
-            .map(|output| output.bind_errors(with_key(key)))
-    }
-
-    fn extract_if_exists<A>(&mut self, key: &str) -> Output<Option<A>>
-    where
-        A: TryFrom<YamlValue, Error = YamlError>,
-    {
-        self.remove_if_exists::<A>(key)
-            .map_err(to_crate_error)
-            .maybe()
-            .bind_errors(with_key(key))
     }
 
     fn transform_if_exists<F, A, B, T>(&mut self, key: &str, f: F) -> Output<Option<B>>
@@ -103,6 +79,16 @@ impl YamlExtractor for YamlMap {
             .maybe()
             .map(|a| f.apply(a))
             .flatten()
+            .bind_errors(with_key(key))
+    }
+
+    fn extract_if_exists<A>(&mut self, key: &str) -> Output<Option<A>>
+    where
+        A: TryFrom<YamlValue, Error = YamlError>,
+    {
+        self.remove_if_exists::<A>(key)
+            .map_err(to_crate_error)
+            .maybe()
             .bind_errors(with_key(key))
     }
 }
@@ -181,6 +167,37 @@ fn to_crate_error(e: YamlError) -> Error {
         YamlError::UnknownType { found } => {
             Error::Unsupported(crate::Unsupported::UnknownType { found })
         }
+    }
+}
+
+pub trait MayTransform<A, B, T> {
+    fn apply(self, a: A) -> Result<Output<B>>;
+}
+
+impl<A, B, F> MayTransform<A, B, Result<Output<B>>> for F
+where
+    F: FnOnce(A) -> Result<Output<B>>,
+{
+    fn apply(self, a: A) -> Result<Output<B>> {
+        self(a)
+    }
+}
+
+impl<A, B, F> MayTransform<A, B, Output<B>> for F
+where
+    F: FnOnce(A) -> Output<B>,
+{
+    fn apply(self, a: A) -> Result<Output<B>> {
+        Ok(self(a))
+    }
+}
+
+impl<A, B, F> MayTransform<A, B, Result<B>> for F
+where
+    F: FnOnce(A) -> Result<B>,
+{
+    fn apply(self, a: A) -> Result<Output<B>> {
+        self(a).map(Output::ok)
     }
 }
 
