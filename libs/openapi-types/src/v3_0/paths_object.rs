@@ -14,10 +14,15 @@ impl PathsObject {
     /// > The Paths MAY be empty, due to ACL constraints.
     pub fn new(paths: Vec<(PathFieldName, PathItemObject)>) -> Output<Self> {
         let (paths, duplicated_names) = paths.partition_dedup_by_key();
-        let err = DuplicatedPathFieldName {
-            fields: duplicated_names.dedup_keys(),
+        let errors = if duplicated_names.is_empty() {
+            vec![]
+        } else {
+            let err = DuplicatedPathFieldName {
+                fields: duplicated_names.dedup_keys(),
+            };
+            vec![err.into()]
         };
-        Output::ok(PathsObject(paths)).append(vec![err.into()])
+        Output::ok(PathsObject(paths)).append(errors)
     }
 
     pub fn from_yaml_map(map: YamlMap) -> Output<PathsObject> {
