@@ -2,8 +2,7 @@ use crate::Output;
 use crate::v3_0::yaml_extractor::collect;
 use crate::v3_0::{PathFieldName, PathItemObject};
 use crate::yaml::YamlMap;
-use indexmap::{IndexMap, IndexSet};
-use std::hash::Hash;
+use gesha_collections::vec::VecPairs;
 
 #[allow(dead_code)]
 #[derive(Debug)]
@@ -13,7 +12,7 @@ pub struct PathsObject(Vec<(PathFieldName, PathItemObject)>);
 impl PathsObject {
     /// > The Paths MAY be empty, due to ACL constraints.
     pub fn new(paths: Vec<(PathFieldName, PathItemObject)>) -> Output<Self> {
-        let (paths, duplicated_names) = dedup_by_key(paths);
+        let (paths, duplicated_names) = paths.partition_dedup_by_key();
         println!("duplicated_names: {duplicated_names:#?}");
 
         // TODO contain `duplicated` as error
@@ -26,28 +25,6 @@ impl PathsObject {
             .map(PathsObject::new)
             .flatten()
     }
-}
-
-/// Deduplicate key-value pairs by key.
-///
-/// Returns a list of unique pairs and a list of duplicated keys.
-/// If multiple pairs have the same key, the first occurrence is kept.
-fn dedup_by_key<K, V>(pairs: Vec<(K, V)>) -> (Vec<(K, V)>, Vec<K>)
-where
-    K: PartialEq + Eq + Hash + Clone,
-{
-    let separate = |(mut map, mut set): (IndexMap<K, V>, IndexSet<K>), (key, value)| {
-        if map.get(&key).is_none() {
-            map.insert(key, value);
-        } else {
-            set.insert(key);
-        }
-        (map, set)
-    };
-    let (unique_map, duplicated_set) = pairs.into_iter().fold(Default::default(), separate);
-    let unique = unique_map.into_iter().collect();
-    let duplicated = duplicated_set.into_iter().collect();
-    (unique, duplicated)
 }
 
 #[cfg(test)]

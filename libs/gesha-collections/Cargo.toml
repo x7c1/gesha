@@ -7,3 +7,4 @@ license = "MIT"
 edition = "2024"
 
 [dependencies]
+indexmap = { workspace = true }
