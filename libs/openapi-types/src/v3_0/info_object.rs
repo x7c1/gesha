@@ -7,21 +7,12 @@ use crate::yaml::YamlMap;
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#info-object
 #[derive(Debug)]
 pub struct InfoObject {
+    /// > REQUIRED. The title of the API.
     pub title: String,
 }
 
 impl InfoObject {
-    pub fn new(title: String) -> Self {
-        Self { title }
-    }
-
-    pub fn from_yaml_map(map: &mut YamlMap) -> Output<InfoObject> {
-        let (mut map, errors_of_info) = map
-            .extract::<YamlMap>("info")
-            .maybe()
-            .map(|maybe| maybe.unwrap_or_default())
-            .into_tuple();
-
+    pub fn from_yaml_map(mut map: YamlMap) -> Output<InfoObject> {
         let (title, errors_of_title) = map
             .extract::<String>("title")
             .maybe()
@@ -29,10 +20,6 @@ impl InfoObject {
             .into_tuple();
 
         let info = InfoObject { title };
-
-        Output::ok(info)
-            .append(errors_of_info)
-            .append(errors_of_title)
-            .bind_errors(with_key("info"))
+        Output::ok(info).append(errors_of_title)
     }
 }

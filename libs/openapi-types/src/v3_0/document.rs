@@ -4,13 +4,19 @@ use crate::v3_0::{ComponentsObject, InfoObject, PathsObject, YamlExtractor};
 use crate::yaml::{ToOpenApi, YamlMap};
 use crate::{Output, Result, with_key};
 
-/// OpenAPI Document
-/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schema
+/// OpenAPI Object
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#openapi-object
 #[derive(Debug)]
 pub struct Document {
+    /// > REQUIRED. This string MUST be the version number of the OpenAPI Specification that the OpenAPI Document uses.
     pub openapi: String,
+
+    /// > REQUIRED. Provides metadata about the API.
     pub info: InfoObject,
+
+    /// > REQUIRED. The available paths and operations for the API.
     pub paths: PathsObject,
+
     pub components: Option<ComponentsObject>,
 }
 
@@ -23,7 +29,9 @@ impl ToOpenApi for Document {
 
         let (paths, errors_of_paths) = to_paths(&mut map).into_tuple();
         let (openapi, errors_of_openapi) = to_openapi(&mut map).into_tuple();
-        let (info, errors_of_info) = InfoObject::from_yaml_map(&mut map).into_tuple();
+        let (info, errors_of_info) = map
+            .extract_or_by_default("info", InfoObject::from_yaml_map)
+            .into_tuple();
 
         let document = Document {
             openapi,

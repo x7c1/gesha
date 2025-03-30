@@ -10,6 +10,12 @@ pub trait YamlExtractor {
     where
         A: TryFrom<YamlValue, Error = YamlError>;
 
+    fn extract_or_by_default<F, A, B>(&mut self, key: &str, f: F) -> Output<B>
+    where
+        F: FnOnce(A) -> Output<B>,
+        A: TryFrom<YamlValue, Error = YamlError>,
+        A: Default;
+
     fn try_extract<F, A, B>(&mut self, key: &str, f: F) -> Result<Output<B>>
     where
         F: FnOnce(A) -> Result<Output<B>>,
@@ -42,6 +48,19 @@ impl YamlExtractor for YamlMap {
         A: TryFrom<YamlValue, Error = YamlError>,
     {
         self.remove(key).map_err(to_crate_error)
+    }
+
+    fn extract_or_by_default<F, A, B>(&mut self, key: &str, f: F) -> Output<B>
+    where
+        F: FnOnce(A) -> Output<B>,
+        A: TryFrom<YamlValue, Error = YamlError>,
+        A: Default,
+    {
+        self.extract::<A>(key)
+            .maybe()
+            .map(|maybe| maybe.unwrap_or_default())
+            .map(f)
+            .flatten()
     }
 
     fn try_extract<F, A, B>(&mut self, key: &str, f: F) -> Result<Output<B>>
