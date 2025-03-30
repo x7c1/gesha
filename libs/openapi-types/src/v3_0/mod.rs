@@ -49,6 +49,9 @@ pub use paths_object::PathsObject;
 mod reference_object;
 pub use reference_object::ReferenceObject;
 
+mod request_body_case;
+pub use request_body_case::RequestBodyCase;
+
 mod request_bodies_object;
 pub use request_bodies_object::RequestBodiesObject;
 
@@ -56,7 +59,7 @@ mod request_body_content;
 pub use request_body_content::RequestBodyContent;
 
 mod request_body_object;
-pub use request_body_object::{RequestBodyCase, RequestBodyObject};
+pub use request_body_object::RequestBodyObject;
 
 mod required_schema_fields;
 pub use required_schema_fields::RequiredSchemaFields;

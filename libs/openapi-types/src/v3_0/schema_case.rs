@@ -1,9 +1,8 @@
 use crate::core::OutputMergeOps;
-use crate::error::by_key;
 use crate::v3_0::yaml_extractor::reify_value;
 use crate::v3_0::{ComponentName, ReferenceObject, SchemaObject, YamlExtractor};
 use crate::yaml::{YamlArray, YamlMap};
-use crate::{Output, Result};
+use crate::{Output, Result, by_key};
 
 pub type NamedSchemaCase = (ComponentName, SchemaCase);
 
@@ -48,7 +47,7 @@ impl SchemaCase {
         let (name, map) = kv;
         let pair = (
             ComponentName::new(&name),
-            SchemaCase::from_yaml_map(map).map_err(by_key(name))?,
+            Self::from_yaml_map(map).map_err(by_key(name))?,
         );
         Ok(pair)
     }

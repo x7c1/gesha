@@ -1,7 +1,6 @@
 use crate::core::{OutputMergeOps, OutputOptionOps};
-use crate::error::by_key;
 use crate::yaml::{YamlError, YamlMap, YamlValue};
-use crate::{Error, Output, Result, v3_0, with_key};
+use crate::{Error, Output, Result, by_key, v3_0, with_key};
 use std::fmt::Display;
 use v3_0::SpecViolation::{FieldNotExist, TypeMismatch};
 

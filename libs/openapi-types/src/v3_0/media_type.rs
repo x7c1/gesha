@@ -1,4 +1,6 @@
-use crate::v3_0::SchemaCase;
+use crate::Result;
+use crate::v3_0::{SchemaCase, YamlExtractor};
+use crate::yaml::YamlMap;
 
 /// > The key is a media type or media type range and the value describes it.
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
@@ -23,4 +25,11 @@ impl From<MediaTypeKey> for String {
 #[derive(Clone, Debug)]
 pub struct MediaTypeObject {
     pub schema: SchemaCase,
+}
+
+impl MediaTypeObject {
+    pub fn from_yaml_map(mut map: YamlMap) -> Result<Self> {
+        let schema = map.extract("schema").map(SchemaCase::from_yaml_map)?;
+        schema.map(|schema| MediaTypeObject { schema })
+    }
 }

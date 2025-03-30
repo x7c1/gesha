@@ -1,7 +1,6 @@
-use crate::error::by_key;
 use crate::v3_0::{OperationObject, PathFieldName, YamlExtractor};
 use crate::yaml::YamlMap;
-use crate::{Error, Output, Result};
+use crate::{Error, Output, Result, by_key};
 
 #[derive(Debug)]
 pub struct PathItemObject {
