@@ -63,7 +63,7 @@ impl TryFrom<DefinitionShape> for Definition {
 pub enum ContentShape {
     Raw {
         media_type: MediaTypeShape,
-        schema: SchemaCase,
+        schema: Option<SchemaCase>,
     },
     Defined(Option<MediaTypeVariant>),
 }

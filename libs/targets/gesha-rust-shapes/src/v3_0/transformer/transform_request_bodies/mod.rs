@@ -2,7 +2,7 @@ use crate::misc::MapOutput;
 use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::request_bodies::{ContentShape, DefinitionShape, MediaTypeShape};
 use crate::v3_0::components::schemas::RefShape;
-use gesha_core::conversions::Error::ReferenceObjectNotFound;
+use gesha_core::conversions::Error::{ReferenceObjectNotFound, Unimplemented};
 use gesha_core::conversions::Result;
 use gesha_rust_types::{DataType, EnumVariant, EnumVariantName, MediaTypeVariant};
 use openapi_types::v3_0::SchemaCase;
@@ -41,7 +41,10 @@ impl Transformer {
                 // ignore unsupported media type
                 Ok(ContentShape::Defined(None))
             }
-            ContentShape::Raw { media_type, schema } => {
+            ContentShape::Raw {
+                media_type,
+                schema: Some(schema),
+            } => {
                 let type_name = self.require_schema_type_name(&schema)?;
                 let variant = EnumVariant::tuple(
                     EnumVariantName::new(&media_type),
@@ -52,6 +55,16 @@ impl Transformer {
                     header_value: media_type.as_ref().to_string(),
                     variant,
                 })))
+            }
+            ContentShape::Raw {
+                media_type,
+                schema: _schema,
+            } => {
+                let message = format!(
+                    "Media Type Object with no schema is not supported: {:#?}",
+                    media_type
+                );
+                Err(Unimplemented { message })
             }
             ContentShape::Defined(_) => {
                 // already processed

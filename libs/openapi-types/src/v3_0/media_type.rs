@@ -21,15 +21,15 @@ impl From<MediaTypeKey> for String {
     }
 }
 
-/// rf. https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#media-type-object
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#media-type-object
 #[derive(Clone, Debug)]
 pub struct MediaTypeObject {
-    pub schema: SchemaCase,
+    pub schema: Option<SchemaCase>,
 }
 
 impl MediaTypeObject {
     pub fn from_yaml_map(mut map: YamlMap) -> Result<Output<Self>> {
-        let output = map.extract("schema", SchemaCase::from_yaml_map)?;
+        let output = map.extract_if_exists("schema", SchemaCase::from_yaml_map);
         Ok(output.map(|schema| Self { schema }))
     }
 }
