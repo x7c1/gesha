@@ -95,37 +95,37 @@ impl SchemaObject {
             map.extract_if_exists::<String>("description").into_tuple();
 
         let (data_type, errors_of_data_type) = map
-            .try_extract_if_exists("type", OpenApiDataType::new)
+            .transform_if_exists("type", OpenApiDataType::new)
             .into_tuple();
 
         let (format, errors_of_format) = map
-            .try_extract_if_exists("format", FormatModifier::from_string)
+            .transform_if_exists("format", FormatModifier::from_string)
             .into_tuple();
 
         let (nullable, errors_of_nullable) = map.extract_if_exists("nullable").into_tuple();
 
         let (properties, errors_of_properties) = map
-            .flat_extract_if_exists("properties", SchemaProperties::from_yaml_map)
+            .transform_if_exists("properties", SchemaProperties::from_yaml_map)
             .into_tuple();
 
         let (required, errors_of_required) = map
-            .try_extract_if_exists("required", RequiredSchemaFields::from_yaml_array)
+            .transform_if_exists("required", RequiredSchemaFields::from_yaml_array)
             .into_tuple();
 
         let (items, errors_of_items) = map
-            .try_extract_if_exists("items", ArrayItems::from_yaml_map)
+            .transform_if_exists("items", ArrayItems::from_yaml_map)
             .into_tuple();
 
         let (enum_values, errors_of_enum) = map
-            .try_extract_if_exists("enum", EnumValues::from_yaml_array)
+            .transform_if_exists("enum", EnumValues::from_yaml_array)
             .into_tuple();
 
         let (all_of, errors_all_of) = map
-            .flat_extract_if_exists("allOf", AllOf::from_yaml_array)
+            .transform_if_exists("allOf", AllOf::from_yaml_array)
             .into_tuple();
 
         let (one_of, errors_one_of) = map
-            .flat_extract_if_exists("oneOf", OneOf::from_yaml_array)
+            .transform_if_exists("oneOf", OneOf::from_yaml_array)
             .into_tuple();
 
         let object = SchemaObject {

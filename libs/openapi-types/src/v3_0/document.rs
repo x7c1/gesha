@@ -33,7 +33,7 @@ impl ToOpenApi for Document {
             .into_tuple();
 
         let (components, errors_of_components) = map
-            .flat_extract_if_exists("components", ToOpenApi::apply)
+            .transform_if_exists("components", ToOpenApi::apply)
             .into_tuple();
 
         let document = Document {

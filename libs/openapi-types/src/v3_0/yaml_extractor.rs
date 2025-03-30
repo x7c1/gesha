@@ -2,7 +2,7 @@ use crate::core::{OutputMergeOps, OutputOptionOps};
 use crate::error::by_key;
 use crate::yaml::{YamlError, YamlMap, YamlValue};
 use crate::{Error, Output, Result, v3_0, with_key};
-use std::fmt::{Debug, Display};
+use std::fmt::Display;
 use v3_0::SpecViolation::{FieldNotExist, TypeMismatch};
 
 pub trait YamlExtractor {
@@ -26,19 +26,14 @@ pub trait YamlExtractor {
         F: FnOnce(A) -> Output<B>,
         A: TryFrom<YamlValue, Error = YamlError>;
 
+    fn transform_if_exists<F, A, B, T>(&mut self, key: &str, f: F) -> Output<Option<B>>
+    where
+        F: FnOnce(A) -> T,
+        F: CanTransform<A, B, T>,
+        A: TryFrom<YamlValue, Error = YamlError>;
+
     fn extract_if_exists<A>(&mut self, key: &str) -> Output<Option<A>>
     where
-        A: TryFrom<YamlValue, Error = YamlError>;
-
-    fn flat_extract_if_exists<F, A, B>(&mut self, key: &str, f: F) -> Output<Option<B>>
-    where
-        F: FnOnce(A) -> Output<B>,
-        A: TryFrom<YamlValue, Error = YamlError>;
-
-    fn try_extract_if_exists<F, A, B>(&mut self, key: &str, f: F) -> Output<Option<B>>
-    where
-        F: FnOnce(A) -> Result<B>,
-        B: Debug,
         A: TryFrom<YamlValue, Error = YamlError>;
 }
 
@@ -97,27 +92,17 @@ impl YamlExtractor for YamlMap {
             .bind_errors(with_key(key))
     }
 
-    fn flat_extract_if_exists<F, A, B>(&mut self, key: &str, f: F) -> Output<Option<B>>
+    fn transform_if_exists<F, A, B, T>(&mut self, key: &str, f: F) -> Output<Option<B>>
     where
-        F: FnOnce(A) -> Output<B>,
+        F: FnOnce(A) -> T,
+        F: CanTransform<A, B, T>,
         A: TryFrom<YamlValue, Error = YamlError>,
     {
         self.remove_if_exists::<A>(key)
             .map_err(to_crate_error)
             .maybe()
-            .flat_map_if_some(f)
-            .bind_errors(with_key(key))
-    }
-
-    fn try_extract_if_exists<F, A, B>(&mut self, key: &str, f: F) -> Output<Option<B>>
-    where
-        F: FnOnce(A) -> Result<B>,
-        A: TryFrom<YamlValue, Error = YamlError>,
-    {
-        self.remove_if_exists::<A>(key)
-            .map_err(to_crate_error)
-            .maybe()
-            .try_map_if_some(f)
+            .map(|a| f.apply(a))
+            .flatten()
             .bind_errors(with_key(key))
     }
 }
@@ -196,5 +181,36 @@ fn to_crate_error(e: YamlError) -> Error {
         YamlError::UnknownType { found } => {
             Error::Unsupported(crate::Unsupported::UnknownType { found })
         }
+    }
+}
+
+pub trait CanTransform<A, B, T> {
+    fn apply(self, a: Option<A>) -> Output<Option<B>>;
+}
+
+impl<A, B, F> CanTransform<A, B, Result<Output<B>>> for F
+where
+    F: FnOnce(A) -> Result<Output<B>>,
+{
+    fn apply(self, a: Option<A>) -> Output<Option<B>> {
+        a.map(self).maybe().map(|x| x.maybe()).flatten()
+    }
+}
+
+impl<A, B, F> CanTransform<A, B, Result<B>> for F
+where
+    F: FnOnce(A) -> Result<B>,
+{
+    fn apply(self, a: Option<A>) -> Output<Option<B>> {
+        a.map(self).maybe()
+    }
+}
+
+impl<A, B, F> CanTransform<A, B, Output<B>> for F
+where
+    F: FnOnce(A) -> Output<B>,
+{
+    fn apply(self, a: Option<A>) -> Output<Option<B>> {
+        a.map(self).maybe()
     }
 }

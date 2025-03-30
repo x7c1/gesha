@@ -12,11 +12,11 @@ pub struct ComponentsObject {
 impl ToOpenApi for ComponentsObject {
     fn apply(mut map: YamlMap) -> Output<Self> {
         let (schemas, schemas_errors) = map
-            .flat_extract_if_exists("schemas", SchemasObject::from_yaml_map)
+            .transform_if_exists("schemas", SchemasObject::from_yaml_map)
             .into_tuple();
 
         let (request_bodies, request_bodies_errors) = map
-            .flat_extract_if_exists("requestBodies", RequestBodiesObject::from_yaml_map)
+            .transform_if_exists("requestBodies", RequestBodiesObject::from_yaml_map)
             .into_tuple();
 
         let object = ComponentsObject {
