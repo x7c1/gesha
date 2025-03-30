@@ -48,21 +48,19 @@ pub enum HttpStatusCode {
     OK,
 }
 
-fn to_response_pair(
-    kv: (String, YamlMap),
-) -> crate::Result<Output<(HttpStatusCode, ResponseCase)>> {
+fn to_response_pair(kv: (String, YamlMap)) -> Result<Output<(HttpStatusCode, ResponseCase)>> {
     let (field, map) = kv;
     let code = to_http_status_code(field)?;
     let output = to_response_case(map)?.map(|case| (code, case));
     Ok(output)
 }
 
-fn to_http_status_code(_v: String) -> crate::Result<HttpStatusCode> {
+fn to_http_status_code(_v: String) -> Result<HttpStatusCode> {
     // TODO:
     Ok(HttpStatusCode::OK)
 }
 
-fn to_response_case(_map: YamlMap) -> crate::Result<Output<ResponseCase>> {
+fn to_response_case(_map: YamlMap) -> Result<Output<ResponseCase>> {
     // TODO:
     let case = ResponseCase::Response(ResponseObject {});
     Ok(Output::ok(case))

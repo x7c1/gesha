@@ -1,4 +1,3 @@
-use crate::error::by_key;
 use crate::v3_0::{ResponsesObject, YamlExtractor};
 use crate::yaml::YamlMap;
 use crate::{Output, Result};
@@ -12,12 +11,11 @@ pub struct OperationObject {
 
 impl OperationObject {
     pub fn from_yaml_map(mut map: YamlMap) -> Result<Output<Self>> {
-        let responses = map.extract("responses")?;
-        let (responses, errors) = ResponsesObject::from_yaml_map(responses)
-            .map_err(by_key("responses"))?
+        let (responses, errors_of_responses) = map
+            .try_extract("responses", ResponsesObject::from_yaml_map)?
             .into_tuple();
 
         let object = OperationObject { responses };
-        Ok(Output::new(object, errors))
+        Ok(Output::new(object, errors_of_responses))
     }
 }

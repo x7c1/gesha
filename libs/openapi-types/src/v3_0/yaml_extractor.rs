@@ -1,13 +1,18 @@
 use crate::core::{OutputMergeOps, OutputOptionOps};
 use crate::error::by_key;
 use crate::yaml::{YamlError, YamlMap, YamlValue};
-use crate::{Error, Output, Result, v3_0};
+use crate::{Error, Output, Result, v3_0, with_key};
 use std::fmt::{Debug, Display};
 use v3_0::SpecViolation::{FieldNotExist, TypeMismatch};
 
 pub trait YamlExtractor {
     fn extract<A>(&mut self, key: &str) -> Result<A>
     where
+        A: TryFrom<YamlValue, Error = YamlError>;
+
+    fn try_extract<F, A, B>(&mut self, key: &str, f: F) -> Result<Output<B>>
+    where
+        F: FnOnce(A) -> Result<Output<B>>,
         A: TryFrom<YamlValue, Error = YamlError>;
 
     fn flat_extract<F, A, B>(&mut self, key: &str, f: F) -> Result<Output<B>>
@@ -39,6 +44,17 @@ impl YamlExtractor for YamlMap {
         self.remove(key).map_err(to_crate_error)
     }
 
+    fn try_extract<F, A, B>(&mut self, key: &str, f: F) -> Result<Output<B>>
+    where
+        F: FnOnce(A) -> Result<Output<B>>,
+        A: TryFrom<YamlValue, Error = YamlError>,
+    {
+        self.remove::<A>(key)
+            .map_err(to_crate_error)
+            .and_then(f)
+            .map(|output| output.bind_errors(with_key(key)))
+    }
+
     fn flat_extract<F, A, B>(&mut self, key: &str, f: F) -> Result<Output<B>>
     where
         F: FnOnce(A) -> Output<B>,
@@ -47,7 +63,7 @@ impl YamlExtractor for YamlMap {
         self.remove::<A>(key)
             .map_err(to_crate_error)
             .map(f)
-            .map(|output| output.bind_errors(crate::with_key(key)))
+            .map(|output| output.bind_errors(with_key(key)))
     }
 
     fn extract_if_exists<A>(&mut self, key: &str) -> Output<Option<A>>
@@ -57,7 +73,7 @@ impl YamlExtractor for YamlMap {
         self.remove_if_exists::<A>(key)
             .map_err(to_crate_error)
             .maybe()
-            .bind_errors(crate::with_key(key))
+            .bind_errors(with_key(key))
     }
 
     fn flat_extract_if_exists<F, A, B>(&mut self, key: &str, f: F) -> Output<Option<B>>
@@ -69,20 +85,19 @@ impl YamlExtractor for YamlMap {
             .map_err(to_crate_error)
             .maybe()
             .flat_map_if_some(f)
-            .bind_errors(crate::with_key(key))
+            .bind_errors(with_key(key))
     }
 
     fn try_extract_if_exists<F, A, B>(&mut self, key: &str, f: F) -> Output<Option<B>>
     where
         F: FnOnce(A) -> Result<B>,
         A: TryFrom<YamlValue, Error = YamlError>,
-        B: Debug,
     {
         self.remove_if_exists::<A>(key)
             .map_err(to_crate_error)
             .maybe()
             .try_map_if_some(f)
-            .bind_errors(crate::with_key(key))
+            .bind_errors(with_key(key))
     }
 }
 
