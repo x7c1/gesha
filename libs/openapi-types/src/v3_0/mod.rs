@@ -82,4 +82,4 @@ pub use schemas_object::SchemasObject;
 mod spec_violation;
 pub use spec_violation::SpecViolation;
 
-mod yaml_map_ext;
+mod yaml_extractor;

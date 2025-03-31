@@ -1,6 +1,6 @@
 use crate::Output;
 use crate::v3_0::SpecViolation::DuplicatedPathFieldName;
-use crate::v3_0::yaml_map_ext::collect;
+use crate::v3_0::yaml_extractor::collect;
 use crate::v3_0::{PathFieldName, PathItemObject};
 use gesha_collections::seq::VecPairs;
 use gesha_collections::yaml::YamlMap;

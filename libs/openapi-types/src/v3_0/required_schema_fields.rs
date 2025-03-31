@@ -1,6 +1,6 @@
 use crate::Result;
 use crate::json_schema::SpecViolation::EmptyRequired;
-use crate::v3_0::yaml_map_ext::reify_value;
+use crate::v3_0::yaml_extractor::reify_value;
 use gesha_collections::yaml::YamlArray;
 use indexmap::IndexSet;
 

@@ -1,4 +1,4 @@
-use crate::v3_0::yaml_map_ext::reify_value;
+use crate::v3_0::yaml_extractor::reify_value;
 use crate::v3_0::{ComponentName, ReferenceObject, SchemaObject};
 use crate::{Output, Result, by_key};
 use gesha_collections::partial_result::MergeOps;

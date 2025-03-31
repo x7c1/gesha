@@ -1,5 +1,5 @@
 use crate::Output;
-use crate::v3_0::yaml_map_ext::collect;
+use crate::v3_0::yaml_extractor::collect;
 use crate::v3_0::{ComponentName, SchemaCase};
 use gesha_collections::yaml::YamlMap;
 use indexmap::IndexMap;
