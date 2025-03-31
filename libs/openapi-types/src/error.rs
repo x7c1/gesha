@@ -1,5 +1,5 @@
 use crate::yaml::YamlLoaderError;
-use crate::{json_schema, v3_0, v3_x};
+use crate::{json_schema, openapi, v3_0};
 use gesha_collections::partial_result::PartialResult;
 use gesha_collections::yaml::{KeyAppendable, KeyBindable, YamlError};
 use std::fmt::Debug;
@@ -41,10 +41,10 @@ impl From<YamlError> for Error {
     fn from(e: YamlError) -> Self {
         match e {
             YamlError::FieldNotExist { field } => {
-                Error::from(v3_x::SpecViolation::FieldNotExist { field })
+                Error::from(openapi::SpecViolation::FieldNotExist { field })
             }
             YamlError::TypeMismatch { found, expected } => {
-                Error::from(v3_x::SpecViolation::TypeMismatch { found, expected })
+                Error::from(openapi::SpecViolation::TypeMismatch { found, expected })
             }
             YamlError::UnknownType { found } => {
                 Error::Unsupported(Unsupported::UnknownType { found })
@@ -81,7 +81,8 @@ fn with_key(key: impl Into<String>) -> impl FnOnce(Vec<Error>) -> Error {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum SpecViolation {
-    V3(v3_x::SpecViolation),
+    /// version independent violations
+    OpenApi(openapi::SpecViolation),
     V3_0(v3_0::SpecViolation),
     JsonSchema(json_schema::SpecViolation),
 }

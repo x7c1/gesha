@@ -17,6 +17,6 @@ pub enum SpecViolation {
 
 impl From<SpecViolation> for crate::Error {
     fn from(reason: SpecViolation) -> Self {
-        crate::Error::SpecViolation(crate::SpecViolation::V3(reason))
+        crate::Error::SpecViolation(crate::SpecViolation::OpenApi(reason))
     }
 }
