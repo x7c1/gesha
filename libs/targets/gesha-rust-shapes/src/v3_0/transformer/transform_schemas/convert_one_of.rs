@@ -1,11 +1,11 @@
-use crate::misc::MapOutput;
 use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::schemas::DefinitionShape::{Mod, OneOf};
 use crate::v3_0::components::schemas::{
     DefinitionShape, EnumShape, EnumVariantShape, OneOfItemShape, OneOfShape,
 };
 use SerdeAttribute::Untagged;
-use gesha_collections::seq::TryMapVec;
+use gesha_collections::seq::MapCollect;
+use gesha_collections::seq::TryMap;
 use gesha_core::conversions::Error::ReferenceObjectNotFound;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{EnumVariantName, SerdeAttribute};
@@ -16,7 +16,7 @@ pub fn convert_one_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
     };
     let defs = shapes.schemas.root.defs;
     shapes.schemas.root.defs = defs
-        .map_output(|x| transformer.shape_one_of(x))
+        .map_collect(|x| transformer.shape_one_of(x))
         .to_result()?;
     Ok(shapes)
 }

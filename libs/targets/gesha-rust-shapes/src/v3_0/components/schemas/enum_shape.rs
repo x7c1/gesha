@@ -1,5 +1,5 @@
 use crate::v3_0::components::schemas::{DefinitionShape, RefShape, TypeHeaderShape, TypeShape};
-use gesha_collections::seq::TryMapVec;
+use gesha_collections::seq::TryMap;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{
     EnumConstant, EnumDef, EnumMacroImpl, EnumVariant, EnumVariantAttribute, EnumVariantName,

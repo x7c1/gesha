@@ -1,9 +1,9 @@
 use super::DefinitionTransformer;
-use crate::misc::MapOutput;
 use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::schemas::{
     DefinitionShape, InlineSchema, InlineShape, OneOfShape, TypeShape,
 };
+use gesha_collections::seq::MapCollect;
 use gesha_core::conversions::Result;
 
 /// If `oneOf` has only one $ref,
@@ -11,7 +11,7 @@ use gesha_core::conversions::Result;
 pub fn collapse_single_one_of(mut shape: ComponentsShape) -> Result<ComponentsShape> {
     let defs = shape.schemas.root.defs;
     let transform = <OneOfShape as DefinitionTransformer>::transform;
-    shape.schemas.root.defs = defs.map_output(transform).to_result()?;
+    shape.schemas.root.defs = defs.map_collect(transform).to_result()?;
     Ok(shape)
 }
 

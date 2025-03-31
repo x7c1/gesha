@@ -1,7 +1,7 @@
-use crate::misc::MapOutput;
 use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::request_bodies::{ContentShape, DefinitionShape, MediaTypeShape};
 use crate::v3_0::components::schemas::RefShape;
+use gesha_collections::seq::MapCollect;
 use gesha_core::conversions::Error::{ReferenceObjectNotFound, Unimplemented};
 use gesha_core::conversions::Result;
 use gesha_rust_types::{DataType, EnumVariant, EnumVariantName, MediaTypeVariant};
@@ -12,7 +12,7 @@ pub fn transform_request_bodies(mut shape: ComponentsShape) -> Result<Components
         snapshot: shape.clone(),
     };
     let defs = shape.request_bodies.root.defs;
-    let request_bodies = defs.map_output(|x| transformer.run(x)).to_result()?;
+    let request_bodies = defs.map_collect(|x| transformer.run(x)).to_result()?;
     shape.request_bodies.root.defs = request_bodies;
     Ok(shape)
 }
@@ -25,7 +25,7 @@ impl Transformer {
     fn run(&self, mut shape: DefinitionShape) -> Result<DefinitionShape> {
         let defined = shape
             .contents
-            .map_output(|x| self.content_shape_to_variant(x))
+            .map_collect(|x| self.content_shape_to_variant(x))
             .to_result()?;
 
         shape.contents = defined;
