@@ -22,6 +22,11 @@ publish = true
 release = true
 
 [[package]]
+name = "gesha-collections"
+publish = true
+release = true
+
+[[package]]
 name = "gesha-core"
 publish = true
 release = true
