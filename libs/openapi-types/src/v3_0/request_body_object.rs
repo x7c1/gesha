@@ -1,5 +1,5 @@
-use crate::v3_0::yaml_extractor::collect;
-use crate::v3_0::{RequestBodyContent, YamlExtractor};
+use crate::v3_0::yaml_map_ext::collect;
+use crate::v3_0::{RequestBodyContent, YamlMapExt};
 use crate::yaml::YamlMap;
 use crate::{Error, Output, Result};
 

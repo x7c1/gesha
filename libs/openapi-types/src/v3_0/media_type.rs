@@ -1,4 +1,4 @@
-use crate::v3_0::{SchemaCase, YamlExtractor};
+use crate::v3_0::{SchemaCase, YamlMapExt};
 use crate::yaml::YamlMap;
 use crate::{Output, Result};
 

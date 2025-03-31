@@ -1,4 +1,4 @@
-use crate::v3_0::{ResponsesObject, YamlExtractor};
+use crate::v3_0::{ResponsesObject, YamlMapExt};
 use crate::yaml::YamlMap;
 use crate::{Output, Result};
 

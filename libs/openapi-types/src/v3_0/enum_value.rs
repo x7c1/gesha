@@ -1,5 +1,5 @@
 use crate::Result;
-use crate::v3_0::yaml_extractor::reify_value;
+use crate::v3_0::yaml_map_ext::reify_value;
 use crate::yaml::{YamlArray, YamlError, YamlValue};
 use indexmap::IndexSet;
 

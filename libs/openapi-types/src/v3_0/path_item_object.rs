@@ -1,4 +1,4 @@
-use crate::v3_0::{OperationObject, PathFieldName, YamlExtractor};
+use crate::v3_0::{OperationObject, PathFieldName, YamlMapExt};
 use crate::yaml::YamlMap;
 use crate::{Error, Output, Result, by_key};
 

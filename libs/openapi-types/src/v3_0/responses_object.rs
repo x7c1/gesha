@@ -1,6 +1,6 @@
 use crate::v3_0::ReferenceObject;
 use crate::v3_0::SpecViolation::EmptyResponses;
-use crate::v3_0::yaml_extractor::collect;
+use crate::v3_0::yaml_map_ext::collect;
 use crate::yaml::YamlMap;
 use crate::{Output, Result};
 

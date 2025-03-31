@@ -1,5 +1,5 @@
 use crate::Output;
-use crate::v3_0::{ComponentsObject, InfoObject, OpenApiVersion, PathsObject, YamlExtractor};
+use crate::v3_0::{ComponentsObject, InfoObject, OpenApiVersion, PathsObject, YamlMapExt};
 use crate::yaml::{ToOpenApi, YamlMap};
 
 /// OpenAPI Object

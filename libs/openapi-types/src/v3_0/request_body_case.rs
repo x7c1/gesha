@@ -1,5 +1,5 @@
 use crate::Unsupported::Unimplemented;
-use crate::v3_0::{ComponentName, ReferenceObject, RequestBodyObject, YamlExtractor};
+use crate::v3_0::{ComponentName, ReferenceObject, RequestBodyObject, YamlMapExt};
 use crate::yaml::YamlMap;
 use crate::{Result, by_key};
 
