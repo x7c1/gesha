@@ -89,7 +89,7 @@ pub enum SpecViolation {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Unsupported {
-    IncompatibleVersion { version: String },
+    IncompatibleOpenApiVersion { version: String },
     UnknownType { found: String },
     Unimplemented { message: String },
 }

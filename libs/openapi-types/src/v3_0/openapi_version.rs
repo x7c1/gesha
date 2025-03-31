@@ -1,17 +1,17 @@
 use crate::Output;
-use crate::Unsupported::IncompatibleVersion;
+use crate::Unsupported::IncompatibleOpenApiVersion;
 
 #[derive(Clone, Debug)]
 pub struct OpenApiVersion(String);
 
 impl OpenApiVersion {
-    const DEFAULT: &'static str = "3.0.0";
+    const DEFAULT: &'static str = "3.0.4";
 
     /// If the given version is not supported, the default version is used,
     /// and `IncompatibleVersion` is included as an error in `Output`.
     pub fn from_string(version: String) -> Output<OpenApiVersion> {
         if !version.starts_with("3.0.") {
-            let error = IncompatibleVersion { version };
+            let error = IncompatibleOpenApiVersion { version };
             return Output::new(
                 OpenApiVersion(Self::DEFAULT.to_string()),
                 vec![error.into()],
