@@ -1,6 +1,6 @@
-use crate::v3_0::{OperationObject, PathFieldName, YamlMapExt};
+use crate::v3_0::{OperationObject, PathFieldName};
 use crate::{Error, Output, Result, by_key};
-use gesha_collections::yaml::YamlMap;
+use gesha_collections::yaml::{YamlMap, YamlMapExt};
 
 #[derive(Debug)]
 pub struct PathItemObject {

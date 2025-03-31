@@ -83,4 +83,3 @@ mod spec_violation;
 pub use spec_violation::SpecViolation;
 
 mod yaml_map_ext;
-pub use yaml_map_ext::YamlMapExt;

@@ -1,7 +1,7 @@
 use crate::Unsupported::Unimplemented;
-use crate::v3_0::{ComponentName, ReferenceObject, RequestBodyObject, YamlMapExt};
-use crate::{Result, by_key};
-use gesha_collections::yaml::YamlMap;
+use crate::v3_0::{ComponentName, ReferenceObject, RequestBodyObject};
+use crate::{Error, Result, by_key};
+use gesha_collections::yaml::{YamlMap, YamlMapExt};
 
 /// Request Body Object | Reference Object
 #[derive(Clone, Debug)]
@@ -12,8 +12,10 @@ pub enum RequestBodyCase {
 
 impl RequestBodyCase {
     pub fn from_yaml_map(mut map: YamlMap) -> Result<RequestBodyCase> {
-        map.error_if_exists("$ref", |_: String| Unimplemented {
-            message: "$ref in requestBody is not supported.".into(),
+        map.error_if_exists("$ref", |_: String| {
+            Error::Unsupported(Unimplemented {
+                message: "$ref in requestBody is not supported.".into(),
+            })
         })?;
         let object = RequestBodyObject::from_yaml_map(map)?;
         let case = RequestBodyCase::RequestBody(Box::new(object));

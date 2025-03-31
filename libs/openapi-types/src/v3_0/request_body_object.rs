@@ -1,7 +1,7 @@
+use crate::v3_0::RequestBodyContent;
 use crate::v3_0::yaml_map_ext::collect;
-use crate::v3_0::{RequestBodyContent, YamlMapExt};
 use crate::{Error, Output, Result};
-use gesha_collections::yaml::YamlMap;
+use gesha_collections::yaml::{YamlMap, YamlMapExt};
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#request-body-object
 #[derive(Clone, Debug)]
