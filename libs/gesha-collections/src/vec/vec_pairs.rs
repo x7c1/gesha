@@ -1,4 +1,4 @@
-use crate::default;
+use crate::default::default;
 use indexmap::{IndexMap, IndexSet};
 use std::hash::Hash;
 
