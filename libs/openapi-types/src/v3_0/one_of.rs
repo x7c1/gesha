@@ -1,8 +1,8 @@
-use crate::core::OutputOptionOps;
 use crate::json_schema::SpecViolation::EmptyOneOf;
 use crate::v3_0::SchemaCase;
 use crate::yaml::YamlArray;
 use crate::{Output, Result};
+use gesha_collections::partial_result::MaybeOps;
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schema-object
 /// > Inline or referenced schema MUST be of a Schema Object and not a standard JSON Schema.

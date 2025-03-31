@@ -1,7 +1,7 @@
 use crate::misc::TryMap;
 use crate::v3_0::components::schemas::RefShape;
+use gesha_collections::partial_result::MergeOps;
 use gesha_core::conversions::{Output, Result};
-use openapi_types::core::OutputMergeOps;
 use openapi_types::v3_0::SchemaCase;
 
 /// Items defined in allOf and oneOf

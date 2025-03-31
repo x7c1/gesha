@@ -10,6 +10,7 @@ edition = "2024"
 testing = ["gesha-core/testing"]
 
 [dependencies]
+gesha-collections = { workspace = true }
 gesha-core = { workspace = true }
 gesha-rust-types = { workspace = true }
 openapi-types = { workspace = true }

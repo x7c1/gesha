@@ -13,6 +13,7 @@ testing = []
 
 [dependencies]
 openapi-types = { workspace = true }
+gesha-collections = { workspace = true }
 
 chrono = "0.4.40"
 console = "0.15.11"

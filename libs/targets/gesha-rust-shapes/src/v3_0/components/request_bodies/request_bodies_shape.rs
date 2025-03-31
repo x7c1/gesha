@@ -1,10 +1,10 @@
 use crate::v3_0::components::request_bodies::{
     ContentShape, DefinitionShape, MediaTypeShape, ModShape,
 };
+use gesha_collections::partial_result::MergeOps;
 use gesha_core::conversions::{Output, Result};
 use gesha_rust_types::{DocComments, EnumVariantName, MediaTypeDef, ModDef, TypeIdentifier};
 use indexmap::IndexMap;
-use openapi_types::core::OutputMergeOps;
 use openapi_types::v3_0::{ComponentName, RequestBodiesObject, RequestBodyCase, RequestBodyObject};
 use std::ops::Not;
 

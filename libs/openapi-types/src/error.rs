@@ -1,10 +1,11 @@
 use crate::yaml::YamlLoaderError;
 use crate::{json_schema, v3_0};
+use gesha_collections::partial_result::PartialResult;
 use std::fmt::Debug;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
-pub type Output<A> = crate::core::Output<A, Error>;
+pub type Output<A> = PartialResult<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {

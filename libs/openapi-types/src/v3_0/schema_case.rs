@@ -1,8 +1,8 @@
-use crate::core::OutputMergeOps;
 use crate::v3_0::yaml_map_ext::reify_value;
 use crate::v3_0::{ComponentName, ReferenceObject, SchemaObject, YamlMapExt};
 use crate::yaml::{YamlArray, YamlMap};
 use crate::{Output, Result, by_key};
+use gesha_collections::partial_result::MergeOps;
 
 pub type NamedSchemaCase = (ComponentName, SchemaCase);
 

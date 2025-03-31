@@ -1,8 +1,9 @@
+use gesha_collections::partial_result::PartialResult;
 use openapi_types::v3_0::OpenApiDataType;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
-pub type Output<A> = openapi_types::core::Output<A, Error>;
+pub type Output<A> = PartialResult<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {

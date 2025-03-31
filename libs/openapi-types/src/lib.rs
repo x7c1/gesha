@@ -1,4 +1,3 @@
-pub mod core;
 pub mod json_schema;
 pub mod v3_0;
 pub mod yaml;
