@@ -1,6 +1,5 @@
-use crate::v3_0::SpecViolation::{FieldNotExist, TypeMismatch};
 use crate::yaml::YamlLoaderError;
-use crate::{json_schema, v3_0};
+use crate::{json_schema, v3_0, v3_x};
 use gesha_collections::partial_result::PartialResult;
 use gesha_collections::yaml::{KeyAppendable, KeyBindable, YamlError};
 use std::fmt::Debug;
@@ -40,13 +39,12 @@ impl From<Vec<Error>> for Error {
 
 impl From<YamlError> for Error {
     fn from(e: YamlError) -> Self {
-        // TODO: change v3_0 -> v3_x
         match e {
             YamlError::FieldNotExist { field } => {
-                Error::SpecViolation(SpecViolation::from(FieldNotExist { field }))
+                Error::from(v3_x::SpecViolation::FieldNotExist { field })
             }
             YamlError::TypeMismatch { found, expected } => {
-                Error::SpecViolation(SpecViolation::from(TypeMismatch { found, expected }))
+                Error::from(v3_x::SpecViolation::TypeMismatch { found, expected })
             }
             YamlError::UnknownType { found } => {
                 Error::Unsupported(Unsupported::UnknownType { found })
@@ -83,6 +81,7 @@ fn with_key(key: impl Into<String>) -> impl FnOnce(Vec<Error>) -> Error {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum SpecViolation {
+    V3(v3_x::SpecViolation),
     V3_0(v3_0::SpecViolation),
     JsonSchema(json_schema::SpecViolation),
 }

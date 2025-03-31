@@ -1,16 +1,13 @@
-use crate::{Error, Output, Result, by_key, v3_0};
+use crate::{Error, Output, Result, by_key};
 use gesha_collections::partial_result::MergeOps;
 use gesha_collections::yaml::{YamlError, YamlMap, YamlValue};
 use std::fmt::Display;
-use v3_0::SpecViolation::{FieldNotExist, TypeMismatch};
 
 pub fn reify_value<A>(v: std::result::Result<YamlValue, YamlError>) -> Result<A>
 where
     A: TryFrom<YamlValue, Error = YamlError>,
 {
-    v.map_err(to_crate_error)?
-        .try_into()
-        .map_err(to_crate_error)
+    v.map_err(Error::from)?.try_into().map_err(Error::from)
 }
 
 pub fn collect<X, Y, F>(f: F) -> impl FnOnce(YamlMap) -> Output<Y>
@@ -37,18 +34,12 @@ where
     A: TryFrom<YamlValue, Error = YamlError> + Display,
     B: TryFrom<YamlValue, Error = YamlError>,
 {
-    let (k, v) = kv.map_err(to_crate_error)?;
+    let (k, v) = kv.map_err(Error::from)?;
     let outline = k.outline();
-    let key: A = k
-        .try_into()
-        .map_err(to_crate_error)
-        .map_err(by_key(outline))?;
+    let key: A = k.try_into().map_err(Error::from).map_err(by_key(outline))?;
 
     let cloned = key.to_string();
-    let value = v
-        .try_into()
-        .map_err(to_crate_error)
-        .map_err(by_key(cloned))?;
+    let value = v.try_into().map_err(Error::from).map_err(by_key(cloned))?;
 
     Ok((key, value))
 }
@@ -65,18 +56,4 @@ where
         }
         (xs, errors)
     })
-}
-
-fn to_crate_error(e: YamlError) -> Error {
-    match e {
-        YamlError::FieldNotExist { field } => {
-            Error::SpecViolation(crate::SpecViolation::from(FieldNotExist { field }))
-        }
-        YamlError::TypeMismatch { found, expected } => {
-            Error::SpecViolation(crate::SpecViolation::from(TypeMismatch { found, expected }))
-        }
-        YamlError::UnknownType { found } => {
-            Error::Unsupported(crate::Unsupported::UnknownType { found })
-        }
-    }
 }
