@@ -1,6 +1,6 @@
 use crate::Result;
 use crate::v3_0::SchemaCase;
-use crate::yaml::YamlMap;
+use gesha_collections::yaml::YamlMap;
 
 /// > Value MUST be an object and not an array.
 /// > Inline or referenced schema MUST be of a Schema Object and

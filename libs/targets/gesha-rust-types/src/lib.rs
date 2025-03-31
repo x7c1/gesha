@@ -34,6 +34,9 @@ pub use identifier::TypeIdentifier;
 mod imports;
 pub use imports::{Imports, Package};
 
+mod keywords;
+pub use keywords::KEYWORDS;
+
 mod media_type_def;
 pub use media_type_def::MediaTypeDef;
 

@@ -1,5 +1,5 @@
-use crate::misc::TryMap;
 use crate::v3_0::components::schemas::{DefinitionShape, TypeShape};
+use gesha_collections::seq::TryMap;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{Definitions, DeriveAttribute, ModDef, ModuleName, Package};
 

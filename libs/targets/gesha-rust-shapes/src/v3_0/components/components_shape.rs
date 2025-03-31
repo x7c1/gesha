@@ -1,9 +1,9 @@
 use crate::v3_0::components::core::CoreShape;
 use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::{SchemasShape, TypeShape};
+use gesha_collections::partial_result::MaybeOps;
 use gesha_core::conversions::{Output, with_key};
 use gesha_rust_types::ModDef;
-use openapi_types::core::OutputOptionOps;
 
 #[derive(Clone, Debug)]
 pub struct ComponentsShape {

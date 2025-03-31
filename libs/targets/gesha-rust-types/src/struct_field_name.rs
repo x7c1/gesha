@@ -1,3 +1,4 @@
+use crate::KEYWORDS;
 use heck::ToSnakeCase;
 use std::fmt::{Display, Formatter};
 
@@ -19,14 +20,12 @@ impl Display for StructFieldName {
     }
 }
 
-/// append '_' if given string is reserved keyword.
+/// Appends an underscore ('_') to the given string if it is a reserved keyword.
 ///
 /// https://doc.rust-lang.org/reference/keywords.html
 fn to_rust_compatible_name(target: &str) -> String {
     let target = target.to_snake_case();
-
-    // TODO: include other keywords
-    ["break", "continue", "move", "ref", "type"]
+    KEYWORDS
         .into_iter()
         .find(|x| &target == x)
         .map(|x| x.to_string() + "_")

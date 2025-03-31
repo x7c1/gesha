@@ -2,7 +2,7 @@ path: ./examples/v3_0/invalid/multiple-errors.yaml
 
     @ components > schemas > NonObject
     SpecViolation(
-        V3_0(
+        OpenApi(
             TypeMismatch {
                 expected: "Map",
                 found: "Array",
@@ -12,7 +12,7 @@ path: ./examples/v3_0/invalid/multiple-errors.yaml
 
     @ components > schemas > Foo > type
     SpecViolation(
-        V3_0(
+        OpenApi(
             UnknownDataType {
                 found: "int",
             },

@@ -1,17 +1,18 @@
+use crate::v3_0::PathFieldName;
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum SpecViolation {
-    FieldNotExist {
+    DuplicatedPathFieldName {
+        fields: Vec<PathFieldName>,
+    },
+
+    /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#responses-object
+    /// > The Responses Object MUST contain at least one response code,
+    EmptyResponses,
+
+    /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#paths-object
+    InvalidPathFieldName {
         field: String,
-    },
-
-    /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#data-types
-    UnknownDataType {
-        found: String,
-    },
-
-    TypeMismatch {
-        expected: String,
-        found: String,
     },
 }
 

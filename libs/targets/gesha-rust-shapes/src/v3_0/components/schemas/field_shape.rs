@@ -1,7 +1,7 @@
 use crate::v3_0::components::schemas::{Optionality, TypeShape};
+use gesha_collections::partial_result::MergeOps;
 use gesha_core::conversions::{Output, Result, by_key};
 use gesha_rust_types::{StructField, StructFieldAttribute, StructFieldName};
-use openapi_types::core::OutputMergeOps;
 use openapi_types::v3_0::{
     ComponentName, RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
 };

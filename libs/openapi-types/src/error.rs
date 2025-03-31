@@ -1,8 +1,12 @@
 use crate::yaml::YamlLoaderError;
-use crate::{json_schema, v3_0};
+use crate::{json_schema, openapi, v3_0};
+use gesha_collections::partial_result::PartialResult;
+use gesha_collections::yaml::{KeyAppendable, KeyBindable, YamlError};
 use std::fmt::Debug;
 
 pub type Result<A> = std::result::Result<A, Error>;
+
+pub type Output<A> = PartialResult<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {
@@ -33,6 +37,34 @@ impl From<Vec<Error>> for Error {
     }
 }
 
+impl From<YamlError> for Error {
+    fn from(e: YamlError) -> Self {
+        match e {
+            YamlError::FieldNotExist { field } => {
+                Error::from(openapi::SpecViolation::FieldNotExist { field })
+            }
+            YamlError::TypeMismatch { found, expected } => {
+                Error::from(openapi::SpecViolation::TypeMismatch { found, expected })
+            }
+            YamlError::UnknownType { found } => {
+                Error::Unsupported(Unsupported::UnknownType { found })
+            }
+        }
+    }
+}
+
+impl KeyBindable for Error {
+    fn bind_key(key: &str, error: Vec<Self>) -> Self {
+        with_key(key)(error)
+    }
+}
+
+impl KeyAppendable for Error {
+    fn append_key(key: &str, error: Self) -> Self {
+        by_key(key)(error)
+    }
+}
+
 pub fn by_key(key: impl Into<String>) -> impl FnOnce(Error) -> Error {
     move |cause| Error::Enclosed {
         key: key.into(),
@@ -40,25 +72,26 @@ pub fn by_key(key: impl Into<String>) -> impl FnOnce(Error) -> Error {
     }
 }
 
-pub fn with_key(key: impl Into<String>) -> impl FnOnce(Vec<Error>) -> Error {
+fn with_key(key: impl Into<String>) -> impl FnOnce(Vec<Error>) -> Error {
     move |causes| Error::Enclosed {
         key: key.into(),
         causes,
     }
 }
 
-pub type Output<A> = crate::core::Output<A, Error>;
-
 #[derive(Clone, Debug, PartialEq)]
 pub enum SpecViolation {
+    /// version independent violations
+    OpenApi(openapi::SpecViolation),
     V3_0(v3_0::SpecViolation),
     JsonSchema(json_schema::SpecViolation),
 }
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Unsupported {
-    IncompatibleVersion { version: String },
+    IncompatibleOpenApiVersion { version: String },
     UnknownType { found: String },
+    Unimplemented { message: String },
 }
 
 impl From<Unsupported> for Error {

@@ -1,7 +1,7 @@
-use crate::yaml::loader::YamlLoaderError::Conversion;
-use crate::yaml::{YamlError, YamlValue};
+use crate::yaml::YamlLoaderError::Conversion;
 use crate::{Error, Result};
 use YamlLoaderError::CannotScanYaml;
+use gesha_collections::yaml::{YamlError, YamlValue};
 use std::fmt::Debug;
 use yaml_rust::YamlLoader;
 

@@ -1,9 +1,8 @@
-use crate::core::OutputMergeOps;
-use crate::error::by_key;
 use crate::v3_0::yaml_extractor::reify_value;
-use crate::v3_0::{ComponentName, ReferenceObject, SchemaObject, YamlExtractor};
-use crate::yaml::{YamlArray, YamlMap};
-use crate::{Output, Result};
+use crate::v3_0::{ComponentName, ReferenceObject, SchemaObject};
+use crate::{Output, Result, by_key};
+use gesha_collections::partial_result::MergeOps;
+use gesha_collections::yaml::{YamlArray, YamlMap, YamlMapExt};
 
 pub type NamedSchemaCase = (ComponentName, SchemaCase);
 
@@ -16,9 +15,9 @@ pub enum SchemaCase {
 
 impl SchemaCase {
     pub fn from_yaml_map(mut map: YamlMap) -> Result<SchemaCase> {
-        let case = match map.extract_if_exists::<String>("$ref").to_result()? {
+        let case = match map.extract_if_exists("$ref", Output::ok).to_result()? {
             Some(rf) => {
-                let reference = ReferenceObject::new(rf);
+                let reference = ReferenceObject::new::<String>(rf);
                 SchemaCase::Reference(reference)
             }
             None => {
@@ -48,7 +47,7 @@ impl SchemaCase {
         let (name, map) = kv;
         let pair = (
             ComponentName::new(&name),
-            SchemaCase::from_yaml_map(map).map_err(by_key(name))?,
+            Self::from_yaml_map(map).map_err(by_key(name))?,
         );
         Ok(pair)
     }

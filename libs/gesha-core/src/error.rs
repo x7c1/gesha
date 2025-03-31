@@ -1,11 +1,12 @@
 use crate::conversions;
 use console::{Style, StyledObject};
+use gesha_collections::partial_result::PartialResult;
 use std::path::PathBuf;
 use tokio::task::JoinError;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
-pub type Output<A> = openapi_types::core::Output<A, Error>;
+pub type Output<A> = PartialResult<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {

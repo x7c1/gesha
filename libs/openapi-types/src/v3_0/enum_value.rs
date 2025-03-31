@@ -1,6 +1,6 @@
 use crate::Result;
 use crate::v3_0::yaml_extractor::reify_value;
-use crate::yaml::{YamlArray, YamlError, YamlValue};
+use gesha_collections::yaml::{YamlArray, YamlError, YamlValue};
 use indexmap::IndexSet;
 
 /// https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.20

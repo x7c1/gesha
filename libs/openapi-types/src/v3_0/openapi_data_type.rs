@@ -1,5 +1,5 @@
 use crate::Result;
-use crate::v3_0::SpecViolation::UnknownDataType;
+use crate::openapi::SpecViolation::UnknownDataType;
 use std::fmt::{Display, Formatter};
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#dataTypes

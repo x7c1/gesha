@@ -1,0 +1,14 @@
+[package]
+name = "gesha-collections"
+version = "0.0.1"
+description = "Collection utilities for the Gesha project"
+repository = "https://github.com/x7c1/gesha/tree/main/libs/gesha-collections"
+license = "MIT"
+edition = "2024"
+
+[features]
+yaml = ["dep:yaml-rust"]
+
+[dependencies]
+indexmap = { workspace = true }
+yaml-rust = { version = "0.4.5", optional = true }

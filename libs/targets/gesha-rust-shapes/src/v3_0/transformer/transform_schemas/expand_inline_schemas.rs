@@ -1,10 +1,11 @@
-use crate::misc::{MapOutput, TryMap};
 use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::schemas::{
     AllOfItemShapes, AllOfShape, DefinitionShape, EnumShape, FieldShape, InlineShape, ModShape,
     NewTypeShape, OneOfShape, Optionality, StructShape, TypeHeaderShape, TypePath, TypeShape,
 };
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
+use gesha_collections::seq::MapCollect;
+use gesha_collections::seq::TryMap;
 use gesha_core::conversions::{Result, by_key};
 use gesha_rust_types::{ModuleName, TypeIdentifier};
 use std::ops::Not;
@@ -12,7 +13,7 @@ use std::ops::Not;
 pub fn expand_inline_schemas(mut shape: ComponentsShape) -> Result<ComponentsShape> {
     let defs = shape.schemas.root.defs;
     let defs = defs
-        .map_output(expand)
+        .map_collect(expand)
         .to_result()?
         .into_iter()
         .flatten()

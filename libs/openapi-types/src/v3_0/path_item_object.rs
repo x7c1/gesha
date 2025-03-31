@@ -1,8 +1,6 @@
-use crate::core::OutputOptionOps;
-use crate::error::by_key;
-use crate::v3_0::{OperationObject, PathFieldName, YamlExtractor};
-use crate::yaml::YamlMap;
-use crate::{Error, Output, Result};
+use crate::v3_0::{OperationObject, PathFieldName};
+use crate::{Error, Output, Result, by_key};
+use gesha_collections::yaml::{YamlMap, YamlMapExt};
 
 #[derive(Debug)]
 pub struct PathItemObject {
@@ -13,15 +11,13 @@ pub struct PathItemObject {
 impl PathItemObject {
     pub fn from_yaml_map(mut map: YamlMap) -> Result<Self> {
         let (get, get_errors) = map
-            .try_extract_if_exists("get", OperationObject::from_yaml_map)
-            .map(|x| x.maybe())
-            .flatten()
+            .extractor("get", OperationObject::from_yaml_map)
+            .as_optional::<Output<_>>()
             .into_tuple();
 
         let (post, post_errors) = map
-            .try_extract_if_exists("post", OperationObject::from_yaml_map)
-            .map(|x| x.maybe())
-            .flatten()
+            .extractor("post", OperationObject::from_yaml_map)
+            .as_optional::<Output<_>>()
             .into_tuple();
 
         let object = PathItemObject { get, post };
@@ -32,7 +28,7 @@ impl PathItemObject {
     pub fn with_name(kv: (String, YamlMap)) -> Result<(PathFieldName, PathItemObject)> {
         let (field, map) = kv;
         let pair = (
-            PathFieldName::new(&field),
+            PathFieldName::new(&field)?,
             PathItemObject::from_yaml_map(map).map_err(by_key(field))?,
         );
         Ok(pair)

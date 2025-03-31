@@ -1,4 +1,6 @@
 use crate::v3_0::SchemaCase;
+use crate::{Output, Result};
+use gesha_collections::yaml::{YamlMap, YamlMapExt};
 
 /// > The key is a media type or media type range and the value describes it.
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
@@ -19,8 +21,15 @@ impl From<MediaTypeKey> for String {
     }
 }
 
-/// rf. https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#media-type-object
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#media-type-object
 #[derive(Clone, Debug)]
 pub struct MediaTypeObject {
-    pub schema: SchemaCase,
+    pub schema: Option<SchemaCase>,
+}
+
+impl MediaTypeObject {
+    pub fn from_yaml_map(mut map: YamlMap) -> Result<Output<Self>> {
+        let output = map.extract_if_exists("schema", SchemaCase::from_yaml_map);
+        Ok(output.map(|schema| Self { schema }))
+    }
 }

@@ -2,7 +2,7 @@ path: ./examples/v3_0/invalid/unknown-type.yaml
 
     @ components > schemas > Foo > properties > x1 > type
     SpecViolation(
-        V3_0(
+        OpenApi(
             UnknownDataType {
                 found: "unknown-type1",
             },
@@ -11,7 +11,7 @@ path: ./examples/v3_0/invalid/unknown-type.yaml
 
     @ components > schemas > Foo > properties > x2 > type
     SpecViolation(
-        V3_0(
+        OpenApi(
             UnknownDataType {
                 found: "unknown-type2",
             },

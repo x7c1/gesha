@@ -1,5 +1,5 @@
 use crate::Output;
-use crate::yaml::YamlMap;
+use gesha_collections::yaml::YamlMap;
 
 /// convert YamlMap to a type defined in this crate.
 pub trait ToOpenApi: Sized {

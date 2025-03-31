@@ -1,4 +1,6 @@
 use crate::v3_0::{MediaTypeKey, MediaTypeObject};
+use crate::{Output, Result, by_key};
+use gesha_collections::yaml::YamlMap;
 use indexmap::IndexMap;
 
 type InnerMap = IndexMap<MediaTypeKey, MediaTypeObject>;
@@ -10,6 +12,16 @@ pub struct RequestBodyContent(InnerMap);
 impl RequestBodyContent {
     pub fn new(map: InnerMap) -> Self {
         Self(map)
+    }
+
+    pub fn with_name(kv: (String, YamlMap)) -> Result<Output<(MediaTypeKey, MediaTypeObject)>> {
+        let (name, map) = kv;
+        let key = MediaTypeKey::new(name);
+        let output = MediaTypeObject::from_yaml_map(map)
+            .map_err(by_key(key.clone()))?
+            .map(|object| (key, object));
+
+        Ok(output)
     }
 }
 
