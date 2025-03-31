@@ -1,9 +1,9 @@
-use crate::misc::TryMap;
 use crate::v3_0::components::schemas::DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 use crate::v3_0::components::schemas::{
     AllOfItemShape, AllOfShape, DefinitionShape, FieldShape, InlineSchema, InlineShape,
     NewTypeShape, OneOfShape, Optionality, RefShape, StructShape, TypeHeaderShape, TypeShape,
 };
+use gesha_collections::seq::TryMapVec;
 use gesha_core::broken;
 use gesha_core::conversions::Result;
 

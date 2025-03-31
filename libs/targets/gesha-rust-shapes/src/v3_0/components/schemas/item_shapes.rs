@@ -1,6 +1,6 @@
-use crate::misc::TryMap;
 use crate::v3_0::components::schemas::RefShape;
 use gesha_collections::partial_result::MergeOps;
+use gesha_collections::seq::TryMapVec;
 use gesha_core::conversions::{Output, Result};
 use openapi_types::v3_0::SchemaCase;
 
