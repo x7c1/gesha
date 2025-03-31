@@ -1,7 +1,8 @@
 use crate::Error::CannotReadFile;
 use crate::conversions::Converter;
 use crate::{Error, Output, Result};
-use openapi_types::yaml::{ToOpenApi, YamlMap, load_from_str};
+use gesha_collections::yaml::YamlMap;
+use openapi_types::yaml::{ToOpenApi, load_from_str};
 use std::fmt::Debug;
 use std::fs;
 use std::path::PathBuf;

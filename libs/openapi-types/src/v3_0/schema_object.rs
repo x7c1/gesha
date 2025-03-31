@@ -2,8 +2,8 @@ use crate::v3_0::{
     AllOf, ArrayItems, EnumValues, FormatModifier, OneOf, OpenApiDataType, RequiredSchemaFields,
     SchemaCase, SchemaProperties, YamlMapExt,
 };
-use crate::yaml::YamlMap;
 use crate::{Error, Output, Result};
+use gesha_collections::yaml::YamlMap;
 
 /// ex.1
 /// ```yaml

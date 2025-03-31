@@ -1,6 +1,6 @@
 use crate::Output;
 use crate::v3_0::YamlMapExt;
-use crate::yaml::YamlMap;
+use gesha_collections::yaml::YamlMap;
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#info-object
 #[derive(Debug)]

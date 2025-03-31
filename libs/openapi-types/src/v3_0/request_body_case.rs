@@ -1,7 +1,7 @@
 use crate::Unsupported::Unimplemented;
 use crate::v3_0::{ComponentName, ReferenceObject, RequestBodyObject, YamlMapExt};
-use crate::yaml::YamlMap;
 use crate::{Result, by_key};
+use gesha_collections::yaml::YamlMap;
 
 /// Request Body Object | Reference Object
 #[derive(Clone, Debug)]

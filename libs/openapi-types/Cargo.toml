@@ -12,4 +12,4 @@ edition = "2024"
 indexmap = { workspace = true }
 heck = { workspace = true }
 yaml-rust = "0.4.5"
-gesha-collections = { workspace = true }
+gesha-collections = { workspace = true, features = ["yaml"] }

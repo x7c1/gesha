@@ -1,8 +1,8 @@
 use crate::v3_0::ReferenceObject;
 use crate::v3_0::SpecViolation::EmptyResponses;
 use crate::v3_0::yaml_map_ext::collect;
-use crate::yaml::YamlMap;
 use crate::{Output, Result};
+use gesha_collections::yaml::YamlMap;
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#responses-object
 #[derive(Debug)]

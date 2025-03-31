@@ -1,6 +1,6 @@
-use crate::yaml::{YamlError, YamlMap, YamlValue};
 use crate::{Error, Output, Result, by_key, v3_0, with_key};
 use gesha_collections::partial_result::{MaybeOps, MergeOps};
+use gesha_collections::yaml::{YamlError, YamlMap, YamlValue};
 use std::fmt::Display;
 use std::marker::PhantomData;
 use v3_0::SpecViolation::{FieldNotExist, TypeMismatch};

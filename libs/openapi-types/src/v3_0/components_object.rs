@@ -1,6 +1,7 @@
 use crate::Output;
 use crate::v3_0::{RequestBodiesObject, SchemasObject, YamlMapExt};
-use crate::yaml::{ToOpenApi, YamlMap};
+use crate::yaml::ToOpenApi;
+use gesha_collections::yaml::YamlMap;
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#componentsObject
 #[derive(Debug)]

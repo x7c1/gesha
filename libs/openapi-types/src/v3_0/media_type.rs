@@ -1,6 +1,6 @@
 use crate::v3_0::{SchemaCase, YamlMapExt};
-use crate::yaml::YamlMap;
 use crate::{Output, Result};
+use gesha_collections::yaml::YamlMap;
 
 /// > The key is a media type or media type range and the value describes it.
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]

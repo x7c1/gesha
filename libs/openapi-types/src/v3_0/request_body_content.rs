@@ -1,6 +1,6 @@
 use crate::v3_0::{MediaTypeKey, MediaTypeObject};
-use crate::yaml::YamlMap;
 use crate::{Output, Result, by_key};
+use gesha_collections::yaml::YamlMap;
 use indexmap::IndexMap;
 
 type InnerMap = IndexMap<MediaTypeKey, MediaTypeObject>;

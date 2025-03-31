@@ -1,6 +1,6 @@
 use crate::v3_0::{ResponsesObject, YamlMapExt};
-use crate::yaml::YamlMap;
 use crate::{Output, Result};
+use gesha_collections::yaml::YamlMap;
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#operation-object
 #[derive(Debug)]

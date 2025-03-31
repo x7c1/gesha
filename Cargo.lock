@@ -922,6 +922,7 @@ name = "gesha-collections"
 version = "0.0.1"
 dependencies = [
  "indexmap 2.8.0",
+ "yaml-rust",
 ]
 
 [[package]]
