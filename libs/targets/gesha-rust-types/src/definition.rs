@@ -25,4 +25,14 @@ impl Definition {
         }
     }
 
+    pub fn name(&self) -> &str {
+        match self {
+            Definition::StructDef(x) => x.name(),
+            Definition::NewTypeDef(x) => x.name(),
+            Definition::EnumDef(x) => x.name(),
+            Definition::PresetDef(x) => x.name(),
+            Definition::RequestBodyDef(x) => x.name(),
+            Definition::ModDef(x) => x.name(),
+        }
+    }
 }

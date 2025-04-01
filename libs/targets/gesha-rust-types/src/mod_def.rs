@@ -7,6 +7,12 @@ pub struct ModDef {
     pub defs: Definitions,
 }
 
+impl ModDef {
+    pub fn name(&self) -> &str {
+        self.name.as_ref()
+    }
+}
+
 impl From<ModDef> for Definition {
     fn from(this: ModDef) -> Self {
         Self::ModDef(this)

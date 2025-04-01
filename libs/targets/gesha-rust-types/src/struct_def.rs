@@ -15,6 +15,9 @@ impl StructDef {
             _hide_default_constructor: true,
         }
     }
+    pub fn name(&self) -> &str {
+        self.header.name.as_ref()
+    }
 }
 
 impl From<StructDef> for Definition {

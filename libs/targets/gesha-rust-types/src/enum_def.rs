@@ -21,6 +21,9 @@ impl EnumDef {
             _hide_default_constructor: true,
         }
     }
+    pub fn name(&self) -> &str {
+        self.header.name.as_ref()
+    }
 }
 
 impl From<EnumDef> for Definition {

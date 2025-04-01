@@ -9,6 +9,17 @@ pub enum PresetDef {
     FromJson,
 }
 
+impl PresetDef {
+    pub fn name(&self) -> &str {
+        match self {
+            PresetDef::Error(x) => x.name(),
+            PresetDef::Patch => "Patch",
+            PresetDef::MediaType(x) => x.name(),
+            PresetDef::FromJson => "FromJson",
+        }
+    }
+}
+
 impl From<PresetDef> for Definition {
     fn from(this: PresetDef) -> Self {
         Definition::PresetDef(this)

@@ -1,4 +1,5 @@
-use crate::Definition;
+use crate::{Definition, Error};
+use Error::DefinitionAlreadyExists;
 
 #[derive(Clone, Debug, PartialEq, Default)]
 pub struct Definitions(Vec<Definition>);
@@ -15,8 +16,15 @@ impl Definitions {
     /// Return `DefinitionAlreadyExists`
     /// if a definition with the same name has already been pushed.
     pub fn set<A: Into<Definition>>(&mut self, def: A) -> crate::Result<()> {
-        // TODO: return error if definition already pushed
-        self.0.push(def.into());
+        let def = def.into();
+        let name = def.name();
+
+        if self.already_pushed(def.name()) {
+            return Err(DefinitionAlreadyExists {
+                name: name.to_string(),
+            });
+        }
+        self.0.push(def);
         Ok(())
     }
 
@@ -32,6 +40,10 @@ impl Definitions {
             .map(|x| x.try_into())
             .collect::<Result<Vec<_>, E>>()
             .map(Self)
+    }
+
+    fn already_pushed(&self, name: &str) -> bool {
+        self.0.iter().any(|x| x.name() == name)
     }
 }
 
