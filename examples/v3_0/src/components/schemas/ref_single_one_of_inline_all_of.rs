@@ -19,6 +19,7 @@ pub mod schemas {
         pub struct Foo1 {
             #[serde(default, skip_serializing_if = "Option::is_none")]
             pub foo2: Option<String>,
+
             #[serde(default, skip_serializing_if = "Option::is_none")]
             pub foo3: Option<foo1::Foo3>,
         }
@@ -31,10 +32,13 @@ pub mod schemas {
             pub struct Foo3 {
                 #[serde(default, skip_serializing_if = "Option::is_none")]
                 pub inner1: Option<String>,
+
                 #[serde(default, skip_serializing_if = "Option::is_none")]
                 pub inner2: Option<super::super::Bar>,
+
                 #[serde(default, skip_serializing_if = "Option::is_none")]
                 pub inner3: Option<String>,
+
                 #[serde(default, skip_serializing_if = "Option::is_none")]
                 pub inner4: Option<String>,
             }

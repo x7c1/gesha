@@ -26,6 +26,7 @@ pub mod schemas {
         pub struct Sample1Item {
             #[serde(default, skip_serializing_if = "Option::is_none")]
             pub id: Option<i64>,
+
             #[serde(default, skip_serializing_if = "Option::is_none")]
             pub sample1_nested1: Option<sample1_item::Sample1Nested1>,
         }

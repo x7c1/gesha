@@ -36,6 +36,7 @@ pub mod schemas {
             pub struct X1 {
                 #[serde(default, skip_serializing_if = "Option::is_none")]
                 pub foo1: Option<String>,
+
                 #[serde(default, skip_serializing_if = "Option::is_none")]
                 pub bar1: Option<String>,
             }
