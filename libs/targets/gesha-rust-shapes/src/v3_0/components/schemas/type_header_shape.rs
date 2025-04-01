@@ -1,6 +1,6 @@
+use crate::v3_0::components::schemas::to_doc_comments;
 use gesha_rust_types::{DeriveAttribute, DocComments, SerdeAttribute, TypeHeader, TypeIdentifier};
 use openapi_types::v3_0::SchemaObject;
-use crate::v3_0::components::schemas::to_doc_comments;
 
 #[derive(Clone, Debug)]
 pub struct TypeHeaderShape {
