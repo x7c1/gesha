@@ -15,7 +15,7 @@ impl RequestBodyDef {
             _hide_default_constructor: true,
         }
     }
-    pub fn name(&self) -> &str {
+    pub fn symbol_name(&self) -> &str {
         self.header.name.as_ref()
     }
 }

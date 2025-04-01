@@ -8,7 +8,7 @@ pub struct MediaTypeDef {
 }
 
 impl MediaTypeDef {
-    pub fn name(&self) -> &str {
+    pub fn symbol_name(&self) -> &str {
         "MediaType"
     }
 }

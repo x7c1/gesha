@@ -17,9 +17,9 @@ impl Definitions {
     /// if a definition with the same name has already been pushed.
     pub fn set<A: Into<Definition>>(&mut self, def: A) -> crate::Result<()> {
         let def = def.into();
-        let name = def.name();
+        let name = def.symbol_name();
 
-        if self.already_pushed(def.name()) {
+        if self.already_pushed(def.symbol_name()) {
             return Err(DefinitionAlreadyExists {
                 name: name.to_string(),
             });
@@ -43,7 +43,7 @@ impl Definitions {
     }
 
     fn already_pushed(&self, name: &str) -> bool {
-        self.0.iter().any(|x| x.name() == name)
+        self.0.iter().any(|x| x.symbol_name() == name)
     }
 }
 

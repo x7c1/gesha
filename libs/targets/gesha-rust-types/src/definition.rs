@@ -25,14 +25,19 @@ impl Definition {
         }
     }
 
-    pub fn name(&self) -> &str {
+    /// Return the symbol name of the definition.
+    ///
+    /// e.g.
+    /// - struct Foo -> "Foo"
+    /// - mod bar -> "bar"
+    pub fn symbol_name(&self) -> &str {
         match self {
-            Definition::StructDef(x) => x.name(),
-            Definition::NewTypeDef(x) => x.name(),
-            Definition::EnumDef(x) => x.name(),
-            Definition::PresetDef(x) => x.name(),
-            Definition::RequestBodyDef(x) => x.name(),
-            Definition::ModDef(x) => x.name(),
+            Definition::StructDef(x) => x.symbol_name(),
+            Definition::NewTypeDef(x) => x.symbol_name(),
+            Definition::EnumDef(x) => x.symbol_name(),
+            Definition::PresetDef(x) => x.symbol_name(),
+            Definition::RequestBodyDef(x) => x.symbol_name(),
+            Definition::ModDef(x) => x.symbol_name(),
         }
     }
 }

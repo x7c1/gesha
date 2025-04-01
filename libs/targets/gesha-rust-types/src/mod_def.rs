@@ -8,7 +8,7 @@ pub struct ModDef {
 }
 
 impl ModDef {
-    pub fn name(&self) -> &str {
+    pub fn symbol_name(&self) -> &str {
         self.name.as_ref()
     }
 }

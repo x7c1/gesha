@@ -10,11 +10,11 @@ pub enum PresetDef {
 }
 
 impl PresetDef {
-    pub fn name(&self) -> &str {
+    pub fn symbol_name(&self) -> &str {
         match self {
-            PresetDef::Error(x) => x.name(),
+            PresetDef::Error(x) => x.symbol_name(),
             PresetDef::Patch => "Patch",
-            PresetDef::MediaType(x) => x.name(),
+            PresetDef::MediaType(x) => x.symbol_name(),
             PresetDef::FromJson => "FromJson",
         }
     }
