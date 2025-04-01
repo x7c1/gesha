@@ -130,15 +130,12 @@ fn expand_fields_from(
 
 fn expand_field(
     mod_path: TypePath,
-    field: FieldShape,
+    mut field: FieldShape,
 ) -> Result<(FieldShape, Vec<DefinitionShape>)> {
     let type_name = TypeIdentifier::parse(&field.name);
     let (type_shape, defs) = expand_type_shape(mod_path, type_name, field.type_shape)?;
-    let field_shape = FieldShape {
-        name: field.name,
-        type_shape,
-    };
-    Ok((field_shape, defs))
+    field.type_shape = type_shape;
+    Ok((field, defs))
 }
 
 fn expand_type_shape(

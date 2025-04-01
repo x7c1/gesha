@@ -82,11 +82,9 @@ impl Transformer<'_> {
             .collect()
     }
 
-    fn transform_field(&self, shape: FieldShape) -> Result<FieldShape> {
-        Ok(FieldShape {
-            name: shape.name,
-            type_shape: self.transform_field_type(shape.type_shape)?,
-        })
+    fn transform_field(&self, mut shape: FieldShape) -> Result<FieldShape> {
+        shape.type_shape = self.transform_field_type(shape.type_shape)?;
+        Ok(shape)
     }
 
     fn transform_field_type(&self, shape: TypeShape) -> Result<TypeShape> {
