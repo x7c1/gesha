@@ -1,6 +1,7 @@
+use crate::http::HttpStatusCode;
+use crate::v3_0::ReferenceObject;
 use crate::v3_0::SpecViolation::EmptyResponses;
 use crate::v3_0::yaml_extractor::collect;
-use crate::v3_0::{HttpStatusCode, ReferenceObject};
 use crate::{Output, Result};
 use gesha_collections::yaml::YamlMap;
 

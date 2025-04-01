@@ -1,5 +1,5 @@
 use crate::yaml::YamlLoaderError;
-use crate::{json_schema, openapi, v3_0};
+use crate::{http, json_schema, openapi, v3_0};
 use gesha_collections::partial_result::PartialResult;
 use gesha_collections::yaml::{KeyAppendable, KeyBindable, YamlError};
 use std::fmt::Debug;
@@ -81,10 +81,13 @@ fn with_key(key: impl Into<String>) -> impl FnOnce(Vec<Error>) -> Error {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum SpecViolation {
+    Http(http::SpecViolation),
+    JsonSchema(json_schema::SpecViolation),
+
     /// version independent violations
     OpenApi(openapi::SpecViolation),
+
     V3_0(v3_0::SpecViolation),
-    JsonSchema(json_schema::SpecViolation),
 }
 
 #[derive(Clone, Debug, PartialEq)]

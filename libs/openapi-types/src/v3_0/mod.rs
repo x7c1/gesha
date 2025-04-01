@@ -19,9 +19,6 @@ pub use enum_value::{EnumValue, EnumValues};
 mod format_modifier;
 pub use format_modifier::FormatModifier;
 
-mod http_status_code;
-pub use http_status_code::HttpStatusCode;
-
 mod info_object;
 pub use info_object::InfoObject;
 
