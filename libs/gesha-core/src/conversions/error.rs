@@ -1,5 +1,6 @@
 use gesha_collections::partial_result::PartialResult;
 use openapi_types::v3_0::OpenApiDataType;
+use std::fmt::Debug;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
@@ -30,6 +31,13 @@ pub enum Error {
     /// e.g. a shape that has not been processed.
     TransformBroken {
         detail: String,
+    },
+
+    /// ## Internal Error
+    /// e.g. a shape that violates the target language's specifications.
+    DefinitionFailed {
+        location: String,
+        cause: Box<dyn Debug + Send + 'static>,
     },
 
     /// ## Internal Error
@@ -72,6 +80,16 @@ macro_rules! broken {
                 line = line!(),
                 shape = $shape,
             ),
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! definition_failed {
+    () => {
+        |cause| $crate::conversions::Error::DefinitionFailed {
+            cause: Box::new(cause),
+            location: format!("at {file}:{line}", file = file!(), line = line!(),),
         }
     };
 }

@@ -12,9 +12,12 @@ impl Definitions {
         self.0.is_empty()
     }
 
-    pub fn set<A: Into<Definition>>(&mut self, def: A) {
+    /// Return `DefinitionAlreadyExists`
+    /// if a definition with the same name has already been pushed.
+    pub fn set<A: Into<Definition>>(&mut self, def: A) -> crate::Result<()> {
         // TODO: return error if definition already pushed
         self.0.push(def.into());
+        Ok(())
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &Definition> {

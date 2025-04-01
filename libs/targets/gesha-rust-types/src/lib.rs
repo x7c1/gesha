@@ -25,6 +25,9 @@ pub use enum_variant::{EnumCase, EnumConstant, EnumVariant, EnumVariantAttribute
 mod enum_variant_name;
 pub use enum_variant_name::EnumVariantName;
 
+mod error;
+pub use error::{Error, Result};
+
 mod error_def;
 pub use error_def::{ErrorDef, ErrorVariant};
 
