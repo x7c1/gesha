@@ -52,6 +52,10 @@ impl FieldShape {
         self
     }
 
+    pub fn erase_doc_comments(&mut self) {
+        self.doc_comments = None;
+    }
+
     fn from_properties(
         properties: Option<SchemaProperties>,
         required: Option<RequiredSchemaFields>,

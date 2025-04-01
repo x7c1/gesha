@@ -135,6 +135,12 @@ fn expand_field(
     let type_name = TypeIdentifier::parse(&field.name);
     let (type_shape, defs) = expand_type_shape(mod_path, type_name, field.type_shape)?;
     field.type_shape = type_shape;
+
+    // Newly generated defs include doc comments in the expanded definition,
+    // so the field doesn't need them.
+    if !defs.is_empty() {
+        field.erase_doc_comments();
+    }
     Ok((field, defs))
 }
 
