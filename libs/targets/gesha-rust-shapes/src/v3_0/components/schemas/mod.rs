@@ -51,3 +51,6 @@ pub use type_path::TypePath;
 
 mod type_shape;
 pub use type_shape::TypeShape;
+
+mod to_doc_comments;
+pub(crate) use to_doc_comments::to_doc_comments;
