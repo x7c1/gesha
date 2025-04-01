@@ -115,6 +115,16 @@ fn render_fields(write: &mut impl Write, fields: &[StructField]) -> fmt::Result 
 }
 
 fn render_field(write: &mut impl Write, field: &StructField) -> fmt::Result {
+    if field.doc_comments.is_some() || !field.attributes.is_empty() {
+        render! { write =>
+            echo > "\n";
+        }
+    }
+    if let Some(doc_comments) = &field.doc_comments {
+        render! { write =>
+            echo > "{comments}", comments = doc_comments;
+        }
+    };
     render! { write =>
         call > render_field_attrs => &field.attributes;
         echo > "pub {name}: ", name = field.name;

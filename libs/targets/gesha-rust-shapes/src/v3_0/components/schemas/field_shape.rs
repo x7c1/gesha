@@ -1,7 +1,8 @@
-use crate::v3_0::components::schemas::{Optionality, TypeShape};
+use crate::v3_0::components::schemas::{Optionality, TypeShape, to_doc_comments};
+use gesha_collections::default::default;
 use gesha_collections::partial_result::MergeOps;
 use gesha_core::conversions::{Output, Result, by_key};
-use gesha_rust_types::{StructField, StructFieldAttribute, StructFieldName};
+use gesha_rust_types::{DocComments, StructField, StructFieldAttribute, StructFieldName};
 use openapi_types::v3_0::{
     ComponentName, RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
 };
@@ -10,6 +11,7 @@ use openapi_types::v3_0::{
 pub struct FieldShape {
     pub name: ComponentName,
     pub type_shape: TypeShape,
+    pub doc_comments: Option<DocComments>,
 }
 
 impl FieldShape {
@@ -29,7 +31,7 @@ impl FieldShape {
         let name = StructFieldName::new(self.name.as_ref());
         let attrs = self.create_field_attrs(&name);
         let data_type = self.type_shape.define()?;
-        let field = StructField::new(name, data_type, attrs);
+        let field = StructField::new(name, data_type, attrs, self.doc_comments);
         Ok(field)
     }
 
@@ -97,9 +99,12 @@ impl ToFieldShapes {
 
     fn to_field(&self, name: ComponentName, case: SchemaCase) -> Result<FieldShape> {
         let is_required = self.is_required(&name);
+        let (title, description) = title_and_description(&case);
+        let doc_comments = to_doc_comments(title, description);
         Ok(FieldShape {
             name: name.clone(),
             type_shape: TypeShape::from_case(case, is_required).map_err(by_key(name))?,
+            doc_comments,
         })
     }
 
@@ -108,5 +113,12 @@ impl ToFieldShapes {
             Some(required) => required.contains(name.as_ref()),
             None => false,
         }
+    }
+}
+
+fn title_and_description(case: &SchemaCase) -> (Option<&str>, Option<&str>) {
+    match case {
+        SchemaCase::Schema(object) => (object.title.as_deref(), object.description.as_deref()),
+        SchemaCase::Reference(_) => default(),
     }
 }
