@@ -34,13 +34,6 @@ pub enum Error {
     },
 
     /// ## Internal Error
-    /// e.g. a shape that violates the target language's specifications.
-    DefinitionFailed {
-        location: String,
-        cause: Box<dyn Debug + Send + 'static>,
-    },
-
-    /// ## Internal Error
     Unimplemented {
         message: String,
     },
@@ -85,11 +78,14 @@ macro_rules! broken {
 }
 
 #[macro_export]
-macro_rules! definition_failed {
+macro_rules! broken_defs {
     () => {
-        |cause| $crate::conversions::Error::DefinitionFailed {
-            cause: Box::new(cause),
-            location: format!("at {file}:{line}", file = file!(), line = line!(),),
+        |cause| $crate::conversions::Error::TransformBroken {
+            detail: format!(
+                "unprocessed defs found:\n  at {file}:{line}\n{cause:#?}",
+                file = file!(),
+                line = line!(),
+            ),
         }
     };
 }
