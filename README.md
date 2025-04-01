@@ -10,10 +10,10 @@ It helps developers quickly create Rust applications that adhere to OpenAPI stan
 
 ## Features
 
-- Supports OpenAPI v3.0.x.
+- Supports OpenAPI v3.0 Schema Object.
 - Accurately expands inline-defined types.
 - Correctly interprets `required` and `nullable` attributes.
-- Includes comprehensive example tests.
+- Comprehensively covers examples and their tests.
 
 ## Installation
 
