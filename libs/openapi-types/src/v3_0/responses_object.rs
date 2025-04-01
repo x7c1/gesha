@@ -1,6 +1,6 @@
-use crate::v3_0::ReferenceObject;
 use crate::v3_0::SpecViolation::EmptyResponses;
 use crate::v3_0::yaml_extractor::collect;
+use crate::v3_0::{HttpStatusCode, ReferenceObject};
 use crate::{Output, Result};
 use gesha_collections::yaml::YamlMap;
 
@@ -42,22 +42,11 @@ pub enum ResponseCase {
 #[derive(Debug)]
 pub struct ResponseObject {}
 
-#[derive(Debug)]
-pub enum HttpStatusCode {
-    // 200
-    OK,
-}
-
 fn to_response_pair(kv: (String, YamlMap)) -> Result<Output<(HttpStatusCode, ResponseCase)>> {
     let (field, map) = kv;
-    let code = to_http_status_code(field)?;
+    let code = HttpStatusCode::new(field)?;
     let output = to_response_case(map)?.map(|case| (code, case));
     Ok(output)
-}
-
-fn to_http_status_code(_v: String) -> Result<HttpStatusCode> {
-    // TODO:
-    Ok(HttpStatusCode::OK)
 }
 
 fn to_response_case(_map: YamlMap) -> Result<Output<ResponseCase>> {

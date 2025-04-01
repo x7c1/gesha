@@ -19,6 +19,9 @@ pub use enum_value::{EnumValue, EnumValues};
 mod format_modifier;
 pub use format_modifier::FormatModifier;
 
+mod http_status_code;
+pub use http_status_code::HttpStatusCode;
+
 mod info_object;
 pub use info_object::InfoObject;
 
@@ -65,7 +68,7 @@ mod required_schema_fields;
 pub use required_schema_fields::RequiredSchemaFields;
 
 mod responses_object;
-pub use responses_object::{HttpStatusCode, ResponseCase, ResponseObject, ResponsesObject};
+pub use responses_object::{ResponseCase, ResponseObject, ResponsesObject};
 
 mod schema_case;
 pub use schema_case::SchemaCase;
