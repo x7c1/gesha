@@ -1,34 +1,28 @@
-use crate::http::HttpStatusCode;
-use crate::v3_0::ReferenceObject;
 use crate::v3_0::SpecViolation::EmptyResponses;
 use crate::v3_0::yaml_extractor::collect;
+use crate::v3_0::{ReferenceObject, ResponseSpecifier};
 use crate::{Output, Result};
 use gesha_collections::yaml::YamlMap;
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#responses-object
 #[derive(Debug)]
 pub struct ResponsesObject {
-    pub responses: Vec<(HttpStatusCode, ResponseCase)>,
-    pub default: Option<ResponseCase>,
+    pub responses: Vec<(ResponseSpecifier, ResponseCase)>,
 }
 
 impl ResponsesObject {
     /// > The Responses Object MUST contain at least one response code,
     /// > and it SHOULD be the response for a successful operation call.
-    pub fn new(
-        responses: Vec<(HttpStatusCode, ResponseCase)>,
-        default: Option<ResponseCase>,
-    ) -> Result<Self> {
+    pub fn new(responses: Vec<(ResponseSpecifier, ResponseCase)>) -> Result<Self> {
         if responses.is_empty() {
             return Err(EmptyResponses)?;
         }
-        Ok(ResponsesObject { responses, default })
+        Ok(ResponsesObject { responses })
     }
 
     pub fn from_yaml_map(map: YamlMap) -> Result<Output<Self>> {
         let (tuples, errors) = collect(to_response_pair)(map).into_tuple();
-        let default = None;
-        let object = ResponsesObject::new(tuples, default)?;
+        let object = ResponsesObject::new(tuples)?;
         Ok(Output::new(object, errors))
     }
 }
@@ -43,10 +37,10 @@ pub enum ResponseCase {
 #[derive(Debug)]
 pub struct ResponseObject {}
 
-fn to_response_pair(kv: (String, YamlMap)) -> Result<Output<(HttpStatusCode, ResponseCase)>> {
+fn to_response_pair(kv: (String, YamlMap)) -> Result<Output<(ResponseSpecifier, ResponseCase)>> {
     let (field, map) = kv;
-    let code = HttpStatusCode::new(field)?;
-    let output = to_response_case(map)?.map(|case| (code, case));
+    let specifier = ResponseSpecifier::from_string(field)?;
+    let output = to_response_case(map)?.map(|case| (specifier, case));
     Ok(output)
 }
 
