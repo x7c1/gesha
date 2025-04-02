@@ -13,3 +13,6 @@ gesha-core = { workspace = true }
 heck = { workspace = true }
 indexmap = { workspace = true }
 syn = { workspace = true }
+
+[dev-dependencies]
+rstest = { workspace = true }

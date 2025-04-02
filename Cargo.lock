@@ -969,6 +969,7 @@ dependencies = [
  "gesha-core",
  "heck",
  "indexmap 2.8.0",
+ "rstest",
  "syn",
 ]
 

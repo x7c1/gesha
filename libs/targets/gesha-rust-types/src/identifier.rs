@@ -124,61 +124,30 @@ fn ascii_symbol_to_name(c: char) -> Option<&'static str> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::rstest;
 
-    #[test]
-    fn ok_as_it_is() {
-        let actual = TypeIdentifier::parse("hello_world").unwrap();
-        assert_eq!(actual, "HelloWorld");
-    }
-
-    #[test]
-    fn ok_only_symbol() {
-        let actual = TypeIdentifier::parse("*+-/").unwrap();
-        let expected = "AsteriskPlusMinusSlash";
+    #[rstest]
+    #[case::as_it_is("hello_world", "HelloWorld")]
+    #[case::only_symbol("*+-/", "AsteriskPlusMinusSlash")]
+    #[case::only_symbol("123foo", "_123foo")]
+    #[case::only_symbol("1+foo=345%bar", "_1PlusFooEquals345PercentBar")]
+    #[case::with_minus("-42", "Minus42")]
+    #[case::with_numeric_and_symbol("_42", "Underscore42")]
+    #[case::with_symbol_and_numeric("%_42", "PercentUnderscore42")]
+    fn ok(#[case] input: &str, #[case] expected: &str) {
+        let actual = TypeIdentifier::parse(input).unwrap();
         assert_eq!(actual, expected);
     }
 
-    #[test]
-    fn ok_starts_with_numeric() {
-        let actual = TypeIdentifier::parse("123foo").unwrap();
-        let expected = "_123foo";
-        assert_eq!(actual, expected);
-    }
-
-    #[test]
-    fn ok_with_numeric_and_symbol() {
-        let actual = TypeIdentifier::parse("1+foo=345%bar").unwrap();
-        let expected = "_1PlusFooEquals345PercentBar";
-        assert_eq!(actual, expected);
-    }
-
-    #[test]
-    fn ok_with_minus() {
-        let actual = TypeIdentifier::parse("-42").unwrap();
-        let expected = "Minus42";
-        assert_eq!(actual, expected);
-    }
-
-    #[test]
-    fn ok_with_numeric_and_symbol_as_it_is() {
-        let actual = TypeIdentifier::parse("_42").unwrap();
-        let expected = "Underscore42";
-        assert_eq!(actual, expected);
-    }
-
-    #[test]
-    fn ok_with_symbol_and_numeric() {
-        let actual = TypeIdentifier::parse("%_42").unwrap();
-        let expected = "PercentUnderscore42";
-        assert_eq!(actual, expected);
-    }
-
-    #[test]
-    fn ng_with_non_ascii() {
-        let actual = match TypeIdentifier::parse("🔥") {
+    #[rstest]
+    #[case::empty_string("")]
+    #[case::non_ascii("🔥🔥🔥")]
+    fn ng(#[case] input: &str) {
+        let actual = match TypeIdentifier::parse(input) {
             Err(InvalidToken { target }) => target,
             other => panic!("expected error not returned but got: {other:?}"),
         };
-        assert_eq!(actual, "🔥");
+        let expected = input.to_string();
+        assert_eq!(actual, expected);
     }
 }
