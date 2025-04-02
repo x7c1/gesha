@@ -966,6 +966,7 @@ dependencies = [
 name = "gesha-rust-types"
 version = "0.0.4"
 dependencies = [
+ "gesha-core",
  "heck",
  "indexmap 2.8.0",
  "syn",

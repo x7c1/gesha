@@ -132,7 +132,7 @@ fn expand_field(
     mod_path: TypePath,
     mut field: FieldShape,
 ) -> Result<(FieldShape, Vec<DefinitionShape>)> {
-    let type_name = TypeIdentifier::parse(&field.name);
+    let type_name = TypeIdentifier::parse(&field.name)?;
     let (type_shape, defs) = expand_type_shape(mod_path, type_name, field.type_shape)?;
     field.type_shape = type_shape;
 
@@ -195,7 +195,7 @@ fn expand_inline_type_shape(
         }
         InlineShape::Enum(inline) => {
             let values = inline.enum_values.unwrap_or_default();
-            let shape = EnumShape::new(header, values);
+            let shape = EnumShape::new(header, values)?;
             vec![Enum(shape)]
         }
         InlineShape::OneOf(inline) => {
@@ -219,7 +219,7 @@ fn expand_array_type_shape(
     type_shape: TypeShape,
     optionality: Optionality,
 ) -> Result<(TypeShape, Vec<DefinitionShape>)> {
-    let item_name = TypeIdentifier::parse(mod_name.append("_item"));
+    let item_name = TypeIdentifier::parse(mod_name.append("_item"))?;
     let (expanded, defs) = expand_type_shape(mod_path, item_name, type_shape)?;
     let shape = TypeShape::Array {
         type_shape: Box::new(expanded),

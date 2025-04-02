@@ -7,7 +7,25 @@ use indexmap::IndexMap;
 type InnerMap = IndexMap<ComponentName, RequestBodyCase>;
 type InnerEntry = (ComponentName, RequestBodyCase);
 
-/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#components-object
+/**
+    https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#components-object
+
+    ## Example
+
+    ```yaml
+    requestBodies:
+      PetBody:
+        description: Request body containing pet information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Pet'
+    ```
+*/
 #[derive(Debug)]
 pub struct RequestBodiesObject(InnerMap);
 

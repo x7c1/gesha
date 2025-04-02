@@ -1,13 +1,14 @@
 use crate::TypeIdentifier;
+use gesha_core::conversions::Result;
 use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct EnumVariantName(TypeIdentifier);
 
 impl EnumVariantName {
-    pub fn new<A: AsRef<str>>(x: A) -> Self {
-        let identifier = TypeIdentifier::parse(x);
-        Self(identifier)
+    pub fn new<A: AsRef<str>>(x: A) -> Result<Self> {
+        let identifier = TypeIdentifier::parse(x)?;
+        Ok(Self(identifier))
     }
     pub fn as_str(&self) -> &str {
         self.0.as_ref()

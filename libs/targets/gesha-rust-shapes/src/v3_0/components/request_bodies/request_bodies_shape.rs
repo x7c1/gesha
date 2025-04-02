@@ -75,7 +75,7 @@ fn shape(name: ComponentName, object: RequestBodyObject) -> Result<DefinitionSha
         .collect();
 
     Ok(DefinitionShape {
-        name: TypeIdentifier::parse(name),
+        name: TypeIdentifier::parse(name)?,
         doc_comments: DocComments::wrap(object.description),
         is_required: object.required,
         contents,

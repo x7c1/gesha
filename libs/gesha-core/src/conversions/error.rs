@@ -21,6 +21,12 @@ pub enum Error {
         detail: String,
     },
 
+    /// Cause: Client
+    /// - Invalid character or unrecognized symbol in the token
+    InvalidToken {
+        target: String,
+    },
+
     Multiple(Vec<Error>),
 
     /// Cause: Client

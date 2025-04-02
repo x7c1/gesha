@@ -79,12 +79,12 @@ fn new(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
     match schema_case {
         SchemaCase::Schema(obj) => {
             let (name, object) = (field_name.clone(), *obj);
-            let name = TypeIdentifier::parse(&name);
+            let name = TypeIdentifier::parse(&name)?;
             Shaper { name, object }.run().map_err(by_key(field_name))
         }
         SchemaCase::Reference(obj) => {
             let type_shape = RefShape::new(obj, /* is_required */ true)?;
-            let type_name = TypeIdentifier::parse(&field_name);
+            let type_name = TypeIdentifier::parse(&field_name)?;
             let header = TypeHeaderShape::from_name(type_name);
             let shape = NewTypeShape::new(header, type_shape.into());
             Ok(shape.into())
@@ -158,7 +158,7 @@ impl Shaper {
     }
 
     fn for_enum(self, values: EnumValues) -> Result<DefinitionShape> {
-        let shape = EnumShape::new(self.create_type_header(), values);
+        let shape = EnumShape::new(self.create_type_header(), values)?;
         Ok(shape.into())
     }
 
