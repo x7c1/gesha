@@ -27,7 +27,7 @@ where
         Z: TrackingKeyAppendable,
     {
         let result = self.map.remove(self.key).map_err(E::from);
-        self.converter.convert(result).append(self.key)
+        self.converter.convert(result).with_key(self.key)
     }
 
     pub fn as_optional<Z>(self) -> Z
@@ -36,7 +36,7 @@ where
         Z: TrackingKeyAppendable,
     {
         let result = self.map.remove_if_exists(self.key).map_err(E::from);
-        self.converter.convert(result).append(self.key)
+        self.converter.convert(result).with_key(self.key)
     }
 
     pub fn as_required_with_default<Z>(self) -> Z
@@ -52,7 +52,7 @@ where
             .maybe()
             .map(|maybe| maybe.unwrap_or_default());
 
-        self.converter.convert(result).append(self.key)
+        self.converter.convert(result).with_key(self.key)
     }
 
     pub fn error_if_exists(self) -> Result<(), E>
