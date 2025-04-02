@@ -1,33 +1,24 @@
-use crate::v3_0::SpecViolation::{DuplicatedResponseSpecifier, EmptyResponses};
+use crate::v3_0::SpecViolation::{DuplicatedResponseSpecifier, NoResponseCode};
 use crate::v3_0::yaml_extractor::collect;
 use crate::v3_0::{ReferenceObject, ResponseSpecifier};
-use crate::{Output, Result};
+use crate::{Error, Output, Result};
 use gesha_collections::seq::VecPairs;
 use gesha_collections::yaml::YamlMap;
+
+type Pair = (ResponseSpecifier, ResponseCase);
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#responses-object
 #[derive(Debug)]
 pub struct ResponsesObject {
-    pub responses: Vec<(ResponseSpecifier, ResponseCase)>,
+    pub responses: Vec<Pair>,
 }
 
 impl ResponsesObject {
     /// > The Responses Object MUST contain at least one response code,
     /// > and it SHOULD be the response for a successful operation call.
-    pub fn new(responses: Vec<(ResponseSpecifier, ResponseCase)>) -> Result<Output<Self>> {
-        // TODO: check if this has at least one status code
-        if responses.is_empty() {
-            return Err(EmptyResponses)?;
-        }
-        let (responses, duplicated_names) = responses.partition_unique_by_key();
-        let errors = if duplicated_names.is_empty() {
-            vec![]
-        } else {
-            let err = DuplicatedResponseSpecifier {
-                fields: duplicated_names.dedup_keys(),
-            };
-            vec![err.into()]
-        };
+    pub fn new(responses: Vec<Pair>) -> Result<Output<Self>> {
+        let (responses, errors) = dedup(responses);
+        ensure_status_code(&responses)?;
         Ok(Output::new(ResponsesObject { responses }, errors))
     }
 
@@ -37,6 +28,30 @@ impl ResponsesObject {
             .transpose()
             .map(|output| output.flatten())
     }
+}
+
+fn dedup(responses: Vec<Pair>) -> (Vec<Pair>, Vec<Error>) {
+    let (responses, duplicated_names) = responses.partition_unique_by_key();
+    let errors = if duplicated_names.is_empty() {
+        vec![]
+    } else {
+        let err = DuplicatedResponseSpecifier {
+            fields: duplicated_names.dedup_keys(),
+        };
+        vec![err.into()]
+    };
+    (responses, errors)
+}
+
+fn ensure_status_code(response: &[Pair]) -> Result<()> {
+    let has_status_code = response
+        .iter()
+        .any(|(x, _)| matches!(x, ResponseSpecifier::HttpStatusCode(_)));
+
+    if !has_status_code {
+        Err(NoResponseCode)?;
+    }
+    Ok(())
 }
 
 /// Response Object | Reference Object
@@ -49,7 +64,7 @@ pub enum ResponseCase {
 #[derive(Debug)]
 pub struct ResponseObject {}
 
-fn to_response_pair(kv: (String, YamlMap)) -> Result<Output<(ResponseSpecifier, ResponseCase)>> {
+fn to_response_pair(kv: (String, YamlMap)) -> Result<Output<Pair>> {
     let (field, map) = kv;
     let specifier = ResponseSpecifier::from_string(field)?;
     let output = to_response_case(map)?.map(|case| (specifier, case));
