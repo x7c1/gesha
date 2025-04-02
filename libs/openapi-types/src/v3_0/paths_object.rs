@@ -13,7 +13,7 @@ pub struct PathsObject(Vec<(PathFieldName, PathItemObject)>);
 impl PathsObject {
     /// > The Paths MAY be empty, due to ACL constraints.
     pub fn new(paths: Vec<(PathFieldName, PathItemObject)>) -> Output<Self> {
-        let (paths, duplicated_names) = paths.partition_dedup_by_key();
+        let (paths, duplicated_names) = paths.partition_unique_by_key();
         let errors = if duplicated_names.is_empty() {
             vec![]
         } else {
