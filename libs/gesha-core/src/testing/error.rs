@@ -12,7 +12,9 @@ pub enum Error {
         schema_path: PathBuf,
         cause: JoinError,
     },
-    ThreadNotFound(String),
+    TaskNotFound {
+        id: String,
+    },
     UnknownTestCase {
         path: String,
     },

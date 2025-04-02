@@ -1,4 +1,4 @@
-use crate::testing::Error::ThreadNotFound;
+use crate::testing::Error::TaskNotFound;
 use crate::testing::TestCase;
 use crate::{Error, Result, testing};
 use futures::future::join_all;
@@ -75,7 +75,7 @@ impl<A> TestCaseMap<A> {
     pub fn extract(&mut self, id: Id) -> Result<TestCase<A>> {
         self.0
             .remove(&id)
-            .ok_or_else(|| ThreadNotFound(id.to_string()).into())
+            .ok_or_else(|| TaskNotFound { id: id.to_string() }.into())
     }
 
     pub fn accumulate<B>(
