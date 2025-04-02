@@ -1,4 +1,5 @@
 use crate::ModuleName;
+use gesha_core::conversions::Error::InvalidToken;
 use gesha_core::conversions::Result;
 use heck::{ToSnakeCase, ToUpperCamelCase};
 use std::fmt::{Display, Formatter};
@@ -26,7 +27,11 @@ impl TypeIdentifier {
         if converted.starts_with(char::is_numeric) {
             converted = "_".to_string() + &converted;
         }
-        // TODO: return error if incompatible chars found
+        if converted.is_empty() || converted.chars().any(|c| !c.is_ascii()) {
+            return Err(InvalidToken {
+                target: a.to_string(),
+            });
+        }
         Ok(Self(converted))
     }
 
@@ -166,5 +171,14 @@ mod tests {
         let actual = TypeIdentifier::parse("%_42").unwrap();
         let expected = "PercentUnderscore42";
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn ng_with_non_ascii() {
+        let actual = match TypeIdentifier::parse("🔥") {
+            Err(InvalidToken { target }) => target,
+            other => panic!("expected error not returned but got: {other:?}"),
+        };
+        assert_eq!(actual, "🔥");
     }
 }

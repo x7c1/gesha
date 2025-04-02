@@ -1,5 +1,5 @@
 use crate::conversions::Error::FormatFailed;
-use crate::{conversions, io, testing};
+use crate::{conversions, io};
 use console::{Style, StyledObject};
 use gesha_collections::partial_result::PartialResult;
 use std::path::PathBuf;
@@ -25,7 +25,7 @@ pub enum Error {
     Multiple(Vec<Self>),
 
     #[cfg(feature = "testing")]
-    Testing(testing::Error),
+    Testing(crate::testing::Error),
 }
 
 impl Error {
@@ -54,7 +54,7 @@ impl Error {
                 .join("\n"),
 
             #[cfg(feature = "testing")]
-            Error::Testing(testing::Error::DiffDetected {
+            Error::Testing(crate::testing::Error::DiffDetected {
                 output,
                 actual,
                 expected,
