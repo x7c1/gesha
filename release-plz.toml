@@ -10,16 +10,12 @@ name = "gesha"
 publish = true
 release = true
 changelog_include = [
-    "openapi-types",
+    "gesha-collections",
     "gesha-core",
     "gesha-rust-shapes",
     "gesha-rust-types",
+    "openapi-types",
 ]
-
-[[package]]
-name = "openapi-types"
-publish = true
-release = true
 
 [[package]]
 name = "gesha-collections"
@@ -43,5 +39,10 @@ release = true
 
 [[package]]
 name = "gesha-macros"
+publish = true
+release = true
+
+[[package]]
+name = "openapi-types"
 publish = true
 release = true
