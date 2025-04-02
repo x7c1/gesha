@@ -27,7 +27,7 @@ impl TypeIdentifier {
         if converted.starts_with(char::is_numeric) {
             converted = "_".to_string() + &converted;
         }
-        if converted.is_empty() || converted.chars().any(|c| !c.is_ascii()) {
+        if converted.is_empty() || !converted.is_ascii() {
             return Err(InvalidToken {
                 target: a.to_string(),
             });
