@@ -1,5 +1,4 @@
-use crate::Error::Testing;
-use crate::{conversions, testing};
+use crate::{conversions, io, testing};
 use console::{Style, StyledObject};
 use gesha_collections::partial_result::PartialResult;
 use std::path::PathBuf;
@@ -24,23 +23,9 @@ pub enum Error {
         path: PathBuf,
         detail: String,
     },
-    CannotCreateFile {
-        path: PathBuf,
-        detail: String,
-    },
-    CannotReadFile {
-        path: PathBuf,
-        detail: String,
-    },
-    CannotCopyFile {
-        from: PathBuf,
-        to: PathBuf,
-        detail: String,
-    },
-    CannotRender {
-        path: PathBuf,
-        detail: String,
-    },
+
+    Io(io::Error),
+
     Multiple(Vec<Self>),
 
     #[cfg(feature = "testing")]
@@ -50,22 +35,6 @@ pub enum Error {
 impl Error {
     pub fn detail(&self, theme: ErrorTheme) -> String {
         match self {
-            #[cfg(feature = "testing")]
-            Testing(testing::Error::DiffDetected {
-                output,
-                actual,
-                expected,
-            }) => {
-                let style = theme.diff_style();
-                format!(
-                    "\n {: <10} : {}\n {} : {}\n\n{}",
-                    style.src_lines,
-                    actual.to_string_lossy(),
-                    style.dst_lines,
-                    expected.to_string_lossy(),
-                    output
-                )
-            }
             Error::FormatFailed { detail, .. } => {
                 format!("rustfmt>\n{}", detail)
             }
@@ -85,6 +54,22 @@ impl Error {
                 .collect::<Vec<_>>()
                 .join("\n"),
 
+            #[cfg(feature = "testing")]
+            Error::Testing(testing::Error::DiffDetected {
+                output,
+                actual,
+                expected,
+            }) => {
+                let style = theme.diff_style();
+                format!(
+                    "\n {: <10} : {}\n {} : {}\n\n{}",
+                    style.src_lines,
+                    actual.to_string_lossy(),
+                    style.dst_lines,
+                    expected.to_string_lossy(),
+                    output
+                )
+            }
             _ => {
                 format!("{:#?}", self)
             }
