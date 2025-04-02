@@ -42,7 +42,6 @@ pub enum Error {
         detail: String,
     },
     Errors(Vec<Self>),
-    UnsupportedExampleLocation(String),
 
     #[cfg(feature = "testing")]
     Testing(testing::Error),
