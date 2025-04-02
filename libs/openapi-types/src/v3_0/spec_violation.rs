@@ -1,9 +1,12 @@
-use crate::v3_0::PathFieldName;
+use crate::v3_0::{PathFieldName, ResponseSpecifier};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum SpecViolation {
     DuplicatedPathFieldName {
         fields: Vec<PathFieldName>,
+    },
+    DuplicatedResponseSpecifier {
+        fields: Vec<ResponseSpecifier>,
     },
 
     /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#responses-object

@@ -1,7 +1,8 @@
-use crate::v3_0::SpecViolation::EmptyResponses;
+use crate::v3_0::SpecViolation::{DuplicatedResponseSpecifier, EmptyResponses};
 use crate::v3_0::yaml_extractor::collect;
 use crate::v3_0::{ReferenceObject, ResponseSpecifier};
 use crate::{Output, Result};
+use gesha_collections::seq::VecPairs;
 use gesha_collections::yaml::YamlMap;
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#responses-object
@@ -13,17 +14,28 @@ pub struct ResponsesObject {
 impl ResponsesObject {
     /// > The Responses Object MUST contain at least one response code,
     /// > and it SHOULD be the response for a successful operation call.
-    pub fn new(responses: Vec<(ResponseSpecifier, ResponseCase)>) -> Result<Self> {
+    pub fn new(responses: Vec<(ResponseSpecifier, ResponseCase)>) -> Result<Output<Self>> {
+        // TODO: check if this has at least one status code
         if responses.is_empty() {
             return Err(EmptyResponses)?;
         }
-        Ok(ResponsesObject { responses })
+        let (responses, duplicated_names) = responses.partition_unique_by_key();
+        let errors = if duplicated_names.is_empty() {
+            vec![]
+        } else {
+            let err = DuplicatedResponseSpecifier {
+                fields: duplicated_names.dedup_keys(),
+            };
+            vec![err.into()]
+        };
+        Ok(Output::new(ResponsesObject { responses }, errors))
     }
 
     pub fn from_yaml_map(map: YamlMap) -> Result<Output<Self>> {
-        let (tuples, errors) = collect(to_response_pair)(map).into_tuple();
-        let object = ResponsesObject::new(tuples)?;
-        Ok(Output::new(object, errors))
+        collect(to_response_pair)(map)
+            .map(Self::new)
+            .transpose()
+            .map(|output| output.flatten())
     }
 }
 

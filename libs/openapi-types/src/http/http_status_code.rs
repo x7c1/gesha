@@ -12,7 +12,7 @@ use crate::{Error, Result, http};
 /// ## IANA HTTP Status Codes
 /// https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
 /// > The status code of a response is a three-digit integer code
-#[derive(Debug)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub struct HttpStatusCode(String);
 
 impl HttpStatusCode {
