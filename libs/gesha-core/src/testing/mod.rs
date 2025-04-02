@@ -3,6 +3,9 @@ pub mod v3_0;
 mod diff;
 pub use diff::detect_diff;
 
+mod error;
+pub use error::Error;
+
 mod init;
 pub use init::init;
 

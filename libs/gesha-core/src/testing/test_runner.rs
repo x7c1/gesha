@@ -1,7 +1,9 @@
 use crate::conversions::Generator;
 use crate::io::Writer;
+use crate::testing::Error::DiffDetected;
 use crate::testing::{TestCase, TestCaseIndex, TestDefinition, detect_diff, run_parallel};
 use crate::{Error, ErrorTheme, Result};
+use Error::Testing;
 use std::fmt::Debug;
 use tracing::{info, instrument};
 
@@ -104,12 +106,12 @@ where
             Writer::new(&case.example).touch()?;
         }
 
-        // Unlike run_single(), case.example represents the actual file,
+        // Unlike run_single_test(), case.example represents the actual file,
         // while case.output modified represents the expected file.
         let result = detect_diff(&case.example, &case.output);
         match result {
             Ok(_) => Ok(None),
-            Err(e @ Error::DiffDetected { .. }) => Ok(Some(ModifiedTestCase {
+            Err(e @ Testing(DiffDetected { .. })) => Ok(Some(ModifiedTestCase {
                 target: case,
                 diff: e.detail(ErrorTheme::Overwrite),
             })),

@@ -1,5 +1,5 @@
-use crate::Error::UnknownTestCase;
 use crate::conversions::Converter;
+use crate::testing::Error::UnknownTestCase;
 use crate::testing::{TestCase, TestCaseIndex};
 
 pub trait TestDefinition: Converter {
@@ -20,11 +20,14 @@ pub trait TestDefinition: Converter {
     /// Get a test case by its path.
     /// If the test case does not exist, return an error.
     fn require_test_case(&self, path: &str) -> Result<TestCase<Self>, crate::Error> {
-        self.list_test_cases()
+        let case = self
+            .list_test_cases()
             .into_iter()
             .find(|case| case.schema.as_os_str() == path)
             .ok_or_else(|| UnknownTestCase {
                 path: path.to_string(),
-            })
+            })?;
+
+        Ok(case)
     }
 }

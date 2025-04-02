@@ -1,6 +1,6 @@
-use crate::Error::DiffDetected;
 use crate::Result;
 use crate::io::Reader;
+use crate::testing::Error::DiffDetected;
 use console::Style;
 use similar::{Change, ChangeTag, TextDiff};
 use std::fmt::Debug;
@@ -20,7 +20,7 @@ where
             output: diff.output,
             actual: src.as_ref().into(),
             expected: dst.as_ref().into(),
-        })
+        })?
     } else {
         Ok(())
     }

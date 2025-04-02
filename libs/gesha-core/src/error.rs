@@ -1,8 +1,8 @@
-use crate::conversions;
+use crate::Error::Testing;
+use crate::{conversions, testing};
 use console::{Style, StyledObject};
 use gesha_collections::partial_result::PartialResult;
 use std::path::PathBuf;
-use tokio::task::JoinError;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
@@ -10,10 +10,6 @@ pub type Output<A> = PartialResult<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {
-    UnknownTestCase {
-        path: String,
-    },
-
     // inherited errors
     OpenApiTypes {
         path: PathBuf,
@@ -24,18 +20,6 @@ pub enum Error {
         cause: conversions::Error,
     },
 
-    // thread errors
-    JoinError {
-        schema_path: PathBuf,
-        cause: JoinError,
-    },
-
-    // module errors
-    DiffDetected {
-        output: String,
-        actual: PathBuf,
-        expected: PathBuf,
-    },
     FormatFailed {
         path: PathBuf,
         detail: String,
@@ -58,18 +42,21 @@ pub enum Error {
         detail: String,
     },
     Errors(Vec<Self>),
-    ThreadNotFound(String),
     UnsupportedExampleLocation(String),
+
+    #[cfg(feature = "testing")]
+    Testing(testing::Error),
 }
 
 impl Error {
     pub fn detail(&self, theme: ErrorTheme) -> String {
         match self {
-            Error::DiffDetected {
+            #[cfg(feature = "testing")]
+            Testing(testing::Error::DiffDetected {
                 output,
                 actual,
                 expected,
-            } => {
+            }) => {
                 let style = theme.diff_style();
                 format!(
                     "\n {: <10} : {}\n {} : {}\n\n{}",
