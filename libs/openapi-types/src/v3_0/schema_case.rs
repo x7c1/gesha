@@ -2,7 +2,7 @@ use crate::v3_0::yaml_extractor::reify_value;
 use crate::v3_0::{ComponentName, ReferenceObject, SchemaObject};
 use crate::{Output, Result, by_key};
 use gesha_collections::partial_result::MergeOps;
-use gesha_collections::seq::TryMap;
+use gesha_collections::seq::TryMapOps;
 use gesha_collections::yaml::{YamlArray, YamlMap, YamlMapExt};
 
 pub type NamedSchemaCase = (ComponentName, SchemaCase);

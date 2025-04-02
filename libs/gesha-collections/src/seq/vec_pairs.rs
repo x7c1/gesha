@@ -2,7 +2,7 @@ use crate::default::default;
 use indexmap::{IndexMap, IndexSet};
 use std::hash::Hash;
 
-pub trait VecPairs<K, V> {
+pub trait VecPairsOps<K, V> {
     /// Splits key-value pairs into unique pairs and duplicate pairs.
     ///
     /// Returns a tuple where:
@@ -17,7 +17,7 @@ pub trait VecPairs<K, V> {
     fn dedup_keys(self) -> Vec<K>;
 }
 
-impl<K, V> VecPairs<K, V> for Vec<(K, V)>
+impl<K, V> VecPairsOps<K, V> for Vec<(K, V)>
 where
     K: PartialEq + Eq + Hash,
 {

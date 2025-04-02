@@ -1,7 +1,7 @@
 use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::schemas::{DefinitionShape, FieldShape, StructShape};
 use DefinitionShape::{AllOf, Mod};
-use gesha_collections::seq::MapCollect;
+use gesha_collections::seq::MapCollectOps;
 use gesha_core::conversions::Result;
 
 pub fn convert_all_of(mut shapes: ComponentsShape) -> Result<ComponentsShape> {

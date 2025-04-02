@@ -3,7 +3,7 @@ use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::schemas::{
     DefinitionShape, InlineSchema, InlineShape, OneOfShape, TypeShape,
 };
-use gesha_collections::seq::MapCollect;
+use gesha_collections::seq::MapCollectOps;
 use gesha_core::conversions::Result;
 
 /// If `oneOf` has only one $ref,

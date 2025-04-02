@@ -2,7 +2,7 @@ use crate::v3_0::components::request_bodies::{
     ContentShape, DefinitionShape, MediaTypeShape, ModShape,
 };
 use gesha_collections::partial_result::MergeOps;
-use gesha_collections::seq::TryMap;
+use gesha_collections::seq::TryMapOps;
 use gesha_core::conversions::{Output, Result};
 use gesha_rust_types::{DocComments, EnumVariantName, MediaTypeDef, ModDef, TypeIdentifier};
 use indexmap::IndexMap;

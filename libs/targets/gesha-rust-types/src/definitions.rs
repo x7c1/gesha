@@ -1,5 +1,5 @@
 use crate::Definition;
-use gesha_collections::seq::TryMap;
+use gesha_collections::seq::TryMapOps;
 use gesha_core::conversions::Result;
 use gesha_core::{broken_defs, conversions};
 

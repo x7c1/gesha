@@ -2,7 +2,7 @@ use crate::v3_0::components::schemas::{
     AllOfShape, EnumShape, FieldShape, ModShape, NewTypeShape, OneOfShape, RefShape, StructShape,
     TypeHeaderShape, TypeShape,
 };
-use gesha_collections::seq::TryMap;
+use gesha_collections::seq::TryMapOps;
 use gesha_core::broken;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{Definition, DeriveAttribute, NewTypeDef, StructDef};

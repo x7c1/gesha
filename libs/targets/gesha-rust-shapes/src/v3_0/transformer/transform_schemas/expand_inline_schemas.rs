@@ -4,8 +4,8 @@ use crate::v3_0::components::schemas::{
     NewTypeShape, OneOfShape, Optionality, StructShape, TypeHeaderShape, TypePath, TypeShape,
 };
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
-use gesha_collections::seq::MapCollect;
-use gesha_collections::seq::TryMap;
+use gesha_collections::seq::MapCollectOps;
+use gesha_collections::seq::TryMapOps;
 use gesha_core::conversions::{Result, by_key};
 use gesha_rust_types::{ModuleName, TypeIdentifier};
 use std::ops::Not;

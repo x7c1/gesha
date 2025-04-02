@@ -2,7 +2,7 @@ use crate::v3_0::SpecViolation::DuplicatedPathFieldName;
 use crate::v3_0::yaml_extractor::collect;
 use crate::v3_0::{PathFieldName, PathItemObject};
 use crate::{Error, Output};
-use gesha_collections::seq::VecPairs;
+use gesha_collections::seq::VecPairsOps;
 use gesha_collections::yaml::YamlMap;
 
 type Pair = (PathFieldName, PathItemObject);

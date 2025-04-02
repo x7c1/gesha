@@ -1,7 +1,7 @@
 use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::schemas::{DefinitionShape, FieldShape};
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
-use gesha_collections::seq::{MapCollect, TryMap};
+use gesha_collections::seq::{MapCollectOps, TryMapOps};
 use gesha_core::broken;
 use gesha_core::conversions::Result;
 

@@ -2,7 +2,7 @@ use crate::v3_0::SpecViolation::{DuplicatedResponseSpecifier, NoResponseCode};
 use crate::v3_0::yaml_extractor::collect;
 use crate::v3_0::{ReferenceObject, ResponseSpecifier};
 use crate::{Error, Output, Result};
-use gesha_collections::seq::VecPairs;
+use gesha_collections::seq::VecPairsOps;
 use gesha_collections::yaml::YamlMap;
 
 type Pair = (ResponseSpecifier, ResponseCase);
