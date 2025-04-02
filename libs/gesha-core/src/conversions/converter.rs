@@ -15,5 +15,5 @@ pub trait Converter: Debug + Clone + Sized + Send + Sync + 'static {
     fn convert(&self, src: Self::OpenApiType) -> Result<Output<Self::TargetType>>;
 
     /// Format the code in the given path.
-    fn format_code(&self, path: &Path) -> crate::Result<String>;
+    fn format_code(&self, path: &Path) -> Result<String>;
 }

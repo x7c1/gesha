@@ -1,6 +1,6 @@
 use crate::conversions::Converter;
 use crate::io::{Reader, Writer};
-use crate::{Output, Result};
+use crate::{Error, Output, Result};
 use std::path::PathBuf;
 use tracing::debug;
 
@@ -24,7 +24,11 @@ impl<'a, A: Converter> Generator<'a, A> {
         let writer = Writer::new(&self.output);
         writer.write_code(target)?;
 
-        let output = self.converter.format_code(&self.output)?;
+        let output = self
+            .converter
+            .format_code(&self.output)
+            .map_err(Error::conversion(self.output.clone()))?;
+
         debug!("format>\n{}", output);
 
         Ok(Output::new((), errors))
@@ -34,7 +38,11 @@ impl<'a, A: Converter> Generator<'a, A> {
         let writer = Writer::new(&self.output);
         writer.write_code(target)?;
 
-        let output = self.converter.format_code(&self.output)?;
+        let output = self
+            .converter
+            .format_code(&self.output)
+            .map_err(Error::conversion(self.output.clone()))?;
+
         debug!("format>\n{}", output);
         Ok(())
     }

@@ -3,8 +3,8 @@ use crate::v3_0::components::core::CoreShape;
 use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::SchemasShape;
 use crate::v3_0::transformer::transform;
-use gesha_core::Error::FormatFailed;
 use gesha_core::conversions;
+use gesha_core::conversions::Error::FormatFailed;
 use gesha_core::conversions::{Output, Result, by_key, with_key};
 use gesha_rust_types::NonDocComments;
 use openapi_types::v3_0;
@@ -29,7 +29,7 @@ impl conversions::Converter for DocumentConverter {
         Ok(output)
     }
 
-    fn format_code(&self, path: &Path) -> gesha_core::Result<String> {
+    fn format_code(&self, path: &Path) -> Result<String> {
         format_code(path)
     }
 }
@@ -72,13 +72,12 @@ pub(crate) fn generate_components_code(
         .bind_errors(with_key("components"))
 }
 
-pub(crate) fn format_code(path: &Path) -> gesha_core::Result<String> {
+pub(crate) fn format_code(path: &Path) -> Result<String> {
     let output = Command::new("rustfmt")
         .arg("--verbose")
         .arg(path)
         .output()
         .map_err(|e| FormatFailed {
-            path: path.into(),
             detail: format!("{:?}", e),
         })?;
 
@@ -86,7 +85,6 @@ pub(crate) fn format_code(path: &Path) -> gesha_core::Result<String> {
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     } else {
         Err(FormatFailed {
-            path: path.into(),
             detail: String::from_utf8_lossy(&output.stderr).to_string(),
         })
     }

@@ -1,3 +1,4 @@
+use crate::conversions::Error::FormatFailed;
 use crate::{conversions, io, testing};
 use console::{Style, StyledObject};
 use gesha_collections::partial_result::PartialResult;
@@ -9,19 +10,14 @@ pub type Output<A> = PartialResult<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {
-    // inherited errors
     OpenApiTypes {
         path: PathBuf,
         cause: openapi_types::Error,
     },
+
     Conversion {
         path: PathBuf,
         cause: conversions::Error,
-    },
-
-    FormatFailed {
-        path: PathBuf,
-        detail: String,
     },
 
     Io(io::Error),
@@ -35,7 +31,10 @@ pub enum Error {
 impl Error {
     pub fn detail(&self, theme: ErrorTheme) -> String {
         match self {
-            Error::FormatFailed { detail, .. } => {
+            Error::Conversion {
+                cause: FormatFailed { detail },
+                ..
+            } => {
                 format!("rustfmt>\n{}", detail)
             }
             Error::Conversion {

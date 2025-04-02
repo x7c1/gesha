@@ -11,21 +11,33 @@ pub enum Error {
         key: String,
         causes: Vec<Error>,
     },
+
+    /// Cause: Client
+    /// - `rustfmt` is missing.
+    ///
+    /// Cause: Internal
+    /// - The generated code is malformed.
+    FormatFailed {
+        detail: String,
+    },
+
     Multiple {
         causes: Vec<Error>,
     },
 
-    /// ## Client Error
-    /// e.g. a reference to a schema that does not exist.
+    /// Cause: Client
+    /// - References a schema that does not exist.
     ReferenceObjectNotFound(String),
 
-    /// ## Internal Error
-    /// e.g. a shape that has not been processed.
+    /// Cause: Internal
+    /// - a shape that has not been processed correctly.
     TransformBroken {
         detail: String,
     },
 
-    /// ## Internal Error
+    /// Cause: Internal
+    /// - The property is not supported.
+    /// - The property is unimplemented in the current version.
     Unimplemented {
         message: String,
     },
