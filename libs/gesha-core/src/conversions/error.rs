@@ -87,10 +87,11 @@ macro_rules! broken {
 
 #[macro_export]
 macro_rules! broken_defs {
-    () => {
-        |cause| $crate::conversions::Error::TransformBroken {
+    ($name: expr) => {
+        $crate::conversions::Error::TransformBroken {
             detail: format!(
-                "unprocessed defs found:\n  at {file}:{line}\n{cause:#?}",
+                "unprocessed defs found: {name}\n  at {file}:{line}",
+                name = $name,
                 file = file!(),
                 line = line!(),
             ),

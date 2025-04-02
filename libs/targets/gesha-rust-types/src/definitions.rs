@@ -1,5 +1,6 @@
-use crate::{Definition, Error};
-use Error::DefinitionAlreadyExists;
+use crate::Definition;
+use gesha_core::conversions::Result;
+use gesha_core::{broken_defs, conversions};
 
 #[derive(Clone, Debug, PartialEq, Default)]
 pub struct Definitions(Vec<Definition>);
@@ -13,16 +14,14 @@ impl Definitions {
         self.0.is_empty()
     }
 
-    /// Return `DefinitionAlreadyExists`
+    /// Return `gesha_core::conversions::Error::TransformBroken`
     /// if a definition with the same name has already been pushed.
-    pub fn set<A: Into<Definition>>(&mut self, def: A) -> crate::Result<()> {
+    pub fn set<A: Into<Definition>>(&mut self, def: A) -> Result<()> {
         let def = def.into();
         let name = def.symbol_name();
 
         if self.already_pushed(def.symbol_name()) {
-            return Err(DefinitionAlreadyExists {
-                name: name.to_string(),
-            });
+            return Err(broken_defs!(name.to_string()));
         }
         self.0.push(def);
         Ok(())
@@ -32,13 +31,13 @@ impl Definitions {
         self.0.iter()
     }
 
-    pub fn from<A, E>(xs: Vec<A>) -> Result<Self, E>
+    pub fn from<A>(xs: Vec<A>) -> Result<Self>
     where
-        A: TryInto<Definition, Error = E>,
+        A: TryInto<Definition, Error = conversions::Error>,
     {
         xs.into_iter()
             .map(|x| x.try_into())
-            .collect::<Result<Vec<_>, E>>()
+            .collect::<Result<Vec<_>>>()
             .map(Self)
     }
 
