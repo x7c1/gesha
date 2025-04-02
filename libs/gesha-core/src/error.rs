@@ -41,7 +41,7 @@ pub enum Error {
         path: PathBuf,
         detail: String,
     },
-    Errors(Vec<Self>),
+    Multiple(Vec<Self>),
 
     #[cfg(feature = "testing")]
     Testing(testing::Error),
@@ -79,7 +79,7 @@ impl Error {
                     detail,
                 )
             }
-            Error::Errors(errors) => errors
+            Error::Multiple(errors) => errors
                 .iter()
                 .map(|e| e.detail(theme))
                 .collect::<Vec<_>>()

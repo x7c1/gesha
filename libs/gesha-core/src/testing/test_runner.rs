@@ -30,7 +30,7 @@ where
         if errors.is_empty() {
             Ok(())
         } else {
-            Err(Error::Errors(errors))
+            Err(Error::Multiple(errors))
         }
     }
 
@@ -53,7 +53,7 @@ where
         if errors.is_empty() {
             Ok(outputs)
         } else {
-            Err(Error::Errors(errors))
+            Err(Error::Multiple(errors))
         }
     }
 
@@ -82,7 +82,7 @@ where
         Generator::new(&self.0, &case.output)
             .generate_from_file(&case.schema)?
             .to_result()
-            .map_err(Error::Errors)?;
+            .map_err(Error::Multiple)?;
 
         detect_diff(&case.output, &case.example)?;
         info!("passed: {path}", path = case.schema.to_string_lossy());
