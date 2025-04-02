@@ -21,9 +21,7 @@ pub enum Error {
         detail: String,
     },
 
-    Multiple {
-        causes: Vec<Error>,
-    },
+    Multiple(Vec<Error>),
 
     /// Cause: Client
     /// - References a schema that does not exist.
@@ -62,7 +60,7 @@ impl From<Vec<Error>> for Error {
         if causes.len() == 1 {
             causes.remove(0)
         } else {
-            Error::Multiple { causes }
+            Error::Multiple(causes)
         }
     }
 }

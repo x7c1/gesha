@@ -40,7 +40,7 @@ macro_rules! generate {
         pub fn format_error(err: Error, mut keys: Vec<String>) -> Vec<String> {
             let mut lines = vec![];
             match err {
-                Error::Multiple { causes } => {
+                Error::Multiple(causes) => {
                     let mut next_lines = causes
                         .into_iter()
                         .flat_map(|e| format_error(e, keys.clone()))

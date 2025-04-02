@@ -11,7 +11,7 @@ pub type Output<A> = PartialResult<A, Error>;
 #[derive(Debug)]
 pub enum Error {
     Enclosed { key: String, causes: Vec<Error> },
-    Multiple { causes: Vec<Error> },
+    Multiple(Vec<Error>),
     SpecViolation(SpecViolation),
     Unsupported(Unsupported),
     YamlLoader(YamlLoaderError),
@@ -22,7 +22,7 @@ impl Error {
         if causes.len() == 1 {
             causes.remove(0)
         } else {
-            Self::Multiple { causes }
+            Self::Multiple(causes)
         }
     }
 }
@@ -32,7 +32,7 @@ impl From<Vec<Error>> for Error {
         if causes.len() == 1 {
             causes.remove(0)
         } else {
-            Error::Multiple { causes }
+            Error::Multiple(causes)
         }
     }
 }
