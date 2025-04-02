@@ -65,7 +65,7 @@ mod required_schema_fields;
 pub use required_schema_fields::RequiredSchemaFields;
 
 mod responses_object;
-pub use responses_object::{HttpStatusCode, ResponseCase, ResponseObject, ResponsesObject};
+pub use responses_object::{ResponseCase, ResponseObject, ResponsesObject};
 
 mod schema_case;
 pub use schema_case::SchemaCase;

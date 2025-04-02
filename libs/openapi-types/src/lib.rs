@@ -1,3 +1,4 @@
+pub mod http;
 pub mod json_schema;
 pub mod openapi;
 pub mod v3_0;

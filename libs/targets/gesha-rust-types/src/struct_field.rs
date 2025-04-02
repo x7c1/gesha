@@ -1,11 +1,12 @@
-use crate::{DataType, StructFieldName};
+use crate::{DataType, DocComments, StructFieldName};
 use std::fmt::{Display, Formatter};
 
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct StructField {
     pub name: StructFieldName,
     pub data_type: DataType,
     pub attributes: Vec<StructFieldAttribute>,
+    pub doc_comments: Option<DocComments>,
     _hide_default_constructor: bool,
 }
 
@@ -14,17 +15,19 @@ impl StructField {
         name: StructFieldName,
         data_type: DataType,
         attributes: Vec<StructFieldAttribute>,
+        doc_comments: Option<DocComments>,
     ) -> Self {
         Self {
             name,
             data_type,
             attributes,
+            doc_comments,
             _hide_default_constructor: true,
         }
     }
 }
 
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct StructFieldAttribute(String);
 
 impl StructFieldAttribute {

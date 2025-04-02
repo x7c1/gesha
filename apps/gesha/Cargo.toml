@@ -2,10 +2,19 @@
 name = "gesha"
 version = "0.0.10"
 description = "Generates code based on OpenAPI specs"
-repository = "https://github.com/x7c1/gesha/tree/main/apps/gesha"
+repository = "https://github.com/x7c1/gesha"
 license = "MIT"
 edition = "2024"
-
+keywords = [
+    "openapi",
+    "codegen",
+    "generator",
+]
+categories = [
+    "command-line-utilities",
+    "development-tools",
+    "web-programming",
+]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

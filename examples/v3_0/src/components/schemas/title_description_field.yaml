@@ -1,0 +1,44 @@
+schemas:
+  HasTitle:
+    type: object
+    properties:
+      x1:
+        type: integer
+        title: title1
+      x2:
+        type: integer
+        title: title2
+
+  HasDescription:
+    type: object
+    properties:
+      name:
+        type: string
+        description: description1
+
+  WithWhiteSpaces:
+    type: object
+    properties:
+      id:
+        title: |
+
+
+          title1
+
+
+        description: |
+
+
+          description1
+
+
+        type: integer
+
+  HasLineBreak:
+    type: object
+    properties:
+      foo:
+        type: integer
+        title: The quick brown fox jumps over the lazy dog.
+        description: |
+          The quick brown fox jumps over the lazy dog.

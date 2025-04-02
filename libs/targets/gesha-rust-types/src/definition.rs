@@ -1,7 +1,4 @@
-use crate::{
-    DataType, Definitions, EnumDef, ErrorDef, Imports, MediaTypeDef, ModuleName, RequestBodyDef,
-    StructField, TypeHeader,
-};
+use crate::{DataType, EnumDef, ModDef, NewTypeDef, PresetDef, RequestBodyDef, StructDef};
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Definition {
@@ -27,78 +24,20 @@ impl Definition {
             Definition::ModDef(_) => false,
         }
     }
-}
 
-#[derive(Clone, Debug, PartialEq)]
-pub enum PresetDef {
-    Error(ErrorDef),
-    /// rf. https://stackoverflow.com/q/44331037
-    Patch,
-    MediaType(MediaTypeDef),
-    FromJson,
-}
-
-impl From<PresetDef> for Definition {
-    fn from(this: PresetDef) -> Self {
-        Definition::PresetDef(this)
-    }
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct StructDef {
-    pub header: TypeHeader,
-    pub fields: Vec<StructField>,
-    _hide_default_constructor: bool,
-}
-
-impl StructDef {
-    pub fn new(header: TypeHeader, fields: Vec<StructField>) -> Self {
-        Self {
-            header,
-            fields,
-            _hide_default_constructor: true,
+    /// Return the symbol name of the definition.
+    ///
+    /// e.g.
+    /// - struct Foo -> "Foo"
+    /// - mod bar -> "bar"
+    pub fn symbol_name(&self) -> &str {
+        match self {
+            Definition::StructDef(x) => x.symbol_name(),
+            Definition::NewTypeDef(x) => x.symbol_name(),
+            Definition::EnumDef(x) => x.symbol_name(),
+            Definition::PresetDef(x) => x.symbol_name(),
+            Definition::RequestBodyDef(x) => x.symbol_name(),
+            Definition::ModDef(x) => x.symbol_name(),
         }
-    }
-}
-
-impl From<StructDef> for Definition {
-    fn from(x: StructDef) -> Self {
-        Self::StructDef(x)
-    }
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct NewTypeDef {
-    pub header: TypeHeader,
-    pub data_type: DataType,
-    _hide_default_constructor: bool,
-}
-
-impl NewTypeDef {
-    pub fn new(header: TypeHeader, data_type: DataType) -> Self {
-        Self {
-            header,
-            data_type,
-            _hide_default_constructor: true,
-        }
-    }
-}
-
-impl From<NewTypeDef> for Definition {
-    fn from(x: NewTypeDef) -> Self {
-        Self::NewTypeDef(x)
-    }
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ModDef {
-    pub name: ModuleName,
-    pub imports: Imports,
-    pub defs: Definitions,
-}
-
-impl From<ModDef> for Definition {
-    fn from(this: ModDef) -> Self {
-        Self::ModDef(this)
     }
 }

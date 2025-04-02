@@ -25,6 +25,7 @@ pub fn schemas_files() -> Vec<&'static str> {
         "all_of_ref.yaml",
         "camel_case_fields.yaml",
         "title_description.yaml",
+        "title_description_field.yaml",
         "nullable_field.yaml",
         "object_inline.yaml",
         "object_inline_nested.yaml",

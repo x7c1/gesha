@@ -95,6 +95,7 @@ pub mod schemas {
     pub struct AllOfWithTitle {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub x1: Option<i64>,
+
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub x2: Option<i64>,
     }

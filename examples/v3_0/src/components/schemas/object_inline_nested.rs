@@ -8,6 +8,7 @@ pub mod schemas {
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub struct SamplePet {
         pub id: i64,
+
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub foo: Option<sample_pet::Foo>,
     }
@@ -28,6 +29,7 @@ pub mod schemas {
             #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
             pub struct RegisteredProfile {
                 pub name: String,
+
                 #[serde(default, skip_serializing_if = "Option::is_none")]
                 pub current_location: Option<registered_profile::CurrentLocation>,
             }

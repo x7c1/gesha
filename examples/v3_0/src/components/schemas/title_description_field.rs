@@ -6,34 +6,46 @@ pub mod schemas {
     use serde::Serialize;
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Base {
+    pub struct HasTitle {
+        /**
+        title1
+        */
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub x1: Option<String>,
+        pub x1: Option<i64>,
 
+        /**
+        title2
+        */
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub x2: Option<i64>,
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Extended {
-        pub x1: String,
-
+    pub struct HasDescription {
+        /**
+        description1
+        */
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub x2: Option<i64>,
-
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub foo: Option<String>,
+        pub name: Option<String>,
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct ExtendedMore {
-        pub x1: String,
-        pub x2: i64,
+    pub struct WithWhiteSpaces {
+        /**
+        title1
 
+        description1
+        */
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub foo: Option<String>,
+        pub id: Option<i64>,
+    }
 
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct HasLineBreak {
+        /**
+        The quick brown fox jumps over the lazy dog.
+        */
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub bar: Option<i64>,
+        pub foo: Option<i64>,
     }
 }

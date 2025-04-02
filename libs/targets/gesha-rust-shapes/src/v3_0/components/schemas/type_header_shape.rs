@@ -1,3 +1,4 @@
+use crate::v3_0::components::schemas::to_doc_comments;
 use gesha_rust_types::{DeriveAttribute, DocComments, SerdeAttribute, TypeHeader, TypeIdentifier};
 use openapi_types::v3_0::SchemaObject;
 
@@ -51,17 +52,6 @@ impl TypeHeaderShape {
     pub fn remove_derive_attrs(&mut self, attrs: &[DeriveAttribute]) {
         self.derive_attrs.retain(|attr| !attrs.contains(attr));
     }
-}
-
-fn to_doc_comments(title: Option<&str>, description: Option<&str>) -> Option<DocComments> {
-    let trim = |x: &str| x.trim().to_string();
-    let maybe = match (title.map(trim), description.map(trim)) {
-        (t, None) => t,
-        (None, d) => d,
-        (t, d) if t == d => t,
-        (Some(t), Some(d)) => Some(format!("{t}\n\n{d}")),
-    };
-    DocComments::wrap(maybe)
 }
 
 pub struct HeaderBody {

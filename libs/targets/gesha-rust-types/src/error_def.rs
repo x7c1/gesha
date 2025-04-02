@@ -17,6 +17,9 @@ impl ErrorDef {
     pub fn iter(&self) -> impl Iterator<Item = &ErrorVariant> {
         self.0.iter()
     }
+    pub fn symbol_name(&self) -> &str {
+        "Error"
+    }
 }
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]

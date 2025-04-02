@@ -1,5 +1,6 @@
 use gesha_collections::partial_result::PartialResult;
 use openapi_types::v3_0::OpenApiDataType;
+use std::fmt::Debug;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
@@ -71,6 +72,19 @@ macro_rules! broken {
                 file = file!(),
                 line = line!(),
                 shape = $shape,
+            ),
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! broken_defs {
+    () => {
+        |cause| $crate::conversions::Error::TransformBroken {
+            detail: format!(
+                "unprocessed defs found:\n  at {file}:{line}\n{cause:#?}",
+                file = file!(),
+                line = line!(),
             ),
         }
     };

@@ -9,6 +9,7 @@ pub mod schemas {
     pub struct Base {
         pub x1: String,
         pub x2: i64,
+
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub optional_value: Option<i64>,
     }
@@ -17,6 +18,7 @@ pub mod schemas {
     pub struct Extended {
         pub x1: extended::X1,
         pub x2: i64,
+
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub optional_value: Option<i64>,
     }

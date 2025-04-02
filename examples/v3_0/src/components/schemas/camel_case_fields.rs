@@ -9,6 +9,7 @@ pub mod schemas {
     pub struct CamelCaseFields {
         #[serde(rename = "lowerCamelCase")]
         pub lower_camel_case: String,
+
         #[serde(rename = "UpperCamelCase")]
         pub upper_camel_case: String,
     }
