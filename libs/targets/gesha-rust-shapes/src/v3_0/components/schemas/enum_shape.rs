@@ -15,14 +15,9 @@ pub struct EnumShape {
 
 impl EnumShape {
     pub fn new(header: TypeHeaderShape, values: EnumValues) -> Result<Self> {
-        let variants = values
-            .into_iter()
-            .map(to_enum_variant)
-            .collect::<Result<_>>()?;
-
         Ok(Self {
             header,
-            variants,
+            variants: values.try_map(to_enum_variant)?,
             macro_impl: None,
         })
     }

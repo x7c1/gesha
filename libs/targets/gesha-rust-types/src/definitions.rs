@@ -1,4 +1,5 @@
 use crate::Definition;
+use gesha_collections::seq::TryMap;
 use gesha_core::conversions::Result;
 use gesha_core::{broken_defs, conversions};
 
@@ -35,10 +36,7 @@ impl Definitions {
     where
         A: TryInto<Definition, Error = conversions::Error>,
     {
-        xs.into_iter()
-            .map(|x| x.try_into())
-            .collect::<Result<Vec<_>>>()
-            .map(Self)
+        xs.try_map(|x| x.try_into()).map(Self)
     }
 
     fn already_pushed(&self, name: &str) -> bool {

@@ -2,6 +2,7 @@ use crate::v3_0::components::request_bodies::{
     ContentShape, DefinitionShape, MediaTypeShape, ModShape,
 };
 use gesha_collections::partial_result::MergeOps;
+use gesha_collections::seq::TryMap;
 use gesha_core::conversions::{Output, Result};
 use gesha_rust_types::{DocComments, EnumVariantName, MediaTypeDef, ModDef, TypeIdentifier};
 use indexmap::IndexMap;
@@ -16,12 +17,7 @@ pub struct RequestBodiesShape {
 impl RequestBodiesShape {
     pub fn shape(maybe: Option<RequestBodiesObject>) -> Output<Self> {
         let (defs, errors) = if let Some(object) = maybe {
-            object
-                .into_iter()
-                .map(new)
-                .collect::<Vec<Result<_>>>()
-                .merge()
-                .into_tuple()
+            object.try_map(new).merge().into_tuple()
         } else {
             Default::default()
         };

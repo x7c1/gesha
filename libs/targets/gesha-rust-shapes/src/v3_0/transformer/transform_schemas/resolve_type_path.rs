@@ -3,7 +3,7 @@ use crate::v3_0::components::schemas::{
     DefinitionShape, FieldShape, Optionality, TypePath, TypeShape,
 };
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
-use gesha_collections::seq::MapCollect;
+use gesha_collections::seq::{MapCollect, TryMap};
 use gesha_core::broken;
 use gesha_core::conversions::Error::Unimplemented;
 use gesha_core::conversions::{Result, by_key};
@@ -76,10 +76,7 @@ impl Transformer<'_> {
     }
 
     fn transform_fields(&self, shapes: Vec<FieldShape>) -> Result<Vec<FieldShape>> {
-        shapes
-            .into_iter()
-            .map(|shape| self.transform_field(shape))
-            .collect()
+        shapes.try_map(|shape| self.transform_field(shape))
     }
 
     fn transform_field(&self, mut shape: FieldShape) -> Result<FieldShape> {

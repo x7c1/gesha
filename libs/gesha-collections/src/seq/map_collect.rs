@@ -1,4 +1,5 @@
 use crate::partial_result::{MergeOps, PartialResult};
+use crate::seq::TryMap;
 
 pub trait MapCollect<A, E> {
     fn map_collect<B>(self, f: impl FnMut(A) -> Result<B, E>) -> PartialResult<Vec<B>, E>;
@@ -6,9 +7,6 @@ pub trait MapCollect<A, E> {
 
 impl<A, E> MapCollect<A, E> for Vec<A> {
     fn map_collect<B>(self, f: impl FnMut(A) -> Result<B, E>) -> PartialResult<Vec<B>, E> {
-        self.into_iter()
-            .map(f)
-            .collect::<Vec<Result<B, E>>>()
-            .merge()
+        self.try_map(f).merge()
     }
 }
