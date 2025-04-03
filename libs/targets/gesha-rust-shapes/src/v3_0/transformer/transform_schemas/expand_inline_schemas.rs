@@ -6,7 +6,7 @@ use crate::v3_0::components::schemas::{
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 use gesha_collections::seq::MapCollectOps;
 use gesha_collections::seq::TryMapOps;
-use gesha_collections::tracking::WithKeyOps;
+use gesha_collections::tracking::WithContextOps;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{ModuleName, TypeIdentifier};
 use std::ops::Not;
@@ -28,11 +28,11 @@ fn expand(def: DefinitionShape) -> Result<Vec<DefinitionShape>> {
     match def {
         Struct(x) => {
             let name = x.header.name.clone();
-            expand_struct_fields(TypePath::new(), x).with_key(name)
+            expand_struct_fields(TypePath::new(), x).with_context(name)
         }
         AllOf(x) => {
             let name = x.header.name.clone();
-            expand_all_of_fields(TypePath::new(), x).with_key(name)
+            expand_all_of_fields(TypePath::new(), x).with_context(name)
         }
         OneOf(_) => {
             // inline definition in oneOf is not supported
@@ -40,7 +40,7 @@ fn expand(def: DefinitionShape) -> Result<Vec<DefinitionShape>> {
         }
         NewType(x) => {
             let name = x.header.name.clone();
-            expand_newtype_field(TypePath::new(), x).with_key(name)
+            expand_newtype_field(TypePath::new(), x).with_context(name)
         }
         Enum(_) | Mod(_) => {
             // nop

@@ -4,7 +4,7 @@ use crate::v3_0::components::schemas::{
 };
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 use gesha_collections::seq::{MapCollectOps, TryMapOps};
-use gesha_collections::tracking::WithKeyOps;
+use gesha_collections::tracking::WithContextOps;
 use gesha_core::broken;
 use gesha_core::conversions::Error::Unimplemented;
 use gesha_core::conversions::Result;
@@ -31,14 +31,14 @@ impl Transformer<'_> {
             Struct(mut shape) => {
                 shape.fields = self
                     .transform_fields(shape.fields)
-                    .with_key(shape.header.name.clone())?;
+                    .with_context(shape.header.name.clone())?;
 
                 shape.into()
             }
             NewType(mut shape) => {
                 shape.type_shape = self
                     .transform_field_type(shape.type_shape)
-                    .with_key(shape.header.name.clone())?;
+                    .with_context(shape.header.name.clone())?;
 
                 shape.into()
             }
@@ -47,7 +47,7 @@ impl Transformer<'_> {
                 let mod_path = self.mod_path.clone().add(shape.name.clone());
                 let next = shape
                     .map_def(|x| self.resolve_in_mod(mod_path.clone(), x))
-                    .with_key(name)?;
+                    .with_context(name)?;
 
                 next.into()
             }
@@ -55,7 +55,7 @@ impl Transformer<'_> {
                 let name = shape.header.name.clone();
                 let next = shape
                     .map_type(|x| self.transform_field_type(x))
-                    .with_key(name)?;
+                    .with_context(name)?;
 
                 next.into()
             }

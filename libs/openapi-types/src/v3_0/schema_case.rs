@@ -3,7 +3,7 @@ use crate::v3_0::{ComponentName, ReferenceObject, SchemaObject};
 use crate::{Output, Result};
 use gesha_collections::partial_result::MergeOps;
 use gesha_collections::seq::TryMapOps;
-use gesha_collections::tracking::WithKeyOps;
+use gesha_collections::tracking::WithContextOps;
 use gesha_collections::yaml::{YamlArray, YamlMap, YamlMapExt};
 
 pub type NamedSchemaCase = (ComponentName, SchemaCase);
@@ -42,7 +42,7 @@ impl SchemaCase {
         let (name, map) = kv;
         let pair = (
             ComponentName::new(&name),
-            Self::from_yaml_map(map).with_key(name)?,
+            Self::from_yaml_map(map).with_context(name)?,
         );
         Ok(pair)
     }

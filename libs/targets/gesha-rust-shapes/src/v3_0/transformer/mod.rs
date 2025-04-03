@@ -1,6 +1,6 @@
 mod transform_core;
 
-use gesha_collections::tracking::WithKeyOps;
+use gesha_collections::tracking::WithContextOps;
 use transform_core::transform_core;
 
 mod transform_request_bodies;
@@ -14,15 +14,15 @@ use gesha_core::conversions::{Output, Result};
 
 pub fn transform(shape: ComponentsShape) -> Result<ComponentsShape> {
     let maybe = Output::optionize(transform_schemas)(Some(shape))
-        .with_key("schemas")
+        .with_context("schemas")
         .to_result()?;
 
     let maybe = Output::optionize(transform_request_bodies)(maybe)
-        .with_key("request_bodies")
+        .with_context("request_bodies")
         .to_result()?;
 
     let shape = Output::optionize(transform_core)(maybe)
-        .with_key("core")
+        .with_context("core")
         .ok_or_errors()?;
 
     Ok(shape)

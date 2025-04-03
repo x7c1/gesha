@@ -1,6 +1,6 @@
 use crate::v3_0::{MediaTypeKey, MediaTypeObject};
 use crate::{Output, Result};
-use gesha_collections::tracking::WithKeyOps;
+use gesha_collections::tracking::WithContextOps;
 use gesha_collections::yaml::YamlMap;
 use indexmap::IndexMap;
 
@@ -19,7 +19,7 @@ impl RequestBodyContent {
         let (name, map) = kv;
         let key = MediaTypeKey::new(name);
         let output = MediaTypeObject::from_yaml_map(map)
-            .with_key(key.clone())?
+            .with_context(key.clone())?
             .map(|object| (key, object));
 
         Ok(output)

@@ -1,7 +1,7 @@
 use crate::Unsupported::Unimplemented;
 use crate::v3_0::{ComponentName, ReferenceObject, RequestBodyObject};
 use crate::{Error, Result};
-use gesha_collections::tracking::WithKeyOps;
+use gesha_collections::tracking::WithContextOps;
 use gesha_collections::yaml::{YamlMap, YamlMapExt};
 
 /// Request Body Object | Reference Object
@@ -27,7 +27,7 @@ impl RequestBodyCase {
         let (name, map) = kv;
         let pair = (
             ComponentName::new(&name),
-            Self::from_yaml_map(map).with_key(name)?,
+            Self::from_yaml_map(map).with_context(name)?,
         );
         Ok(pair)
     }

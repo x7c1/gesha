@@ -3,7 +3,7 @@ use crate::v3_0::components::core::CoreShape;
 use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::SchemasShape;
 use crate::v3_0::transformer::transform;
-use gesha_collections::tracking::WithKeyOps;
+use gesha_collections::tracking::WithContextOps;
 use gesha_core::conversions;
 use gesha_core::conversions::Error::FormatFailed;
 use gesha_core::conversions::{Output, Result};
@@ -26,7 +26,7 @@ impl conversions::Converter for DocumentConverter {
             // see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#document-structure
             return Ok(Output::ok(gesha_rust_types::SourceCode::empty()));
         };
-        let output = generate_components_code(components).with_key("#(convert)");
+        let output = generate_components_code(components).with_context("#(convert)");
         Ok(output)
     }
 
@@ -45,12 +45,12 @@ pub(crate) fn generate_components_code(
     components: ComponentsObject,
 ) -> Output<gesha_rust_types::SourceCode> {
     let (schemas, errors_of_schemas) = SchemasShape::shape(components.schemas)
-        .with_key("schemas")
+        .with_context("schemas")
         .into_tuple();
 
     let (request_bodies, errors_of_request_bodies) =
         RequestBodiesShape::shape(components.request_bodies)
-            .with_key("request_bodies")
+            .with_context("request_bodies")
             .into_tuple();
 
     let shapes = ComponentsShape {
@@ -60,8 +60,8 @@ pub(crate) fn generate_components_code(
     };
 
     let (mod_defs, errors_of_mods) = transform(shapes)
-        .with_key("#(transform)")
-        .map(|shapes| shapes.define().with_key("#(define)"))
+        .with_context("#(transform)")
+        .map(|shapes| shapes.define().with_context("#(define)"))
         .unwrap_or_else(Output::err)
         .into_tuple();
 
@@ -70,7 +70,7 @@ pub(crate) fn generate_components_code(
         .append(errors_of_schemas)
         .append(errors_of_request_bodies)
         .append(errors_of_mods)
-        .with_key("components")
+        .with_context("components")
 }
 
 pub(crate) fn format_code(path: &Path) -> Result<String> {

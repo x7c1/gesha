@@ -1,5 +1,5 @@
 use gesha_collections::partial_result::PartialResult;
-use gesha_collections::tracking::{KeyAppendable, KeyBindable};
+use gesha_collections::tracking::{ContextAppendable, ContextBindable};
 use std::fmt::Debug;
 
 pub type Result<A> = std::result::Result<A, Error>;
@@ -48,8 +48,8 @@ pub enum Error {
     },
 }
 
-impl KeyBindable for Error {
-    fn bind_key(key: impl Into<String>, causes: Vec<Self>) -> Self {
+impl ContextBindable<String> for Error {
+    fn bind(key: impl Into<String>, causes: Vec<Self>) -> Self {
         Self::Enclosed {
             key: key.into(),
             causes,
@@ -57,8 +57,8 @@ impl KeyBindable for Error {
     }
 }
 
-impl KeyAppendable for Error {
-    fn append_key(key: impl Into<String>, cause: Self) -> Self {
+impl ContextAppendable<String> for Error {
+    fn append(key: impl Into<String>, cause: Self) -> Self {
         Self::Enclosed {
             key: key.into(),
             causes: vec![cause],

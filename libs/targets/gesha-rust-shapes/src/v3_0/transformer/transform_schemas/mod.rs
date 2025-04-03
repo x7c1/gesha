@@ -15,7 +15,7 @@ use definition_transformer::DefinitionTransformer;
 
 mod expand_inline_schemas;
 use expand_inline_schemas::expand_inline_schemas;
-use gesha_collections::tracking::WithKeyOps;
+use gesha_collections::tracking::WithContextOps;
 
 mod insert_impl_serde_macro;
 use insert_impl_serde_macro::insert_impl_serde_macro;
@@ -33,14 +33,14 @@ use crate::v3_0::components::ComponentsShape;
 use gesha_core::conversions::Result;
 
 pub fn transform_schemas(mut shape: ComponentsShape) -> Result<ComponentsShape> {
-    shape = collapse_single_all_of(shape).with_key("#(collapse_single_all_of)")?;
-    shape = collapse_single_one_of(shape).with_key("#(collapse_single_one_of)")?;
-    shape = expand_inline_schemas(shape).with_key("#(expand_inline_schemas)")?;
-    shape = convert_all_of(shape).with_key("#(convert_all_of)")?;
-    shape = convert_one_of(shape).with_key("#(convert_one_of)")?;
-    shape = resolve_type_path(shape).with_key("#(resolve_type_path)")?;
-    shape = resolve_optionality(shape).with_key("#(resolve_optionality)")?;
-    shape = insert_imports(shape).with_key("#(insert_imports)")?;
-    shape = insert_impl_serde_macro(shape).with_key("#(insert_impl_serde_macro)")?;
+    shape = collapse_single_all_of(shape).with_context("#(collapse_single_all_of)")?;
+    shape = collapse_single_one_of(shape).with_context("#(collapse_single_one_of)")?;
+    shape = expand_inline_schemas(shape).with_context("#(expand_inline_schemas)")?;
+    shape = convert_all_of(shape).with_context("#(convert_all_of)")?;
+    shape = convert_one_of(shape).with_context("#(convert_one_of)")?;
+    shape = resolve_type_path(shape).with_context("#(resolve_type_path)")?;
+    shape = resolve_optionality(shape).with_context("#(resolve_optionality)")?;
+    shape = insert_imports(shape).with_context("#(insert_imports)")?;
+    shape = insert_impl_serde_macro(shape).with_context("#(insert_impl_serde_macro)")?;
     Ok(shape)
 }
