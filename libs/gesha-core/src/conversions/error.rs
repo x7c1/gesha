@@ -1,4 +1,5 @@
 use gesha_collections::partial_result::PartialResult;
+use gesha_collections::tracking::{KeyAppendable, KeyBindable};
 use std::fmt::Debug;
 
 pub type Result<A> = std::result::Result<A, Error>;
@@ -47,14 +48,26 @@ pub enum Error {
     },
 }
 
-pub fn by_key(key: impl Into<String>) -> impl FnOnce(Error) -> Error {
+impl KeyBindable for Error {
+    fn bind_key(key: impl Into<String>, error: Vec<Self>) -> Self {
+        with_key(key)(error)
+    }
+}
+
+impl KeyAppendable for Error {
+    fn append_key(key: impl Into<String>, error: Self) -> Self {
+        by_key(key)(error)
+    }
+}
+
+fn by_key(key: impl Into<String>) -> impl FnOnce(Error) -> Error {
     move |cause| Error::Enclosed {
         key: key.into(),
         causes: vec![cause],
     }
 }
 
-pub fn with_key(key: impl Into<String>) -> impl FnOnce(Vec<Error>) -> Error {
+fn with_key(key: impl Into<String>) -> impl FnOnce(Vec<Error>) -> Error {
     move |causes| Error::Enclosed {
         key: key.into(),
         causes,

@@ -1,7 +1,8 @@
 use crate::yaml::YamlLoaderError;
 use crate::{http, json_schema, openapi, v3_0};
 use gesha_collections::partial_result::PartialResult;
-use gesha_collections::yaml::{KeyAppendable, KeyBindable, YamlError};
+use gesha_collections::tracking::{KeyAppendable, KeyBindable};
+use gesha_collections::yaml::YamlError;
 use std::fmt::Debug;
 
 pub type Result<A> = std::result::Result<A, Error>;
@@ -54,13 +55,13 @@ impl From<YamlError> for Error {
 }
 
 impl KeyBindable for Error {
-    fn bind_key(key: &str, error: Vec<Self>) -> Self {
+    fn bind_key(key: impl Into<String>, error: Vec<Self>) -> Self {
         with_key(key)(error)
     }
 }
 
 impl KeyAppendable for Error {
-    fn append_key(key: &str, error: Self) -> Self {
+    fn append_key(key: impl Into<String>, error: Self) -> Self {
         by_key(key)(error)
     }
 }

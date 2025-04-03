@@ -1,5 +1,6 @@
 use crate::partial_result::PartialResult;
-use crate::yaml::{Converter, Extractor, TrackingKeyAppendable, YamlError, YamlMap, YamlValue};
+use crate::tracking::TrackingKeyAppendable;
+use crate::yaml::{Converter, Extractor, YamlError, YamlMap, YamlValue};
 use std::marker::PhantomData;
 
 pub trait YamlMapExt<E>

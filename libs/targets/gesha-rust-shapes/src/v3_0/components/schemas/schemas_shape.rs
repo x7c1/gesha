@@ -3,7 +3,8 @@ use crate::v3_0::components::schemas::{
     OneOfItemShapes, OneOfShape, RefShape, StructShape, TypeHeaderShape, TypeShape,
 };
 use gesha_collections::partial_result::MergeOps;
-use gesha_core::conversions::{Output, Result, by_key};
+use gesha_collections::tracking::TrackingKeyAppendable;
+use gesha_core::conversions::{Output, Result};
 use gesha_rust_types::{ModDef, ModuleName, TypeIdentifier};
 use openapi_types::v3_0::{ComponentName, EnumValues, SchemaCase, SchemaObject, SchemasObject};
 use std::ops::Not;
@@ -80,7 +81,7 @@ fn new(kv: (ComponentName, SchemaCase)) -> Result<DefinitionShape> {
         SchemaCase::Schema(obj) => {
             let (name, object) = (field_name.clone(), *obj);
             let name = TypeIdentifier::parse(&name)?;
-            Shaper { name, object }.run().map_err(by_key(field_name))
+            Shaper { name, object }.run().with_key(field_name)
         }
         SchemaCase::Reference(obj) => {
             let type_shape = RefShape::new(obj, /* is_required */ true)?;

@@ -1,5 +1,6 @@
 use crate::partial_result::{MaybeOps, PartialResult};
-use crate::yaml::{Converter, TrackingKeyAppendable, YamlError, YamlMap, YamlValue};
+use crate::tracking::TrackingKeyAppendable;
+use crate::yaml::{Converter, YamlError, YamlMap, YamlValue};
 use std::marker::PhantomData;
 
 pub struct Extractor<'a, F, X, Y, E>
