@@ -49,28 +49,20 @@ pub enum Error {
 }
 
 impl KeyBindable for Error {
-    fn bind_key(key: impl Into<String>, error: Vec<Self>) -> Self {
-        with_key(key)(error)
+    fn bind_key(key: impl Into<String>, causes: Vec<Self>) -> Self {
+        Self::Enclosed {
+            key: key.into(),
+            causes,
+        }
     }
 }
 
 impl KeyAppendable for Error {
-    fn append_key(key: impl Into<String>, error: Self) -> Self {
-        by_key(key)(error)
-    }
-}
-
-fn by_key(key: impl Into<String>) -> impl FnOnce(Error) -> Error {
-    move |cause| Error::Enclosed {
-        key: key.into(),
-        causes: vec![cause],
-    }
-}
-
-fn with_key(key: impl Into<String>) -> impl FnOnce(Vec<Error>) -> Error {
-    move |causes| Error::Enclosed {
-        key: key.into(),
-        causes,
+    fn append_key(key: impl Into<String>, cause: Self) -> Self {
+        Self::Enclosed {
+            key: key.into(),
+            causes: vec![cause],
+        }
     }
 }
 

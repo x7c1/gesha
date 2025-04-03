@@ -1,5 +1,6 @@
 use crate::v3_0::{OperationObject, PathFieldName};
-use crate::{Error, Output, Result, by_key};
+use crate::{Error, Output, Result};
+use gesha_collections::tracking::TrackingKeyAppendable;
 use gesha_collections::yaml::{YamlMap, YamlMapExt};
 
 #[derive(Debug)]
@@ -29,7 +30,7 @@ impl PathItemObject {
         let (field, map) = kv;
         let pair = (
             PathFieldName::new(&field)?,
-            PathItemObject::from_yaml_map(map).map_err(by_key(field))?,
+            PathItemObject::from_yaml_map(map).with_key(field)?,
         );
         Ok(pair)
     }

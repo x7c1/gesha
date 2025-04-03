@@ -1,8 +1,9 @@
 use crate::v3_0::yaml_extractor::reify_value;
 use crate::v3_0::{ComponentName, ReferenceObject, SchemaObject};
-use crate::{Output, Result, by_key};
+use crate::{Output, Result};
 use gesha_collections::partial_result::MergeOps;
 use gesha_collections::seq::TryMapOps;
+use gesha_collections::tracking::TrackingKeyAppendable;
 use gesha_collections::yaml::{YamlArray, YamlMap, YamlMapExt};
 
 pub type NamedSchemaCase = (ComponentName, SchemaCase);
@@ -41,7 +42,7 @@ impl SchemaCase {
         let (name, map) = kv;
         let pair = (
             ComponentName::new(&name),
-            Self::from_yaml_map(map).map_err(by_key(name))?,
+            Self::from_yaml_map(map).with_key(name)?,
         );
         Ok(pair)
     }
