@@ -20,17 +20,7 @@ impl<'a, A: Converter> Generator<'a, A> {
     pub fn generate_from_file(&self, schema: impl Into<PathBuf>) -> Result<Output<()>> {
         let reader = Reader::new(schema);
         let (target, errors) = reader.open_target_type(self.converter)?.into_tuple();
-
-        let writer = Writer::new(&self.output);
-        writer.write_code(target)?;
-
-        let output = self
-            .converter
-            .format_code(&self.output)
-            .map_err(Error::conversion(self.output.clone()))?;
-
-        debug!("format>\n{}", output);
-
+        self.generate_from_type(target)?;
         Ok(Output::new((), errors))
     }
 
