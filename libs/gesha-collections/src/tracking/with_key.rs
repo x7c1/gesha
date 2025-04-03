@@ -1,10 +1,10 @@
 use crate::partial_result::PartialResult;
 
-pub trait TrackingKeyAppendable {
+pub trait WithKeyOps {
     fn with_key(self, key: impl Into<String>) -> Self;
 }
 
-impl<A, E> TrackingKeyAppendable for Result<A, E>
+impl<A, E> WithKeyOps for Result<A, E>
 where
     E: KeyAppendable,
 {
@@ -13,7 +13,7 @@ where
     }
 }
 
-impl<A, E> TrackingKeyAppendable for PartialResult<A, E>
+impl<A, E> WithKeyOps for PartialResult<A, E>
 where
     E: KeyBindable,
 {

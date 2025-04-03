@@ -3,7 +3,7 @@ use crate::v3_0::components::schemas::{
     OneOfItemShapes, OneOfShape, RefShape, StructShape, TypeHeaderShape, TypeShape,
 };
 use gesha_collections::partial_result::MergeOps;
-use gesha_collections::tracking::TrackingKeyAppendable;
+use gesha_collections::tracking::WithKeyOps;
 use gesha_core::conversions::{Output, Result};
 use gesha_rust_types::{ModDef, ModuleName, TypeIdentifier};
 use openapi_types::v3_0::{ComponentName, EnumValues, SchemaCase, SchemaObject, SchemasObject};

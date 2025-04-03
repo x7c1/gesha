@@ -1,6 +1,6 @@
 use crate::v3_0::{MediaTypeKey, MediaTypeObject};
 use crate::{Output, Result};
-use gesha_collections::tracking::TrackingKeyAppendable;
+use gesha_collections::tracking::WithKeyOps;
 use gesha_collections::yaml::YamlMap;
 use indexmap::IndexMap;
 

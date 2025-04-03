@@ -1,7 +1,7 @@
 use crate::v3_0::components::schemas::{Optionality, TypeShape, to_doc_comments};
 use gesha_collections::default::default;
 use gesha_collections::partial_result::MergeOps;
-use gesha_collections::tracking::TrackingKeyAppendable;
+use gesha_collections::tracking::WithKeyOps;
 use gesha_core::conversions::{Output, Result};
 use gesha_rust_types::{DocComments, StructField, StructFieldAttribute, StructFieldName};
 use openapi_types::v3_0::{

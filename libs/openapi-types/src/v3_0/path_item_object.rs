@@ -1,6 +1,6 @@
 use crate::v3_0::{OperationObject, PathFieldName};
 use crate::{Error, Output, Result};
-use gesha_collections::tracking::TrackingKeyAppendable;
+use gesha_collections::tracking::WithKeyOps;
 use gesha_collections::yaml::{YamlMap, YamlMapExt};
 
 #[derive(Debug)]

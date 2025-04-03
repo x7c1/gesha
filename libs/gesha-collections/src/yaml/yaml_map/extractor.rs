@@ -1,5 +1,5 @@
 use crate::partial_result::{MaybeOps, PartialResult};
-use crate::tracking::TrackingKeyAppendable;
+use crate::tracking::WithKeyOps;
 use crate::yaml::{Converter, YamlError, YamlMap, YamlValue};
 use std::marker::PhantomData;
 
@@ -25,7 +25,7 @@ where
     pub fn as_required<Z>(self) -> Z
     where
         F: Converter<Result<X, E>, Y, Z>,
-        Z: TrackingKeyAppendable,
+        Z: WithKeyOps,
     {
         let result = self.map.remove(self.key).map_err(E::from);
         self.converter.convert(result).with_key(self.key)
@@ -34,7 +34,7 @@ where
     pub fn as_optional<Z>(self) -> Z
     where
         F: Converter<Result<Option<X>, E>, Y, Z>,
-        Z: TrackingKeyAppendable,
+        Z: WithKeyOps,
     {
         let result = self.map.remove_if_exists(self.key).map_err(E::from);
         self.converter.convert(result).with_key(self.key)
@@ -44,7 +44,7 @@ where
     where
         F: Converter<PartialResult<X, E>, Y, Z>,
         X: Default,
-        Z: TrackingKeyAppendable,
+        Z: WithKeyOps,
     {
         let result: PartialResult<X, E> = self
             .map

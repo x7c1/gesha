@@ -6,7 +6,7 @@ use crate::v3_0::components::schemas::{
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 use gesha_collections::seq::MapCollectOps;
 use gesha_collections::seq::TryMapOps;
-use gesha_collections::tracking::TrackingKeyAppendable;
+use gesha_collections::tracking::WithKeyOps;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{ModuleName, TypeIdentifier};
 use std::ops::Not;

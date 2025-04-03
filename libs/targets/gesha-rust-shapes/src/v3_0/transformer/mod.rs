@@ -1,6 +1,6 @@
 mod transform_core;
 
-use gesha_collections::tracking::TrackingKeyAppendable;
+use gesha_collections::tracking::WithKeyOps;
 use transform_core::transform_core;
 
 mod transform_request_bodies;

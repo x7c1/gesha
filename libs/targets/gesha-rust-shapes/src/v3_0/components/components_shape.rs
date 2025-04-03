@@ -2,7 +2,7 @@ use crate::v3_0::components::core::CoreShape;
 use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::{SchemasShape, TypeShape};
 use gesha_collections::partial_result::MaybeOps;
-use gesha_collections::tracking::TrackingKeyAppendable;
+use gesha_collections::tracking::WithKeyOps;
 use gesha_core::conversions::Output;
 use gesha_rust_types::ModDef;
 

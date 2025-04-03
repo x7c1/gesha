@@ -1,5 +1,5 @@
 use crate::partial_result::PartialResult;
-use crate::tracking::TrackingKeyAppendable;
+use crate::tracking::WithKeyOps;
 use crate::yaml::{Converter, Extractor, YamlError, YamlMap, YamlValue};
 use std::marker::PhantomData;
 
@@ -17,7 +17,7 @@ where
         F: FnOnce(X) -> Y,
         F: Converter<Result<X, E>, Y, Z>,
         X: TryFrom<YamlValue, Error = YamlError>,
-        Z: TrackingKeyAppendable,
+        Z: WithKeyOps,
     {
         self.extractor(key, f).as_required()
     }
@@ -27,7 +27,7 @@ where
         F: FnOnce(X) -> Y,
         F: Converter<Result<Option<X>, E>, Y, Z>,
         X: TryFrom<YamlValue, Error = YamlError>,
-        Z: TrackingKeyAppendable,
+        Z: WithKeyOps,
     {
         self.extractor(key, f).as_optional()
     }
@@ -38,7 +38,7 @@ where
         F: Converter<PartialResult<X, E>, PartialResult<Y, E>, Z>,
         X: TryFrom<YamlValue, Error = YamlError>,
         X: Default,
-        Z: TrackingKeyAppendable,
+        Z: WithKeyOps,
     {
         self.extractor(key, f).as_required_with_default()
     }

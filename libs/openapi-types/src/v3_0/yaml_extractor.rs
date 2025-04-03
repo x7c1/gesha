@@ -1,6 +1,6 @@
 use crate::{Error, Output, Result};
 use gesha_collections::partial_result::MergeOps;
-use gesha_collections::tracking::TrackingKeyAppendable;
+use gesha_collections::tracking::WithKeyOps;
 use gesha_collections::yaml::{YamlError, YamlMap, YamlValue};
 use std::fmt::Display;
 

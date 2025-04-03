@@ -15,7 +15,7 @@ use definition_transformer::DefinitionTransformer;
 
 mod expand_inline_schemas;
 use expand_inline_schemas::expand_inline_schemas;
-use gesha_collections::tracking::TrackingKeyAppendable;
+use gesha_collections::tracking::WithKeyOps;
 
 mod insert_impl_serde_macro;
 use insert_impl_serde_macro::insert_impl_serde_macro;

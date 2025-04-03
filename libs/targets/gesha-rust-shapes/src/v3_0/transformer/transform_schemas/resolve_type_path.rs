@@ -4,7 +4,7 @@ use crate::v3_0::components::schemas::{
 };
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
 use gesha_collections::seq::{MapCollectOps, TryMapOps};
-use gesha_collections::tracking::TrackingKeyAppendable;
+use gesha_collections::tracking::WithKeyOps;
 use gesha_core::broken;
 use gesha_core::conversions::Error::Unimplemented;
 use gesha_core::conversions::Result;
