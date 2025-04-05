@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.11](https://github.com/x7c1/gesha/compare/gesha-core-v0.0.10...gesha-core-v0.0.11) - 2025-04-05
+
+### Added
+
+- generate doc comments for fields ([#144](https://github.com/x7c1/gesha/pull/144))
+- create gesha-collections ([#141](https://github.com/x7c1/gesha/pull/141))
+
+### Fixed
+
+- allow "default" in the responses field ([#145](https://github.com/x7c1/gesha/pull/145))
+
 ## [0.0.10](https://github.com/x7c1/gesha/compare/gesha-core-v0.0.9...gesha-core-v0.0.10) - 2025-03-29
 
 ### Fixed
