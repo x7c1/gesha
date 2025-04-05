@@ -1,6 +1,6 @@
 [package]
 name = "gesha-collections"
-version = "0.0.1"
+version = "0.0.2"
 description = "Collection utilities for the Gesha project"
 repository = "https://github.com/x7c1/gesha/tree/main/libs/gesha-collections"
 license = "MIT"
