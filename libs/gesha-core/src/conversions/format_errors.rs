@@ -48,9 +48,9 @@ macro_rules! generate {
 
                     lines.append(&mut next_lines)
                 }
-                Error::Enclosed { key, causes } => {
+                Error::Enclosed { key, cause } => {
                     keys.push(key);
-                    let mut next_lines = format_enclosed_error(causes, keys);
+                    let mut next_lines = format_error(*cause, keys);
                     lines.append(&mut next_lines)
                 }
                 _ => {
@@ -65,12 +65,6 @@ macro_rules! generate {
                 }
             }
             lines
-        }
-        fn format_enclosed_error(causes: Vec<Error>, keys: Vec<String>) -> Vec<String> {
-            causes
-                .into_iter()
-                .flat_map(|cause| format_error(cause, keys.clone()))
-                .collect()
         }
     };
 }

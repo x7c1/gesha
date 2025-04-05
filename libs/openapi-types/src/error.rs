@@ -11,7 +11,7 @@ pub type Output<A> = PartialResult<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {
-    Enclosed { key: String, causes: Vec<Error> },
+    Enclosed { key: String, cause: Box<Error> },
     Multiple(Vec<Error>),
     SpecViolation(SpecViolation),
     Unsupported(Unsupported),
@@ -58,7 +58,7 @@ impl ContextBindable<String> for Error {
     fn bind(key: impl Into<String>, causes: Vec<Self>) -> Self {
         Error::Enclosed {
             key: key.into(),
-            causes,
+            cause: Box::new(causes.into()),
         }
     }
 }
@@ -67,7 +67,7 @@ impl ContextAppendable<String> for Error {
     fn append(key: impl Into<String>, cause: Self) -> Self {
         Error::Enclosed {
             key: key.into(),
-            causes: vec![cause],
+            cause: Box::new(cause),
         }
     }
 }
