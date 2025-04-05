@@ -4,8 +4,8 @@ use crate::v3_0::components::schemas::{
     DefinitionShape, EnumShape, EnumVariantShape, OneOfItemShape, OneOfShape,
 };
 use SerdeAttribute::Untagged;
-use gesha_collections::seq::MapCollect;
-use gesha_collections::seq::TryMap;
+use gesha_collections::seq::MapCollectOps;
+use gesha_collections::seq::TryMapOps;
 use gesha_core::conversions::Error::ReferenceObjectNotFound;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{EnumVariantName, SerdeAttribute};
@@ -64,7 +64,7 @@ impl Transformer {
             .schemas
             .find_type_name(&item.target)
             .ok_or_else(|| ReferenceObjectNotFound(item.target.original.clone().into()))
-            .map(EnumVariantName::new)?;
+            .and_then(EnumVariantName::new)?;
 
         EnumVariantShape::tuple(name, vec![item.target], vec![])
     }

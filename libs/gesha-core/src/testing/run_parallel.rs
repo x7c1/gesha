@@ -1,5 +1,6 @@
+use crate::testing::Error::TaskNotFound;
 use crate::testing::TestCase;
-use crate::{Error, Result};
+use crate::{Error, Result, testing};
 use futures::future::join_all;
 use std::collections::HashMap;
 use std::future::Future;
@@ -74,7 +75,7 @@ impl<A> TestCaseMap<A> {
     pub fn extract(&mut self, id: Id) -> Result<TestCase<A>> {
         self.0
             .remove(&id)
-            .ok_or_else(|| Error::ThreadNotFound(id.to_string()))
+            .ok_or_else(|| TaskNotFound { id: id.to_string() }.into())
     }
 
     pub fn accumulate<B>(
@@ -88,10 +89,10 @@ impl<A> TestCaseMap<A> {
     pub fn flatten<B>(&mut self, result: std::result::Result<Result<B>, JoinError>) -> Result<B> {
         match result {
             Ok(x) => x,
-            Err(cause) => Err(Error::JoinError {
+            Err(cause) => Err(testing::Error::JoinError {
                 schema_path: self.extract(cause.id())?.schema,
                 cause,
-            }),
+            })?,
         }
     }
 }

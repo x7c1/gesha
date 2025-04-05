@@ -3,10 +3,11 @@ use crate::v3_0::components::schemas::{
     DefinitionShape, FieldShape, Optionality, TypePath, TypeShape,
 };
 use DefinitionShape::{AllOf, Enum, Mod, NewType, OneOf, Struct};
-use gesha_collections::seq::MapCollect;
+use gesha_collections::seq::{MapCollectOps, TryMapOps};
+use gesha_collections::tracking::WithContextOps;
 use gesha_core::broken;
 use gesha_core::conversions::Error::Unimplemented;
-use gesha_core::conversions::{Result, by_key};
+use gesha_core::conversions::Result;
 use tracing::error;
 
 pub fn resolve_type_path(mut shapes: ComponentsShape) -> Result<ComponentsShape> {
@@ -30,14 +31,14 @@ impl Transformer<'_> {
             Struct(mut shape) => {
                 shape.fields = self
                     .transform_fields(shape.fields)
-                    .map_err(by_key(shape.header.name.clone()))?;
+                    .with_context(shape.header.name.clone())?;
 
                 shape.into()
             }
             NewType(mut shape) => {
                 shape.type_shape = self
                     .transform_field_type(shape.type_shape)
-                    .map_err(by_key(shape.header.name.clone()))?;
+                    .with_context(shape.header.name.clone())?;
 
                 shape.into()
             }
@@ -46,7 +47,7 @@ impl Transformer<'_> {
                 let mod_path = self.mod_path.clone().add(shape.name.clone());
                 let next = shape
                     .map_def(|x| self.resolve_in_mod(mod_path.clone(), x))
-                    .map_err(by_key(name))?;
+                    .with_context(name)?;
 
                 next.into()
             }
@@ -54,7 +55,7 @@ impl Transformer<'_> {
                 let name = shape.header.name.clone();
                 let next = shape
                     .map_type(|x| self.transform_field_type(x))
-                    .map_err(by_key(name))?;
+                    .with_context(name)?;
 
                 next.into()
             }
@@ -76,10 +77,7 @@ impl Transformer<'_> {
     }
 
     fn transform_fields(&self, shapes: Vec<FieldShape>) -> Result<Vec<FieldShape>> {
-        shapes
-            .into_iter()
-            .map(|shape| self.transform_field(shape))
-            .collect()
+        shapes.try_map(|shape| self.transform_field(shape))
     }
 
     fn transform_field(&self, mut shape: FieldShape) -> Result<FieldShape> {

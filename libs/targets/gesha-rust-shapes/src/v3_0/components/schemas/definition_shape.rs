@@ -2,9 +2,10 @@ use crate::v3_0::components::schemas::{
     AllOfShape, EnumShape, FieldShape, ModShape, NewTypeShape, OneOfShape, RefShape, StructShape,
     TypeHeaderShape, TypeShape,
 };
+use gesha_collections::seq::TryMapOps;
 use gesha_core::broken;
 use gesha_core::conversions::Result;
-use gesha_rust_types::{Definition, DeriveAttribute, NewTypeDef, StructDef, StructField};
+use gesha_rust_types::{Definition, DeriveAttribute, NewTypeDef, StructDef};
 
 #[derive(Clone, Debug)]
 pub enum DefinitionShape {
@@ -77,7 +78,8 @@ impl DefinitionShape {
     pub fn define(self) -> Result<Definition> {
         match self {
             Self::Struct(StructShape { header, fields }) => {
-                let def = StructDef::new(header.define(), define_fields(fields)?);
+                let fields = fields.try_map(|field| field.define())?;
+                let def = StructDef::new(header.define(), fields);
                 Ok(def.into())
             }
             Self::NewType(NewTypeShape { header, type_shape }) => {
@@ -97,8 +99,4 @@ impl TryFrom<DefinitionShape> for Definition {
     fn try_from(this: DefinitionShape) -> Result<Self> {
         this.define()
     }
-}
-
-fn define_fields(shapes: Vec<FieldShape>) -> Result<Vec<StructField>> {
-    shapes.into_iter().map(|field| field.define()).collect()
 }

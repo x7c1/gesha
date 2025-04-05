@@ -1,5 +1,5 @@
-use crate::Error::CannotCopyFile;
 use crate::Result;
+use crate::io::Error::CannotCopyFile;
 use crate::io::Writer;
 use std::path::Path;
 

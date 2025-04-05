@@ -1,7 +1,9 @@
 use crate::conversions::Generator;
 use crate::io::Writer;
+use crate::testing::Error::DiffDetected;
 use crate::testing::{TestCase, TestCaseIndex, TestDefinition, detect_diff, run_parallel};
 use crate::{Error, ErrorTheme, Result};
+use Error::Testing;
 use std::fmt::Debug;
 use tracing::{info, instrument};
 
@@ -28,7 +30,7 @@ where
         if errors.is_empty() {
             Ok(())
         } else {
-            Err(Error::Errors(errors))
+            Err(Error::Multiple(errors))
         }
     }
 
@@ -51,7 +53,7 @@ where
         if errors.is_empty() {
             Ok(outputs)
         } else {
-            Err(Error::Errors(errors))
+            Err(Error::Multiple(errors))
         }
     }
 
@@ -80,7 +82,7 @@ where
         Generator::new(&self.0, &case.output)
             .generate_from_file(&case.schema)?
             .to_result()
-            .map_err(Error::Errors)?;
+            .map_err(Error::Multiple)?;
 
         detect_diff(&case.output, &case.example)?;
         info!("passed: {path}", path = case.schema.to_string_lossy());
@@ -104,12 +106,12 @@ where
             Writer::new(&case.example).touch()?;
         }
 
-        // Unlike run_single(), case.example represents the actual file,
+        // Unlike run_single_test(), case.example represents the actual file,
         // while case.output modified represents the expected file.
         let result = detect_diff(&case.example, &case.output);
         match result {
             Ok(_) => Ok(None),
-            Err(e @ Error::DiffDetected { .. }) => Ok(Some(ModifiedTestCase {
+            Err(e @ Testing(DiffDetected { .. })) => Ok(Some(ModifiedTestCase {
                 target: case,
                 diff: e.detail(ErrorTheme::Overwrite),
             })),

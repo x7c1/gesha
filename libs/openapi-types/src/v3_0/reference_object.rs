@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#referenceObject
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#reference-object
 #[derive(Clone, Debug)]
 pub struct ReferenceObject<T>(String, PhantomData<T>);
 

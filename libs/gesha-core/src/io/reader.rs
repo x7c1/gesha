@@ -1,5 +1,5 @@
-use crate::Error::CannotReadFile;
 use crate::conversions::Converter;
+use crate::io::Error::CannotReadFile;
 use crate::{Error, Output, Result};
 use gesha_collections::yaml::YamlMap;
 use openapi_types::yaml::{ToOpenApi, load_from_str};

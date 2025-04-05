@@ -1,7 +1,8 @@
 use crate::yaml::YamlLoaderError;
 use crate::{http, json_schema, openapi, v3_0};
 use gesha_collections::partial_result::PartialResult;
-use gesha_collections::yaml::{KeyAppendable, KeyBindable, YamlError};
+use gesha_collections::tracking::{ContextAppendable, ContextBindable};
+use gesha_collections::yaml::YamlError;
 use std::fmt::Debug;
 
 pub type Result<A> = std::result::Result<A, Error>;
@@ -10,8 +11,8 @@ pub type Output<A> = PartialResult<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {
-    Enclosed { key: String, causes: Vec<Error> },
-    Multiple { causes: Vec<Error> },
+    Enclosed { key: String, cause: Box<Error> },
+    Multiple(Vec<Error>),
     SpecViolation(SpecViolation),
     Unsupported(Unsupported),
     YamlLoader(YamlLoaderError),
@@ -22,7 +23,7 @@ impl Error {
         if causes.len() == 1 {
             causes.remove(0)
         } else {
-            Self::Multiple { causes }
+            Self::Multiple(causes)
         }
     }
 }
@@ -32,7 +33,7 @@ impl From<Vec<Error>> for Error {
         if causes.len() == 1 {
             causes.remove(0)
         } else {
-            Error::Multiple { causes }
+            Error::Multiple(causes)
         }
     }
 }
@@ -53,29 +54,21 @@ impl From<YamlError> for Error {
     }
 }
 
-impl KeyBindable for Error {
-    fn bind_key(key: &str, error: Vec<Self>) -> Self {
-        with_key(key)(error)
+impl ContextBindable<String> for Error {
+    fn bind(key: impl Into<String>, causes: Vec<Self>) -> Self {
+        Error::Enclosed {
+            key: key.into(),
+            cause: Box::new(causes.into()),
+        }
     }
 }
 
-impl KeyAppendable for Error {
-    fn append_key(key: &str, error: Self) -> Self {
-        by_key(key)(error)
-    }
-}
-
-pub fn by_key(key: impl Into<String>) -> impl FnOnce(Error) -> Error {
-    move |cause| Error::Enclosed {
-        key: key.into(),
-        causes: vec![cause],
-    }
-}
-
-fn with_key(key: impl Into<String>) -> impl FnOnce(Vec<Error>) -> Error {
-    move |causes| Error::Enclosed {
-        key: key.into(),
-        causes,
+impl ContextAppendable<String> for Error {
+    fn append(key: impl Into<String>, cause: Self) -> Self {
+        Error::Enclosed {
+            key: key.into(),
+            cause: Box::new(cause),
+        }
     }
 }
 

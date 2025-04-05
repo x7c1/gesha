@@ -1,5 +1,6 @@
-use crate::{Error, Output, Result, by_key};
+use crate::{Error, Output, Result};
 use gesha_collections::partial_result::MergeOps;
+use gesha_collections::tracking::WithContextOps;
 use gesha_collections::yaml::{YamlError, YamlMap, YamlValue};
 use std::fmt::Display;
 
@@ -36,10 +37,10 @@ where
 {
     let (k, v) = kv.map_err(Error::from)?;
     let outline = k.outline();
-    let key: A = k.try_into().map_err(Error::from).map_err(by_key(outline))?;
+    let key: A = k.try_into().map_err(Error::from).with_context(outline)?;
 
     let cloned = key.to_string();
-    let value = v.try_into().map_err(Error::from).map_err(by_key(cloned))?;
+    let value = v.try_into().map_err(Error::from).with_context(cloned)?;
 
     Ok((key, value))
 }

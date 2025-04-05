@@ -3,7 +3,7 @@ use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::schemas::{
     AllOfShape, DefinitionShape, InlineSchema, InlineShape, TypeShape,
 };
-use gesha_collections::seq::MapCollect;
+use gesha_collections::seq::MapCollectOps;
 use gesha_core::conversions::Result;
 
 /// If `allOf` has only one $ref,

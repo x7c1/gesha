@@ -1,8 +1,8 @@
-use crate::conversions;
+use crate::conversions::Error::FormatFailed;
+use crate::{conversions, io};
 use console::{Style, StyledObject};
 use gesha_collections::partial_result::PartialResult;
 use std::path::PathBuf;
-use tokio::task::JoinError;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
@@ -10,77 +10,31 @@ pub type Output<A> = PartialResult<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {
-    UnknownTestCase {
-        path: String,
-    },
-
-    // inherited errors
     OpenApiTypes {
         path: PathBuf,
         cause: openapi_types::Error,
     },
+
     Conversion {
         path: PathBuf,
         cause: conversions::Error,
     },
 
-    // thread errors
-    JoinError {
-        schema_path: PathBuf,
-        cause: JoinError,
-    },
+    Io(io::Error),
 
-    // module errors
-    DiffDetected {
-        output: String,
-        actual: PathBuf,
-        expected: PathBuf,
-    },
-    FormatFailed {
-        path: PathBuf,
-        detail: String,
-    },
-    CannotCreateFile {
-        path: PathBuf,
-        detail: String,
-    },
-    CannotReadFile {
-        path: PathBuf,
-        detail: String,
-    },
-    CannotCopyFile {
-        from: PathBuf,
-        to: PathBuf,
-        detail: String,
-    },
-    CannotRender {
-        path: PathBuf,
-        detail: String,
-    },
-    Errors(Vec<Self>),
-    ThreadNotFound(String),
-    UnsupportedExampleLocation(String),
+    Multiple(Vec<Self>),
+
+    #[cfg(feature = "testing")]
+    Testing(crate::testing::Error),
 }
 
 impl Error {
     pub fn detail(&self, theme: ErrorTheme) -> String {
         match self {
-            Error::DiffDetected {
-                output,
-                actual,
-                expected,
+            Error::Conversion {
+                cause: FormatFailed { detail },
+                ..
             } => {
-                let style = theme.diff_style();
-                format!(
-                    "\n {: <10} : {}\n {} : {}\n\n{}",
-                    style.src_lines,
-                    actual.to_string_lossy(),
-                    style.dst_lines,
-                    expected.to_string_lossy(),
-                    output
-                )
-            }
-            Error::FormatFailed { detail, .. } => {
                 format!("rustfmt>\n{}", detail)
             }
             Error::Conversion {
@@ -93,12 +47,28 @@ impl Error {
                     detail,
                 )
             }
-            Error::Errors(errors) => errors
+            Error::Multiple(errors) => errors
                 .iter()
                 .map(|e| e.detail(theme))
                 .collect::<Vec<_>>()
                 .join("\n"),
 
+            #[cfg(feature = "testing")]
+            Error::Testing(crate::testing::Error::DiffDetected {
+                output,
+                actual,
+                expected,
+            }) => {
+                let style = theme.diff_style();
+                format!(
+                    "\n {: <10} : {}\n {} : {}\n\n{}",
+                    style.src_lines,
+                    actual.to_string_lossy(),
+                    style.dst_lines,
+                    expected.to_string_lossy(),
+                    output
+                )
+            }
             _ => {
                 format!("{:#?}", self)
             }

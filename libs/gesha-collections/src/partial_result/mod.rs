@@ -117,3 +117,18 @@ impl<A, E> PartialResult<PartialResult<A, E>, E> {
         PartialResult(a, errors1)
     }
 }
+
+impl<A, E> PartialResult<Result<A, E>, E>
+where
+    E: From<Vec<E>>,
+{
+    pub fn transpose(self) -> Result<PartialResult<A, E>, E> {
+        let PartialResult(result, mut errors) = self;
+        let e = match result {
+            Ok(a) => return Ok(PartialResult(a, errors)),
+            Err(e) => e,
+        };
+        errors.push(e);
+        Err(errors.into())
+    }
+}

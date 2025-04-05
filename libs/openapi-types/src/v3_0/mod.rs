@@ -64,6 +64,9 @@ pub use request_body_object::RequestBodyObject;
 mod required_schema_fields;
 pub use required_schema_fields::RequiredSchemaFields;
 
+mod response_specifier;
+pub use response_specifier::ResponseSpecifier;
+
 mod responses_object;
 pub use responses_object::{ResponseCase, ResponseObject, ResponsesObject};
 

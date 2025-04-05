@@ -2,7 +2,8 @@ use crate::v3_0::components::core::CoreShape;
 use crate::v3_0::components::request_bodies::RequestBodiesShape;
 use crate::v3_0::components::schemas::{SchemasShape, TypeShape};
 use gesha_collections::partial_result::MaybeOps;
-use gesha_core::conversions::{Output, with_key};
+use gesha_collections::tracking::WithContextOps;
+use gesha_core::conversions::Output;
 use gesha_rust_types::ModDef;
 
 #[derive(Clone, Debug)]
@@ -18,22 +19,17 @@ impl ComponentsShape {
             .request_bodies
             .define()
             .maybe()
-            .bind_errors(with_key("request_bodies"))
+            .with_context("request_bodies")
             .into_tuple();
 
         let (schemas, errors_of_schemas) = self
             .schemas
             .define()
             .maybe()
-            .bind_errors(with_key("schemas"))
+            .with_context("schemas")
             .into_tuple();
 
-        let (core, errors_of_core) = self
-            .core
-            .define()
-            .maybe()
-            .bind_errors(with_key("core"))
-            .into_tuple();
+        let (core, errors_of_core) = self.core.define().maybe().with_context("core").into_tuple();
 
         let mod_defs = vec![request_bodies, schemas, core]
             .into_iter()

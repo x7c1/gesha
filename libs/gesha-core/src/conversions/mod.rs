@@ -1,5 +1,5 @@
 mod error;
-pub use error::{Error, Output, Result, by_key, with_key};
+pub use error::{Error, Output, Result};
 
 mod converter;
 pub use converter::Converter;

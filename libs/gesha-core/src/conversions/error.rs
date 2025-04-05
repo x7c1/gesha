@@ -1,5 +1,5 @@
 use gesha_collections::partial_result::PartialResult;
-use openapi_types::v3_0::OpenApiDataType;
+use gesha_collections::tracking::{ContextAppendable, ContextBindable};
 use std::fmt::Debug;
 
 pub type Result<A> = std::result::Result<A, Error>;
@@ -10,46 +10,59 @@ pub type Output<A> = PartialResult<A, Error>;
 pub enum Error {
     Enclosed {
         key: String,
-        causes: Vec<Error>,
-    },
-    Multiple {
-        causes: Vec<Error>,
+        cause: Box<Error>,
     },
 
-    /// ## Client Error
-    /// e.g. a reference to a schema that does not exist.
+    /// Cause: Client
+    /// - `rustfmt` is missing.
+    ///
+    /// Cause: Internal
+    /// - The generated code is malformed.
+    FormatFailed {
+        detail: String,
+    },
+
+    /// Cause: Client
+    /// - Invalid character or unrecognized symbol in the token
+    InvalidToken {
+        target: String,
+    },
+
+    Multiple(Vec<Error>),
+
+    /// Cause: Client
+    /// - References a schema that does not exist.
     ReferenceObjectNotFound(String),
 
-    /// ## Client Error
-    /// e.g. a schema with an unknown format.
-    UnknownFormat {
-        data_type: OpenApiDataType,
-        format: String,
-    },
-
-    /// ## Internal Error
-    /// e.g. a shape that has not been processed.
+    /// Cause: Internal
+    /// - a shape that has not been processed correctly.
     TransformBroken {
         detail: String,
     },
 
-    /// ## Internal Error
+    /// Cause: Internal
+    /// - The property is not supported.
+    /// - The property is unimplemented in the current version.
     Unimplemented {
         message: String,
     },
 }
 
-pub fn by_key(key: impl Into<String>) -> impl FnOnce(Error) -> Error {
-    move |cause| Error::Enclosed {
-        key: key.into(),
-        causes: vec![cause],
+impl ContextBindable<String> for Error {
+    fn bind(key: impl Into<String>, causes: Vec<Self>) -> Self {
+        Self::Enclosed {
+            key: key.into(),
+            cause: Box::new(causes.into()),
+        }
     }
 }
 
-pub fn with_key(key: impl Into<String>) -> impl FnOnce(Vec<Error>) -> Error {
-    move |causes| Error::Enclosed {
-        key: key.into(),
-        causes,
+impl ContextAppendable<String> for Error {
+    fn append(key: impl Into<String>, cause: Self) -> Self {
+        Self::Enclosed {
+            key: key.into(),
+            cause: Box::new(cause),
+        }
     }
 }
 
@@ -58,7 +71,7 @@ impl From<Vec<Error>> for Error {
         if causes.len() == 1 {
             causes.remove(0)
         } else {
-            Error::Multiple { causes }
+            Error::Multiple(causes)
         }
     }
 }
@@ -79,10 +92,11 @@ macro_rules! broken {
 
 #[macro_export]
 macro_rules! broken_defs {
-    () => {
-        |cause| $crate::conversions::Error::TransformBroken {
+    ($name: expr) => {
+        $crate::conversions::Error::TransformBroken {
             detail: format!(
-                "unprocessed defs found:\n  at {file}:{line}\n{cause:#?}",
+                "unprocessed defs found: {name}\n  at {file}:{line}",
+                name = $name,
                 file = file!(),
                 line = line!(),
             ),

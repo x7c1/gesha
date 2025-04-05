@@ -1,5 +1,5 @@
 use crate::v3_0::components::schemas::{DefinitionShape, RefShape, TypeHeaderShape, TypeShape};
-use gesha_collections::seq::TryMap;
+use gesha_collections::seq::TryMapOps;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{
     EnumConstant, EnumDef, EnumMacroImpl, EnumVariant, EnumVariantAttribute, EnumVariantName,
@@ -14,12 +14,12 @@ pub struct EnumShape {
 }
 
 impl EnumShape {
-    pub fn new(header: TypeHeaderShape, values: EnumValues) -> Self {
-        Self {
+    pub fn new(header: TypeHeaderShape, values: EnumValues) -> Result<Self> {
+        Ok(Self {
             header,
-            variants: values.into_iter().map(to_enum_variant).collect(),
+            variants: values.try_map(to_enum_variant)?,
             macro_impl: None,
-        }
+        })
     }
 
     pub fn map_type(mut self, f: impl Fn(TypeShape) -> Result<TypeShape>) -> Result<Self> {
@@ -40,20 +40,20 @@ impl From<EnumShape> for DefinitionShape {
     }
 }
 
-fn to_enum_variant(original: EnumValue) -> EnumVariantShape {
+fn to_enum_variant(original: EnumValue) -> Result<EnumVariantShape> {
     let original_name = to_enum_variant_name(&original);
-    let name = EnumVariantName::new(&original_name);
+    let name = EnumVariantName::new(&original_name)?;
     let mut attrs = vec![];
     if name.as_str() != original_name {
         attrs.push(EnumVariantAttribute::new(format!(
             r#"serde(rename="{original_name}")"#
         )))
     }
-    EnumVariantShape {
+    Ok(EnumVariantShape {
         name,
         attributes: attrs,
         case: EnumCaseShape::Unit(to_enum_constant(original)),
-    }
+    })
 }
 
 fn to_enum_constant(value: EnumValue) -> EnumConstant {

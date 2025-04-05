@@ -1,7 +1,7 @@
 use crate::v3_0::components::ComponentsShape;
 use crate::v3_0::components::request_bodies::{ContentShape, DefinitionShape, MediaTypeShape};
 use crate::v3_0::components::schemas::RefShape;
-use gesha_collections::seq::MapCollect;
+use gesha_collections::seq::MapCollectOps;
 use gesha_core::conversions::Error::{ReferenceObjectNotFound, Unimplemented};
 use gesha_core::conversions::Result;
 use gesha_rust_types::{DataType, EnumVariant, EnumVariantName, MediaTypeVariant};
@@ -47,7 +47,7 @@ impl Transformer {
             } => {
                 let type_name = self.require_schema_type_name(&schema)?;
                 let variant = EnumVariant::tuple(
-                    EnumVariantName::new(&media_type),
+                    EnumVariantName::new(&media_type)?,
                     vec![DataType::Custom(format!("super::schemas::{}", type_name))],
                     vec![],
                 );

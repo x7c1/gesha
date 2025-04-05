@@ -15,7 +15,7 @@ impl conversions::Converter for ComponentsConverter {
         Ok(generate_components_code(src))
     }
 
-    fn format_code(&self, path: &Path) -> gesha_core::Result<String> {
+    fn format_code(&self, path: &Path) -> Result<String> {
         format_code(path)
     }
 }

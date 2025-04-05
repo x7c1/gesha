@@ -1,7 +1,8 @@
 use crate::v3_0::components::schemas::{Optionality, TypeShape, to_doc_comments};
 use gesha_collections::default::default;
 use gesha_collections::partial_result::MergeOps;
-use gesha_core::conversions::{Output, Result, by_key};
+use gesha_collections::tracking::WithContextOps;
+use gesha_core::conversions::{Output, Result};
 use gesha_rust_types::{DocComments, StructField, StructFieldAttribute, StructFieldName};
 use openapi_types::v3_0::{
     ComponentName, RequiredSchemaFields, SchemaCase, SchemaObject, SchemaProperties,
@@ -107,7 +108,7 @@ impl ToFieldShapes {
         let doc_comments = to_doc_comments(title, description);
         Ok(FieldShape {
             name: name.clone(),
-            type_shape: TypeShape::from_case(case, is_required).map_err(by_key(name))?,
+            type_shape: TypeShape::from_case(case, is_required).with_context(name)?,
             doc_comments,
         })
     }

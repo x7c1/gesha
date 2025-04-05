@@ -1,5 +1,5 @@
-use crate::Error::{CannotCreateFile, CannotRender};
 use crate::Result;
+use crate::io::Error::{CannotCreateFile, CannotRender};
 use std::fmt::{Debug, Display};
 use std::fs::File;
 use std::io::Write;
@@ -18,10 +18,11 @@ impl Writer {
     }
 
     pub fn touch(&self) -> Result<File> {
-        File::create(&self.path).map_err(|cause| CannotCreateFile {
+        let file = File::create(&self.path).map_err(|cause| CannotCreateFile {
             path: self.path.clone(),
             detail: format!("{:?}", cause),
-        })
+        })?;
+        Ok(file)
     }
 
     #[instrument(skip_all)]
