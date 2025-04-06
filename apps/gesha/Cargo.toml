@@ -3,6 +3,7 @@ name = "gesha"
 version = "0.0.11"
 description = "Generates code based on OpenAPI specs"
 repository = "https://github.com/x7c1/gesha"
+readme = "../../README.md"
 license = "MIT"
 edition = "2024"
 keywords = [
