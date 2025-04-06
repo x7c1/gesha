@@ -17,7 +17,7 @@ pub mod schemas {
 
     gesha_macros::impl_enum_from!(
         IntEnum,
-        super::core::Error
+        super::core::Error,
         [i32],
         [(_0, 0), (_100, 100), (_200, 200)],
     );

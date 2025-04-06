@@ -2,7 +2,7 @@
 macro_rules! impl_enum_from {
     (
         $enum_name:ident,
-        $error_type:ty
+        $error_type:ty,
         [ $( $type:ty  ),* ],
         $pairs:tt,
     ) => {
