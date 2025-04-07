@@ -24,12 +24,12 @@ MixedTypeEnum:
 ```
 */
 #[derive(Clone, Debug, PartialEq)]
-pub struct EnumMacroImpl {
+pub struct EnumMacroSerdeImpl {
     pub name: TypeIdentifier,
     pub type_variants: IndexMap<EnumMacroType, EnumMacroVariants>,
 }
 
-impl EnumMacroImpl {
+impl EnumMacroSerdeImpl {
     pub fn from_variants(name: TypeIdentifier, variants: Vec<EnumVariant>) -> Self {
         let type_variants = variants
             .into_iter()

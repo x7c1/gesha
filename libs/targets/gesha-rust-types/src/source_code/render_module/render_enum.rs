@@ -1,6 +1,6 @@
 use super::{render_data_types, render_header};
 use crate::{
-    EnumCase, EnumDef, EnumMacroImpl, EnumMacroType, EnumMacroVariants, EnumVariant,
+    EnumCase, EnumDef, EnumMacroSerdeImpl, EnumMacroType, EnumMacroVariants, EnumVariant,
     EnumVariantAttribute, render,
 };
 use indexmap::IndexMap;
@@ -14,10 +14,10 @@ pub fn render_enum(write: &mut impl Write, x: &EnumDef) -> fmt::Result {
         "{}" > render_enum_variants => x.variants.iter();
         echo > "\n\n";
     }
-    if let Some(macro_impl) = &x.macro_impl {
+    if let Some(macro_impl) = &x.macro_serde_impl {
         render! { write =>
             echo > "gesha_macros::impl_enum_serde!";
-            "()" > render_enum_macro_impl => macro_impl;
+            "()" > render_enum_macro_for_serde_impl => macro_impl;
             echo > ";";
             echo > "\n\n";
         }
@@ -59,7 +59,7 @@ fn render_enum_case(write: &mut impl Write, case: &EnumCase) -> fmt::Result {
     Ok(())
 }
 
-fn render_enum_macro_impl(write: &mut impl Write, x: &EnumMacroImpl) -> fmt::Result {
+fn render_enum_macro_for_serde_impl(write: &mut impl Write, x: &EnumMacroSerdeImpl) -> fmt::Result {
     render! { write =>
         echo > "{name}", name = x.name;
         "{}" > render_enum_macro_type_variants => &x.type_variants;
