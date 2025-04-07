@@ -71,7 +71,6 @@ fn to_enum_constant(value: EnumValue, format: &Option<FormatModifier>) -> Result
     type V = EnumValue;
     let constant = match (value, format) {
         (V::String(value), _) => EnumConstant::Str(value),
-        (V::Integer(value), _) if value > 0 => EnumConstant::U64(value as u64),
         (V::Integer(value), _) => from_signed_int_value(value, format)?,
         (V::Boolean(value), _) => EnumConstant::Bool(value),
         (V::Null, _) => EnumConstant::Null,

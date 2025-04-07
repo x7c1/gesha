@@ -50,7 +50,6 @@ pub enum EnumConstant {
     I64(i64),
     Null,
     Str(String),
-    U64(u64),
 }
 
 impl Display for EnumConstant {
@@ -61,7 +60,6 @@ impl Display for EnumConstant {
             EnumConstant::I64(x) => Display::fmt(x, f),
             EnumConstant::Null => Display::fmt("null", f),
             EnumConstant::Str(x) => Display::fmt(&format!(r#""{x}""#), f),
-            EnumConstant::U64(x) => Display::fmt(x, f),
         }
     }
 }
