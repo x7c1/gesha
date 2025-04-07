@@ -15,12 +15,12 @@ gesha_macros::impl_enum_serde!(MixedTypeEnum {
 From the following YAML:
 ```yaml
 MixedTypeEnum:
-    enum:
-      - 1000
-      - "2000"
-      - "2001"
-      - "2002"
-      - -42
+  enum:
+    - 1000
+    - "2000"
+    - "2001"
+    - "2002"
+    - -42
 ```
 */
 #[derive(Clone, Debug, PartialEq)]

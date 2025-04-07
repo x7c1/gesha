@@ -1,9 +1,8 @@
+mod render_macro_for_serde;
+use render_macro_for_serde::render_macro_for_serde;
+
 use super::{render_data_types, render_header};
-use crate::{
-    EnumCase, EnumDef, EnumMacroSerdeImpl, EnumMacroType, EnumMacroVariants, EnumVariant,
-    EnumVariantAttribute, render,
-};
-use indexmap::IndexMap;
+use crate::{EnumCase, EnumDef, EnumVariant, EnumVariantAttribute, render};
 use std::fmt;
 use std::fmt::Write;
 
@@ -17,7 +16,7 @@ pub fn render_enum(write: &mut impl Write, x: &EnumDef) -> fmt::Result {
     if let Some(macro_impl) = &x.macro_serde_impl {
         render! { write =>
             echo > "gesha_macros::impl_enum_serde!";
-            "()" > render_enum_macro_for_serde_impl => macro_impl;
+            "()" > render_macro_for_serde => macro_impl;
             echo > ";";
             echo > "\n\n";
         }
@@ -55,41 +54,6 @@ fn render_enum_case(write: &mut impl Write, case: &EnumCase) -> fmt::Result {
                 "()" > render_data_types => &types;
             }
         }
-    }
-    Ok(())
-}
-
-fn render_enum_macro_for_serde_impl(write: &mut impl Write, x: &EnumMacroSerdeImpl) -> fmt::Result {
-    render! { write =>
-        echo > "{name}", name = x.name;
-        "{}" > render_enum_macro_type_variants => &x.type_variants;
-    }
-    Ok(())
-}
-
-fn render_enum_macro_type_variants(
-    write: &mut impl Write,
-    type_variants: &IndexMap<EnumMacroType, EnumMacroVariants>,
-) -> fmt::Result {
-    for (name, variants) in type_variants {
-        render! { write =>
-            echo > "{name}:", name = name.to_string();
-            "[]" > render_enum_macro_variants => variants;
-            echo > ",";
-        }
-    }
-    Ok(())
-}
-
-fn render_enum_macro_variants(write: &mut impl Write, variants: &EnumMacroVariants) -> fmt::Result {
-    let pairs = variants
-        .iter()
-        .map(|(name, constant)| format!("({name}, {constant})"))
-        .collect::<Vec<_>>()
-        .join(",");
-
-    render! { write =>
-        echo > "{pairs}";
     }
     Ok(())
 }
