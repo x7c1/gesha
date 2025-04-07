@@ -5,6 +5,7 @@ use gesha_collections::seq::TryMapOps;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{DeriveAttribute, EnumMacroForSerde, Package};
 
+/// Transforms the shape to insert `gesha_macros::impl_enum_serde!`.
 pub fn insert_macro_for_serde(mut shape: ComponentsShape) -> Result<ComponentsShape> {
     shape.schemas.root = transform_mod(shape.schemas.root)?;
     Ok(shape)

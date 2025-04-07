@@ -55,6 +55,7 @@ impl Transformer {
                 .try_map(|item| self.to_variant(item))?,
 
             macro_for_serde: None,
+            format: shape.format,
         })
     }
 

@@ -1,24 +1,31 @@
 use crate::v3_0::components::schemas::{DefinitionShape, RefShape, TypeHeaderShape, TypeShape};
 use gesha_collections::seq::TryMapOps;
+use gesha_core::conversions::Error::EnumFormatMismatch;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{
     EnumConstant, EnumDef, EnumMacroForSerde, EnumVariant, EnumVariantAttribute, EnumVariantName,
 };
-use openapi_types::v3_0::{EnumValue, EnumValues};
+use openapi_types::v3_0::{EnumValue, EnumValues, FormatModifier};
 
 #[derive(Clone, Debug)]
 pub struct EnumShape {
     pub header: TypeHeaderShape,
     pub variants: Vec<EnumVariantShape>,
     pub macro_for_serde: Option<EnumMacroForSerde>,
+    pub format: Option<FormatModifier>,
 }
 
 impl EnumShape {
-    pub fn new(header: TypeHeaderShape, values: EnumValues) -> Result<Self> {
+    pub fn new(
+        header: TypeHeaderShape,
+        values: EnumValues,
+        format: Option<FormatModifier>,
+    ) -> Result<Self> {
         Ok(Self {
             header,
-            variants: values.try_map(to_enum_variant)?,
+            variants: values.try_map(|value| to_enum_variant(value, &format))?,
             macro_for_serde: None,
+            format,
         })
     }
 
@@ -40,7 +47,10 @@ impl From<EnumShape> for DefinitionShape {
     }
 }
 
-fn to_enum_variant(original: EnumValue) -> Result<EnumVariantShape> {
+fn to_enum_variant(
+    original: EnumValue,
+    format: &Option<FormatModifier>,
+) -> Result<EnumVariantShape> {
     let original_name = to_enum_variant_name(&original);
     let name = EnumVariantName::new(&original_name)?;
     let mut attrs = vec![];
@@ -49,21 +59,53 @@ fn to_enum_variant(original: EnumValue) -> Result<EnumVariantShape> {
             r#"serde(rename="{original_name}")"#
         )))
     }
+    let constant = to_enum_constant(original, format)?;
     Ok(EnumVariantShape {
         name,
         attributes: attrs,
-        case: EnumCaseShape::Unit(to_enum_constant(original)),
+        case: EnumCaseShape::Unit(constant),
     })
 }
 
-fn to_enum_constant(value: EnumValue) -> EnumConstant {
-    match value {
-        EnumValue::String(value) => EnumConstant::Str(value),
-        EnumValue::Integer(value) if value > 0 => EnumConstant::U64(value as u64),
-        EnumValue::Integer(value) => EnumConstant::I64(value),
-        EnumValue::Boolean(value) => EnumConstant::Bool(value),
-        EnumValue::Null => EnumConstant::Null,
-    }
+fn to_enum_constant(value: EnumValue, format: &Option<FormatModifier>) -> Result<EnumConstant> {
+    type V = EnumValue;
+    let constant = match (value, format) {
+        (V::String(value), _) => EnumConstant::Str(value),
+        (V::Integer(value), _) if value > 0 => EnumConstant::U64(value as u64),
+        (V::Integer(value), _) => from_signed_int_value(value, format)?,
+        (V::Boolean(value), _) => EnumConstant::Bool(value),
+        (V::Null, _) => EnumConstant::Null,
+    };
+    Ok(constant)
+}
+
+fn from_signed_int_value(value: i64, format: &Option<FormatModifier>) -> Result<EnumConstant> {
+    let constant = match (value, format) {
+        (value, Some(FormatModifier::Int32)) => {
+            let x = i32::try_from(value).map_err(|_| EnumFormatMismatch {
+                format: FormatModifier::Int32.to_string(),
+                value: value.to_string(),
+            })?;
+            EnumConstant::I32(x)
+        }
+        (value, Some(FormatModifier::Int64)) => EnumConstant::I64(value),
+        (value, _) => EnumConstant::I64(value),
+    };
+    Ok(constant)
+}
+
+#[test]
+fn test_from_signed_int_value() {
+    let target_value = (i32::MAX as i64) + 1;
+    let target_format = FormatModifier::Int32;
+
+    let EnumFormatMismatch { format, value } =
+        from_signed_int_value(target_value, &Some(target_format.clone())).unwrap_err()
+    else {
+        panic!("Missing expected error")
+    };
+    assert_eq!(format, target_format.as_ref());
+    assert_eq!(value, target_value.to_string());
 }
 
 fn to_enum_variant_name(value: &EnumValue) -> String {

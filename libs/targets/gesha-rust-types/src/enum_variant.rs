@@ -45,21 +45,23 @@ pub enum EnumCase {
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub enum EnumConstant {
-    U64(u64),
-    I64(i64),
-    Str(String),
     Bool(bool),
+    I32(i32),
+    I64(i64),
     Null,
+    Str(String),
+    U64(u64),
 }
 
 impl Display for EnumConstant {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            EnumConstant::U64(x) => Display::fmt(x, f),
-            EnumConstant::I64(x) => Display::fmt(x, f),
-            EnumConstant::Str(x) => Display::fmt(&format!(r#""{x}""#), f),
             EnumConstant::Bool(x) => Display::fmt(x, f),
+            EnumConstant::I32(x) => Display::fmt(x, f),
+            EnumConstant::I64(x) => Display::fmt(x, f),
             EnumConstant::Null => Display::fmt("null", f),
+            EnumConstant::Str(x) => Display::fmt(&format!(r#""{x}""#), f),
+            EnumConstant::U64(x) => Display::fmt(x, f),
         }
     }
 }
