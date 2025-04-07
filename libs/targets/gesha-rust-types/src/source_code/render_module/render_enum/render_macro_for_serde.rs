@@ -1,9 +1,9 @@
-use crate::{EnumMacroSerdeImpl, EnumMacroType, EnumMacroVariants, render};
+use crate::{EnumMacroForSerde, EnumMacroTypeForSerde, EnumMacroVariantsForSerde, render};
 use indexmap::IndexMap;
 use std::fmt;
 use std::fmt::Write;
 
-pub fn render_macro_for_serde(write: &mut impl Write, x: &EnumMacroSerdeImpl) -> fmt::Result {
+pub fn render_macro_for_serde(write: &mut impl Write, x: &EnumMacroForSerde) -> fmt::Result {
     render! { write =>
         echo > "{name}", name = x.name;
         "{}" > render_enum_macro_type_variants => &x.type_variants;
@@ -13,7 +13,7 @@ pub fn render_macro_for_serde(write: &mut impl Write, x: &EnumMacroSerdeImpl) ->
 
 fn render_enum_macro_type_variants(
     write: &mut impl Write,
-    type_variants: &IndexMap<EnumMacroType, EnumMacroVariants>,
+    type_variants: &IndexMap<EnumMacroTypeForSerde, EnumMacroVariantsForSerde>,
 ) -> fmt::Result {
     for (name, variants) in type_variants {
         render! { write =>
@@ -25,7 +25,10 @@ fn render_enum_macro_type_variants(
     Ok(())
 }
 
-fn render_enum_macro_variants(write: &mut impl Write, variants: &EnumMacroVariants) -> fmt::Result {
+fn render_enum_macro_variants(
+    write: &mut impl Write,
+    variants: &EnumMacroVariantsForSerde,
+) -> fmt::Result {
     let pairs = variants
         .iter()
         .map(|(name, constant)| format!("({name}, {constant})"))

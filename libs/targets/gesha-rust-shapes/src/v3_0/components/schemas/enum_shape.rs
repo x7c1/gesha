@@ -2,7 +2,7 @@ use crate::v3_0::components::schemas::{DefinitionShape, RefShape, TypeHeaderShap
 use gesha_collections::seq::TryMapOps;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{
-    EnumConstant, EnumDef, EnumMacroSerdeImpl, EnumVariant, EnumVariantAttribute, EnumVariantName,
+    EnumConstant, EnumDef, EnumMacroForSerde, EnumVariant, EnumVariantAttribute, EnumVariantName,
 };
 use openapi_types::v3_0::{EnumValue, EnumValues};
 
@@ -10,7 +10,7 @@ use openapi_types::v3_0::{EnumValue, EnumValues};
 pub struct EnumShape {
     pub header: TypeHeaderShape,
     pub variants: Vec<EnumVariantShape>,
-    pub macro_serde_impl: Option<EnumMacroSerdeImpl>,
+    pub macro_for_serde: Option<EnumMacroForSerde>,
 }
 
 impl EnumShape {
@@ -18,7 +18,7 @@ impl EnumShape {
         Ok(Self {
             header,
             variants: values.try_map(to_enum_variant)?,
-            macro_serde_impl: None,
+            macro_for_serde: None,
         })
     }
 
@@ -29,7 +29,7 @@ impl EnumShape {
 
     pub fn define(self) -> Result<EnumDef> {
         let variants = self.variants.try_map(|x| x.define())?;
-        let def = EnumDef::new(self.header.define(), variants, self.macro_serde_impl);
+        let def = EnumDef::new(self.header.define(), variants, self.macro_for_serde);
         Ok(def)
     }
 }

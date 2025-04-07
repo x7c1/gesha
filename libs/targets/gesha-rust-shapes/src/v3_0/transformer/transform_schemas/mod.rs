@@ -17,11 +17,11 @@ mod expand_inline_schemas;
 use expand_inline_schemas::expand_inline_schemas;
 use gesha_collections::tracking::WithContextOps;
 
-mod insert_impl_serde_macro;
-use insert_impl_serde_macro::insert_impl_serde_macro;
-
 mod insert_imports;
 use insert_imports::insert_imports;
+
+mod insert_macro_for_serde;
+use insert_macro_for_serde::insert_macro_for_serde;
 
 mod resolve_optional_fields;
 use resolve_optional_fields::resolve_optionality;
@@ -41,6 +41,6 @@ pub fn transform_schemas(mut shape: ComponentsShape) -> Result<ComponentsShape> 
     shape = resolve_type_path(shape).with_context("#(resolve_type_path)")?;
     shape = resolve_optionality(shape).with_context("#(resolve_optionality)")?;
     shape = insert_imports(shape).with_context("#(insert_imports)")?;
-    shape = insert_impl_serde_macro(shape).with_context("#(insert_impl_serde_macro)")?;
+    shape = insert_macro_for_serde(shape).with_context("#(insert_macro_for_serde)")?;
     Ok(shape)
 }

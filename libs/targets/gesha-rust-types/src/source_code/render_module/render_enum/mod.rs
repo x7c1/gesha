@@ -13,7 +13,7 @@ pub fn render_enum(write: &mut impl Write, x: &EnumDef) -> fmt::Result {
         "{}" > render_enum_variants => x.variants.iter();
         echo > "\n\n";
     }
-    if let Some(macro_impl) = &x.macro_serde_impl {
+    if let Some(macro_impl) = &x.macro_for_serde {
         render! { write =>
             echo > "gesha_macros::impl_enum_serde!";
             "()" > render_macro_for_serde => macro_impl;

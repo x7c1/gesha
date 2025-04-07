@@ -24,12 +24,12 @@ MixedTypeEnum:
 ```
 */
 #[derive(Clone, Debug, PartialEq)]
-pub struct EnumMacroSerdeImpl {
+pub struct EnumMacroForSerde {
     pub name: TypeIdentifier,
-    pub type_variants: IndexMap<EnumMacroType, EnumMacroVariants>,
+    pub type_variants: IndexMap<EnumMacroTypeForSerde, EnumMacroVariantsForSerde>,
 }
 
-impl EnumMacroSerdeImpl {
+impl EnumMacroForSerde {
     pub fn from_variants(name: TypeIdentifier, variants: Vec<EnumVariant>) -> Self {
         let type_variants = variants
             .into_iter()
@@ -37,8 +37,8 @@ impl EnumMacroSerdeImpl {
                 let EnumCase::Unit(constant) = variant.case else {
                     return map;
                 };
-                let enum_type = EnumMacroType::from(&constant);
-                let entry: &mut EnumMacroVariants = map.entry(enum_type).or_default();
+                let enum_type = EnumMacroTypeForSerde::from(&constant);
+                let entry: &mut EnumMacroVariantsForSerde = map.entry(enum_type).or_default();
                 entry.insert(variant.name, constant);
                 map
             });
@@ -51,7 +51,7 @@ impl EnumMacroSerdeImpl {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub enum EnumMacroType {
+pub enum EnumMacroTypeForSerde {
     Bool,
     I64,
     Null,
@@ -59,7 +59,7 @@ pub enum EnumMacroType {
     U64,
 }
 
-impl From<&EnumConstant> for EnumMacroType {
+impl From<&EnumConstant> for EnumMacroTypeForSerde {
     fn from(value: &EnumConstant) -> Self {
         match value {
             EnumConstant::Bool(_) => Self::Bool,
@@ -71,7 +71,7 @@ impl From<&EnumConstant> for EnumMacroType {
     }
 }
 
-impl Display for EnumMacroType {
+impl Display for EnumMacroTypeForSerde {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Bool => write!(f, "bool"),
@@ -84,9 +84,9 @@ impl Display for EnumMacroType {
 }
 
 #[derive(Clone, Debug, PartialEq, Default)]
-pub struct EnumMacroVariants(IndexMap<EnumVariantName, EnumConstant>);
+pub struct EnumMacroVariantsForSerde(IndexMap<EnumVariantName, EnumConstant>);
 
-impl EnumMacroVariants {
+impl EnumMacroVariantsForSerde {
     pub fn insert(&mut self, name: EnumVariantName, constant: EnumConstant) {
         self.0.insert(name, constant);
     }

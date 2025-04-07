@@ -3,9 +3,9 @@ use crate::v3_0::components::schemas::DefinitionShape::{Enum, Mod};
 use crate::v3_0::components::schemas::{EnumShape, ModShape};
 use gesha_collections::seq::TryMapOps;
 use gesha_core::conversions::Result;
-use gesha_rust_types::{DeriveAttribute, EnumMacroSerdeImpl, Package};
+use gesha_rust_types::{DeriveAttribute, EnumMacroForSerde, Package};
 
-pub fn insert_impl_serde_macro(mut shape: ComponentsShape) -> Result<ComponentsShape> {
+pub fn insert_macro_for_serde(mut shape: ComponentsShape) -> Result<ComponentsShape> {
     shape.schemas.root = transform_mod(shape.schemas.root)?;
     Ok(shape)
 }
@@ -48,9 +48,9 @@ fn transform_enum(mut shape: EnumShape) -> Result<EnumShape> {
         .header
         .remove_derive_attrs(&[DeriveAttribute::Serialize, DeriveAttribute::Deserialize]);
 
-    shape.macro_serde_impl = {
+    shape.macro_for_serde = {
         let variants = shape.variants.clone().try_map(|x| x.define())?;
-        let macro_impl = EnumMacroSerdeImpl::from_variants(shape.header.name.clone(), variants);
+        let macro_impl = EnumMacroForSerde::from_variants(shape.header.name.clone(), variants);
         Some(macro_impl)
     };
 
