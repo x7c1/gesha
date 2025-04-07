@@ -1,4 +1,4 @@
-use crate::{EnumMacroForSerde, EnumMacroTypeForSerde, EnumMacroVariantsForSerde, render};
+use crate::{EnumMacroForSerde, EnumMacroTypeForSerde, EnumMacroVariants, render};
 use indexmap::IndexMap;
 use std::fmt;
 use std::fmt::Write;
@@ -13,7 +13,7 @@ pub fn render_macro_for_serde(write: &mut impl Write, x: &EnumMacroForSerde) -> 
 
 fn render_enum_macro_type_variants(
     write: &mut impl Write,
-    type_variants: &IndexMap<EnumMacroTypeForSerde, EnumMacroVariantsForSerde>,
+    type_variants: &IndexMap<EnumMacroTypeForSerde, EnumMacroVariants>,
 ) -> fmt::Result {
     for (name, variants) in type_variants {
         render! { write =>
@@ -27,7 +27,7 @@ fn render_enum_macro_type_variants(
 
 fn render_enum_macro_variants(
     write: &mut impl Write,
-    variants: &EnumMacroVariantsForSerde,
+    variants: &EnumMacroVariants,
 ) -> fmt::Result {
     let pairs = variants
         .iter()

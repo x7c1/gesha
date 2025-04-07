@@ -17,9 +17,10 @@ mod enum_def;
 pub use enum_def::EnumDef;
 
 mod enum_macro_for_serde;
-pub use enum_macro_for_serde::{
-    EnumMacroForSerde, EnumMacroTypeForSerde, EnumMacroVariantsForSerde,
-};
+pub use enum_macro_for_serde::{EnumMacroForSerde, EnumMacroTypeForSerde};
+
+mod enum_macro_variants;
+pub use enum_macro_variants::EnumMacroVariants;
 
 mod enum_variant;
 pub use enum_variant::{EnumCase, EnumConstant, EnumVariant, EnumVariantAttribute};

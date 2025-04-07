@@ -1,4 +1,4 @@
-use crate::{EnumCase, EnumConstant, EnumVariant, EnumVariantName, TypeIdentifier};
+use crate::{EnumCase, EnumConstant, EnumMacroVariants, EnumVariant, TypeIdentifier};
 use indexmap::IndexMap;
 use std::fmt::Display;
 
@@ -26,7 +26,7 @@ MixedTypeEnum:
 #[derive(Clone, Debug, PartialEq)]
 pub struct EnumMacroForSerde {
     pub name: TypeIdentifier,
-    pub type_variants: IndexMap<EnumMacroTypeForSerde, EnumMacroVariantsForSerde>,
+    pub type_variants: IndexMap<EnumMacroTypeForSerde, EnumMacroVariants>,
 }
 
 impl EnumMacroForSerde {
@@ -38,7 +38,7 @@ impl EnumMacroForSerde {
                     return map;
                 };
                 let enum_type = EnumMacroTypeForSerde::from(&constant);
-                let entry: &mut EnumMacroVariantsForSerde = map.entry(enum_type).or_default();
+                let entry: &mut EnumMacroVariants = map.entry(enum_type).or_default();
                 entry.insert(variant.name, constant);
                 map
             });
@@ -87,17 +87,5 @@ impl Display for EnumMacroTypeForSerde {
             Self::Str => write!(f, "str"),
             Self::U64 => write!(f, "u64"),
         }
-    }
-}
-
-#[derive(Clone, Debug, PartialEq, Default)]
-pub struct EnumMacroVariantsForSerde(IndexMap<EnumVariantName, EnumConstant>);
-
-impl EnumMacroVariantsForSerde {
-    pub fn insert(&mut self, name: EnumVariantName, constant: EnumConstant) {
-        self.0.insert(name, constant);
-    }
-    pub fn iter(&self) -> impl Iterator<Item = (&EnumVariantName, &EnumConstant)> {
-        self.0.iter()
     }
 }
