@@ -25,10 +25,7 @@ fn render_enum_macro_type_variants(
     Ok(())
 }
 
-fn render_enum_macro_variants(
-    write: &mut impl Write,
-    variants: &EnumMacroVariants,
-) -> fmt::Result {
+fn render_enum_macro_variants(write: &mut impl Write, variants: &EnumMacroVariants) -> fmt::Result {
     let pairs = variants
         .iter()
         .map(|(name, constant)| format!("({name}, {constant})"))

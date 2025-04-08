@@ -16,6 +16,9 @@ pub use doc_comments::DocComments;
 mod enum_def;
 pub use enum_def::EnumDef;
 
+mod enum_macro_for_from;
+pub use enum_macro_for_from::{EnumMacroForFrom, EnumMacroTypeForFrom};
+
 mod enum_macro_for_serde;
 pub use enum_macro_for_serde::{EnumMacroForSerde, EnumMacroTypeForSerde};
 

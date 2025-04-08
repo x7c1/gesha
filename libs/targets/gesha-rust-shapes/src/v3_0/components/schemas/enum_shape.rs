@@ -3,7 +3,8 @@ use gesha_collections::seq::TryMapOps;
 use gesha_core::conversions::Error::EnumFormatMismatch;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{
-    EnumConstant, EnumDef, EnumMacroForSerde, EnumVariant, EnumVariantAttribute, EnumVariantName,
+    EnumConstant, EnumDef, EnumMacroForFrom, EnumMacroForSerde, EnumVariant, EnumVariantAttribute,
+    EnumVariantName,
 };
 use openapi_types::v3_0::{EnumValue, EnumValues, FormatModifier};
 
@@ -12,6 +13,7 @@ pub struct EnumShape {
     pub header: TypeHeaderShape,
     pub variants: Vec<EnumVariantShape>,
     pub macro_for_serde: Option<EnumMacroForSerde>,
+    pub macro_for_from: Option<EnumMacroForFrom>,
     pub format: Option<FormatModifier>,
 }
 
@@ -25,6 +27,7 @@ impl EnumShape {
             header,
             variants: values.try_map(|value| to_enum_variant(value, &format))?,
             macro_for_serde: None,
+            macro_for_from: None,
             format,
         })
     }
@@ -177,10 +180,26 @@ impl EnumVariantShape {
     pub fn erase_attributes(&mut self) {
         self.attributes = vec![];
     }
+
+    pub fn constant(&self) -> Option<&EnumConstant> {
+        let EnumCaseShape::Unit(constant) = &self.case else {
+            return None;
+        };
+        Some(constant)
+    }
 }
 
 #[derive(Clone, Debug)]
 pub enum EnumCaseShape {
     Unit(EnumConstant),
     Tuple(Vec<TypeShape>),
+}
+
+impl EnumCaseShape {
+    pub fn to_constant(&self) -> Option<&EnumConstant> {
+        let EnumCaseShape::Unit(constant) = self else {
+            return None;
+        };
+        Some(constant)
+    }
 }

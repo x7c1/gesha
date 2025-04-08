@@ -52,6 +52,18 @@ pub enum EnumConstant {
     Str(String),
 }
 
+impl EnumConstant {
+    pub fn type_name(&self) -> &str {
+        match self {
+            EnumConstant::Bool(_) => "bool",
+            EnumConstant::I32(_) => "i32",
+            EnumConstant::I64(_) => "i64",
+            EnumConstant::Null => "null",
+            EnumConstant::Str(_) => "str",
+        }
+    }
+}
+
 impl Display for EnumConstant {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {

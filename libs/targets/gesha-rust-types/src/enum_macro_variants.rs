@@ -1,5 +1,5 @@
-use indexmap::IndexMap;
 use crate::{EnumConstant, EnumVariantName};
+use indexmap::IndexMap;
 
 #[derive(Clone, Debug, PartialEq, Default)]
 pub struct EnumMacroVariants(IndexMap<EnumVariantName, EnumConstant>);
