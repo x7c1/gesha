@@ -18,7 +18,6 @@ fn transform_mod(mut shape: ModShape, depth: usize) -> Result<ModShape> {
         Enum(x) => Ok(transform_enum(x, depth)?.into()),
         _ => Result::Ok(x),
     })?;
-
     Ok(shape)
 }
 
@@ -27,19 +26,6 @@ fn transform_enum(mut shape: EnumShape, depth: usize) -> Result<EnumShape> {
         // the macro is not used for empty enums
         return Ok(shape);
     }
-    let all_same_type = shape
-        .variants
-        .iter()
-        .map(|x| x.constant().map(|y| y.type_name()))
-        .collect::<Vec<_>>()
-        .windows(2)
-        .all(|xs| xs[0] == xs[1]);
-
-    if !all_same_type {
-        // the macro is not used for enums with different types
-        return Ok(shape);
-    }
-
     let named_constants = shape
         .variants
         .iter()
@@ -51,13 +37,22 @@ fn transform_enum(mut shape: EnumShape, depth: usize) -> Result<EnumShape> {
         // the macro is not used for enums with non-constant variants
         return Ok(shape);
     }
+    let all_same_type = named_constants
+        .iter()
+        .map(|(_, constant)| constant.type_name())
+        .collect::<Vec<_>>()
+        .windows(2)
+        .all(|xs| xs[0] == xs[1]);
 
+    if !all_same_type {
+        // the macro is not used for enums with different types
+        return Ok(shape);
+    }
     let (_name, constant) = named_constants[0];
     let Some(target_type) = EnumMacroTypeForFrom::from_constant(constant) else {
         // the macro is not used for unsupported types
         return Ok(shape);
     };
-
     let variants = named_constants.into_iter().fold(
         EnumMacroVariants::default(),
         |mut variants, (name, constant)| {
@@ -65,7 +60,6 @@ fn transform_enum(mut shape: EnumShape, depth: usize) -> Result<EnumShape> {
             variants
         },
     );
-
     shape.macro_for_from = Some(EnumMacroForFrom {
         name: shape.header.name.clone(),
         types: vec![target_type],

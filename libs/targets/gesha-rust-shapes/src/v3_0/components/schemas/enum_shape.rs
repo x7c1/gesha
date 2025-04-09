@@ -187,10 +187,7 @@ impl EnumVariantShape {
     }
 
     pub fn constant(&self) -> Option<&EnumConstant> {
-        let EnumCaseShape::Unit(constant) = &self.case else {
-            return None;
-        };
-        Some(constant)
+        self.case.to_constant()
     }
 }
 
