@@ -1,3 +1,4 @@
+use super::render_enum_macro_variants;
 use crate::{EnumMacroForSerde, EnumMacroTypeForSerde, EnumMacroVariants, render};
 use indexmap::IndexMap;
 use std::fmt;
@@ -21,19 +22,6 @@ fn render_enum_macro_type_variants(
             "[]" > render_enum_macro_variants => variants;
             echo > ",";
         }
-    }
-    Ok(())
-}
-
-fn render_enum_macro_variants(write: &mut impl Write, variants: &EnumMacroVariants) -> fmt::Result {
-    let pairs = variants
-        .iter()
-        .map(|(name, constant)| format!("({name}, {constant})"))
-        .collect::<Vec<_>>()
-        .join(",");
-
-    render! { write =>
-        echo > "{pairs}";
     }
     Ok(())
 }

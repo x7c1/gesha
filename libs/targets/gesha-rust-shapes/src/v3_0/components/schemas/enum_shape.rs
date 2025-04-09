@@ -39,7 +39,12 @@ impl EnumShape {
 
     pub fn define(self) -> Result<EnumDef> {
         let variants = self.variants.try_map(|x| x.define())?;
-        let def = EnumDef::new(self.header.define(), variants, self.macro_for_serde);
+        let def = EnumDef::new(
+            self.header.define(),
+            variants,
+            self.macro_for_serde,
+            self.macro_for_from,
+        );
         Ok(def)
     }
 }

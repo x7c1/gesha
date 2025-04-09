@@ -12,7 +12,7 @@ pub fn insert_macro_for_from(mut shape: ComponentsShape) -> Result<ComponentsSha
     Ok(shape)
 }
 
-fn transform_mod(mut shape: ModShape, depth: u16) -> Result<ModShape> {
+fn transform_mod(mut shape: ModShape, depth: usize) -> Result<ModShape> {
     shape.defs = shape.defs.try_map(|x| match x {
         Mod(x) => Ok(transform_mod(x, depth + 1)?.into()),
         Enum(x) => Ok(transform_enum(x, depth)?.into()),
@@ -22,7 +22,7 @@ fn transform_mod(mut shape: ModShape, depth: u16) -> Result<ModShape> {
     Ok(shape)
 }
 
-fn transform_enum(mut shape: EnumShape, depth: u16) -> Result<EnumShape> {
+fn transform_enum(mut shape: EnumShape, depth: usize) -> Result<EnumShape> {
     if shape.variants.is_empty() {
         // the macro is not used for empty enums
         return Ok(shape);
