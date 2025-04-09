@@ -1,5 +1,6 @@
 mod array_object_nested;
 mod camel_case_fields;
+mod enum_numeric;
 mod enums;
 mod enums_mixed_type;
 mod newtype;

@@ -16,7 +16,9 @@ macro_rules! impl_enum_serde {
             {
                 match *self {
                     $($(
-                        $enum_name::$variant => $crate::impl_serialize_variant!{ $type [serializer, $value] },
+                        $enum_name::$variant => $crate::private_impl_serialize_variant!{
+                            $type [serializer, $value]
+                        },
                     )*)*
                 }
             }
@@ -36,7 +38,7 @@ macro_rules! impl_enum_serde {
                         write!(formatter, "{}", variants.join(" or "))
                     }
                     $(
-                        $crate::impl_deserialize_variant! {
+                        $crate::private_impl_deserialize_variant! {
                             $enum_name,
                             $type [$($value => $variant),*]
                         }
@@ -49,21 +51,21 @@ macro_rules! impl_enum_serde {
 }
 
 #[macro_export]
-macro_rules! impl_deserialize_variant {
+macro_rules! private_impl_deserialize_variant {
     ($enum_name:ident, u64 [ $($value:expr => $variant:ident),* ]) => {
-        $crate::impl_deserialize_variant! { $enum_name, visit_u64, u64 [$($value => $variant),*] }
+        $crate::private_impl_deserialize_variant! { $enum_name, visit_u64, u64 [$($value => $variant),*] }
     };
     ($enum_name:ident, i64 [ $($value:expr => $variant:ident),* ]) => {
-        $crate::impl_deserialize_variant! { $enum_name, visit_i64, i64 [$($value => $variant),*] }
+        $crate::private_impl_deserialize_variant! { $enum_name, visit_i64, i64 [$($value => $variant),*] }
     };
     ($enum_name:ident, str [ $($value:expr => $variant:ident),* ]) => {
-        $crate::impl_deserialize_variant! { $enum_name, visit_str, &str [$($value => $variant),*] }
+        $crate::private_impl_deserialize_variant! { $enum_name, visit_str, &str [$($value => $variant),*] }
     };
     ($enum_name:ident, bool [ $($value:expr => $variant:ident),* ]) => {
-        $crate::impl_deserialize_variant! { $enum_name, visit_bool, bool [$($value => $variant),*] }
+        $crate::private_impl_deserialize_variant! { $enum_name, visit_bool, bool [$($value => $variant),*] }
     };
     ($enum_name:ident, null [ $($value:expr => $variant:ident),* ]) => {
-        $crate::impl_deserialize_variant! { $enum_name, visit_unit [$($value => $variant),*] }
+        $crate::private_impl_deserialize_variant! { $enum_name, visit_unit [$($value => $variant),*] }
     };
     (
         $enum_name:ident,
@@ -100,7 +102,7 @@ macro_rules! impl_deserialize_variant {
 }
 
 #[macro_export]
-macro_rules! impl_serialize_variant {
+macro_rules! private_impl_serialize_variant {
     (u64 [$serializer:ident, $value:expr]) => {
         $serializer.serialize_u64($value)
     };

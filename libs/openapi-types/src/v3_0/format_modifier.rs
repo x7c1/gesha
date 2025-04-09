@@ -1,7 +1,7 @@
 use crate::Result;
 use std::fmt::{Display, Formatter};
 
-/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#dataTypes
+/// https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.4.md#data-type-format
 #[derive(Clone, Debug)]
 pub enum FormatModifier {
     Int32,

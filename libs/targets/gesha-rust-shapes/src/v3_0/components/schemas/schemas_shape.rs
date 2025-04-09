@@ -41,6 +41,10 @@ impl SchemasShape {
         self.root.defs.iter().any(|x| x.any_type(f))
     }
 
+    pub fn any_enum(&self, f: &impl Fn(&EnumShape) -> bool) -> bool {
+        self.root.defs.iter().any(|x| x.any_enum(f))
+    }
+
     pub fn find_type_name(&self, target: &RefShape) -> Option<&TypeIdentifier> {
         self.find_header(target).map(|x| &x.name)
     }
@@ -146,6 +150,7 @@ impl Shaper {
                 let cases = self.object.one_of.expect("one_of must be Some.");
                 OneOfItemShapes::from_schema_cases(cases).to_result()?
             },
+            format: self.object.format,
         };
         Ok(shape.into())
     }
@@ -159,7 +164,7 @@ impl Shaper {
     }
 
     fn for_enum(self, values: EnumValues) -> Result<DefinitionShape> {
-        let shape = EnumShape::new(self.create_type_header(), values)?;
+        let shape = EnumShape::new(self.create_type_header(), values, self.object.format)?;
         Ok(shape.into())
     }
 

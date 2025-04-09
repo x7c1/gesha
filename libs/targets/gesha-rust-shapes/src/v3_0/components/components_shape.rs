@@ -1,6 +1,6 @@
 use crate::v3_0::components::core::CoreShape;
 use crate::v3_0::components::request_bodies::RequestBodiesShape;
-use crate::v3_0::components::schemas::{SchemasShape, TypeShape};
+use crate::v3_0::components::schemas::{EnumShape, SchemasShape, TypeShape};
 use gesha_collections::partial_result::MaybeOps;
 use gesha_collections::tracking::WithContextOps;
 use gesha_core::conversions::Output;
@@ -44,5 +44,9 @@ impl ComponentsShape {
 
     pub fn any_type(&self, f: impl Fn(&TypeShape) -> bool) -> bool {
         self.schemas.any_type(&f)
+    }
+
+    pub fn any_enum(&self, f: impl Fn(&EnumShape) -> bool) -> bool {
+        self.schemas.any_enum(&f)
     }
 }

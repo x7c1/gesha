@@ -1,4 +1,4 @@
-use crate::v3_0::components::schemas::{DefinitionShape, TypeShape};
+use crate::v3_0::components::schemas::{DefinitionShape, EnumShape, TypeShape};
 use gesha_collections::seq::TryMapOps;
 use gesha_core::conversions::Result;
 use gesha_rust_types::{Definitions, DeriveAttribute, ModDef, ModuleName, Package};
@@ -25,6 +25,10 @@ impl ModShape {
 
     pub fn any_type_directly(&self, f: &impl Fn(&TypeShape) -> bool) -> bool {
         self.defs.iter().any(|x| x.any_type_directly(f))
+    }
+
+    pub fn any_enum(&self, f: &impl Fn(&EnumShape) -> bool) -> bool {
+        self.defs.iter().any(|x| x.any_enum(f))
     }
 
     pub fn any_derive_directly(&self, mut f: impl FnMut(&DeriveAttribute) -> bool) -> bool {

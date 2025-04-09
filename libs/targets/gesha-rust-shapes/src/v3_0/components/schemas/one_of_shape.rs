@@ -1,11 +1,13 @@
 use crate::v3_0::components::schemas::{
     DefinitionShape, FieldShape, OneOfItemShapes, RefShape, TypeHeaderShape, TypeShape,
 };
+use openapi_types::v3_0::FormatModifier;
 
 #[derive(Clone, Debug)]
 pub struct OneOfShape {
     pub header: TypeHeaderShape,
     pub items: OneOfItemShapes,
+    pub format: Option<FormatModifier>,
 }
 
 impl OneOfShape {

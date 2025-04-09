@@ -196,13 +196,14 @@ fn expand_inline_type_shape(
         }
         InlineShape::Enum(inline) => {
             let values = inline.enum_values.unwrap_or_default();
-            let shape = EnumShape::new(header, values)?;
+            let shape = EnumShape::new(header, values, inline.format)?;
             vec![Enum(shape)]
         }
         InlineShape::OneOf(inline) => {
             let shape = OneOfShape {
                 header,
                 items: inline.one_of,
+                format: inline.format,
             };
             vec![OneOf(shape)]
         }

@@ -760,6 +760,7 @@ version = "0.0.1"
 dependencies = [
  "gesha-macros",
  "pretty_assertions",
+ "rstest",
  "serde",
  "serde_json",
 ]

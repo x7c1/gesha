@@ -48,11 +48,35 @@ pub mod schemas {
                     Minus400,
                 }
 
-                gesha_macros::impl_enum_serde!(Sample1Nested2 {
-                    u64: [(_300, 300)],
-                    i64: [(Minus400, -400)],
-                });
+                gesha_macros::impl_enum!(
+                    impl Serialize,
+                    impl Deserialize,
+                    Sample1Nested2 {
+                        u64: [(_300, 300)],
+                        i64: [(Minus400, -400)],
+                    },
+                );
+
+                gesha_macros::impl_enum!(
+                    impl From<Sample1Nested2>,
+                    impl TryFrom<i64>,
+                    super::super::super::super::core::Error,
+                    [(_300, 300), (Minus400, -400)],
+                );
             }
         }
+    }
+}
+
+pub mod core {
+
+    pub type Result<A> = std::result::Result<A, Error>;
+
+    #[derive(Debug)]
+    pub enum Error {
+        UnknownEnumValue {
+            enum_name: &'static str,
+            given: String,
+        },
     }
 }

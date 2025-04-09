@@ -1,0 +1,8 @@
+schemas:
+  IntEnum:
+    type: integer
+    format: int32
+    enum:
+      - 0
+      - 100
+      - 200

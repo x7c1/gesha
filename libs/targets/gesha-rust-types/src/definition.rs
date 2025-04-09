@@ -4,7 +4,7 @@ use crate::{DataType, EnumDef, ModDef, NewTypeDef, PresetDef, RequestBodyDef, St
 pub enum Definition {
     StructDef(StructDef),
     NewTypeDef(NewTypeDef),
-    EnumDef(EnumDef),
+    EnumDef(Box<EnumDef>),
     PresetDef(PresetDef),
     RequestBodyDef(RequestBodyDef),
     ModDef(ModDef),

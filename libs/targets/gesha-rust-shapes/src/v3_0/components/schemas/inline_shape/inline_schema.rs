@@ -1,7 +1,7 @@
 use crate::v3_0::components::schemas::type_header_shape::HeaderBody;
 use crate::v3_0::components::schemas::{AllOfItemShapes, FieldShape, OneOfItemShapes, Optionality};
 use gesha_core::conversions::Result;
-use openapi_types::v3_0::{EnumValues, RequiredSchemaFields, SchemaObject};
+use openapi_types::v3_0::{EnumValues, FormatModifier, RequiredSchemaFields, SchemaObject};
 
 #[derive(Clone, Debug)]
 pub struct InlineSchema {
@@ -13,6 +13,7 @@ pub struct InlineSchema {
     pub one_of: OneOfItemShapes,
     pub enum_values: Option<EnumValues>,
     pub optionality: Optionality,
+    pub format: Option<FormatModifier>,
 }
 
 impl InlineSchema {
@@ -32,6 +33,7 @@ impl InlineSchema {
             description: object.description.clone(),
             required: object.required.clone(),
             enum_values: object.enum_values.clone(),
+            format: object.format.clone(),
             fields: FieldShape::from_object(object).to_result()?,
             all_of,
             one_of,
