@@ -4,13 +4,24 @@ use std::fmt;
 use std::fmt::Write;
 
 pub fn render_macro_for_from(write: &mut impl Write, x: &EnumMacroForFrom) -> fmt::Result {
-    let prefix = ["super"].repeat(x.depth).join("::");
-
     render! { write =>
-        echo > "{name},", name = x.name;
-        echo > "{prefix}::core::Error,";
-        "[]" > render_types => &x.types;
+        echo > "gesha_macros::impl_enum!";
+        "()" > render_body => x;
+        echo > ";";
+        echo > "\n\n";
+    }
+
+    Ok(())
+}
+
+fn render_body(write: &mut impl Write, x: &EnumMacroForFrom) -> fmt::Result {
+    let prefix = ["super"].repeat(x.depth).join("::");
+    render! { write =>
+        echo > "impl From<{name}>,", name = x.name;
+        echo > "impl TryFrom";
+        "<>" > render_types => &x.types;
         echo > ",";
+        echo > "{prefix}::core::Error,";
         "[]" > render_enum_macro_variants => &x.variants;
         echo > ",";
     }

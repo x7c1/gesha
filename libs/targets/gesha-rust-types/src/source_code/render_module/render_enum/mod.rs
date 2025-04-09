@@ -17,20 +17,10 @@ pub fn render_enum(write: &mut impl Write, x: &EnumDef) -> fmt::Result {
         echo > "\n\n";
     }
     if let Some(macro_impl) = &x.macro_for_serde {
-        render! { write =>
-            echo > "gesha_macros::impl_enum_serde!";
-            "()" > render_macro_for_serde => macro_impl;
-            echo > ";";
-            echo > "\n\n";
-        }
+        render_macro_for_serde(write, macro_impl)?;
     }
     if let Some(macro_impl) = &x.macro_for_from {
-        render! { write =>
-            echo > "gesha_macros::impl_enum_from!";
-            "()" > render_macro_for_from => macro_impl;
-            echo > ";";
-            echo > "\n\n";
-        }
+        render_macro_for_from(write, macro_impl)?;
     }
     Ok(())
 }

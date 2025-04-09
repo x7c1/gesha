@@ -6,8 +6,21 @@ use std::fmt::Write;
 
 pub fn render_macro_for_serde(write: &mut impl Write, x: &EnumMacroForSerde) -> fmt::Result {
     render! { write =>
+        echo > "gesha_macros::impl_enum!";
+        "()" > render_body => x;
+        echo > ";";
+        echo > "\n\n";
+    }
+    Ok(())
+}
+
+fn render_body(write: &mut impl Write, x: &EnumMacroForSerde) -> fmt::Result {
+    render! { write =>
+        echo > "impl Serialize,";
+        echo > "impl Deserialize,";
         echo > "{name}", name = x.name;
         "{}" > render_enum_macro_type_variants => &x.type_variants;
+        echo > ",";
     }
     Ok(())
 }
