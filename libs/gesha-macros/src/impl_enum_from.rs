@@ -59,7 +59,7 @@ macro_rules! private_impl_enum_try_from {
                     )*
                     _ => Err(Self::Error::UnknownEnumValue {
                         enum_name: stringify!($enum_name),
-                        value: value.to_string(),
+                        given: value.to_string(),
                     }),
                 }
             }

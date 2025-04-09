@@ -41,6 +41,10 @@ impl SchemasShape {
         self.root.defs.iter().any(|x| x.any_type(f))
     }
 
+    pub fn any_enum(&self, f: &impl Fn(&EnumShape) -> bool) -> bool {
+        self.root.defs.iter().any(|x| x.any_enum(f))
+    }
+
     pub fn find_type_name(&self, target: &RefShape) -> Option<&TypeIdentifier> {
         self.find_header(target).map(|x| &x.name)
     }
