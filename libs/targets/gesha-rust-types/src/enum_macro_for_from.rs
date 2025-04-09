@@ -4,10 +4,10 @@ use std::fmt::{Display, Formatter};
 /**
 Rendered as follows:
 ```ignore
-gesha_macros::impl_enum_from!(
-    IntEnum,
+gesha_macros::impl_enum!(
+    impl From<IntEnum>,
+    impl TryFrom<i32>,
     super::core::Error,
-    [i32],
     [(_0, 0), (_100, 100), (_200, 200)],
 );
 ```
