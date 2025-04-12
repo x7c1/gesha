@@ -909,7 +909,7 @@ dependencies = [
 
 [[package]]
 name = "gesha"
-version = "0.0.11"
+version = "0.0.12"
 dependencies = [
  "clap",
  "gesha-core",
@@ -928,7 +928,7 @@ dependencies = [
 
 [[package]]
 name = "gesha-core"
-version = "0.0.11"
+version = "0.0.12"
 dependencies = [
  "chrono",
  "console",
@@ -948,11 +948,11 @@ dependencies = [
 
 [[package]]
 name = "gesha-macros"
-version = "0.0.2"
+version = "0.0.3"
 
 [[package]]
 name = "gesha-rust-shapes"
-version = "0.0.11"
+version = "0.0.12"
 dependencies = [
  "gesha-collections",
  "gesha-core",
@@ -965,7 +965,7 @@ dependencies = [
 
 [[package]]
 name = "gesha-rust-types"
-version = "0.0.5"
+version = "0.0.6"
 dependencies = [
  "gesha-collections",
  "gesha-core",
@@ -1633,7 +1633,7 @@ checksum = "1261fe7e33c73b354eab43b1273a57c8f967d0391e80353e51f764ac02cf6775"
 
 [[package]]
 name = "openapi-types"
-version = "0.0.8"
+version = "0.0.9"
 dependencies = [
  "gesha-collections",
  "heck",
