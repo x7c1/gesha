@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.9](https://github.com/x7c1/gesha/compare/openapi-types-v0.0.8...openapi-types-v0.0.9) - 2025-04-12
+
+### Added
+
+- generate From and TryFrom impls for numeric enums ([#148](https://github.com/x7c1/gesha/pull/148))
+
 ## [0.0.8](https://github.com/x7c1/gesha/compare/openapi-types-v0.0.7...openapi-types-v0.0.8) - 2025-04-05
 
 ### Added

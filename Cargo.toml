@@ -9,11 +9,11 @@ resolver = "2"
 
 [workspace.dependencies]
 gesha-collections = { version = "0.0.2", path = "libs/gesha-collections" }
-gesha-core = { version = "0.0.11", path = "libs/gesha-core" }
-gesha-macros = { version = "0.0.2", path = "libs/gesha-macros" }
-gesha-rust-shapes = { version = "0.0.11", path = "libs/targets/gesha-rust-shapes" }
-gesha-rust-types = { version = "0.0.5", path = "libs/targets/gesha-rust-types" }
-openapi-types = { version = "0.0.8", path = "libs/openapi-types" }
+gesha-core = { version = "0.0.12", path = "libs/gesha-core" }
+gesha-macros = { version = "0.0.3", path = "libs/gesha-macros" }
+gesha-rust-shapes = { version = "0.0.12", path = "libs/targets/gesha-rust-shapes" }
+gesha-rust-types = { version = "0.0.6", path = "libs/targets/gesha-rust-types" }
+openapi-types = { version = "0.0.9", path = "libs/openapi-types" }
 
 async-trait = "0.1.88"
 clap = { version = "4.5.36", features = ["derive"] }

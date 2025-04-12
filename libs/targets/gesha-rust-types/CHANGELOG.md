@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.6](https://github.com/x7c1/gesha/compare/gesha-rust-types-v0.0.5...gesha-rust-types-v0.0.6) - 2025-04-12
+
+### Added
+
+- generate From and TryFrom impls for numeric enums ([#148](https://github.com/x7c1/gesha/pull/148))
+
 ## [0.0.5](https://github.com/x7c1/gesha/compare/gesha-rust-types-v0.0.4...gesha-rust-types-v0.0.5) - 2025-04-05
 
 ### Added
