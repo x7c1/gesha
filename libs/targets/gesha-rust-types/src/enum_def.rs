@@ -1,10 +1,11 @@
-use crate::{Definition, EnumMacroImpl, EnumVariant, TypeHeader};
+use crate::{Definition, EnumMacroForFrom, EnumMacroForSerde, EnumVariant, TypeHeader};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct EnumDef {
     pub header: TypeHeader,
     pub variants: Vec<EnumVariant>,
-    pub macro_impl: Option<EnumMacroImpl>,
+    pub macro_for_serde: Option<EnumMacroForSerde>,
+    pub macro_for_from: Option<EnumMacroForFrom>,
     _hide_default_constructor: bool,
 }
 
@@ -12,12 +13,14 @@ impl EnumDef {
     pub fn new(
         header: TypeHeader,
         variants: Vec<EnumVariant>,
-        macro_impl: Option<EnumMacroImpl>,
+        macro_for_serde: Option<EnumMacroForSerde>,
+        macro_for_from: Option<EnumMacroForFrom>,
     ) -> Self {
         Self {
             header,
-            macro_impl,
             variants,
+            macro_for_serde,
+            macro_for_from,
             _hide_default_constructor: true,
         }
     }
@@ -28,6 +31,6 @@ impl EnumDef {
 
 impl From<EnumDef> for Definition {
     fn from(this: EnumDef) -> Self {
-        Self::EnumDef(this)
+        Self::EnumDef(Box::new(this))
     }
 }

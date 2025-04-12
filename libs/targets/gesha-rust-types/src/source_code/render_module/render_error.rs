@@ -25,6 +25,9 @@ pub fn render_error(write: &mut impl Write, x: &ErrorDef) -> fmt::Result {
 fn format_variant(x: &ErrorVariant) -> &'static str {
     match x {
         ErrorVariant::InvalidJson => "InvalidJson(serde_json::Error)",
+        ErrorVariant::UnknownEnumValue => {
+            "UnknownEnumValue { enum_name: &'static str, given: String }"
+        }
         ErrorVariant::UnsupportedMediaType => "UnsupportedMediaType { given: String }",
     }
 }

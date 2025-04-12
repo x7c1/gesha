@@ -25,5 +25,6 @@ impl ErrorDef {
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub enum ErrorVariant {
     InvalidJson,
+    UnknownEnumValue,
     UnsupportedMediaType,
 }

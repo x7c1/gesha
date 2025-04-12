@@ -16,8 +16,14 @@ pub use doc_comments::DocComments;
 mod enum_def;
 pub use enum_def::EnumDef;
 
-mod enum_macro_impl;
-pub use enum_macro_impl::{EnumMacroImpl, EnumMacroType, EnumMacroVariants};
+mod enum_macro_for_from;
+pub use enum_macro_for_from::{EnumMacroForFrom, EnumMacroTypeForFrom};
+
+mod enum_macro_for_serde;
+pub use enum_macro_for_serde::{EnumMacroForSerde, EnumMacroTypeForSerde};
+
+mod enum_macro_variants;
+pub use enum_macro_variants::EnumMacroVariants;
 
 mod enum_variant;
 pub use enum_variant::{EnumCase, EnumConstant, EnumVariant, EnumVariantAttribute};

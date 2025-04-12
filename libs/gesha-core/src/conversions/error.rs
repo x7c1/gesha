@@ -8,6 +8,13 @@ pub type Output<A> = PartialResult<A, Error>;
 
 #[derive(Debug)]
 pub enum Error {
+    /// Cause: Client
+    /// - e.g., `format: "int32"` with a value that exceeds the `i32` range.
+    EnumFormatMismatch {
+        format: String,
+        value: String,
+    },
+
     Enclosed {
         key: String,
         cause: Box<Error>,

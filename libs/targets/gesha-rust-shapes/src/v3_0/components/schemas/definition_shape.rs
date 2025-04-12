@@ -51,6 +51,14 @@ impl DefinitionShape {
         }
     }
 
+    pub fn any_enum(&self, f: &impl Fn(&EnumShape) -> bool) -> bool {
+        match self {
+            Self::Enum(x) => f(x),
+            Self::Mod(x) => x.any_enum(f),
+            _ => false,
+        }
+    }
+
     pub fn any_derive_directly(&self, f: impl FnMut(&DeriveAttribute) -> bool) -> bool {
         let header = match self {
             Self::AllOf(x) => &x.header,
