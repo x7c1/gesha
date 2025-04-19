@@ -37,7 +37,6 @@ pub enum EnumMacroTypeForFrom {
     I32,
     I64,
     String,
-    // TODO: support Bool type.
 }
 
 impl EnumMacroTypeForFrom {
