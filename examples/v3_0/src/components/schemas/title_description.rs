@@ -72,6 +72,13 @@ pub mod schemas {
         Bar,
     }
 
+    gesha_macros::impl_enum!(
+        impl From<EnumWithTitle>,
+        impl TryFrom<String>,
+        super::core::Error,
+        [(Foo, "Foo"), (Bar, "Bar")],
+    );
+
     /**
     Sample2
     */
@@ -98,5 +105,18 @@ pub mod schemas {
 
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub x2: Option<i64>,
+    }
+}
+
+pub mod core {
+
+    pub type Result<A> = std::result::Result<A, Error>;
+
+    #[derive(Debug)]
+    pub enum Error {
+        UnknownEnumValue {
+            enum_name: &'static str,
+            given: String,
+        },
     }
 }

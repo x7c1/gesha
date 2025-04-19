@@ -40,4 +40,24 @@ pub mod schemas {
         #[serde(rename = "c")]
         C,
     }
+
+    gesha_macros::impl_enum!(
+        impl From<EnumSample>,
+        impl TryFrom<String>,
+        super::core::Error,
+        [(A, "a"), (B, "b"), (C, "c")],
+    );
+}
+
+pub mod core {
+
+    pub type Result<A> = std::result::Result<A, Error>;
+
+    #[derive(Debug)]
+    pub enum Error {
+        UnknownEnumValue {
+            enum_name: &'static str,
+            given: String,
+        },
+    }
 }

@@ -32,5 +32,25 @@ pub mod schemas {
             A,
             B,
         }
+
+        gesha_macros::impl_enum!(
+            impl From<X1>,
+            impl TryFrom<String>,
+            super::super::core::Error,
+            [(A, "A"), (B, "B")],
+        );
+    }
+}
+
+pub mod core {
+
+    pub type Result<A> = std::result::Result<A, Error>;
+
+    #[derive(Debug)]
+    pub enum Error {
+        UnknownEnumValue {
+            enum_name: &'static str,
+            given: String,
+        },
     }
 }

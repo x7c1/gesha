@@ -8,6 +8,43 @@ mod enum1 {
         let expected = r#""ERROR1""#;
         assert_eq!(actual, expected)
     }
+
+    #[test]
+    fn from_string() {
+        let source = "ERROR1".to_string();
+        let actual = StringEnum1::try_from(source).unwrap();
+        let expected = StringEnum1::Error1;
+        assert_eq!(actual, expected)
+    }
+
+    #[test]
+    fn from_str() {
+        let source = "ERROR2";
+        let actual = StringEnum1::try_from(source).unwrap();
+        let expected = StringEnum1::Error2;
+        assert_eq!(actual, expected)
+    }
+
+    #[test]
+    fn into_string() {
+        let actual: String = StringEnum1::Error1.into();
+        let expected = "ERROR1".to_string();
+        assert_eq!(actual, expected)
+    }
+
+    #[test]
+    fn into_str() {
+        let actual: &str = StringEnum1::Error2.into();
+        let expected = "ERROR2";
+        assert_eq!(actual, expected)
+    }
+
+    #[test]
+    fn as_ref_str() {
+        let actual: &str = StringEnum1::Error2.as_ref();
+        let expected = "ERROR2";
+        assert_eq!(actual, expected)
+    }
 }
 
 mod enum2 {

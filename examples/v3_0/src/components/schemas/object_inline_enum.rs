@@ -22,6 +22,13 @@ pub mod schemas {
             #[serde(rename = "x2")]
             X2,
         }
+
+        gesha_macros::impl_enum!(
+            impl From<Sample0Nested1>,
+            impl TryFrom<String>,
+            super::super::core::Error,
+            [(X1, "x1"), (X2, "x2")],
+        );
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -50,6 +57,26 @@ pub mod schemas {
                 #[serde(rename = "y2")]
                 Y2,
             }
+
+            gesha_macros::impl_enum!(
+                impl From<Sample1Nested2>,
+                impl TryFrom<String>,
+                super::super::super::core::Error,
+                [(Y1, "y1"), (Y2, "y2")],
+            );
         }
+    }
+}
+
+pub mod core {
+
+    pub type Result<A> = std::result::Result<A, Error>;
+
+    #[derive(Debug)]
+    pub enum Error {
+        UnknownEnumValue {
+            enum_name: &'static str,
+            given: String,
+        },
     }
 }

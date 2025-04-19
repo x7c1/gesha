@@ -14,4 +14,28 @@ pub mod schemas {
         #[serde(rename = "1+abc%3")]
         _1PlusAbcPercent3,
     }
+
+    gesha_macros::impl_enum!(
+        impl From<Symbols>,
+        impl TryFrom<String>,
+        super::core::Error,
+        [
+            (Minus, "-"),
+            (SlashAsterisk, "/*"),
+            (_1PlusAbcPercent3, "1+abc%3")
+        ],
+    );
+}
+
+pub mod core {
+
+    pub type Result<A> = std::result::Result<A, Error>;
+
+    #[derive(Debug)]
+    pub enum Error {
+        UnknownEnumValue {
+            enum_name: &'static str,
+            given: String,
+        },
+    }
 }

@@ -12,7 +12,7 @@ macro_rules! impl_enum {
     };
     (
         impl From<$enum_name:ident>,
-        impl TryFrom<$( $type:ty ),*>,
+        impl TryFrom<$( $type:tt ),*>,
         $error_type:ty,
         $pairs:tt,
     ) => {

@@ -33,6 +33,18 @@ pub mod schemas {
             Retriever,
             Shepherd,
         }
+
+        gesha_macros::impl_enum!(
+            impl From<Breed>,
+            impl TryFrom<String>,
+            super::super::core::Error,
+            [
+                (Dingo, "Dingo"),
+                (Husky, "Husky"),
+                (Retriever, "Retriever"),
+                (Shepherd, "Shepherd")
+            ],
+        );
     }
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -40,5 +52,18 @@ pub mod schemas {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub hunts: Option<bool>,
         pub age: i64,
+    }
+}
+
+pub mod core {
+
+    pub type Result<A> = std::result::Result<A, Error>;
+
+    #[derive(Debug)]
+    pub enum Error {
+        UnknownEnumValue {
+            enum_name: &'static str,
+            given: String,
+        },
     }
 }
