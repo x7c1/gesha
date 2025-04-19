@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.4](https://github.com/x7c1/gesha/compare/gesha-macros-v0.0.3...gesha-macros-v0.0.4) - 2025-04-19
+
+### Added
+
+- generate From, TryFrom, and AsRef impls for String enums ([#151](https://github.com/x7c1/gesha/pull/151))
+
 ## [0.0.3](https://github.com/x7c1/gesha/compare/gesha-macros-v0.0.2...gesha-macros-v0.0.3) - 2025-04-12
 
 ### Added
