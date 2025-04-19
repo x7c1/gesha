@@ -36,7 +36,8 @@ pub struct EnumMacroForFrom {
 pub enum EnumMacroTypeForFrom {
     I32,
     I64,
-    // TODO: support other types like Str, Bool.
+    String,
+    // TODO: support Bool type.
 }
 
 impl EnumMacroTypeForFrom {
@@ -44,6 +45,7 @@ impl EnumMacroTypeForFrom {
         match constant {
             EnumConstant::I32(_) => Some(Self::I32),
             EnumConstant::I64(_) => Some(Self::I64),
+            EnumConstant::Str(_) => Some(Self::String),
             _ => None,
         }
     }
@@ -54,6 +56,7 @@ impl Display for EnumMacroTypeForFrom {
         match self {
             EnumMacroTypeForFrom::I32 => Display::fmt("i32", f),
             EnumMacroTypeForFrom::I64 => Display::fmt("i64", f),
+            EnumMacroTypeForFrom::String => Display::fmt("String", f),
         }
     }
 }
