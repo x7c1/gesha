@@ -25,7 +25,7 @@ macro_rules! impl_enum_from {
 #[macro_export]
 macro_rules! private_impl_enum_from {
 
-    // For String, generate :
+    // For String, generate:
     // - impl From<...> for &str
     // - impl From<...> for String
     // - impl AsRef<str> for ...
