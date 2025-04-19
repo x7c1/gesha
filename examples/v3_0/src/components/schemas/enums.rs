@@ -13,6 +13,13 @@ pub mod schemas {
         Error2,
     }
 
+    gesha_macros::impl_enum!(
+        impl From<StringEnum1>,
+        impl TryFrom<String>,
+        super::core::Error,
+        [(Error1, "ERROR1"), (Error2, "ERROR2")],
+    );
+
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum StringEnum2 {
         #[serde(rename = "ERROR_FOO")]
@@ -20,6 +27,13 @@ pub mod schemas {
         #[serde(rename = "ERROR_BAR")]
         ErrorBar,
     }
+
+    gesha_macros::impl_enum!(
+        impl From<StringEnum2>,
+        impl TryFrom<String>,
+        super::core::Error,
+        [(ErrorFoo, "ERROR_FOO"), (ErrorBar, "ERROR_BAR")],
+    );
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum StringEnum3 {
@@ -29,9 +43,36 @@ pub mod schemas {
         Desc,
     }
 
+    gesha_macros::impl_enum!(
+        impl From<StringEnum3>,
+        impl TryFrom<String>,
+        super::core::Error,
+        [(Asc, "asc"), (Desc, "desc")],
+    );
+
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum StringEnum4 {
         Foo,
         Bar,
+    }
+
+    gesha_macros::impl_enum!(
+        impl From<StringEnum4>,
+        impl TryFrom<String>,
+        super::core::Error,
+        [(Foo, "Foo"), (Bar, "Bar")],
+    );
+}
+
+pub mod core {
+
+    pub type Result<A> = std::result::Result<A, Error>;
+
+    #[derive(Debug)]
+    pub enum Error {
+        UnknownEnumValue {
+            enum_name: &'static str,
+            given: String,
+        },
     }
 }
