@@ -22,23 +22,32 @@ macro_rules! impl_enum_from {
     };
 }
 
+/**
+   For `enum Foo` with inner type is `A`, generate:
+   - `impl From<Foo> for A`
+   - `impl AsRef<A> for Foo`
+
+   For `enum Foo` with inner type is `&str`, generate:
+   - `impl From<Foo> for &str`
+   - `impl From<Foo> for String`
+   - `impl AsRef<str> for Foo`
+*/
 #[macro_export]
 macro_rules! private_impl_enum_from {
-
-    // For String, generate:
-    // - impl From<...> for &str
-    // - impl From<...> for String
-    // - impl AsRef<str> for ...
     (
         $enum_name:ident,
         String,
         [ $(($variant:ident, $value:expr)),* ],
     ) => {
-        $crate::private_impl_enum_from!(
-            $enum_name,
-            &str,
-            [ $(($variant, $value)),* ],
-        );
+        impl From<$enum_name> for &str {
+            fn from(value: $enum_name) -> Self {
+                match value {
+                    $(
+                        $enum_name::$variant => $value,
+                    )*
+                }
+            }
+        }
 
         impl From<$enum_name> for String {
             fn from(value: $enum_name) -> Self {
@@ -71,15 +80,29 @@ macro_rules! private_impl_enum_from {
                 }
             }
         }
+
+        impl AsRef<$type> for $enum_name {
+            fn as_ref(&self) -> &$type {
+                match self {
+                    $(
+                        $enum_name::$variant => &$value,
+                    )*
+                }
+            }
+        }
     };
 }
 
+/**
+    For `enum Foo` with inner type is `A`, generate:
+    - `impl TryFrom<A> for Foo`
+
+    For `enum Foo` with inner type is `&str`, generate:
+    - `impl TryFrom<&str> for Foo`
+    - `impl TryFrom<String> for Foo`
+*/
 #[macro_export]
 macro_rules! private_impl_enum_try_from {
-
-    // For String, generate:
-    // - impl TryFrom<&str> for ...
-    // - impl TryFrom<String> for ...
     (
         $enum_name:ident,
         $error_type:ty,
