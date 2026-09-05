@@ -72,7 +72,7 @@ jobs:
 
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.x
+          deno-version: 1.46.3
 
       - run: |
           make e2e-test
